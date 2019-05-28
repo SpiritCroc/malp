@@ -260,6 +260,10 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
                 enqueueTrack(position);
                 return;
             }
+            case ACTION_ADD_SONG_AT_START: {
+                prependTrack(position);
+                return;
+            }
             case ACTION_PLAY_SONG: {
                 play(position);
                 return;
@@ -403,6 +407,12 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
         MPDFileEntry entry = (MPDFileEntry) mFileAdapter.getItem(index);
 
         MPDQueryHandler.addPath(entry.getPath());
+    }
+
+    private void prependTrack(int index) {
+        MPDFileEntry entry = (MPDFileEntry) mFileAdapter.getItem(index);
+
+        MPDQueryHandler.addPathAtStart(entry.getPath());
     }
 
     private void play(int index) {

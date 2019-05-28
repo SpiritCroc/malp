@@ -33,6 +33,7 @@ public class PreferenceHelper {
     public enum LIBRARY_TRACK_CLICK_ACTION {
         ACTION_SHOW_DETAILS,
         ACTION_ADD_SONG,
+        ACTION_ADD_SONG_AT_START,
         ACTION_PLAY_SONG,
         ACTION_PLAY_SONG_NEXT,
     }
@@ -57,6 +58,8 @@ public class PreferenceHelper {
             return LIBRARY_TRACK_CLICK_ACTION.ACTION_SHOW_DETAILS;
         } else if (clickActionPref.equals(context.getString(R.string.pref_library_click_action_add_key))) {
             return LIBRARY_TRACK_CLICK_ACTION.ACTION_ADD_SONG;
+        } else if (clickActionPref.equals(context.getString(R.string.pref_library_click_action_add_key_at_start))) {
+            return LIBRARY_TRACK_CLICK_ACTION.ACTION_ADD_SONG_AT_START;
         } else if (clickActionPref.equals(context.getString(R.string.pref_library_click_action_play_key))) {
             return LIBRARY_TRACK_CLICK_ACTION.ACTION_PLAY_SONG;
         } else if (clickActionPref.equals(context.getString(R.string.pref_library_click_action_play_next_key))) {

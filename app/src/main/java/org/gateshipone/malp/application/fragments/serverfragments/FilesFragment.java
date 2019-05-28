@@ -251,6 +251,9 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
             case R.id.action_song_enqueue:
                 MPDQueryHandler.addPath(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
                 return true;
+            case R.id.action_song_enqueue_at_start:
+                MPDQueryHandler.addPathAtStart(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+                return true;
             case R.id.action_song_play:
                 MPDQueryHandler.playSong(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
                 return true;
@@ -434,6 +437,12 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
                     MPDTrack track = (MPDTrack) mAdapter.getItem(position);
 
                     MPDQueryHandler.addPath(track.getPath());
+                    return;
+                }
+                case ACTION_ADD_SONG_AT_START:{
+                    MPDTrack track = (MPDTrack) mAdapter.getItem(position);
+
+                    MPDQueryHandler.addPathAtStart(track.getPath());
                     return;
                 }
                 case ACTION_PLAY_SONG: {

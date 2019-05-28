@@ -184,6 +184,9 @@ public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry
             case R.id.action_song_enqueue:
                 enqueueTrack(info.position);
                 return true;
+            case R.id.action_song_enqueue_at_start:
+                prependTrack(info.position);
+                return true;
             case R.id.action_song_play:
                 play(info.position);
                 return true;
@@ -309,6 +312,12 @@ public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry
         MPDQueryHandler.addPath(track.getPath());
     }
 
+    private void prependTrack(int index) {
+        MPDTrack track = (MPDTrack) mFileAdapter.getItem(index);
+
+        MPDQueryHandler.addPathAtStart(track.getPath());
+    }
+
     private void play(int index) {
         MPDTrack track = (MPDTrack) mFileAdapter.getItem(index);
 
@@ -345,6 +354,11 @@ public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry
             case ACTION_ADD_SONG:{
                 enqueueTrack(position);
                 return;
+            }
+            case ACTION_ADD_SONG_AT_START: {
+                prependTrack(position);
+                return;
+
             }
             case ACTION_PLAY_SONG: {
                 play(position);

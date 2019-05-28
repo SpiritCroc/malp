@@ -417,6 +417,13 @@ public class MPDQueryHandler extends MPDGenericHandler {
                 String url = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SONG_URL);
 
                 MPDInterface.mInstance.addSong(url);
+
+            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_ADD_PATH_AT_INDEX) {
+                String url = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SONG_URL);
+                Integer index = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SONG_INDEX_DESTINATION);
+
+                MPDInterface.mInstance.addSongatIndex(url,index);
+
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_PLAY_SONG_NEXT) {
                 String url = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SONG_URL);
 
@@ -1103,6 +1110,34 @@ public class MPDQueryHandler extends MPDGenericHandler {
         MPDQueryHandler.getHandler().sendMessage(msg);
     }
 
+    /**
+     * Prepends a path to the current playlist. Can be a file or directory
+     *
+     * @param url URL of the path to add.
+     */
+    public static void addPathAtStart(String url) {
+        addPathAtIndex(url, 0);
+    }
+
+    /**
+     * Adds a path to the current playlist at specific index. Can be a file or directory
+     *
+     * @param url URL of the path to add.
+     */
+    public static void addPathAtIndex(String url, Integer index) {
+        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_ADD_PATH_AT_INDEX);
+        Message msg = Message.obtain();
+        if (null == msg) {
+            return;
+        }
+
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SONG_URL, url);
+        action.setIntExtras(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SONG_INDEX_DESTINATION, index);
+
+        msg.obj = action;
+
+        MPDQueryHandler.getHandler().sendMessage(msg);
+    }
 
     public static void playDirectory(String url) {
         MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_PLAY_DIRECTORY);
