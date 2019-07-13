@@ -24,19 +24,20 @@ package org.gateshipone.malp.application.fragments.serverfragments;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
+
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.utils.FormatHelper;
+import org.gateshipone.malp.application.viewmodels.GenericViewModel;
+import org.gateshipone.malp.application.viewmodels.StatisticsViewModel;
 import org.gateshipone.malp.mpdservice.handlers.MPDStatusChangeHandler;
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseServerStatistics;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDStateMonitoringHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCapabilities;
@@ -46,8 +47,9 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
-public class ServerStatisticFragment extends Fragment {
+public class ServerStatisticFragment extends GenericMPDFragment<MPDStatistics> {
     public final static String TAG = ServerStatisticFragment.class.getSimpleName();
 
     private TextView mArtistCount;
@@ -84,9 +86,14 @@ public class ServerStatisticFragment extends Fragment {
 
         mServerFeatures = rootView.findViewById(R.id.server_statistic_malp_server_information);
 
-        rootView.findViewById(R.id.server_statistic_update_db_btn).setOnClickListener(new DBUpdateBtnListener());
+        rootView.findViewById(R.id.server_statistic_update_db_btn).setOnClickListener(v -> {
+            // Update the whole database => no path
+            MPDQueryHandler.updateDatabase("");
+        });
 
         mServerStatusHandler = new ServerStatusHandler(this);
+
+        getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
 
         // Return the ready inflated and configured fragment view.
         return rootView;
@@ -98,8 +105,6 @@ public class ServerStatisticFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        MPDQueryHandler.getStatistics(new StatisticResponseHandler(this));
 
         MPDStateMonitoringHandler.getHandler().registerStatusListener(mServerStatusHandler);
 
@@ -113,6 +118,35 @@ public class ServerStatisticFragment extends Fragment {
         MPDStateMonitoringHandler.getHandler().unregisterStatusListener(mServerStatusHandler);
     }
 
+    @Override
+    GenericViewModel<MPDStatistics> getViewModel() {
+        return new ViewModelProvider(this, new StatisticsViewModel.StatisticsViewModelFactory(getActivity().getApplication())).get(StatisticsViewModel.class);
+    }
+
+    @Override
+    protected void onDataReady(List<MPDStatistics> model) {
+        if (model != null && !model.isEmpty()) {
+            final MPDStatistics statistics = model.get(0);
+
+            mArtistCount.setText(String.valueOf(statistics.getArtistsCount()));
+            mAlbumsCount.setText(String.valueOf(statistics.getAlbumCount()));
+            mSongsCount.setText(String.valueOf(statistics.getSongCount()));
+
+            mUptime.setText(FormatHelper.formatTracktimeFromSWithDays(statistics.getServerUptime(), getContext()));
+            mPlaytime.setText(FormatHelper.formatTracktimeFromSWithDays(statistics.getPlayDuration(), getContext()));
+            mDBLength.setText(FormatHelper.formatTracktimeFromSWithDays(statistics.getAllSongDuration(), getContext()));
+
+            if (statistics.getLastDBUpdate() != 0) {
+                mLastUpdate.setText(FormatHelper.formatTimeStampToString(statistics.getLastDBUpdate() * 1000));
+            }
+
+            final MPDCapabilities capabilities = MPDInterface.mInstance.getServerCapabilities();
+            if (capabilities != null) {
+                mServerFeatures.setText(capabilities.getServerFeatures());
+            }
+        }
+    }
+
     private synchronized void showDatabaseUpdating(final boolean show) {
         Activity activity = getActivity();
         if (null == activity) {
@@ -120,55 +154,14 @@ public class ServerStatisticFragment extends Fragment {
         }
         activity.runOnUiThread(() -> {
             // If state is changed, update statistics to show current timestamp
-            MPDQueryHandler.getStatistics(new StatisticResponseHandler(this));
+            getViewModel().reloadData();
+
             if (show) {
                 mDBUpdating.setVisibility(View.VISIBLE);
             } else {
                 mDBUpdating.setVisibility(View.GONE);
             }
         });
-
-    }
-
-
-    private static class StatisticResponseHandler extends MPDResponseServerStatistics {
-        WeakReference<ServerStatisticFragment> mFragment;
-        StatisticResponseHandler(ServerStatisticFragment fragment) {
-            mFragment = new WeakReference<>(fragment);
-        }
-
-
-        @Override
-        public void handleStatistic(MPDStatistics statistics) {
-            mFragment.get().mArtistCount.setText(String.valueOf(statistics.getArtistsCount()));
-            mFragment.get().mAlbumsCount.setText(String.valueOf(statistics.getAlbumCount()));
-            mFragment.get().mSongsCount.setText(String.valueOf(statistics.getSongCount()));
-
-            // Context could be null already because of asynchronous back call
-            Context context = mFragment.get().getContext();
-            if (context != null) {
-                mFragment.get().mUptime.setText(FormatHelper.formatTracktimeFromSWithDays(statistics.getServerUptime(), context));
-                mFragment.get().mPlaytime.setText(FormatHelper.formatTracktimeFromSWithDays(statistics.getPlayDuration(), context));
-                mFragment.get().mDBLength.setText(FormatHelper.formatTracktimeFromSWithDays(statistics.getAllSongDuration(), context));
-            }
-
-            if (statistics.getLastDBUpdate() != 0) {
-                mFragment.get().mLastUpdate.setText(FormatHelper.formatTimeStampToString(statistics.getLastDBUpdate() * 1000));
-            }
-
-            MPDCapabilities capabilities = MPDInterface.mInstance.getServerCapabilities();
-            if (null != capabilities) {
-                mFragment.get().mServerFeatures.setText(capabilities.getServerFeatures());
-            }
-        }
-    }
-
-    private static class DBUpdateBtnListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            // Update the whole database => no path
-            MPDQueryHandler.updateDatabase("");
-        }
     }
 
     private static class ServerStatusHandler extends MPDStatusChangeHandler {
@@ -177,7 +170,6 @@ public class ServerStatisticFragment extends Fragment {
         ServerStatusHandler(ServerStatisticFragment fragment) {
             mFragment = new WeakReference<>(fragment);
         }
-
 
         @Override
         protected void onNewStatusReady(MPDCurrentStatus status) {
@@ -189,7 +181,7 @@ public class ServerStatisticFragment extends Fragment {
 
         @Override
         protected void onNewTrackReady(MPDTrack track) {
-
+            // unused
         }
     }
 }

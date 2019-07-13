@@ -28,9 +28,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.loader.content.Loader;
-
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -42,27 +39,25 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
 
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.ArtistsAdapter;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.listviewitems.AbsImageListViewItem;
-import org.gateshipone.malp.application.loaders.ArtistsLoader;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ScrollSpeedListener;
 import org.gateshipone.malp.application.utils.ThemeUtils;
+import org.gateshipone.malp.application.viewmodels.ArtistsViewModel;
+import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
-public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> implements AdapterView.OnItemClickListener {
+public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements AdapterView.OnItemClickListener {
     public final static String TAG = ArtistsFragment.class.getSimpleName();
-    /**
-     * GridView adapter object used for this GridView
-     */
-    private ArtistsAdapter mArtistAdapter;
 
     /**
      * Save the root GridView for later usage.
@@ -85,6 +80,10 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
 
     private MPDAlbum.MPD_ALBUM_SORT_ORDER mAlbumSortOrder;
 
+    private boolean mUseAlbumArtists;
+
+    private boolean mUseArtistSort;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -96,6 +95,8 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
         }
 
         mAlbumSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, getContext());
+        mUseAlbumArtists = sharedPref.getBoolean(getString(R.string.pref_use_album_artists_key), getResources().getBoolean(R.bool.pref_use_album_artists_default));
+        mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
 
         View rootView;
         // get gridview
@@ -108,12 +109,12 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
             mAdapterView = (GridView) rootView.findViewById(R.id.grid_refresh_gridview);
         }
 
-        mArtistAdapter = new ArtistsAdapter(getActivity(), mAdapterView, mUseList);
+        mAdapter = new ArtistsAdapter(getActivity(), mAdapterView, mUseList);
 
-        mAdapterView.setAdapter(mArtistAdapter);
+        mAdapterView.setAdapter(mAdapter);
         mAdapterView.setOnItemClickListener(this);
 
-        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mArtistAdapter, mAdapterView));
+        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter, mAdapterView));
 
         // register for context menu
         registerForContextMenu(mAdapterView);
@@ -127,26 +128,32 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
+        getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
+
         return rootView;
+    }
+
+    @Override
+    GenericViewModel<MPDArtist> getViewModel() {
+        return new ViewModelProvider(this, new ArtistsViewModel.ArtistViewModelFactory(getActivity().getApplication(), mUseAlbumArtists, mUseArtistSort)).get(ArtistsViewModel.class);
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-
         if (null != mFABCallback) {
             mFABCallback.setupFAB(false, null);
             mFABCallback.setupToolbar(getString(R.string.app_name), true, true, false);
         }
-        ArtworkManager.getInstance(getContext().getApplicationContext()).registerOnNewArtistImageListener(mArtistAdapter);
+        ArtworkManager.getInstance(getContext().getApplicationContext()).registerOnNewArtistImageListener((ArtistsAdapter) mAdapter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        ArtworkManager.getInstance(getContext().getApplicationContext()).unregisterOnNewArtistImageListener(mArtistAdapter);
+        ArtworkManager.getInstance(getContext().getApplicationContext()).unregisterOnNewArtistImageListener((ArtistsAdapter) mAdapter);
     }
 
     /**
@@ -171,53 +178,6 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
         } catch (ClassCastException e) {
             mFABCallback = null;
         }
-    }
-
-    /**
-     * This method creates a new loader for this fragment.
-     *
-     * @param id
-     * @param args
-     * @return
-     */
-    @NonNull
-    @Override
-    public Loader<List<MPDArtist>> onCreateLoader(int id, Bundle args) {
-        // Read albumartists/artists preference
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean useAlbumArtists = sharedPref.getBoolean(getString(R.string.pref_use_album_artists_key), getResources().getBoolean(R.bool.pref_use_album_artists_default));
-        boolean useArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
-        return new ArtistsLoader(getActivity(), useAlbumArtists, useArtistSort);
-    }
-
-    /**
-     * Called when the loader finished loading its data.
-     *
-     * @param loader The used loader itself
-     * @param data   Data of the loader
-     */
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<MPDArtist>> loader, List<MPDArtist> data) {
-        super.onLoadFinished(loader, data);
-        // Set the actual data to the adapter.
-        mArtistAdapter.swapModel(data);
-
-        // Reset old scroll position
-        if (mLastPosition >= 0) {
-            mAdapterView.setSelection(mLastPosition);
-            mLastPosition = -1;
-        }
-    }
-
-    /**
-     * If a loader is reset the model data should be cleared.
-     *
-     * @param loader Loader that was resetted.
-     */
-    @Override
-    public void onLoaderReset(Loader<List<MPDArtist>> loader) {
-        // Clear the model data of the adapter.
-        mArtistAdapter.swapModel(null);
     }
 
     /**
@@ -260,7 +220,7 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mLastPosition = position;
 
-        MPDArtist artist = (MPDArtist) mArtistAdapter.getItem(position);
+        MPDArtist artist = (MPDArtist) mAdapter.getItem(position);
 
         Bitmap bitmap = null;
 
@@ -278,23 +238,23 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
 
 
     private void enqueueArtist(int index) {
-        MPDArtist artist = (MPDArtist) mArtistAdapter.getItem(index);
+        MPDArtist artist = (MPDArtist) mAdapter.getItem(index);
 
         MPDQueryHandler.addArtist(artist.getArtistName(), mAlbumSortOrder);
     }
 
     private void playArtist(int index) {
-        MPDArtist artist = (MPDArtist) mArtistAdapter.getItem(index);
+        MPDArtist artist = (MPDArtist) mAdapter.getItem(index);
 
         MPDQueryHandler.playArtist(artist.getArtistName(), mAlbumSortOrder);
     }
 
     public void applyFilter(String name) {
-        mArtistAdapter.applyFilter(name);
+        mAdapter.applyFilter(name);
     }
 
     public void removeFilter() {
-        mArtistAdapter.removeFilter();
+        mAdapter.removeFilter();
     }
 
 }

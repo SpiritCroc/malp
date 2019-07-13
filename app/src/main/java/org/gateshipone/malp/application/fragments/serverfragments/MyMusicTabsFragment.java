@@ -150,6 +150,11 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
             ViewPager myMusicViewPager = view.findViewById(R.id.my_music_viewpager);
             myMusicViewPager.setCurrentItem(tab.getPosition());
+
+            GenericMPDFragment fragment = mMyMusicPagerAdapter.getRegisteredFragment(tab.getPosition());
+            if (fragment != null) {
+                fragment.getContent();
+            }
         }
     }
 

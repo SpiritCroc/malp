@@ -20,61 +20,48 @@
  *
  */
 
-package org.gateshipone.malp.application.loaders;
+package org.gateshipone.malp.application.viewmodels;
 
+import android.app.Application;
 
-import android.content.Context;
-import androidx.loader.content.Loader;
-
-import java.lang.ref.WeakReference;
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseOutputList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
+import java.util.List;
 
-public class OutputsLoader extends Loader<List<MPDOutput>> {
+public class OutputsViewModel extends GenericViewModel<MPDOutput> {
 
-    private OutputResponseHandler mOutputResponseHandler;
-
-
-    public OutputsLoader(Context context) {
-        super(context);
-        mOutputResponseHandler = new OutputResponseHandler(this);
+    private OutputsViewModel(@NonNull final Application application) {
+        super(application);
     }
 
-
-    private static class OutputResponseHandler extends MPDResponseOutputList {
-        private WeakReference<OutputsLoader> mOutputsLoader;
-
-        private OutputResponseHandler(OutputsLoader loader) {
-            mOutputsLoader = new WeakReference<>(loader);
-        }
-
-        @Override
-        public void handleOutputs(List<MPDOutput> outputList) {
-            OutputsLoader loader = mOutputsLoader.get();
-
-            if (loader != null) {
-               loader.deliverResult(outputList);
+    @Override
+    void loadData() {
+        MPDQueryHandler.getOutputs(new MPDResponseOutputList() {
+            @Override
+            public void handleOutputs(List<MPDOutput> outputList) {
+                setData(outputList);
             }
+        });
+    }
+
+    public static class OutputsViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+
+        private final Application mApplication;
+
+        public OutputsViewModelFactory(final Application application) {
+            mApplication = application;
         }
-    }
 
-
-    @Override
-    public void onStartLoading() {
-        forceLoad();
-    }
-
-    @Override
-    public void onStopLoading() {
-
-    }
-
-    @Override
-    public void onForceLoad() {
-        MPDQueryHandler.getOutputs(mOutputResponseHandler);
+        @NonNull
+        @Override
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) new OutputsViewModel(mApplication);
+        }
     }
 }

@@ -20,41 +20,44 @@
  *
  */
 
-package org.gateshipone.malp.application.loaders;
+package org.gateshipone.malp.application.viewmodels;
 
+import android.app.Application;
 
-import android.content.Context;
-import androidx.loader.content.AsyncTaskLoader;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
 
 import java.util.List;
 
-import org.gateshipone.malp.mpdservice.profilemanagement.MPDProfileManager;
-import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
+public abstract class GenericViewModel<T extends MPDGenericItem> extends AndroidViewModel {
 
-public class ProfilesLoader extends AsyncTaskLoader<List<MPDServerProfile>> {
-    public ProfilesLoader(Context context) {
-        super(context);
+    private MutableLiveData<List<T>> mData;
+
+    abstract void loadData();
+
+    GenericViewModel(@NonNull final Application application) {
+        super(application);
+
+        mData = new MutableLiveData<>();
     }
 
-    @Override
-    public List<MPDServerProfile> loadInBackground() {
-        return MPDProfileManager.getInstance(getContext()).getProfiles();
+    public LiveData<List<T>> getData() {
+        return mData;
     }
 
-    /**
-     * Start loading the data.
-     * A previous load dataset will be ignored
-     */
-    @Override
-    protected void onStartLoading() {
-        forceLoad();
+    public void reloadData() {
+        loadData();
     }
 
-    /**
-     * Stop the loader and cancel the current task.
-     */
-    @Override
-    protected void onStopLoading() {
-        cancelLoad();
+    public void clearData() {
+        mData.setValue(null);
+    }
+
+    protected void setData(final List<T> data) {
+        mData.setValue(data);
     }
 }

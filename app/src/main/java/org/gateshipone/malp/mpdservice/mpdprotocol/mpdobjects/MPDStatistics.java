@@ -22,7 +22,7 @@
 
 package org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects;
 
-public class MPDStatistics {
+public class MPDStatistics implements MPDGenericItem {
     private int mArtistsCount;
     private int mAlbumCount;
     private int mSongCount;
@@ -102,4 +102,9 @@ public class MPDStatistics {
     }
 
 
+    @Override
+    public String getSectionTitle() {
+        // FIXME
+        return "";
+    }
 }

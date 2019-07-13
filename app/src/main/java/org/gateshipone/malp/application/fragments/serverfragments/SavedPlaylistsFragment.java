@@ -25,10 +25,6 @@ package org.gateshipone.malp.application.fragments.serverfragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
-import androidx.appcompat.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -39,24 +35,23 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.callbacks.PlaylistCallback;
-import org.gateshipone.malp.application.loaders.PlaylistsLoader;
 import org.gateshipone.malp.application.utils.ThemeUtils;
+import org.gateshipone.malp.application.viewmodels.GenericViewModel;
+import org.gateshipone.malp.application.viewmodels.PlaylistsViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
 
-public class SavedPlaylistsFragment extends GenericMPDFragment<List<MPDFileEntry>> implements AbsListView.OnItemClickListener {
+public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> implements AbsListView.OnItemClickListener {
     public final static String TAG = SavedPlaylistsFragment.class.getSimpleName();
-    /**
-     * Adapter used by the ListView
-     */
-    private FileAdapter mPlaylistAdapter;
 
     /**
      * Main ListView of this fragment
@@ -81,10 +76,10 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<List<MPDFileEntry
 
 
         // Create the needed adapter for the ListView
-        mPlaylistAdapter = new FileAdapter(getActivity(), true, false);
+        mAdapter = new FileAdapter(getActivity(), true, false);
 
         // Combine the two to a happy couple
-        mListView.setAdapter(mPlaylistAdapter);
+        mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
         registerForContextMenu(mListView);
 
@@ -97,9 +92,15 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<List<MPDFileEntry
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
+        getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
 
         // Return the ready inflated and configured fragment view.
         return rootView;
+    }
+
+    @Override
+    GenericViewModel<MPDFileEntry> getViewModel() {
+        return new ViewModelProvider(this, new PlaylistsViewModel.PlaylistsViewModelFactory(getActivity().getApplication(), false)).get(PlaylistsViewModel.class);
     }
 
     /**
@@ -165,7 +166,7 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<List<MPDFileEntry
             return super.onContextItemSelected(item);
         }
 
-        final MPDPlaylist playlist = (MPDPlaylist) mPlaylistAdapter.getItem(info.position);
+        final MPDPlaylist playlist = (MPDPlaylist) mAdapter.getItem(info.position);
         switch (item.getItemId()) {
             case R.id.action_add_playlist:
                 MPDQueryHandler.loadPlaylist(playlist.getPath());
@@ -176,9 +177,8 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<List<MPDFileEntry
                 removeListBuilder.setMessage(getContext().getString(R.string.dialog_message_delete_playlist) + ' ' + playlist.getSectionTitle() + '?');
                 removeListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> {
                     MPDQueryHandler.removePlaylist(playlist.getPath());
-                    mPlaylistAdapter.swapModel(null);
-                    LoaderManager.getInstance(this).destroyLoader(0);
-                    LoaderManager.getInstance(this).initLoader(0, getArguments(), SavedPlaylistsFragment.this);
+                    mAdapter.swapModel(null);
+                    refreshContent();
                 });
                 removeListBuilder.setNegativeButton(R.string.dialog_action_no, (dialog, which) -> {
 
@@ -194,46 +194,10 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<List<MPDFileEntry
         }
     }
 
-    /**
-     * Creates a new Loader that retrieves the list of playlists
-     *
-     * @param id
-     * @param args
-     * @return Newly created loader
-     */
-    @NonNull
-    @Override
-    public Loader<List<MPDFileEntry>> onCreateLoader(int id, Bundle args) {
-        return new PlaylistsLoader(getActivity(), false);
-    }
-
-    /**
-     * When the loader finished its loading of the data it is transferred to the adapter.
-     *
-     * @param loader Loader that finished its loading
-     * @param data   Data that was retrieved by the laoder
-     */
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
-        super.onLoadFinished(loader, data);
-        mPlaylistAdapter.swapModel(data);
-    }
-
-    /**
-     * Resets the loader and clears the model data set
-     *
-     * @param loader The loader that gets cleared.
-     */
-    @Override
-    public void onLoaderReset(Loader<List<MPDFileEntry>> loader) {
-        // Clear the model data of the used adapter
-        mPlaylistAdapter.swapModel(null);
-    }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (null != mCallback) {
-            MPDPlaylist playlist = (MPDPlaylist) mPlaylistAdapter.getItem(position);
+            MPDPlaylist playlist = (MPDPlaylist) mAdapter.getItem(position);
             mCallback.openPlaylist(playlist.getPath());
         }
     }

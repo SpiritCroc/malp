@@ -27,13 +27,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-
-import androidx.annotation.NonNull;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.activities.MainActivity;
@@ -62,7 +63,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         Preference openVolumeStepDialog = findPreference(getString(R.string.pref_volume_steps_dialog_key));
         openVolumeStepDialog.setOnPreferenceClickListener(preference -> {
             VolumeStepPreferenceDialog dialog = new VolumeStepPreferenceDialog();
-            dialog.show(getFragmentManager(), "Volume steps");
+            dialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "Volume steps");
             return true;
         });
     }

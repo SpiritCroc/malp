@@ -25,78 +25,33 @@ package org.gateshipone.malp.application.fragments.serverfragments;
 import android.app.Dialog;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
 import androidx.appcompat.app.AlertDialog;
-
-
-import java.util.List;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
 import org.gateshipone.malp.application.callbacks.OnSaveDialogListener;
-import org.gateshipone.malp.application.loaders.PlaylistsLoader;
 import org.gateshipone.malp.application.utils.ThemeUtils;
+import org.gateshipone.malp.application.viewmodels.GenericViewModel;
+import org.gateshipone.malp.application.viewmodels.PlaylistsViewModel;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
 
-public class ChoosePlaylistDialog extends GenericMPDFragment<List<MPDFileEntry>> {
+public class ChoosePlaylistDialog extends GenericMPDFragment<MPDFileEntry> {
 
     public static final String EXTRA_SHOW_NEW_ENTRY = "show_newentry";
 
     /**
      * Listener to save the bookmark
      */
-    OnSaveDialogListener mSaveCallback;
-
-    /**
-     * Adapter used for the ListView
-     */
-    private FileAdapter mPlaylistsListViewAdapter;
+    private OnSaveDialogListener mSaveCallback;
 
     private boolean mShowNewEntry;
 
-
     public void setCallback(OnSaveDialogListener callback) {
         mSaveCallback = callback;
-    }
-
-
-
-
-    /**
-     * This method creates a new loader for this fragment.
-     *
-     * @param id   The id of the loader
-     * @param args Optional arguments
-     * @return Return a new Loader instance that is ready to start loading.
-     */
-    @NonNull
-    @Override
-    public Loader<List<MPDFileEntry>> onCreateLoader(int id, Bundle args) {
-        return new PlaylistsLoader(getActivity(),mShowNewEntry);
-    }
-
-    /**
-     * Called when the loader finished loading its data.
-     *
-     * @param loader The used loader itself
-     * @param data   Data of the loader
-     */
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
-        mPlaylistsListViewAdapter.swapModel(data);
-    }
-
-    /**
-     * If a loader is reset the model data should be cleared.
-     *
-     * @param loader Loader that was resetted.
-     */
-    @Override
-    public void onLoaderReset(Loader<List<MPDFileEntry>> loader) {
-        mPlaylistsListViewAdapter.swapModel(null);
     }
 
     /**
@@ -107,17 +62,17 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<List<MPDFileEntry>>
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
 
-        if ( null != args ) {
+        if (null != args) {
             mShowNewEntry = args.getBoolean(EXTRA_SHOW_NEW_ENTRY);
         }
 
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        mPlaylistsListViewAdapter = new FileAdapter(getActivity(), false, false);
+        mAdapter = new FileAdapter(getActivity(), false, false);
 
-        builder.setTitle(getString(R.string.dialog_choose_playlist)).setAdapter(mPlaylistsListViewAdapter, (dialog, which) -> {
-            if ( null == mSaveCallback ) {
+        builder.setTitle(getString(R.string.dialog_choose_playlist)).setAdapter(mAdapter, (dialog, which) -> {
+            if (null == mSaveCallback) {
                 return;
             }
             if (which == 0) {
@@ -125,7 +80,7 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<List<MPDFileEntry>>
                 mSaveCallback.onCreateNewObject();
             } else {
                 // override existing playlist
-                MPDPlaylist playlist = (MPDPlaylist) mPlaylistsListViewAdapter.getItem(which);
+                MPDPlaylist playlist = (MPDPlaylist) mAdapter.getItem(which);
                 String objectTitle = playlist.getPath();
                 mSaveCallback.onSaveObject(objectTitle);
             }
@@ -134,14 +89,18 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<List<MPDFileEntry>>
             getDialog().cancel();
         });
 
-        // Prepare loader ( start new one or reuse old )
-        LoaderManager.getInstance(this).initLoader(0, getArguments(), this);
+        getViewModel().getData().observe(this, this::onDataReady);
 
         // set divider
         AlertDialog dlg = builder.create();
-        dlg.getListView().setDivider(new ColorDrawable(ThemeUtils.getThemeColor(getContext(),R.attr.malp_color_background_selected)));
+        dlg.getListView().setDivider(new ColorDrawable(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_background_selected)));
         dlg.getListView().setDividerHeight(getResources().getDimensionPixelSize(R.dimen.list_divider_size));
 
         return dlg;
+    }
+
+    @Override
+    GenericViewModel<MPDFileEntry> getViewModel() {
+        return new ViewModelProvider(this, new PlaylistsViewModel.PlaylistsViewModelFactory(getActivity().getApplication(), mShowNewEntry)).get(PlaylistsViewModel.class);
     }
 }

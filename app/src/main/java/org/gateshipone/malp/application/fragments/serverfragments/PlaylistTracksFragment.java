@@ -42,31 +42,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.loader.content.Loader;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
 import org.gateshipone.malp.application.callbacks.AddPathToPlaylist;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
-import org.gateshipone.malp.application.loaders.PlaylistTrackLoader;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
+import org.gateshipone.malp.application.viewmodels.GenericViewModel;
+import org.gateshipone.malp.application.viewmodels.PlaylistTracksViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
-import java.util.List;
-
-public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> implements AdapterView.OnItemClickListener {
+public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> implements AdapterView.OnItemClickListener {
     public final static String TAG = PlaylistTracksFragment.class.getSimpleName();
     public final static String EXTRA_PLAYLIST_NAME = "name";
-
-
-    /**
-     * Adapter used by the ListView
-     */
-    private FileAdapter mFileAdapter;
 
     /**
      * Main ListView of this fragment
@@ -81,7 +74,6 @@ public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry
     private FABFragmentCallback mFABCallback = null;
 
     private PreferenceHelper.LIBRARY_TRACK_CLICK_ACTION mClickAction;
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -102,10 +94,10 @@ public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry
         mClickAction = PreferenceHelper.getClickAction(sharedPref, getContext());
 
         // Create the needed adapter for the ListView
-        mFileAdapter = new FileAdapter(getActivity(), false, false, showVisibleSections, true);
+        mAdapter = new FileAdapter(getActivity(), false, false, showVisibleSections, true);
 
         // Combine the two to a happy couple
-        mListView.setAdapter(mFileAdapter);
+        mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
         registerForContextMenu(mListView);
 
@@ -119,8 +111,15 @@ public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry
 
         setHasOptionsMenu(true);
 
+        getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
+
         // Return the ready inflated and configured fragment view.
         return rootView;
+    }
+
+    @Override
+    GenericViewModel<MPDFileEntry> getViewModel() {
+        return new ViewModelProvider(this, new PlaylistTracksViewModel.PlaylistTracksModelFactory(getActivity().getApplication(), mPath)).get(PlaylistTracksViewModel.class);
     }
 
     /**
@@ -199,7 +198,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry
                 ChoosePlaylistDialog choosePlaylistDialog = new ChoosePlaylistDialog();
                 Bundle args = new Bundle();
                 args.putBoolean(ChoosePlaylistDialog.EXTRA_SHOW_NEW_ENTRY, true);
-                choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mFileAdapter.getItem(info.position), getActivity()));
+                choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
                 choosePlaylistDialog.setArguments(args);
                 choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
                 return true;
@@ -212,7 +211,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry
                 // Open song details dialog
                 SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
                 Bundle args = new Bundle();
-                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mFileAdapter.getItem(info.position));
+                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(info.position));
                 songDetailsDialog.setArguments(args);
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 return true;
@@ -270,74 +269,37 @@ public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Creates a new Loader that retrieves the list of playlists
-     *
-     * @param id
-     * @param args
-     * @return Newly created loader
-     */
-    @NonNull
-    @Override
-    public Loader<List<MPDFileEntry>> onCreateLoader(int id, Bundle args) {
-        return new PlaylistTrackLoader(getActivity(), mPath);
-    }
-
-    /**
-     * When the loader finished its loading of the data it is transferred to the adapter.
-     *
-     * @param loader Loader that finished its loading
-     * @param data   Data that was retrieved by the laoder
-     */
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
-        super.onLoadFinished(loader, data);
-        mFileAdapter.swapModel(data);
-
-    }
-
-    /**
-     * Resets the loader and clears the model data set
-     *
-     * @param loader The loader that gets cleared.
-     */
-    @Override
-    public void onLoaderReset(Loader<List<MPDFileEntry>> loader) {
-        // Clear the model data of the used adapter
-        mFileAdapter.swapModel(null);
-    }
-
     private void enqueueTrack(int index) {
-        MPDTrack track = (MPDTrack) mFileAdapter.getItem(index);
+        MPDTrack track = (MPDTrack) mAdapter.getItem(index);
 
         MPDQueryHandler.addPath(track.getPath());
     }
 
     private void prependTrack(int index) {
-        MPDTrack track = (MPDTrack) mFileAdapter.getItem(index);
+        MPDTrack track = (MPDTrack) mAdapter.getItem(index);
 
         MPDQueryHandler.addPathAtStart(track.getPath());
     }
 
     private void play(int index) {
-        MPDTrack track = (MPDTrack) mFileAdapter.getItem(index);
+        MPDTrack track = (MPDTrack) mAdapter.getItem(index);
 
         MPDQueryHandler.playSong(track.getPath());
     }
 
 
     private void playNext(int index) {
-        MPDTrack track = (MPDTrack) mFileAdapter.getItem(index);
+        MPDTrack track = (MPDTrack) mAdapter.getItem(index);
 
         MPDQueryHandler.playSongNext(track.getPath());
     }
 
     public void applyFilter(String name) {
-        mFileAdapter.applyFilter(name);
+        mAdapter.applyFilter(name);
     }
 
     public void removeFilter() {
-        mFileAdapter.removeFilter();
+        mAdapter.removeFilter();
     }
 
     @Override
@@ -347,7 +309,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<List<MPDFileEntry
                 // Open song details dialog
                 SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
                 Bundle args = new Bundle();
-                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mFileAdapter.getItem(position));
+                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(position));
                 songDetailsDialog.setArguments(args);
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 break;

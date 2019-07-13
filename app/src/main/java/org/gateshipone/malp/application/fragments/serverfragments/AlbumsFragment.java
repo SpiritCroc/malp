@@ -44,25 +44,26 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.loader.content.Loader;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.AlbumsAdapter;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.listviewitems.AbsImageListViewItem;
-import org.gateshipone.malp.application.loaders.AlbumsLoader;
 import org.gateshipone.malp.application.utils.CoverBitmapLoader;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ScrollSpeedListener;
 import org.gateshipone.malp.application.utils.ThemeUtils;
+import org.gateshipone.malp.application.viewmodels.AlbumsViewModel;
+import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
 import java.util.List;
 
-public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implements AdapterView.OnItemClickListener, CoverBitmapLoader.CoverBitmapListener, ArtworkManager.onNewArtistImageListener {
+public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements AdapterView.OnItemClickListener, CoverBitmapLoader.CoverBitmapListener, ArtworkManager.onNewArtistImageListener {
     public final static String TAG = AlbumsFragment.class.getSimpleName();
 
     /**
@@ -75,11 +76,6 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
     public static final String BUNDLE_STRING_EXTRA_PATH = "album_path";
 
     public static final String BUNDLE_STRING_EXTRA_BITMAP = "bitmap";
-
-    /**
-     * GridView adapter object used for this GridView
-     */
-    private AlbumsAdapter mAlbumsAdapter;
 
     /**
      * Save the root GridView for later usage.
@@ -136,8 +132,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
 
         mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
 
-        mAlbumsAdapter = new AlbumsAdapter(getActivity(), mAdapterView, mUseList);
-
+        mAdapter = new AlbumsAdapter(getActivity(), mAdapterView, mUseList);
 
         /* Check if an artistname was given in the extras */
         Bundle args = getArguments();
@@ -151,11 +146,9 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
             mArtist = new MPDArtist("");
         }
 
-        mAdapterView.setAdapter(mAlbumsAdapter);
+        mAdapterView.setAdapter(mAdapter);
         mAdapterView.setOnItemClickListener(this);
-
-
-        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mAlbumsAdapter, mAdapterView));
+        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter, mAdapterView));
 
         // register for context menu
         registerForContextMenu(mAdapterView);
@@ -173,8 +166,14 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
 
         mBitmapLoader = new CoverBitmapLoader(getContext(), this);
 
+        getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
 
         return rootView;
+    }
+
+    @Override
+    GenericViewModel<MPDAlbum> getViewModel() {
+        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(getActivity().getApplication(), mArtist == null ? "" : mArtist.getArtistName(), mAlbumsPath)).get(AlbumsViewModel.class);
     }
 
     @Override
@@ -183,9 +182,8 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
 
         setupToolbarAndStuff();
 
-
         ArtworkManager.getInstance(getContext()).registerOnNewArtistImageListener(this);
-        ArtworkManager.getInstance(getContext()).registerOnNewAlbumImageListener(mAlbumsAdapter);
+        ArtworkManager.getInstance(getContext()).registerOnNewAlbumImageListener((AlbumsAdapter) mAdapter);
     }
 
     /**
@@ -213,14 +211,31 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
         }
     }
 
+    /**
+     * Called when the observed {@link androidx.lifecycle.LiveData} is changed.
+     * <p>
+     * This method will update the related adapter and the {@link androidx.swiperefreshlayout.widget.SwipeRefreshLayout} if present.
+     *
+     * @param model The data observed by the {@link androidx.lifecycle.LiveData}.
+     */
+    @Override
+    protected void onDataReady(List<MPDAlbum> model) {
+        super.onDataReady(model);
+
+        // Reset old scroll position
+        if (mLastPosition >= 0) {
+            mAdapterView.setSelection(mLastPosition);
+            mLastPosition = -1;
+        }
+    }
+
     @Override
     public void onPause() {
         super.onPause();
 
         ArtworkManager.getInstance(getContext()).unregisterOnNewArtistImageListener(this);
-        ArtworkManager.getInstance(getContext()).unregisterOnNewAlbumImageListener(mAlbumsAdapter);
+        ArtworkManager.getInstance(getContext()).unregisterOnNewAlbumImageListener((AlbumsAdapter) mAdapter);
     }
-
 
     /**
      * Create the context menu.
@@ -305,39 +320,6 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
         return super.onOptionsItemSelected(item);
     }
 
-
-    /**
-     * This method creates a new loader for this fragment.
-     *
-     * @param id
-     * @param args
-     * @return
-     */
-    @NonNull
-    @Override
-    public Loader<List<MPDAlbum>> onCreateLoader(int id, Bundle args) {
-        return new AlbumsLoader(getActivity(), mArtist == null ? "" : mArtist.getArtistName(), mAlbumsPath);
-    }
-
-    /**
-     * Called when the loader finished loading its data.
-     *
-     * @param loader The used loader itself
-     * @param data   Data of the loader
-     */
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<MPDAlbum>> loader, List<MPDAlbum> data) {
-        super.onLoadFinished(loader, data);
-        // Set the actual data to the adapter.
-        mAlbumsAdapter.swapModel(data);
-
-        // Reset old scroll position
-        if (mLastPosition >= 0) {
-            mAdapterView.setSelection(mLastPosition);
-            mLastPosition = -1;
-        }
-    }
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         // Do not save the bitmap for later use (too big for binder)
@@ -348,23 +330,11 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
         super.onSaveInstanceState(savedInstanceState);
     }
 
-
-    /**
-     * If a loader is reset the model data should be cleared.
-     *
-     * @param loader Loader that was resetted.
-     */
-    @Override
-    public void onLoaderReset(Loader<List<MPDAlbum>> loader) {
-        // Clear the model data of the adapter.
-        mAlbumsAdapter.swapModel(null);
-    }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mLastPosition = position;
 
-        MPDAlbum album = (MPDAlbum) mAlbumsAdapter.getItem(position);
+        MPDAlbum album = (MPDAlbum) mAdapter.getItem(position);
         Bitmap bitmap = null;
 
         // Check if correct view type, to be safe
@@ -470,7 +440,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
      * @param index Index of the selected album
      */
     private void enqueueAlbum(int index) {
-        MPDAlbum album = (MPDAlbum) mAlbumsAdapter.getItem(index);
+        MPDAlbum album = (MPDAlbum) mAdapter.getItem(index);
 
         // If artist albums are shown set artist for the album (necessary for old MPD version, which don't
         // support group commands and therefore do not provide artist tags for albums)
@@ -488,7 +458,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
      * @param index Index of the selected album
      */
     private void playAlbum(int index) {
-        MPDAlbum album = (MPDAlbum) mAlbumsAdapter.getItem(index);
+        MPDAlbum album = (MPDAlbum) mAdapter.getItem(index);
 
         // If artist albums are shown set artist for the album (necessary for old MPD version, which don't
         // support group commands and therefore do not provide artist tags for albums)
@@ -508,11 +478,11 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
     }
 
     public void applyFilter(String name) {
-        mAlbumsAdapter.applyFilter(name);
+        mAdapter.applyFilter(name);
     }
 
     public void removeFilter() {
-        mAlbumsAdapter.removeFilter();
+        mAdapter.removeFilter();
     }
 
 

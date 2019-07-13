@@ -42,16 +42,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.loader.content.Loader;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
 import org.gateshipone.malp.application.callbacks.AddPathToPlaylist;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.callbacks.PlaylistCallback;
-import org.gateshipone.malp.application.loaders.FilesLoader;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
+import org.gateshipone.malp.application.viewmodels.FilesViewModel;
+import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCapabilities;
@@ -63,7 +64,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 import java.util.List;
 
-public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implements AbsListView.OnItemClickListener {
+public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements AbsListView.OnItemClickListener {
     public static final String EXTRA_FILENAME = "filename";
     public static final String TAG = FilesFragment.class.getSimpleName();
 
@@ -85,11 +86,6 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
      * albums.
      */
     private int mLastPosition = -1;
-
-    /**
-     * Adapter used by the ListView
-     */
-    private FileAdapter mAdapter;
 
     /**
      * Saved search string when user rotates devices
@@ -147,8 +143,15 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
 
         setHasOptionsMenu(true);
 
+        getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
+
         // Return the ready inflated and configured fragment view.
         return rootView;
+    }
+
+    @Override
+    GenericViewModel<MPDFileEntry> getViewModel() {
+        return new ViewModelProvider(this, new FilesViewModel.FilesViewModelFactory(getActivity().getApplication(), mPath)).get(FilesViewModel.class);
     }
 
     /**
@@ -170,6 +173,24 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
                     mFABCallback.setupToolbar(mPath, false, false, false);
                 }
             }
+        }
+    }
+
+    /**
+     * Called when the observed {@link androidx.lifecycle.LiveData} is changed.
+     * <p>
+     * This method will update the related adapter and the {@link androidx.swiperefreshlayout.widget.SwipeRefreshLayout} if present.
+     *
+     * @param model The data observed by the {@link androidx.lifecycle.LiveData}.
+     */
+    @Override
+    protected void onDataReady(List<MPDFileEntry> model) {
+        super.onDataReady(model);
+
+        // Reset old scroll position
+        if (mLastPosition >= 0) {
+            mListView.setSelection(mLastPosition);
+            mLastPosition = -1;
         }
     }
 
@@ -370,48 +391,6 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Creates a new Loader that retrieves the list of playlists
-     *
-     * @param id
-     * @param args
-     * @return Newly created loader
-     */
-    @NonNull
-    @Override
-    public Loader<List<MPDFileEntry>> onCreateLoader(int id, Bundle args) {
-        return new FilesLoader(getActivity(), mPath);
-    }
-
-    /**
-     * When the loader finished its loading of the data it is transferred to the adapter.
-     *
-     * @param loader Loader that finished its loading
-     * @param data   Data that was retrieved by the laoder
-     */
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
-        super.onLoadFinished(loader, data);
-        mAdapter.swapModel(data);
-
-        // Reset old scroll position
-        if (mLastPosition >= 0) {
-            mListView.setSelection(mLastPosition);
-            mLastPosition = -1;
-        }
-    }
-
-    /**
-     * Resets the loader and clears the model data set
-     *
-     * @param loader The loader that gets cleared.
-     */
-    @Override
-    public void onLoaderReset(Loader<List<MPDFileEntry>> loader) {
-        // Clear the model data of the used adapter
-        mAdapter.swapModel(null);
     }
 
     @Override

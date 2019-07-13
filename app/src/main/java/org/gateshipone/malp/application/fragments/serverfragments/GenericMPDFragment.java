@@ -27,30 +27,42 @@ import android.app.Activity;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
+
 import androidx.fragment.app.DialogFragment;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.lang.ref.WeakReference;
-
+import org.gateshipone.malp.application.adapters.GenericSectionAdapter;
+import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
 
-public abstract class GenericMPDFragment<T extends Object> extends DialogFragment implements LoaderManager.LoaderCallbacks<T> {
+import java.lang.ref.WeakReference;
+import java.util.List;
+
+public abstract class GenericMPDFragment<T extends MPDGenericItem> extends DialogFragment {
     private static final String TAG = GenericMPDFragment.class.getSimpleName();
 
-    protected ConnectionStateListener mConnectionStateListener;
+    private ConnectionStateListener mConnectionStateListener;
 
-    protected SwipeRefreshLayout mSwipeRefreshLayout = null;
+    SwipeRefreshLayout mSwipeRefreshLayout = null;
 
-    protected GenericMPDFragment() {
-    }
+    /**
+     * The generic adapter for the view model
+     */
+    protected GenericSectionAdapter<T> mAdapter;
+
+    /**
+     * Holds if data is ready of has to be refetched (e.g. after memory trimming)
+     */
+    private boolean mDataReady;
+
+    abstract GenericViewModel<T> getViewModel();
 
     @Override
     public void onResume() {
         super.onResume();
-        refreshContent();
+        getContent();
         Activity activity = getActivity();
         if (activity != null) {
             mConnectionStateListener = new ConnectionStateListener(this, activity.getMainLooper());
@@ -62,27 +74,65 @@ public abstract class GenericMPDFragment<T extends Object> extends DialogFragmen
     public void onPause() {
         super.onPause();
         synchronized (this) {
-            LoaderManager.getInstance(this).destroyLoader(0);
             MPDInterface.mInstance.removeMPDConnectionStateChangeListener(mConnectionStateListener);
             mConnectionStateListener = null;
         }
     }
 
-
-    protected void refreshContent() {
+    void refreshContent() {
         if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
         }
-        if ( !isDetached()) {
-            LoaderManager.getInstance(this).restartLoader(0, getArguments(), this);
+
+        mDataReady = false;
+
+        getViewModel().reloadData();
+    }
+
+    /**
+     * Checks if data is available or not. If not it will start getting the data.
+     * This method should be called from onResume and if the fragment is part of an view pager,
+     * every time the View is activated because the underlying data could be cleaned because
+     * of memory pressure.
+     */
+    void getContent() {
+        // Check if data was fetched already or not (or removed because of trimming)
+        if (!mDataReady) {
+            if (mSwipeRefreshLayout != null) {
+                mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
+            }
+
+            getViewModel().reloadData();
         }
     }
 
+    /**
+     * Called when the observed {@link androidx.lifecycle.LiveData} is changed.
+     * <p>
+     * This method will update the related adapter and the {@link SwipeRefreshLayout} if present.
+     *
+     * @param model The data observed by the {@link androidx.lifecycle.LiveData}.
+     */
+    protected void onDataReady(List<T> model) {
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(false));
+        }
+
+        // Indicate that the data is ready now.
+        mDataReady = model != null;
+
+        swapModel(model);
+    }
+
+    private void swapModel(List<T> model) {
+        // Transfer the data to the adapter so that the views can use it
+        mAdapter.swapModel(model);
+    }
 
     private static class ConnectionStateListener extends MPDConnectionStateChangeHandler {
         private WeakReference<GenericMPDFragment> pFragment;
 
-        public ConnectionStateListener(GenericMPDFragment fragment, Looper looper) {
+        ConnectionStateListener(GenericMPDFragment fragment, Looper looper) {
             super(looper);
             pFragment = new WeakReference<>(fragment);
         }
@@ -95,15 +145,13 @@ public abstract class GenericMPDFragment<T extends Object> extends DialogFragmen
         @Override
         public void onDisconnected() {
             GenericMPDFragment fragment = pFragment.get();
-            if(fragment == null) {
-                    return;
+            if (fragment == null) {
+                return;
             }
             synchronized (fragment) {
                 if (!fragment.isDetached()) {
-                    if(LoaderManager.getInstance(fragment).hasRunningLoaders()) {
-                        LoaderManager.getInstance(fragment).destroyLoader(0);
-                        fragment.finishedLoading();
-                    }
+                    // TODO is this necessary?
+                    fragment.finishedLoading();
                 }
             }
         }
@@ -113,24 +161,6 @@ public abstract class GenericMPDFragment<T extends Object> extends DialogFragmen
         if (null != mSwipeRefreshLayout) {
             mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(false));
         }
-    }
-
-    /**
-     * Called when the loader finished loading its data.
-     * <p/>
-     * The refresh indicator will be stopped if a refreshlayout exists.
-     *
-     * @param loader The used loader itself
-     * @param model  Data of the loader
-     */
-    @Override
-    public void onLoadFinished(@NonNull Loader<T> loader, T model) {
-        finishedLoading();
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<T> loader) {
-        finishedLoading();
     }
 
     /**

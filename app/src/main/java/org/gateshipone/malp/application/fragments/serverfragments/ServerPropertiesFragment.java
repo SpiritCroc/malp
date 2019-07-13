@@ -28,22 +28,24 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.viewpager.widget.ViewPager;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
+
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 
-public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTabSelectedListener  {
+public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTabSelectedListener {
     public static final String TAG = ServerPropertiesFragment.class.getSimpleName();
 
     private ServerPropertiesTabAdapter mTabAdapter;
@@ -96,7 +98,7 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
 
         if (null != mFABCallback) {
             mFABCallback.setupFAB(false, null);
-            if ( mViewPager.getCurrentItem() == 0 ) {
+            if (mViewPager.getCurrentItem() == 0) {
                 mFABCallback.setupToolbar(getString(R.string.menu_statistic), false, true, false);
             } else if (mViewPager.getCurrentItem() == 1) {
                 mFABCallback.setupToolbar(getString(R.string.menu_outputs), false, true, false);
@@ -126,7 +128,7 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
     public void onTabSelected(TabLayout.Tab tab) {
         View view = this.getView();
 
-        if (view != null ) {
+        if (view != null) {
             ViewPager myMusicViewPager = view.findViewById(R.id.my_music_viewpager);
             myMusicViewPager.setCurrentItem(tab.getPosition());
 
@@ -153,16 +155,13 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
     private class ServerPropertiesTabAdapter extends FragmentStatePagerAdapter {
         static final int NUMBER_OF_PAGES = 2;
 
-        private SparseArray<GenericMPDFragment> mRegisteredFragments;
-
-        public ServerPropertiesTabAdapter(FragmentManager fm) {
-            super(fm);
-            mRegisteredFragments = new SparseArray<>();
+        ServerPropertiesTabAdapter(FragmentManager fm) {
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return NUMBER_OF_PAGES;
         }
 
         @Override

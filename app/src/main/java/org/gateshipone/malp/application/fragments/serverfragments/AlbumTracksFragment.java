@@ -42,27 +42,25 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.callbacks.AddPathToPlaylist;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
-import org.gateshipone.malp.application.loaders.AlbumTracksLoader;
 import org.gateshipone.malp.application.utils.CoverBitmapLoader;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
+import org.gateshipone.malp.application.viewmodels.AlbumTracksViewModel;
+import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
-import java.util.List;
-
-public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> implements AdapterView.OnItemClickListener, CoverBitmapLoader.CoverBitmapListener, ArtworkManager.onNewAlbumImageListener {
+public class AlbumTracksFragment extends GenericMPDFragment<MPDFileEntry> implements AdapterView.OnItemClickListener, CoverBitmapLoader.CoverBitmapListener, ArtworkManager.onNewAlbumImageListener {
     public final static String TAG = AlbumTracksFragment.class.getSimpleName();
     /**
      * Parameters for bundled extra arguments for this fragment. Necessary to define which album to
@@ -82,11 +80,6 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
     private ListView mListView;
 
     private FABFragmentCallback mFABCallback = null;
-
-    /**
-     * Adapter used by the ListView
-     */
-    private FileAdapter mFileAdapter;
 
     private Bitmap mBitmap;
 
@@ -113,10 +106,10 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
         }
 
         // Create the needed adapter for the ListView
-        mFileAdapter = new FileAdapter(getActivity(), false, true);
+        mAdapter = new FileAdapter(getActivity(), false, true);
 
         // Combine the two to a happy couple
-        mListView.setAdapter(mFileAdapter);
+        mListView.setAdapter(mAdapter);
         registerForContextMenu(mListView);
         mListView.setOnItemClickListener(this);
 
@@ -138,9 +131,17 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
 
         mBitmapLoader = new CoverBitmapLoader(getContext(), this);
 
+        getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
+
         // Return the ready inflated and configured fragment view.
         return rootView;
     }
+
+    @Override
+    GenericViewModel<MPDFileEntry> getViewModel() {
+        return new ViewModelProvider(this, new AlbumTracksViewModel.AlbumTracksModelFactory(getActivity().getApplication(), mAlbum, mUseArtistSort)).get(AlbumTracksViewModel.class);
+    }
+
 
     /**
      * Starts the loader to make sure the data is up-to-date after resuming the fragment (from background)
@@ -207,44 +208,6 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
         }
     }
 
-
-    /**
-     * Creates a new Loader that retrieves the list of album tracks
-     *
-     * @param id
-     * @param args
-     * @return Newly created loader
-     */
-    @NonNull
-    @Override
-    public Loader<List<MPDFileEntry>> onCreateLoader(int id, Bundle args) {
-        return new AlbumTracksLoader(getActivity(), mAlbum, mUseArtistSort);
-    }
-
-    /**
-     * When the loader finished its loading of the data it is transferred to the adapter.
-     *
-     * @param loader Loader that finished its loading
-     * @param data   Data that was retrieved by the laoder
-     */
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
-        super.onLoadFinished(loader, data);
-        // Give the adapter the new retrieved data set
-        mFileAdapter.swapModel(data);
-    }
-
-    /**
-     * Resets the loader and clears the model data set
-     *
-     * @param loader The loader that gets cleared.
-     */
-    @Override
-    public void onLoaderReset(Loader<List<MPDFileEntry>> loader) {
-        // Clear the model data of the used adapter
-        mFileAdapter.swapModel(null);
-    }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (mClickAction) {
@@ -252,7 +215,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
                 // Open song details dialog
                 SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
                 Bundle args = new Bundle();
-                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mFileAdapter.getItem(position));
+                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(position));
                 songDetailsDialog.setArguments(args);
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 break;
@@ -318,7 +281,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
                 ChoosePlaylistDialog choosePlaylistDialog = new ChoosePlaylistDialog();
                 Bundle args = new Bundle();
                 args.putBoolean(ChoosePlaylistDialog.EXTRA_SHOW_NEW_ENTRY, true);
-                choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mFileAdapter.getItem(info.position), getActivity()));
+                choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
                 choosePlaylistDialog.setArguments(args);
                 choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
                 return true;
@@ -327,7 +290,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
                 // Open song details dialog
                 SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
                 Bundle args = new Bundle();
-                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mFileAdapter.getItem(info.position));
+                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(info.position));
                 songDetailsDialog.setArguments(args);
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 return true;
@@ -387,9 +350,6 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
             case R.id.action_show_all_tracks:
                 mAlbum.setMBID("");
                 mAlbum.setArtistName("");
-                LoaderManager.getInstance(this).destroyLoader(0);
-
-                LoaderManager.getInstance(this).initLoader(0, getArguments(), this);
                 return true;
         }
 
@@ -408,26 +368,26 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
 
 
     private void enqueueTrack(int index) {
-        MPDFileEntry entry = (MPDFileEntry) mFileAdapter.getItem(index);
+        MPDFileEntry entry = (MPDFileEntry) mAdapter.getItem(index);
 
         MPDQueryHandler.addPath(entry.getPath());
     }
 
     private void prependTrack(int index) {
-        MPDFileEntry entry = (MPDFileEntry) mFileAdapter.getItem(index);
+        MPDFileEntry entry = (MPDFileEntry) mAdapter.getItem(index);
 
         MPDQueryHandler.addPathAtStart(entry.getPath());
     }
 
     private void play(int index) {
-        MPDTrack track = (MPDTrack) mFileAdapter.getItem(index);
+        MPDTrack track = (MPDTrack) mAdapter.getItem(index);
 
         MPDQueryHandler.playSong(track.getPath());
     }
 
 
     private void playNext(int index) {
-        MPDTrack track = (MPDTrack) mFileAdapter.getItem(index);
+        MPDTrack track = (MPDTrack) mAdapter.getItem(index);
 
         MPDQueryHandler.playSongNext(track.getPath());
     }

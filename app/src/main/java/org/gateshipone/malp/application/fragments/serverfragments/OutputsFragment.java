@@ -24,8 +24,6 @@ package org.gateshipone.malp.application.fragments.serverfragments;
 
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.loader.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,23 +31,22 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.OutputAdapter;
-import org.gateshipone.malp.application.loaders.OutputsLoader;
+import org.gateshipone.malp.application.viewmodels.GenericViewModel;
+import org.gateshipone.malp.application.viewmodels.OutputsViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
-public class OutputsFragment extends GenericMPDFragment<List<MPDOutput>> implements  AbsListView.OnItemClickListener{
+public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements AbsListView.OnItemClickListener {
     public final static String TAG = OutputsFragment.class.getSimpleName();
     /**
      * Main ListView of this fragment
      */
     private ListView mListView;
-
-    private OutputAdapter mAdapter;
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +55,6 @@ public class OutputsFragment extends GenericMPDFragment<List<MPDOutput>> impleme
 
         // Get the main ListView of this fragment
         mListView = rootView.findViewById(R.id.main_listview);
-
 
         // Create the needed adapter for the ListView
         mAdapter = new OutputAdapter(getActivity());
@@ -70,32 +66,21 @@ public class OutputsFragment extends GenericMPDFragment<List<MPDOutput>> impleme
 
         setHasOptionsMenu(true);
 
+        getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
+
         // Return the ready inflated and configured fragment view.
         return rootView;
     }
 
+    @Override
+    GenericViewModel<MPDOutput> getViewModel() {
+        return new ViewModelProvider(this, new OutputsViewModel.OutputsViewModelFactory(getActivity().getApplication())).get(OutputsViewModel.class);
+    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MPDOutput output = (MPDOutput)mAdapter.getItem(position);
+        MPDOutput output = (MPDOutput) mAdapter.getItem(position);
         MPDCommandHandler.toggleOutput(output.getID());
-        mAdapter.setOutputActive(position,!output.getOutputState());
+        ((OutputAdapter) mAdapter).setOutputActive(position, !output.getOutputState());
     }
-
-    @NonNull
-    @Override
-    public Loader<List<MPDOutput>> onCreateLoader(int id, Bundle args) {
-        return new OutputsLoader(getActivity());
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<MPDOutput>> loader, List<MPDOutput> data) {
-        mAdapter.swapModel(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<MPDOutput>> loader) {
-        mAdapter.swapModel(null);
-    }
-
 }
