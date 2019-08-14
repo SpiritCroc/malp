@@ -27,11 +27,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
-import android.os.Looper;
-import android.util.Log;
 
-import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.application.utils.FileUtils;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
@@ -63,14 +59,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    private void checkMainThread() {
-        if (Looper.getMainLooper() == Looper.myLooper()) {
-            Log.e(TAG, "Database called from UI thread!");
-            new Exception().printStackTrace();
-        }
-    }
-
-
     public static synchronized ArtworkDatabaseManager getInstance(Context context) {
         if (null == mInstance) {
             mInstance = new ArtworkDatabaseManager(context);
@@ -85,18 +73,12 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         AlbumArtTable.createTable(db);
         ArtistArtTable.createTable(db);
     }
 
     @Override
     public synchronized void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         if (newVersion == 22) {
             AlbumArtTable.dropTable(db);
             ArtistArtTable.dropTable(db);
@@ -147,9 +129,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
      * @throws ImageNotFoundException If the image is not in the database and it was not searched for before.
      */
     private String getAlbumImage(final Context context, final String mbid, final String albumName, final String artistName) throws ImageNotFoundException {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         String selection;
         String selectionArguments[];
 
@@ -200,9 +179,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
      * @throws ImageNotFoundException If the image is not in the database and it was not searched for before.
      */
     public String getArtistImage(final Context context, final MPDArtist artist) throws ImageNotFoundException {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         final String artistName = artist.getArtistName();
         String mbid = "";
 
@@ -264,9 +240,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
      *               the database entry will have the not_found flag set.
      */
     public void insertArtistImage(final Context context, final MPDArtist artist, final byte[] image) {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         final StringBuilder mbids = new StringBuilder();
         for (int i = 0; i < artist.getMBIDCount(); i++) {
             mbids.append(artist.getMBID(i));
@@ -314,9 +287,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
      *              the database entry will have the not_found flag set.
      */
     public void insertAlbumImage(final Context context, final MPDAlbum album, final byte[] image) {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         final String albumMBID = album.getMBID();
         final String albumName = album.getName();
         final String albumArtistName = album.getArtistName();
@@ -357,9 +327,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
      * Removes all lines from the artists table
      */
     public synchronized void clearArtistImages(final Context context) {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         SQLiteDatabase database = getWritableDatabase();
 
         database.delete(ArtistArtTable.TABLE_NAME, null, null);
@@ -373,9 +340,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
      * Removes all lines from the albums table
      */
     public synchronized void clearAlbumImages(final Context context) {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         SQLiteDatabase database = getWritableDatabase();
 
         database.delete(AlbumArtTable.TABLE_NAME, null, null);
@@ -386,9 +350,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
     }
 
     public synchronized void clearBlockedArtistImages() {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         SQLiteDatabase database = getWritableDatabase();
 
         String where = ArtistArtTable.COLUMN_IMAGE_NOT_FOUND + "=?";
@@ -400,9 +361,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
     }
 
     public synchronized void clearBlockedAlbumImages() {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         SQLiteDatabase database = getWritableDatabase();
 
         String where = AlbumArtTable.COLUMN_IMAGE_NOT_FOUND + "=?";
@@ -414,9 +372,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
     }
 
     public void removeArtistImage(final Context context, final MPDArtist artist) {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         String where;
         String whereArgs[];
 
@@ -445,9 +400,6 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
     }
 
     public void removeAlbumImage(final Context context, final MPDAlbum album) {
-        if (BuildConfig.DEBUG) {
-            checkMainThread();
-        }
         String where;
         String whereArgs[];
 
@@ -477,61 +429,4 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
         database.close();
     }
 
-    private enum AsyncOperationType {
-        CLEAR_BLOCKED_ARTISTS,
-        CLEAR_BLOCKED_ALBUMS,
-        CLEAR_ARTIST_IMAGES,
-        CLEAR_ALBUM_IMAGES,
-    }
-
-    public static class AsyncOperationTask extends AsyncTask<AsyncOperationType, Object, Object> {
-        private Context mContext;
-
-        private AsyncOperationTask(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        protected Object doInBackground(AsyncOperationType... objects) {
-            if (objects.length > 0) {
-                switch (objects[0]) {
-                    case CLEAR_BLOCKED_ARTISTS:
-                        getInstance(mContext).clearBlockedArtistImages();
-                        break;
-                    case CLEAR_BLOCKED_ALBUMS:
-                        getInstance(mContext).clearBlockedArtistImages();
-                        break;
-                    case CLEAR_ARTIST_IMAGES:
-                        getInstance(mContext).clearArtistImages(mContext);
-                        break;
-                    case CLEAR_ALBUM_IMAGES:
-                        getInstance(mContext).clearArtistImages(mContext);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return null;
-        }
-
-        static public void clearBlockedArtists(Context context) {
-            AsyncOperationType type = AsyncOperationType.CLEAR_BLOCKED_ARTISTS;
-            new AsyncOperationTask(context).execute(type);
-        }
-
-        static public void clearBlockedAlbums(Context context) {
-            AsyncOperationType type = AsyncOperationType.CLEAR_BLOCKED_ALBUMS;
-            new AsyncOperationTask(context).execute(type);
-        }
-
-        static public void clearArtists(Context context) {
-            AsyncOperationType type = AsyncOperationType.CLEAR_ARTIST_IMAGES;
-            new AsyncOperationTask(context).execute(type);
-        }
-
-        static public void clearAlbums(Context context) {
-            AsyncOperationType type = AsyncOperationType.CLEAR_ALBUM_IMAGES;
-            new AsyncOperationTask(context).execute(type);
-        }
-    }
 }

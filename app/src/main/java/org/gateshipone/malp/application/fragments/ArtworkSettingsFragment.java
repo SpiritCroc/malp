@@ -59,7 +59,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
         Preference clearAlbums = findPreference(getString(R.string.pref_clear_album_key));
         clearAlbums.setOnPreferenceClickListener(preference -> {
             final Context context = getContext();
-            ArtworkDatabaseManager.AsyncOperationTask.clearAlbums(getContext().getApplicationContext());
+            ArtworkDatabaseManager.getInstance(context).clearAlbumImages(context);
             return true;
         });
 
@@ -67,19 +67,19 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
         Preference clearArtist = findPreference(getString(R.string.pref_clear_artist_key));
         clearArtist.setOnPreferenceClickListener(preference -> {
             final Context context = getContext();
-            ArtworkDatabaseManager.AsyncOperationTask.clearArtists(getContext().getApplicationContext());
+            ArtworkDatabaseManager.getInstance(context).clearArtistImages(context);
             return true;
         });
 
         Preference clearBlockedAlbums = findPreference(getString(R.string.pref_clear_blocked_album_key));
         clearBlockedAlbums.setOnPreferenceClickListener(preference -> {
-            ArtworkDatabaseManager.AsyncOperationTask.clearBlockedAlbums(getContext().getApplicationContext());
+            ArtworkDatabaseManager.getInstance(getContext()).clearBlockedAlbumImages();
             return true;
         });
 
         Preference clearBlockedArtists = findPreference(getString(R.string.pref_clear_blocked_artist_key));
         clearBlockedArtists.setOnPreferenceClickListener(preference -> {
-            ArtworkDatabaseManager.AsyncOperationTask.clearBlockedArtists(getContext().getApplicationContext());
+            ArtworkDatabaseManager.getInstance(getContext()).clearBlockedArtistImages();
             return true;
         });
 
