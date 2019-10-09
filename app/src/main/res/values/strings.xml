@@ -39,7 +39,7 @@
     <string name="action_save_profile">Save profile</string>
 
     <string name="action_add">Add</string>
-    <string name="action_add_at_start">Add at start</string>
+    <string name="action_add_at_start">Prepend</string>
     <string name="action_add_album">Add album</string>
     <string name="action_play_album">Play album</string>
     <string name="action_show_all_tracks">Show all tracks</string>
@@ -77,7 +77,7 @@
     <string name="action_open_fanart">Go to fullscreen mode</string>
 
     <string name="action_enqueue">Add to playlist</string>
-    <string name="action_enqueue_at_start">Add at start of playlist</string>
+    <string name="action_enqueue_at_start">Prepend to playlist</string>
     <string name="action_enqueue_as_next">Play after current song</string>
     <string name="action_play_song">Play song</string>
     <string name="action_play_albums">Play albums</string>

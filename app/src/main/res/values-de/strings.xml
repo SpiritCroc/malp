@@ -278,4 +278,6 @@
     <string name="contributor_translator_swedish">Schwedische Übersetzung</string>
     <string name="fragment_profile_use_mpd_covers">Nutze MPD-Cover falls verfügbar</string>
     <string name="fragment_profile_use_mpd_covers_text">Nutze MPD-Cover falls verfügbar</string>
+    <string name="action_enqueue_at_start">An Liste voranstellen</string>
+    <string name="action_add_at_start">Voranstellen</string>
 </resources>
