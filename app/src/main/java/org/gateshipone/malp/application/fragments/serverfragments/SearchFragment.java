@@ -269,6 +269,9 @@ public class SearchFragment extends GenericMPDFragment<List<MPDFileEntry>> imple
             case R.id.action_song_enqueue:
                 MPDQueryHandler.addPath(track.getPath());
                 return true;
+            case R.id.action_song_enqueue_at_start:
+                MPDQueryHandler.addPathAtStart(track.getPath());
+                return true;
             case R.id.action_song_play_next:
                 MPDQueryHandler.playSongNext(track.getPath());
                 return true;
@@ -379,6 +382,12 @@ public class SearchFragment extends GenericMPDFragment<List<MPDFileEntry>> imple
                 MPDTrack track = (MPDTrack) mFileAdapter.getItem(position);
 
                 MPDQueryHandler.addPath(track.getPath());
+            }
+            break;
+            case ACTION_ADD_SONG_AT_START: {
+                MPDTrack track = (MPDTrack) mFileAdapter.getItem(position);
+
+                MPDQueryHandler.addPathAtStart(track.getPath());
             }
             break;
             case ACTION_PLAY_SONG: {

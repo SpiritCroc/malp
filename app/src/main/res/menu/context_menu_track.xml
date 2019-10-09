@@ -34,6 +34,11 @@
         android:orderInCategory="100"
         app:showAsAction="never"
         android:title="@string/action_enqueue"/>
+    <item
+        android:id="@+id/action_song_enqueue_at_start"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/action_enqueue_at_start"/>
 
     <item
         android:id="@+id/action_song_play_next"
