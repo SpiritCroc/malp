@@ -40,6 +40,10 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+
 import com.android.volley.NetworkResponse;
 import com.android.volley.VolleyError;
 
@@ -71,9 +75,6 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 public class BulkDownloadService extends Service implements InsertImageTask.ImageSavedCallback, ArtProvider.ArtFetchError {
     private static final String TAG = BulkDownloadService.class.getSimpleName();
@@ -363,62 +364,65 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     private void performNextRequest() {
         ArtworkRequestModel requestModel;
-        synchronized (mArtworkRequestQueue) {
-            updateNotification(mArtworkRequestQueue.size());
+        while (true) {
+            synchronized (mArtworkRequestQueue) {
+                updateNotification(mArtworkRequestQueue.size());
 
-            requestModel = mArtworkRequestQueue.pollFirst();
-        }
-
-        if (requestModel != null) {
-            switch (requestModel.getType()) {
-                case ALBUM:
-                    createAlbumRequest((MPDAlbum) requestModel.getGenericModel());
-                    break;
-                case ARTIST:
-                    createArtistRequest((MPDArtist) requestModel.getGenericModel());
-                    break;
-                case TRACK:
-                    createTrackRequest((MPDTrack) requestModel.getGenericModel());
-                    break;
+                requestModel = mArtworkRequestQueue.pollFirst();
             }
-        } else {
-            finishedLoading();
+
+            if (requestModel != null) {
+                if (checkRequest(requestModel)) {
+                    createRequest(requestModel);
+                    return;
+                }
+            } else {
+                finishedLoading();
+                return;
+            }
         }
     }
 
-    private void createAlbumRequest(final MPDAlbum album) {
-        // Check if image already there
-        try {
-            mDatabaseManager.getAlbumImage(getApplicationContext(), album);
-
-            // If this does not throw the exception it already has an image.
-            performNextRequest();
-        } catch (ImageNotFoundException e) {
-            mArtworkManager.fetchImage(album, this, this);
+    private boolean checkRequest(@NonNull final ArtworkRequestModel requestModel) {
+        switch (requestModel.getType()) {
+            case ALBUM: {
+                try {
+                    mDatabaseManager.getAlbumImage(getApplicationContext(), (MPDAlbum) requestModel.getGenericModel());
+                } catch (ImageNotFoundException e) {
+                    return true;
+                }
+            }
+            break;
+            case ARTIST: {
+                try {
+                    mDatabaseManager.getArtistImage(getApplicationContext(), (MPDArtist) requestModel.getGenericModel());
+                } catch (ImageNotFoundException e) {
+                    return true;
+                }
+            }
+            break;
+            case TRACK: {
+                try {
+                    mDatabaseManager.getTrackImage(getApplicationContext(), (MPDTrack) requestModel.getGenericModel());
+                } catch (ImageNotFoundException e) {
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
-    private void createArtistRequest(final MPDArtist artist) {
-        // Check if image already there
-        try {
-            mDatabaseManager.getArtistImage(getApplicationContext(), artist);
-
-            // If this does not throw the exception it already has an image.
-            performNextRequest();
-        } catch (ImageNotFoundException e) {
-            mArtworkManager.fetchImage(artist, this, this);
-        }
-    }
-
-    private void createTrackRequest(final MPDTrack track) {
-        // Check if image already there
-        try {
-            mDatabaseManager.getTrackImage(getApplicationContext(), track);
-
-            // If this does not throw the exception it already has an image.
-            performNextRequest();
-        } catch (ImageNotFoundException e) {
-            mArtworkManager.fetchImage(track, this, this);
+    private void createRequest(@NonNull final ArtworkRequestModel requestModel) {
+        switch (requestModel.getType()) {
+            case ALBUM:
+                mArtworkManager.fetchImage((MPDAlbum) requestModel.getGenericModel(), this, this);
+                break;
+            case ARTIST:
+                mArtworkManager.fetchImage((MPDArtist) requestModel.getGenericModel(), this, this);
+                break;
+            case TRACK:
+                mArtworkManager.fetchImage((MPDTrack) requestModel.getGenericModel(), this, this);
+                break;
         }
     }
 
