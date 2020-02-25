@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.listviewitems.FileListItem;
@@ -44,8 +45,8 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCapabilities;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -226,13 +227,14 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
 
     /**
      * Returns the type (section track or normal track) of the item at the given position
+     *
      * @param position Position of the item in question
      * @return the int value of the enum {@link VIEW_TYPES}
      */
     @Override
     public int getItemViewType(int position) {
         // If playlist sections are disabled, just return track type here
-        if(!mSectionsEnabled) {
+        if (!mSectionsEnabled) {
             return VIEW_TYPES.TYPE_TRACK_ITEM.ordinal();
         }
         // Get MPDTrack at the given index used for this item.
@@ -251,11 +253,10 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
                 return VIEW_TYPES.TYPE_SECTION_TRACK_ITEM.ordinal();
             }
         }
-        return newAlbum ? VIEW_TYPES.TYPE_SECTION_TRACK_ITEM.ordinal() :VIEW_TYPES.TYPE_TRACK_ITEM.ordinal();
+        return newAlbum ? VIEW_TYPES.TYPE_SECTION_TRACK_ITEM.ordinal() : VIEW_TYPES.TYPE_TRACK_ITEM.ordinal();
     }
 
     /**
-     *
      * @return The count of values in the enum {@link VIEW_TYPES}.
      */
     @Override
@@ -294,7 +295,7 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
             VIEW_TYPES type = VIEW_TYPES.values()[getItemViewType(position)];
             // Normal track item type
             if (type == VIEW_TYPES.TYPE_TRACK_ITEM) {
-                if ( convertView == null ) {
+                if (convertView == null) {
                     // If not create a new Listitem
                     convertView = new FileListItem(mContext, false);
                 }
@@ -302,7 +303,7 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
                 tracksListViewItem.setTrack(track, true, mContext);
                 tracksListViewItem.setTrackNumber(String.valueOf(position + 1));
             } else if (type == VIEW_TYPES.TYPE_SECTION_TRACK_ITEM) { // Section track type.
-                if ( convertView == null ) {
+                if (convertView == null) {
                     // If not create a new Listitem
                     convertView = new FileListItem(mContext, trackAlbum, false, this);
                 }
@@ -331,7 +332,7 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
         } else {
             // If the element is not yet received we will show an empty view, that notifies the user about
             // the running fetch.
-            if ( convertView == null ) {
+            if (convertView == null) {
                 // If not create a new Listitem
                 convertView = new FileListItem(mContext, false);
             } else {
@@ -662,10 +663,14 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
     public void removeAlbumFrom(int position) {
         int rangeEnd = position;
 
-        while ( rangeEnd < getCount() && getItemViewType(rangeEnd + 1) != VIEW_TYPES.TYPE_SECTION_TRACK_ITEM.ordinal()) {
+        while (rangeEnd < getCount() && getItemViewType(rangeEnd + 1) != VIEW_TYPES.TYPE_SECTION_TRACK_ITEM.ordinal()) {
             rangeEnd++;
         }
-        Log.v(TAG,"Remove range from: " + position + " to: " + rangeEnd);
+
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Remove range from: " + position + " to: " + rangeEnd);
+        }
+
         MPDQueryHandler.removeSongRangeFromCurrentPlaylist(position, rangeEnd);
     }
 

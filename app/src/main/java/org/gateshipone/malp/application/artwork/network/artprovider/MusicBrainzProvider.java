@@ -29,6 +29,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.application.artwork.network.ArtworkRequestModel;
 import org.gateshipone.malp.application.artwork.network.MALPRequestQueue;
 import org.gateshipone.malp.application.artwork.network.requests.MALPByteRequest;
@@ -142,7 +143,10 @@ public class MusicBrainzProvider extends ArtProvider {
                     final String url = COVERART_ARCHIVE_API_URL + "/" + "release/" + mbid + "/front-500";
 
                     getAlbumImage(url, model, listener, error -> {
-                        Log.v(TAG, "No image found for: " + model.getAlbumName() + " with release index: " + releaseIndex);
+                        if (BuildConfig.DEBUG) {
+                            Log.v(TAG, "No image found for: " + model.getAlbumName() + " with release index: " + releaseIndex);
+                        }
+
                         if (releaseIndex + 1 < releases.length()) {
                             parseMusicBrainzReleaseJSON(model, releaseIndex + 1, response, context, listener, errorListener);
                         } else {
@@ -150,8 +154,11 @@ public class MusicBrainzProvider extends ArtProvider {
                         }
                     });
                 } else {
-                    Log.v(TAG, "Response ( " + album + "-" + artist + " )" + " doesn't match requested model: " +
-                            "( " + model.getLoggingString() + " )");
+                    if (BuildConfig.DEBUG) {
+                        Log.v(TAG, "Response ( " + album + "-" + artist + " )" + " doesn't match requested model: " +
+                                "( " + model.getLoggingString() + " )");
+                    }
+
                     if (releaseIndex + 1 < releases.length()) {
                         parseMusicBrainzReleaseJSON(model, releaseIndex + 1, response, context, listener, errorListener);
                     } else {
@@ -185,7 +192,9 @@ public class MusicBrainzProvider extends ArtProvider {
             url = MUSICBRAINZ_API_URL + "/" + "release/?query=release:" + albumName + MUSICBRAINZ_LIMIT_RESULT + MUSICBRAINZ_FORMAT_JSON;
         }
 
-        Log.v(TAG, "Requesting release mbid for: " + url);
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Requesting release mbid for: " + url);
+        }
 
         MALPJsonObjectRequest jsonObjectRequest = new MALPJsonObjectRequest(url, null, listener, errorListener);
 
@@ -203,8 +212,11 @@ public class MusicBrainzProvider extends ArtProvider {
     private void getAlbumImage(final String url, final ArtworkRequestModel model,
                                final Response.Listener<ImageResponse> listener,
                                final Response.ErrorListener errorListener) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Get image: " + url);
+        }
+
         Request<ImageResponse> byteResponse = new MALPByteRequest(model, url, listener, errorListener);
-        Log.v(TAG, "Get image: " + url);
         mRequestQueue.add(byteResponse);
     }
 }

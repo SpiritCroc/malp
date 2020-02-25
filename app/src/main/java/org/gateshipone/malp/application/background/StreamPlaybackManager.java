@@ -28,6 +28,8 @@ import android.media.MediaPlayer;
 import android.os.PowerManager;
 import android.util.Log;
 
+import org.gateshipone.malp.BuildConfig;
+
 import java.io.IOException;
 
 
@@ -94,7 +96,7 @@ public class StreamPlaybackManager {
 
     public void setVolume(float volume) {
         if (mPlayer != null) {
-            mPlayer.setVolume(volume,volume);
+            mPlayer.setVolume(volume, volume);
         }
     }
 
@@ -109,7 +111,10 @@ public class StreamPlaybackManager {
 
         @Override
         public void onPrepared(MediaPlayer mp) {
-            Log.v(TAG,"Prepared, start playback");
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "Prepared, start playback");
+            }
+
             mp.setWakeMode(mService.getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
             mp.start();
             mService.onStreamPlaybackStart();
@@ -137,8 +142,8 @@ public class StreamPlaybackManager {
     }
 
     public BackgroundService.STREAMING_STATUS getStreamingStatus() {
-        if(null != mPlayer) {
-            if(mPlayer.isPlaying()) {
+        if (null != mPlayer) {
+            if (mPlayer.isPlaying()) {
                 return BackgroundService.STREAMING_STATUS.PLAYING;
             } else {
                 return BackgroundService.STREAMING_STATUS.BUFFERING;

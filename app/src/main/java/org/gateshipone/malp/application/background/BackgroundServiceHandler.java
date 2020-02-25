@@ -27,6 +27,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import org.gateshipone.malp.BuildConfig;
+
 public class BackgroundServiceHandler extends Handler {
     private static final String TAG = BackgroundServiceHandler.class.getSimpleName();
 
@@ -45,7 +47,9 @@ public class BackgroundServiceHandler extends Handler {
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
 
-        Log.v(TAG, "Handle message: " + msg);
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Handle message: " + msg);
+        }
 
         HANDLER_ACTION_TYPE action = ((HandlerAction) msg.obj).getType();
         switch (action) {

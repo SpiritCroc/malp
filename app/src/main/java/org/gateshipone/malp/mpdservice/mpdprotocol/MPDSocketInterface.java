@@ -56,7 +56,8 @@ public class MPDSocketInterface {
 
     /**
      * Creates a new socket interface
-     * @param inputStream Input stream from the socket to use
+     *
+     * @param inputStream  Input stream from the socket to use
      * @param outputStream Output stream from the socket to use
      */
     public MPDSocketInterface(InputStream inputStream, OutputStream outputStream) {
@@ -76,14 +77,11 @@ public class MPDSocketInterface {
      * Reads as much as possible data from the socket into its buffer.
      * Both pointers are reset, ensure to only call this on an empty buffer or data will
      * be lost!
+     *
      * @throws IOException
      */
     private void fillReadBuffer() throws IOException {
-
-        int readBytes = mInputStream.read(mReadBuffer, 0, READ_BUFFER_SIZE);
-
-       // Log.v(TAG,"Buffer fill read " + readBytes + " bytes");
-        mReadBufferWritePos = readBytes;
+        mReadBufferWritePos = mInputStream.read(mReadBuffer, 0, READ_BUFFER_SIZE);
         mReadBufferReadPos = 0;
     }
 
@@ -93,6 +91,7 @@ public class MPDSocketInterface {
 
     /**
      * Reads a line from the buffered input
+     *
      * @return The read string without the newline
      * @throws IOException Exception during read
      */
@@ -114,15 +113,14 @@ public class MPDSocketInterface {
 
             // Newline found, write buffer and break loop here
             if (mReadBuffer[localReadPos] == '\n') {
-                mLineBuffer.write(mReadBuffer, mReadBufferReadPos, (localReadPos-mReadBufferReadPos));
+                mLineBuffer.write(mReadBuffer, mReadBufferReadPos, (localReadPos - mReadBufferReadPos));
                 mReadBufferReadPos = localReadPos + 1;
                 break;
             }
 
             localReadPos++;
-         }
+        }
 
-        // Log.v(TAG,"retString: " + retString);
         // Return the string data from MPD as UTF-8 (default charset on android) strings
         return mLineBuffer.toString("UTF-8");
     }
@@ -137,12 +135,13 @@ public class MPDSocketInterface {
 
     /**
      * Reads binary data from the socket
+     *
      * @param size size to read from the socket in bytes
      * @return byte array if data is correctly read
      * @throws IOException Exception during read
      */
-     public byte[] readBinary(int size) throws IOException {
-         byte[] data = new byte[size];
+    public byte[] readBinary(int size) throws IOException {
+        byte[] data = new byte[size];
 
         int dataRead = 0;
 
@@ -152,7 +151,7 @@ public class MPDSocketInterface {
             readyData = dataReady();
 
             // Check how much data is necessary to read (do not read more data than requested!)
-            dataToRead = readyData > (size - dataRead) ? (size-dataRead) : readyData;
+            dataToRead = readyData > (size - dataRead) ? (size - dataRead) : readyData;
 
             // Read data that is ready or requested
             System.arraycopy(mReadBuffer, mReadBufferReadPos, data, dataRead, dataToRead);
@@ -160,7 +159,7 @@ public class MPDSocketInterface {
             mReadBufferReadPos += dataToRead;
 
             // Check if the data buffer is depleted
-            if(dataReady() == 0 && dataRead != size) {
+            if (dataReady() == 0 && dataRead != size) {
                 fillReadBuffer();
             }
         }
@@ -175,6 +174,7 @@ public class MPDSocketInterface {
 
     /**
      * Writes a line to the socket.
+     *
      * @param line String to write to the socket. No newline required.
      */
     public void writeLine(String line) {

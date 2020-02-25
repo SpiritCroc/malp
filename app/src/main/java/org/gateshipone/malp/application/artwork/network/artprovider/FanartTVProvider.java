@@ -29,6 +29,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.application.artwork.network.ArtworkRequestModel;
 import org.gateshipone.malp.application.artwork.network.MALPRequestQueue;
 import org.gateshipone.malp.application.artwork.network.requests.FanartImageRequest;
@@ -194,8 +195,10 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
                                 }
                             }, error -> errorListener.fetchVolleyError(model, context, error));
                         } else {
-                            Log.v(TAG, "Response ( " + artist + " )" + " doesn't match requested model: " +
-                                    "( " + model.getLoggingString() + " )");
+                            if (BuildConfig.DEBUG) {
+                                Log.v(TAG, "Response ( " + artist + " )" + " doesn't match requested model: " +
+                                        "( " + model.getLoggingString() + " )");
+                            }
 
                             errorListener.fetchVolleyError(model, context, null);
                         }
@@ -215,8 +218,9 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
      * @param errorListener Error listener
      */
     private void getArtists(String artistName, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
-
-        Log.v(FanartTVProvider.class.getSimpleName(), artistName);
+        if (BuildConfig.DEBUG) {
+            Log.v(FanartTVProvider.class.getSimpleName(), artistName);
+        }
 
         String url = MUSICBRAINZ_API_URL + "/" + "artist/?query=artist:" + artistName + MUSICBRAINZ_LIMIT_RESULT + MUSICBRAINZ_FORMAT_JSON;
 
@@ -233,8 +237,9 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
      * @param errorListener Error listener
      */
     private void getArtistImageURL(final String artistMBID, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
-
-        Log.v(FanartTVProvider.class.getSimpleName(), artistMBID);
+        if (BuildConfig.DEBUG) {
+            Log.v(FanartTVProvider.class.getSimpleName(), artistMBID);
+        }
 
         String url = FANART_TV_API_URL + "/" + artistMBID + "?api_key=" + API_KEY;
 
@@ -253,7 +258,9 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
      */
     private void getArtistImage(final String url, final ArtworkRequestModel model,
                                 final Response.Listener<ImageResponse> listener, final Response.ErrorListener errorListener) {
-        Log.v(FanartTVProvider.class.getSimpleName(), url);
+        if (BuildConfig.DEBUG) {
+            Log.v(FanartTVProvider.class.getSimpleName(), url);
+        }
 
         Request<ImageResponse> byteResponse = new MALPByteRequest(model, url, listener, errorListener);
 

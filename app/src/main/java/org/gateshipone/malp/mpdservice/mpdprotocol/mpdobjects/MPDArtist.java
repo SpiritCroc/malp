@@ -127,7 +127,6 @@ public class MPDArtist implements MPDGenericItem, Comparable<MPDArtist>, Parcela
         Collator collator = Collator.getInstance();
         int compareResult = collator.compare(pArtistName, another.pArtistName);
         if (compareResult == 0) {
-            //Log.v(MPDArtist.class.getSimpleName(),"another mbids: " + another.pMBIDs.size() + "self mbids:" + pMBIDs.size());
             // Try to position artists with one mbid at the end
 
             int size = pMBIDs.size();

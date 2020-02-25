@@ -37,6 +37,7 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.application.artwork.network.ArtworkRequestModel;
 import org.gateshipone.malp.application.artwork.network.requests.MALPByteRequest;
 import org.gateshipone.malp.application.artwork.network.responses.ImageResponse;
@@ -157,8 +158,11 @@ public class HTTPAlbumImageProvider extends ArtProvider {
     private void getAlbumImage(final String url, final ArtworkRequestModel model,
                                final Response.Listener<ImageResponse> listener,
                                final Response.ErrorListener errorListener) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Get image: " + url);
+        }
+
         Request<ImageResponse> byteResponse = new MALPByteRequest(model, url, listener, errorListener);
-        Log.v(TAG, "Get image: " + url);
         mRequestQueue.add(byteResponse);
     }
 

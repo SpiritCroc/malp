@@ -32,9 +32,11 @@ import android.media.AudioManager;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Process;
-import androidx.annotation.Nullable;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.mpdservice.ConnectionManager;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
 import org.gateshipone.malp.mpdservice.handlers.MPDStatusChangeHandler;
@@ -254,7 +256,10 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
 
         mNotificationManager.hideNotification();
 
-        Log.v(TAG, "MALP background service destroyed");
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "MALP background service destroyed");
+        }
+
         super.onDestroy();
     }
 
@@ -262,13 +267,20 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) {
-            Log.v(TAG, "Null intend in onStartCommand");
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "Null intend in onStartCommand");
+            }
+
             shutdownService();
             // Something wrong here.
             return START_NOT_STICKY;
         }
         String action = intent.getAction();
-        Log.v(TAG, "onStartCommand: " + action);
+
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "onStartCommand: " + action);
+        }
+
         if (null != action) {
             handleAction(action);
         }
@@ -279,7 +291,10 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
 
     @Override
     public void onLowMemory() {
-        Log.v(TAG, "onLowMemory");
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "onLowMemory");
+        }
+
         // Disconnect from server gracefully
         onMPDDisconnect();
 
@@ -287,7 +302,10 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
     }
 
     public void onTaskRemoved(Intent rootIntent) {
-        Log.v(TAG, "onTaskRemoved");
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "onTaskRemoved");
+        }
+
         // Disconnect from server gracefully
         onMPDDisconnect();
 
@@ -295,7 +313,10 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
     }
 
     private void shutdownService() {
-        Log.v(TAG, "shutdownService");
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "shutdownService");
+        }
+
         notifyDisconnected();
         mNotificationManager.hideNotification();
 
@@ -381,7 +402,7 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        if(null == mPlaybackManager) {
+        if (null == mPlaybackManager) {
             // No playback is running. Ignore!
             return;
         }
@@ -491,7 +512,10 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
      * @param action Action received via an {@link Intent}
      */
     private void handleAction(String action) {
-        Log.v(TAG, "Action: " + action);
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Action: " + action);
+        }
+
         switch (action) {
             case ACTION_PLAY:
                 onPlay();
@@ -571,7 +595,10 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         startService(serviceStartIntent);
 
         String url = MPDProfileManager.getInstance(this).getAutoconnectProfile().getStreamingURL();
-        Log.v(TAG, "Start playback of: " + url);
+
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Start playback of: " + url);
+        }
 
         // Connect to MPD server for controls
         checkMPDConnection();
@@ -583,7 +610,10 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
     }
 
     public void stopStreamingPlayback() {
-        Log.v(TAG, "Stop stream playback");
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Stop stream playback");
+        }
+
         if (mPlaybackManager != null && mPlaybackManager.isPlaying()) {
             mPlaybackManager.stop();
         }
@@ -649,7 +679,10 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
          */
         @Override
         public void onDisconnected() {
-            Log.v(TAG, "Disconnected");
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "Disconnected");
+            }
+
             mService.get().mConnecting = false;
             mService.get().shutdownService();
 

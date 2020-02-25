@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.artwork.network.artprovider.HTTPAlbumImageProvider;
 import org.gateshipone.malp.application.artwork.network.artprovider.MPDAlbumImageProvider;
@@ -136,7 +137,10 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
     }
 
     public static void disconnectFromServer() {
-        Log.v(TAG, "Disconnecting from server");
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Disconnecting from server");
+        }
+
         MPDCommandHandler.disconnectFromMPDServer();
         mConnectionManager.mDisconnectRequested = true;
     }
@@ -182,7 +186,10 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
             }
             mDisconnectTimer = new Timer();
             mDisconnectTimer.schedule(new DisconnectTask(context), DISCONNECT_DELAY_TIME);
-            Log.v(TAG, "Delayed disconnect started");
+
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "Delayed disconnect started");
+            }
         }
     }
 

@@ -47,6 +47,7 @@ import androidx.core.app.NotificationCompat;
 import com.android.volley.NetworkResponse;
 import com.android.volley.VolleyError;
 
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.artwork.network.ArtworkRequestModel;
 import org.gateshipone.malp.application.artwork.network.InsertImageTask;
@@ -132,7 +133,11 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         if (null == mConnectionHandler) {
             mConnectionHandler = new ConnectionStateHandler(this, getMainLooper());
-            Log.v(TAG, "Registering connection state listener");
+
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "Registering connection state listener");
+            }
+
             MPDInterface.mInstance.addMPDConnectionStateChangeListener(mConnectionHandler);
         }
 
@@ -146,9 +151,8 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
     public void onDestroy() {
         unregisterReceiver(mBroadcastReceiver);
         unregisterReceiver(mConnectionStateChangeReceiver);
-        Log.v(TAG, "Calling super.onDestroy()");
+
         super.onDestroy();
-        Log.v(TAG, "Called super.onDestroy()");
     }
 
     @Nullable
@@ -161,7 +165,9 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if (intent != null && intent.getAction() != null && intent.getAction().equals(ACTION_START_BULKDOWNLOAD)) {
-            Log.v(TAG, "Starting bulk download in service with thread id: " + Thread.currentThread().getId());
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "Starting bulk download in service with thread id: " + Thread.currentThread().getId());
+            }
 
             // reset counter
             mSumArtworkRequests = 0;
@@ -215,7 +221,10 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     @Override
     public void fetchJSONException(final ArtworkRequestModel model, final Context context, final JSONException exception) {
-        Log.e(TAG, "JSONException fetching: " + model.getLoggingString());
+        if (BuildConfig.DEBUG) {
+            Log.e(TAG, "JSONException fetching: " + model.getLoggingString());
+        }
+
         ImageResponse imageResponse = new ImageResponse();
         imageResponse.model = model;
         imageResponse.image = null;
@@ -225,7 +234,9 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     @Override
     public void fetchVolleyError(final ArtworkRequestModel model, final Context context, final VolleyError error) {
-        Log.e(TAG, "VolleyError for request: " + model.getLoggingString());
+        if (BuildConfig.DEBUG) {
+            Log.e(TAG, "VolleyError for request: " + model.getLoggingString());
+        }
 
         if (error != null) {
             NetworkResponse networkResponse = error.networkResponse;
@@ -281,11 +292,16 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         mArtworkRequestQueue.clear();
 
         if (HTTPAlbumImageProvider.getInstance(getApplicationContext()).getActive() || MPDAlbumImageProvider.getInstance().getActive()) {
-            Log.v(TAG, "Try to get all tracks from MPD");
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "Try to get all tracks from MPD");
+            }
+
             MPDQueryHandler.getAllTracks(new MPDResponseFileList() {
                 @Override
                 public void handleTracks(List<MPDFileEntry> trackList, int windowstart, int windowend) {
-                    Log.v(TAG, "Received track count: " + trackList.size());
+                    if (BuildConfig.DEBUG) {
+                        Log.v(TAG, "Received track count: " + trackList.size());
+                    }
 
                     final HashMap<String, MPDTrack> albumPaths = new HashMap<>();
 
@@ -296,7 +312,10 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
                             albumPaths.put(FormatHelper.getDirectoryFromPath(track.getPath()), (MPDTrack) track);
                         }
                     }
-                    Log.v(TAG, "Unique path count: " + albumPaths.size());
+
+                    if (BuildConfig.DEBUG) {
+                        Log.v(TAG, "Unique path count: " + albumPaths.size());
+                    }
 
                     for (MPDTrack track : albumPaths.values()) {
                         mArtworkRequestQueue.add(new ArtworkRequestModel(track));
@@ -315,7 +334,9 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
             MPDQueryHandler.getAlbums(new MPDResponseAlbumList() {
                 @Override
                 public void handleAlbums(List<MPDAlbum> albumList) {
-                    Log.v(TAG, "Received " + albumList.size() + " albums for bulk loading");
+                    if (BuildConfig.DEBUG) {
+                        Log.v(TAG, "Received " + albumList.size() + " albums for bulk loading");
+                    }
 
                     for (MPDAlbum album : albumList) {
                         mArtworkRequestQueue.add(new ArtworkRequestModel(album));
@@ -334,7 +355,9 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
             MPDQueryHandler.getArtists(new MPDResponseArtistList() {
                 @Override
                 public void handleArtists(List<MPDArtist> artistList) {
-                    Log.v(TAG, "Received " + artistList.size() + " artists for bulk loading");
+                    if (BuildConfig.DEBUG) {
+                        Log.v(TAG, "Received " + artistList.size() + " artists for bulk loading");
+                    }
 
                     for (MPDArtist artist : artistList) {
                         mArtworkRequestQueue.add(new ArtworkRequestModel(artist));
@@ -349,7 +372,9 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
     }
 
     private void startBulkDownload() {
-        Log.v(TAG, "Bulkloading started with: " + mArtworkRequestQueue.size());
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Bulkloading started with: " + mArtworkRequestQueue.size());
+        }
 
         mSumArtworkRequests = mArtworkRequestQueue.size();
 
@@ -441,7 +466,9 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
     }
 
     private void updateNotification(final int pendingRequests) {
-        Log.v(TAG, "Remaining requests: " + pendingRequests);
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Remaining requests: " + pendingRequests);
+        }
 
         int finishedRequests = mSumArtworkRequests - pendingRequests;
 
@@ -479,7 +506,9 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
         @Override
         public void onConnected() {
-            Log.v(TAG, "Connected to mpd host");
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "Connected to mpd host");
+            }
 
             // Disable MPD albumart provider if no support is available on at the server side
             if (MPDAlbumImageProvider.getInstance().getActive() && !MPDInterface.mInstance.getServerCapabilities().hasAlbumArt()) {
@@ -499,9 +528,15 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.e(TAG, "Broadcast requested");
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "Broadcast requested");
+            }
+
             if (ACTION_CANCEL.equals(intent.getAction())) {
-                Log.e(TAG, "Cancel requested");
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG, "Cancel requested");
+                }
+
                 finishedLoading();
             }
         }
@@ -512,8 +547,11 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         @Override
         public void onReceive(Context context, Intent intent) {
             if (!NetworkUtils.isDownloadAllowed(context, mWifiOnly)) {
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "Cancel all downloads because of connection change");
+                }
+
                 // Cancel all downloads
-                Log.v(TAG, "Cancel all downloads because of connection change");
                 finishedLoading();
             }
 

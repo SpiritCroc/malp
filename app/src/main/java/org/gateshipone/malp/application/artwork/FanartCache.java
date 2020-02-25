@@ -26,6 +26,8 @@ package org.gateshipone.malp.application.artwork;
 import android.content.Context;
 import android.util.Log;
 
+import org.gateshipone.malp.BuildConfig;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -112,12 +114,17 @@ public class FanartCache {
      */
     synchronized void addFanart(String mbid, String name, byte[] image) {
         int newIndex = getFanartCount(mbid);
-        Log.v(TAG, "Add fanart: " + newIndex + "for mbid: " + mbid);
+
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Add fanart: " + newIndex + "for mbid: " + mbid);
+        }
 
         File outputDir = new File(mCacheBasePath + "/" + mbid);
         if (!outputDir.exists()) {
             if (!outputDir.mkdirs()) {
-                Log.e(TAG, "Fanart cache directory could be created: " + outputDir.getAbsolutePath());
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG, "Fanart cache directory could be created: " + outputDir.getAbsolutePath());
+                }
                 return;
             }
         }
@@ -128,7 +135,9 @@ public class FanartCache {
             try {
                 outputStream = new FileOutputStream(outputFile);
             } catch (FileNotFoundException e) {
-                Log.e(TAG, "Output file could not be created: " + mbid + ":" + name);
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG, "Output file could not be created: " + mbid + ":" + name);
+                }
                 return;
             }
 
@@ -136,32 +145,46 @@ public class FanartCache {
                 outputStream.write(image);
                 outputStream.close();
             } catch (IOException e) {
-                Log.e(TAG, "Error during write of fanart image to cache: " + mbid + ":" + name);
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG, "Error during write of fanart image to cache: " + mbid + ":" + name);
+                }
             }
         }
 
         mLastAccessedMBIDs.add(mbid);
         long cacheSize = getCacheSize();
-        Log.v(TAG, "Cache is now " + cacheSize / (1024 * 1024) + "MB in size");
+
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Cache is now " + cacheSize / (1024 * 1024) + "MB in size");
+        }
+
         if (cacheSize > MAX_CACHE_SIZE) {
             trimCache();
         }
     }
 
     synchronized boolean inCache(String mbid, String name) {
-        Log.v(TAG, "Check if exists: " + mCacheBasePath + "/" + mbid + "/" + name);
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Check if exists: " + mCacheBasePath + "/" + mbid + "/" + name);
+        }
+
         File checkFile = new File(mCacheBasePath + "/" + mbid + "/" + name);
         return checkFile.exists();
     }
 
     private void trimCache() {
-        Log.v(TAG, "Trim of cache started");
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Trim of cache started");
+        }
 
         // Get a list of remaining MBIDs
         List<String> lruEntries = new ArrayList<>();
         for (int i = 0; i < SESSION_LRU_MAX && i < mLastAccessedMBIDs.size(); i++) {
             lruEntries.add(mLastAccessedMBIDs.get(i));
-            Log.v(TAG, "Entry : " + mLastAccessedMBIDs.get(i) + "Should not be removed");
+
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "Entry : " + mLastAccessedMBIDs.get(i) + "Should not be removed");
+            }
         }
 
         mLastAccessedMBIDs.clear();
@@ -169,9 +192,15 @@ public class FanartCache {
 
         File cacheDir = new File(mCacheBasePath);
         for (File subFile : cacheDir.listFiles()) {
-            Log.v(TAG, "Check entry: " + subFile.getName());
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "Check entry: " + subFile.getName());
+            }
+
             if (!lruEntries.contains(subFile.getName())) {
-                Log.v(TAG, "Removing cache entry for: " + subFile.getName());
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "Removing cache entry for: " + subFile.getName());
+                }
+
                 deleteDirectory(subFile);
             }
         }
@@ -180,7 +209,10 @@ public class FanartCache {
     private void deleteDirectory(File url) {
         for (File subFile : url.listFiles()) {
             if (subFile.isFile()) {
-                Log.v(TAG, "Removing file: " + subFile.getPath());
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "Removing file: " + subFile.getPath());
+                }
+
                 subFile.delete();
             } else {
                 deleteDirectory(subFile);

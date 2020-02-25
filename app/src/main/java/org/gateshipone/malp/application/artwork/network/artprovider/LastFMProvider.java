@@ -29,6 +29,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.application.artwork.network.ArtworkRequestModel;
 import org.gateshipone.malp.application.artwork.network.MALPRequestQueue;
 import org.gateshipone.malp.application.artwork.network.requests.MALPByteRequest;
@@ -118,7 +119,10 @@ public class LastFMProvider extends ArtProvider {
             errorListener.onErrorResponse(new VolleyError("required arguments are empty"));
         } else {
             String url = LAST_FM_API_URL + "album.getinfo&album=" + albumName + "&artist=" + artistName + "&api_key=" + API_KEY + LAST_FM_FORMAT_JSON;
-            Log.v(TAG, url);
+
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, url);
+            }
 
             MALPJsonObjectRequest jsonObjectRequest = new MALPJsonObjectRequest(url, null, listener, errorListener);
 
@@ -150,7 +154,9 @@ public class LastFMProvider extends ArtProvider {
             if (isMatching) {
                 final JSONArray images = baseObj.getJSONArray("image");
 
-                Log.v(TAG, "Found: " + images.length() + " images");
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "Found: " + images.length() + " images");
+                }
 
                 for (int i = 0; i < images.length(); i++) {
                     JSONObject image = images.getJSONObject(i);
@@ -164,8 +170,10 @@ public class LastFMProvider extends ArtProvider {
                     }
                 }
             } else {
-                Log.v(TAG, "Response ( " + album + "-" + artist + " )" + " doesn't match requested model: " +
-                        "( " + model.getLoggingString() + " )");
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "Response ( " + album + "-" + artist + " )" + " doesn't match requested model: " +
+                            "( " + model.getLoggingString() + " )");
+                }
 
                 errorListener.fetchVolleyError(model, context, null);
             }
@@ -185,7 +193,9 @@ public class LastFMProvider extends ArtProvider {
      */
     private void getByteImage(final String url, final ArtworkRequestModel model,
                               final Response.Listener<ImageResponse> listener, final Response.ErrorListener errorListener) {
-        Log.v(LastFMProvider.class.getSimpleName(), "Get byte image:" + url);
+        if (BuildConfig.DEBUG) {
+            Log.v(LastFMProvider.class.getSimpleName(), "Get byte image:" + url);
+        }
 
         Request<ImageResponse> byteResponse = new MALPByteRequest(model, url, listener, errorListener);
 

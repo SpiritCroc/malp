@@ -27,7 +27,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class MPDProfileDBHelper extends SQLiteOpenHelper{
+import org.gateshipone.malp.BuildConfig;
+
+public class MPDProfileDBHelper extends SQLiteOpenHelper {
     private static final String TAG = MPDProfileManager.class.getSimpleName();
     /**
      * Database name for the profiles database
@@ -41,15 +43,17 @@ public class MPDProfileDBHelper extends SQLiteOpenHelper{
 
     /**
      * Constructor to create the database.
+     *
      * @param context Application context to create the database in.
      */
     public MPDProfileDBHelper(Context context) {
-        super(context,DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     /**
      * Initializes the tables of this database.
      * Should call all table helpers.
+     *
      * @param database Database to use for tables.
      */
     @Override
@@ -59,14 +63,18 @@ public class MPDProfileDBHelper extends SQLiteOpenHelper{
 
     /**
      * Method to migrate the database to a new version. Nothing implemented for now.
-     * @param database Database to migrate to a different version.
+     *
+     * @param database   Database to migrate to a different version.
      * @param oldVersion Old version of the database to migrate from
      * @param newVersion New version of the database to migrate to
      */
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        Log.v(TAG,"Upgrading database from version: " + oldVersion + " to new version: " + newVersion);
-        switch ( oldVersion ) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Upgrading database from version: " + oldVersion + " to new version: " + newVersion);
+        }
+
+        switch (oldVersion) {
             // Upgrade from version 1 to 2 needs introduction of the streaming port and streaming
             // enable column.
             case 1: {
@@ -88,7 +96,7 @@ public class MPDProfileDBHelper extends SQLiteOpenHelper{
                 String sqlString = "ALTER TABLE " + MPDServerProfileTable.SQL_TABLE_NAME + " ADD COLUMN " + MPDServerProfileTable.COLUMN_PROFILE_MPD_COVER_ENABLED + " integer;";
                 database.execSQL(sqlString);
 
-                sqlString = "UPDATE " + MPDServerProfileTable.SQL_TABLE_NAME + " SET " +  MPDServerProfileTable.COLUMN_PROFILE_MPD_COVER_ENABLED + " = 1;";
+                sqlString = "UPDATE " + MPDServerProfileTable.SQL_TABLE_NAME + " SET " + MPDServerProfileTable.COLUMN_PROFILE_MPD_COVER_ENABLED + " = 1;";
                 database.execSQL(sqlString);
             }
             default:

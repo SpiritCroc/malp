@@ -28,11 +28,12 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import java.util.ArrayList;
-
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionErrorHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDException;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
+
+import java.util.ArrayList;
 
 /**
  * This class is a base class for all derived handlers that talk to the MPD server.
@@ -168,7 +169,9 @@ public abstract class MPDGenericHandler extends Handler {
     }
 
     protected void handleMPDError(MPDException e) {
-        Log.e(TAG, "MPD error: " + e.getError());
+        if (BuildConfig.DEBUG) {
+            Log.e(TAG, "MPD error: " + e.getError());
+        }
 
         // Notify error listeners
         synchronized (mErrorListeners) {
