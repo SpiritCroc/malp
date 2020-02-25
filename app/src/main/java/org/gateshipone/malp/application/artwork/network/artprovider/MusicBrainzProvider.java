@@ -129,23 +129,42 @@ public class MusicBrainzProvider extends ArtProvider {
         try {
             final JSONArray releases = response.getJSONArray("releases");
             if (releases.length() > releaseIndex) {
-                final String mbid = releases.getJSONObject(releaseIndex).getString("id");
-                final String url = COVERART_ARCHIVE_API_URL + "/" + "release/" + mbid + "/front-500";
+                final JSONObject baseObj = releases.getJSONObject(releaseIndex);
 
-                getAlbumImage(url, model, listener, error -> {
-                    Log.v(TAG, "No image found for: " + model.getAlbumName() + " with release index: " + releaseIndex);
+                // verify response
+                final String album = baseObj.getString("title");
+                final String artist = baseObj.getJSONArray("artist-credit").getJSONObject(0).getString("name");
+
+                final boolean isMatching = compareAlbumResponse(model.getAlbumName(), model.getArtistName(), album, artist);
+
+                if (isMatching) {
+                    final String mbid = releases.getJSONObject(releaseIndex).getString("id");
+                    final String url = COVERART_ARCHIVE_API_URL + "/" + "release/" + mbid + "/front-500";
+
+                    getAlbumImage(url, model, listener, error -> {
+                        Log.v(TAG, "No image found for: " + model.getAlbumName() + " with release index: " + releaseIndex);
+                        if (releaseIndex + 1 < releases.length()) {
+                            parseMusicBrainzReleaseJSON(model, releaseIndex + 1, response, context, listener, errorListener);
+                        } else {
+                            errorListener.fetchVolleyError(model, context, error);
+                        }
+                    });
+                } else {
+                    Log.v(TAG, "Response ( " + album + "-" + artist + " )" + " doesn't match requested model: " +
+                            "( " + model.getLoggingString() + " )");
                     if (releaseIndex + 1 < releases.length()) {
                         parseMusicBrainzReleaseJSON(model, releaseIndex + 1, response, context, listener, errorListener);
                     } else {
-                        errorListener.fetchVolleyError(model, context, error);
+                        errorListener.fetchVolleyError(model, context, null);
                     }
-                });
+                }
             } else {
                 errorListener.fetchVolleyError(model, context, null);
             }
         } catch (JSONException e) {
             errorListener.fetchJSONException(model, context, e);
         }
+
     }
 
     /**

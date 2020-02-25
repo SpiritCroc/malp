@@ -167,24 +167,38 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
 
                     // Only check the first matching artist
                     if (!artists.isNull(0)) {
-                        JSONObject artistObj = artists.getJSONObject(0);
-                        final String artistMBID = artistObj.getString("id");
+                        final JSONObject artistObj = artists.getJSONObject(0);
 
-                        // Try to get information for this artist from fanart.tv
-                        getArtistImageURL(artistMBID, response1 -> {
-                            JSONArray thumbImages;
-                            try {
-                                thumbImages = response1.getJSONArray("artistthumb");
+                        // verify response
+                        final String artist = artistObj.getString("name");
 
-                                JSONObject firstThumbImage = thumbImages.getJSONObject(0);
+                        final boolean isMatching = compareArtistResponse(model.getArtistName(), artist);
 
-                                // Get the image for the artist.
-                                getArtistImage(firstThumbImage.getString("url"), model, listener, error -> errorListener.fetchVolleyError(model, context, error));
+                        if (isMatching) {
 
-                            } catch (JSONException e) {
-                                errorListener.fetchJSONException(model, context, e);
-                            }
-                        }, error -> errorListener.fetchVolleyError(model, context, error));
+                            final String artistMBID = artistObj.getString("id");
+
+                            // Try to get information for this artist from fanart.tv
+                            getArtistImageURL(artistMBID, response1 -> {
+                                JSONArray thumbImages;
+                                try {
+                                    thumbImages = response1.getJSONArray("artistthumb");
+
+                                    final JSONObject firstThumbImage = thumbImages.getJSONObject(0);
+
+                                    // Get the image for the artist.
+                                    getArtistImage(firstThumbImage.getString("url"), model, listener, error -> errorListener.fetchVolleyError(model, context, error));
+
+                                } catch (JSONException e) {
+                                    errorListener.fetchJSONException(model, context, e);
+                                }
+                            }, error -> errorListener.fetchVolleyError(model, context, error));
+                        } else {
+                            Log.v(TAG, "Response ( " + artist + " )" + " doesn't match requested model: " +
+                                    "( " + model.getLoggingString() + " )");
+
+                            errorListener.fetchVolleyError(model, context, null);
+                        }
                     }
                 } catch (JSONException e) {
                     errorListener.fetchJSONException(model, context, e);

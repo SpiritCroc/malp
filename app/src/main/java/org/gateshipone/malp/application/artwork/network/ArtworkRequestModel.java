@@ -143,6 +143,23 @@ public class ArtworkRequestModel {
         return Uri.encode(escapedAlbumName);
     }
 
+    public String getArtistName() {
+        String artistName = null;
+
+        switch (mType) {
+            case ALBUM:
+                artistName = ((MPDAlbum) mModel).getArtistName();
+                break;
+            case ARTIST:
+                artistName = ((MPDArtist) mModel).getArtistName();
+                break;
+            case TRACK:
+                break;
+        }
+
+        return artistName;
+    }
+
     public String getEncodedArtistName() {
         String encodedArtistName = null;
 
