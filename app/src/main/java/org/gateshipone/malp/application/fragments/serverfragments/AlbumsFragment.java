@@ -29,11 +29,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-import androidx.loader.content.Loader;
-import androidx.core.graphics.drawable.DrawableCompat;
-
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -45,6 +40,11 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
+
+import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.loader.content.Loader;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.AlbumsAdapter;
@@ -192,7 +192,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
      * Called when the fragment is first attached to its context.
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         // This makes sure that the container activity has implemented
@@ -226,7 +226,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
      * Create the context menu.
      */
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_album, menu);
@@ -266,7 +266,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
      * @param menuInflater The inflater to instantiate the layout.
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         if (null != mArtist && !mArtist.getArtistName().equals("")) {
             menuInflater.inflate(R.menu.fragment_menu_albums, menu);
@@ -313,6 +313,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
      * @param args
      * @return
      */
+    @NonNull
     @Override
     public Loader<List<MPDAlbum>> onCreateLoader(int id, Bundle args) {
         return new AlbumsLoader(getActivity(), mArtist == null ? "" : mArtist.getArtistName(), mAlbumsPath);
@@ -325,7 +326,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
      * @param data   Data of the loader
      */
     @Override
-    public void onLoadFinished(Loader<List<MPDAlbum>> loader, List<MPDAlbum> data) {
+    public void onLoadFinished(@NonNull Loader<List<MPDAlbum>> loader, List<MPDAlbum> data) {
         super.onLoadFinished(loader, data);
         // Set the actual data to the adapter.
         mAlbumsAdapter.swapModel(data);
@@ -338,7 +339,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         // Do not save the bitmap for later use (too big for binder)
         Bundle args = getArguments();
         if (args != null) {
@@ -367,7 +368,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
         Bitmap bitmap = null;
 
         // Check if correct view type, to be safe
-        if (view instanceof AbsImageListViewItem ) {
+        if (view instanceof AbsImageListViewItem) {
             bitmap = ((AbsImageListViewItem) view).getBitmap();
         }
 
@@ -400,7 +401,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
         if (null != mFABCallback) {
             if (null != mArtist && !mArtist.getArtistName().isEmpty()) {
                 mFABCallback.setupFAB(true, view -> {
-                    if(mUseArtistSort) {
+                    if (mUseArtistSort) {
                         MPDQueryHandler.playArtistSort(mArtist.getArtistName(), mSortOrder);
                     } else {
                         MPDQueryHandler.playArtist(mArtist.getArtistName(), mSortOrder);
@@ -422,14 +423,14 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
                         int width = rootView.getWidth();
 
                         // Image too small
-                        if(mBitmap.getWidth() < width) {
+                        if (mBitmap.getWidth() < width) {
                             mBitmapLoader.getArtistImage(mArtist, true, width, width);
                         }
                     });
                 }
             } else if (null != mAlbumsPath && !mAlbumsPath.equals("")) {
                 String lastPath = mAlbumsPath;
-                String pathSplit[] = mAlbumsPath.split("/");
+                String[] pathSplit = mAlbumsPath.split("/");
                 if (pathSplit.length > 0) {
                     lastPath = pathSplit[pathSplit.length - 1];
                 }
@@ -445,6 +446,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
 
     /**
      * Callback for asynchronous image fetching
+     *
      * @param artist Artist for which a new image is received
      */
     @Override
@@ -464,6 +466,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
 
     /**
      * Enqueues the album selected by the user
+     *
      * @param index Index of the selected album
      */
     private void enqueueAlbum(int index) {
@@ -481,6 +484,7 @@ public class AlbumsFragment extends GenericMPDFragment<List<MPDAlbum>> implement
 
     /**
      * Plays the album selected by the user
+     *
      * @param index Index of the selected album
      */
     private void playAlbum(int index) {

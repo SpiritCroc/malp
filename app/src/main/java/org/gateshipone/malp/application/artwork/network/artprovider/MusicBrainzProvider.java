@@ -56,7 +56,7 @@ public class MusicBrainzProvider extends ArtProvider {
 
     private static final int MUSICBRAINZ_LIMIT_RESULT_COUNT = 10;
 
-    private static final String MUSICBRAINZ_LIMIT_RESULT = "&limit=" + String.valueOf(MUSICBRAINZ_LIMIT_RESULT_COUNT);
+    private static final String MUSICBRAINZ_LIMIT_RESULT = "&limit=" + MUSICBRAINZ_LIMIT_RESULT_COUNT;
 
     private MusicBrainzProvider(Context context) {
         mRequestQueue = MALPRequestQueue.getInstance(context);
@@ -89,8 +89,6 @@ public class MusicBrainzProvider extends ArtProvider {
                 }
                 break;
             case ARTIST:
-                // not used for this provider
-                break;
             case TRACK:
                 // not used for this provider
                 break;

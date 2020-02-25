@@ -27,11 +27,6 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.loader.content.Loader;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,7 +38,11 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.loader.content.Loader;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
@@ -58,9 +57,11 @@ import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCapabilities;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
+
+import java.util.List;
 
 public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implements AbsListView.OnItemClickListener {
     public static final String EXTRA_FILENAME = "filename";
@@ -176,7 +177,7 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
      * Called when the fragment is first attached to its context.
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         // This makes sure that the container activity has implemented
@@ -205,7 +206,7 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         // save the already typed search string (or null if nothing is entered)
@@ -216,7 +217,7 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
      * Create the context menu.
      */
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
         MenuInflater inflater = getActivity().getMenuInflater();
@@ -305,7 +306,7 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
      * @param menuInflater The inflater to instantiate the layout.
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater menuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.fragment_menu_files, menu);
 
@@ -323,8 +324,8 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
         menu.findItem(R.id.action_search).setIcon(drawable);
 
         MPDCapabilities serverCaps = MPDInterface.mInstance.getServerCapabilities();
-        if ( null != serverCaps ) {
-            if ( serverCaps.hasListFiltering()) {
+        if (null != serverCaps) {
+            if (serverCaps.hasListFiltering()) {
                 menu.findItem(R.id.action_show_albums_from_here).setVisible(true);
             }
         }
@@ -378,6 +379,7 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
      * @param args
      * @return Newly created loader
      */
+    @NonNull
     @Override
     public Loader<List<MPDFileEntry>> onCreateLoader(int id, Bundle args) {
         return new FilesLoader(getActivity(), mPath);
@@ -390,7 +392,7 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
      * @param data   Data that was retrieved by the laoder
      */
     @Override
-    public void onLoadFinished(Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
+    public void onLoadFinished(@NonNull Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
         super.onLoadFinished(loader, data);
         mAdapter.swapModel(data);
 
@@ -431,31 +433,31 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
                     args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(position));
                     songDetailsDialog.setArguments(args);
                     songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
-                    return;
+                    break;
                 }
-                case ACTION_ADD_SONG:{
+                case ACTION_ADD_SONG: {
                     MPDTrack track = (MPDTrack) mAdapter.getItem(position);
 
                     MPDQueryHandler.addPath(track.getPath());
-                    return;
+                    break;
                 }
-                case ACTION_ADD_SONG_AT_START:{
+                case ACTION_ADD_SONG_AT_START: {
                     MPDTrack track = (MPDTrack) mAdapter.getItem(position);
 
                     MPDQueryHandler.addPathAtStart(track.getPath());
-                    return;
+                    break;
                 }
                 case ACTION_PLAY_SONG: {
                     MPDTrack track = (MPDTrack) mAdapter.getItem(position);
 
                     MPDQueryHandler.playSong(track.getPath());
-                    return;
+                    break;
                 }
                 case ACTION_PLAY_SONG_NEXT: {
                     MPDTrack track = (MPDTrack) mAdapter.getItem(position);
 
                     MPDQueryHandler.playSongNext(track.getPath());
-                    return;
+                    break;
                 }
             }
         }
@@ -463,6 +465,7 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
 
     public interface FilesCallback {
         void openPath(String path);
+
         void showAlbumsForPath(String path);
     }
 

@@ -94,8 +94,6 @@ public class HTTPAlbumImageProvider extends ArtProvider {
     public void fetchImage(ArtworkRequestModel model, Context context, Response.Listener<ImageResponse> listener, ArtFetchError errorListener) {
         switch (model.getType()) {
             case ALBUM:
-                // not used for this provider
-                break;
             case ARTIST:
                 // not used for this provider
                 break;

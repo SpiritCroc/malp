@@ -132,7 +132,7 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
         final SQLiteDatabase database = getReadableDatabase();
 
         String selection;
-        String selectionArguments[];
+        String[] selectionArguments;
 
         if (!mbid.isEmpty()) {
             selection = AlbumArtTable.COLUMN_ALBUM_MBID + "=?";
@@ -194,7 +194,7 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
         }
 
         String selection;
-        String selectionArguments[];
+        String[] selectionArguments;
 
         if (!mbid.isEmpty()) {
             selection = ArtistArtTable.COLUMN_ARTIST_MBID + "=?";
@@ -353,7 +353,7 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
         SQLiteDatabase database = getWritableDatabase();
 
         String where = ArtistArtTable.COLUMN_IMAGE_NOT_FOUND + "=?";
-        String whereArgs[] = {"1"};
+        String[] whereArgs = {"1"};
 
         database.delete(ArtistArtTable.TABLE_NAME, where, whereArgs);
 
@@ -364,7 +364,7 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
         SQLiteDatabase database = getWritableDatabase();
 
         String where = AlbumArtTable.COLUMN_IMAGE_NOT_FOUND + "=?";
-        String whereArgs[] = {"1"};
+        String[] whereArgs = {"1"};
 
         database.delete(AlbumArtTable.TABLE_NAME, where, whereArgs);
 
@@ -375,7 +375,7 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
         final SQLiteDatabase database = getWritableDatabase();
 
         String where;
-        String whereArgs[];
+        String[] whereArgs;
 
         if (artist.getMBIDCount() == 0) {
             where = ArtistArtTable.COLUMN_ARTIST_NAME + "=?";
@@ -404,7 +404,7 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
         final SQLiteDatabase database = getWritableDatabase();
 
         String where;
-        String whereArgs[];
+        String[] whereArgs;
 
         // Check if a MBID is present or not
         if (album.getMBID().isEmpty()) {

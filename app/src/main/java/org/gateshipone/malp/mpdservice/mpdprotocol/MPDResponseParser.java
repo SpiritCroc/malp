@@ -36,7 +36,6 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 import java.io.IOException;
-import java.text.Collator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -526,7 +525,7 @@ class MPDResponseParser {
             } else if (response.startsWith(MPDResponses.MPD_RESPONSE_TIME_INFORMATION_OLD)) {
                 String timeInfo = response.substring(MPDResponses.MPD_RESPONSE_TIME_INFORMATION_OLD.length());
 
-                String timeInfoSep[] = timeInfo.split(":");
+                String[] timeInfoSep = timeInfo.split(":");
                 if (timeInfoSep.length == 2) {
                     try {
                         status.setElapsedTime(Integer.valueOf(timeInfoSep[0]));
@@ -552,7 +551,7 @@ class MPDResponseParser {
             } else if (response.startsWith(MPDResponses.MPD_RESPONSE_AUDIO_INFORMATION)) {
                 String audioInfo = response.substring(MPDResponses.MPD_RESPONSE_AUDIO_INFORMATION.length());
 
-                String audioInfoSep[] = audioInfo.split(":");
+                String[] audioInfoSep = audioInfo.split(":");
                 if (audioInfoSep.length == 3) {
                 /* Extract the separate pieces */
                     try {

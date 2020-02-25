@@ -25,6 +25,7 @@ package org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import java.text.Collator;
@@ -124,7 +125,7 @@ public class MPDArtist implements MPDGenericItem, Comparable<MPDArtist>, Parcela
         }
 
         Collator collator = Collator.getInstance();
-        int compareResult = collator.compare(pArtistName,another.pArtistName);
+        int compareResult = collator.compare(pArtistName, another.pArtistName);
         if (compareResult == 0) {
             //Log.v(MPDArtist.class.getSimpleName(),"another mbids: " + another.pMBIDs.size() + "self mbids:" + pMBIDs.size());
             // Try to position artists with one mbid at the end
@@ -163,6 +164,7 @@ public class MPDArtist implements MPDGenericItem, Comparable<MPDArtist>, Parcela
         return 0;
     }
 
+    @NonNull
     @Override
     public String toString() {
         StringBuilder retVal = new StringBuilder(this.pArtistName + "_");
@@ -175,7 +177,7 @@ public class MPDArtist implements MPDGenericItem, Comparable<MPDArtist>, Parcela
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(pArtistName);
-        String[] mbids = pMBIDs.toArray(new String[pMBIDs.size()]);
+        String[] mbids = pMBIDs.toArray(new String[0]);
         dest.writeStringArray(mbids);
         dest.writeByte(mImageFetching ? (byte) 1 : (byte) 0);
     }

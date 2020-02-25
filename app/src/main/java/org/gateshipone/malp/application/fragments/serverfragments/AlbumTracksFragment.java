@@ -28,12 +28,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,6 +37,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
@@ -56,9 +57,8 @@ import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 import java.util.List;
 
@@ -195,7 +195,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
      * Called when the fragment is first attached to its context.
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         // This makes sure that the container activity has implemented
@@ -215,6 +215,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
      * @param args
      * @return Newly created loader
      */
+    @NonNull
     @Override
     public Loader<List<MPDFileEntry>> onCreateLoader(int id, Bundle args) {
         return new AlbumTracksLoader(getActivity(), mAlbum, mUseArtistSort);
@@ -227,7 +228,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
      * @param data   Data that was retrieved by the laoder
      */
     @Override
-    public void onLoadFinished(Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
+    public void onLoadFinished(@NonNull Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
         super.onLoadFinished(loader, data);
         // Give the adapter the new retrieved data set
         mFileAdapter.swapModel(data);
@@ -254,23 +255,23 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
                 args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mFileAdapter.getItem(position));
                 songDetailsDialog.setArguments(args);
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
-                return;
+                break;
             }
             case ACTION_ADD_SONG: {
                 enqueueTrack(position);
-                return;
+                break;
             }
             case ACTION_ADD_SONG_AT_START: {
                 prependTrack(position);
-                return;
+                break;
             }
             case ACTION_PLAY_SONG: {
                 play(position);
-                return;
+                break;
             }
             case ACTION_PLAY_SONG_NEXT: {
                 playNext(position);
-                return;
+                break;
             }
         }
     }
@@ -279,7 +280,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
      * Create the context menu.
      */
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_track, menu);
@@ -344,7 +345,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
      * @param menuInflater The inflater to instantiate the layout.
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater menuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.fragment_menu_album_tracks, menu);
 
@@ -356,7 +357,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
         DrawableCompat.setTint(drawable, tintColor);
         menu.findItem(R.id.action_add_album).setIcon(drawable);
 
-        if(!mAlbum.getMBID().isEmpty()) {
+        if (!mAlbum.getMBID().isEmpty()) {
             // Disable legacy feature to remove filter criteria for album tracks if an MBID is
             // available. Albums tagged with a MBID can be considered shown correctly.
             menu.findItem(R.id.action_show_all_tracks).setVisible(false);
@@ -396,7 +397,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<List<MPDFileEntry>> 
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         // Do not save the bitmap for later use (too big for binder)
         Bundle args = getArguments();
         if (args != null) {

@@ -45,9 +45,9 @@ public class BackgroundServiceHandler extends Handler {
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
 
-        Log.v(TAG,"Handle message: " + msg);
+        Log.v(TAG, "Handle message: " + msg);
 
-        HANDLER_ACTION_TYPE action = ((HandlerAction)msg.obj).getType();
+        HANDLER_ACTION_TYPE action = ((HandlerAction) msg.obj).getType();
         switch (action) {
             case ACTION_START_STREAMING:
                 mService.startStreamingPlayback();
@@ -56,12 +56,13 @@ public class BackgroundServiceHandler extends Handler {
                 mService.stopStreamingPlayback();
                 break;
             default:
-                return;
+                break;
         }
     }
 
     public static class HandlerAction {
         private HANDLER_ACTION_TYPE mType;
+
         public HandlerAction(HANDLER_ACTION_TYPE type) {
             mType = type;
         }

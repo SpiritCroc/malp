@@ -90,7 +90,6 @@ public class ArtworkRequestModel {
     public String getPath() {
         switch (mType) {
             case ALBUM:
-                break;
             case ARTIST:
                 break;
             case TRACK:
@@ -107,7 +106,6 @@ public class ArtworkRequestModel {
                 albumName = ((MPDAlbum) mModel).getName();
                 break;
             case ARTIST:
-                break;
             case TRACK:
                 break;
         }
@@ -123,7 +121,6 @@ public class ArtworkRequestModel {
                 encodedAlbumName = Uri.encode(((MPDAlbum) mModel).getName());
                 break;
             case ARTIST:
-                break;
             case TRACK:
                 break;
         }
@@ -139,7 +136,6 @@ public class ArtworkRequestModel {
                 escapedAlbumName = FormatHelper.escapeSpecialCharsLucene(((MPDAlbum) mModel).getName());
                 break;
             case ARTIST:
-                break;
             case TRACK:
                 break;
         }

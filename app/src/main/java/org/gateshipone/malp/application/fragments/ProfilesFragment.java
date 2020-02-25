@@ -26,11 +26,6 @@ package org.gateshipone.malp.application.fragments;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
-import androidx.core.graphics.drawable.DrawableCompat;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,9 +37,11 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.ProfileAdapter;
@@ -56,7 +53,11 @@ import org.gateshipone.malp.mpdservice.ConnectionManager;
 import org.gateshipone.malp.mpdservice.profilemanagement.MPDProfileManager;
 import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
 
-public class ProfilesFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<MPDServerProfile>>, AbsListView.OnItemClickListener, Observer{
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+public class ProfilesFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<MPDServerProfile>>, AbsListView.OnItemClickListener, Observer {
     public final static String TAG = ProfilesFragment.class.getSimpleName();
     /**
      * Main ListView of this fragment
@@ -98,7 +99,7 @@ public class ProfilesFragment extends Fragment implements LoaderManager.LoaderCa
      * Create the context menu.
      */
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_profile, menu);
@@ -141,7 +142,7 @@ public class ProfilesFragment extends Fragment implements LoaderManager.LoaderCa
      * @param menuInflater The inflater to instantiate the layout.
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater menuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.fragment_menu_profiles, menu);
 
@@ -164,10 +165,9 @@ public class ProfilesFragment extends Fragment implements LoaderManager.LoaderCa
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add:
-                mCallback.editProfile(null);
-                return true;
+        if (item.getItemId() == R.id.action_add) {
+            mCallback.editProfile(null);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -177,7 +177,7 @@ public class ProfilesFragment extends Fragment implements LoaderManager.LoaderCa
      * Called when the fragment is first attached to its context.
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         // This makes sure that the container activity has implemented
@@ -209,8 +209,8 @@ public class ProfilesFragment extends Fragment implements LoaderManager.LoaderCa
         // Prepare loader ( start new one or reuse old )
         LoaderManager.getInstance(this).restartLoader(0, getArguments(), this);
 
-        if ( null != mFABCallback ) {
-            mFABCallback.setupFAB(false,null);
+        if (null != mFABCallback) {
+            mFABCallback.setupFAB(false, null);
             mFABCallback.setupToolbar(getString(R.string.menu_profiles), false, true, false);
         }
     }
@@ -222,37 +222,38 @@ public class ProfilesFragment extends Fragment implements LoaderManager.LoaderCa
         MPDProfileManager.getInstance(getActivity()).deleteObserver(this);
     }
 
+    @NonNull
     @Override
     public Loader<List<MPDServerProfile>> onCreateLoader(int id, Bundle args) {
         return new ProfilesLoader(getActivity());
     }
 
     @Override
-    public void onLoadFinished(Loader<List<MPDServerProfile>> loader, List<MPDServerProfile> data) {
+    public void onLoadFinished(@NonNull Loader<List<MPDServerProfile>> loader, List<MPDServerProfile> data) {
         mAdapter.swapModel(data);
     }
 
     @Override
-    public void onLoaderReset(Loader<List<MPDServerProfile>> loader) {
+    public void onLoaderReset(@NonNull Loader<List<MPDServerProfile>> loader) {
         mAdapter.swapModel(null);
     }
 
 
     private void connectProfile(int index) {
-        if ( null != mCallback ) {
-            ConnectionManager.getInstance(getContext().getApplicationContext()).connectProfile((MPDServerProfile)mAdapter.getItem(index), getContext());
+        if (null != mCallback) {
+            ConnectionManager.getInstance(getContext().getApplicationContext()).connectProfile((MPDServerProfile) mAdapter.getItem(index), getContext());
         }
     }
 
     private void editProfile(int index) {
-        if ( null != mCallback ) {
-            mCallback.editProfile((MPDServerProfile)mAdapter.getItem(index));
+        if (null != mCallback) {
+            mCallback.editProfile((MPDServerProfile) mAdapter.getItem(index));
         }
     }
 
     private void removeProfile(int index) {
-        if ( null != mCallback ) {
-            ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile((MPDServerProfile)mAdapter.getItem(index),getContext());
+        if (null != mCallback) {
+            ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile((MPDServerProfile) mAdapter.getItem(index), getContext());
             mAdapter.swapModel(null);
             // Prepare loader ( start new one or reuse old )
             LoaderManager.getInstance(this).restartLoader(0, getArguments(), this);
@@ -261,8 +262,8 @@ public class ProfilesFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if ( null != mCallback ) {
-            ConnectionManager.getInstance(getContext().getApplicationContext()).connectProfile((MPDServerProfile)mAdapter.getItem(position),getContext());
+        if (null != mCallback) {
+            ConnectionManager.getInstance(getContext().getApplicationContext()).connectProfile((MPDServerProfile) mAdapter.getItem(position), getContext());
             mAdapter.setActive(position, true);
         }
     }

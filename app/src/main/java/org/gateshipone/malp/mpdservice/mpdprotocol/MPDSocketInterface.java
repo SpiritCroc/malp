@@ -142,7 +142,7 @@ public class MPDSocketInterface {
      * @throws IOException Exception during read
      */
      public byte[] readBinary(int size) throws IOException {
-        byte data[] = new byte[size];
+         byte[] data = new byte[size];
 
         int dataRead = 0;
 

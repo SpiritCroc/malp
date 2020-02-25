@@ -119,7 +119,7 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<List<MPDFileEntry
      * Called when the fragment is first attached to its context.
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         // This makes sure that the container activity has implemented
@@ -144,7 +144,7 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<List<MPDFileEntry
      * Create the context menu.
      */
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_playlist, menu);
@@ -201,6 +201,7 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<List<MPDFileEntry
      * @param args
      * @return Newly created loader
      */
+    @NonNull
     @Override
     public Loader<List<MPDFileEntry>> onCreateLoader(int id, Bundle args) {
         return new PlaylistsLoader(getActivity(), false);
@@ -213,7 +214,7 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<List<MPDFileEntry
      * @param data   Data that was retrieved by the laoder
      */
     @Override
-    public void onLoadFinished(Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
+    public void onLoadFinished(@NonNull Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
         super.onLoadFinished(loader, data);
         mPlaylistAdapter.swapModel(data);
     }

@@ -22,7 +22,6 @@
 
 package org.gateshipone.malp.application.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import androidx.annotation.NonNull;

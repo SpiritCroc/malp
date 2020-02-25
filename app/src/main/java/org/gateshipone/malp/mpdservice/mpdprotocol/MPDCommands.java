@@ -49,7 +49,7 @@ public class MPDCommands {
 
     /* Database request commands */
     public static String MPD_COMMAND_REQUEST_ALBUMS(MPDCapabilities caps) {
-        if ( caps.hasListGroup()) {
+        if (caps.hasListGroup()) {
             return "list album" + createAlbumGroupString(caps);
         } else {
             return "list album";
@@ -57,10 +57,10 @@ public class MPDCommands {
     }
 
     public static String MPD_COMMAND_REQUEST_ARTIST_ALBUMS(String artistName, MPDCapabilities caps) {
-        if ( caps.hasListGroup() ) {
+        if (caps.hasListGroup()) {
             return "list album artist \"" + escapeString(artistName) + "\"" + createAlbumGroupString(caps);
         } else {
-            return "list album \"" + escapeString(artistName)+ "\"";
+            return "list album \"" + escapeString(artistName) + "\"";
         }
     }
 
@@ -70,7 +70,7 @@ public class MPDCommands {
     }
 
     public static final String MPD_COMMAND_REQUEST_ALBUMS_FOR_PATH(String path, MPDCapabilities caps) {
-        if ( caps.hasListGroup()) {
+        if (caps.hasListGroup()) {
             return "list album base \"" + escapeString(path) + "\"" + createAlbumGroupString(caps);
         } else {
             // FIXME check if correct. Possible fallback for group missing -> base command also missing.
@@ -92,7 +92,7 @@ public class MPDCommands {
     }
 
     public static String MPD_COMMAND_REQUEST_ARTISTS(boolean groupMBID) {
-        if ( !groupMBID ) {
+        if (!groupMBID) {
             return "list artist";
         } else {
             return "list artist group MUSICBRAINZ_ARTISTID";
@@ -100,7 +100,7 @@ public class MPDCommands {
     }
 
     public static String MPD_COMMAND_REQUEST_ALBUMARTISTS(boolean groupMBID) {
-        if ( !groupMBID ) {
+        if (!groupMBID) {
             return "list albumartist";
         } else {
             return "list albumartist group MUSICBRAINZ_ARTISTID";
@@ -108,7 +108,7 @@ public class MPDCommands {
     }
 
     public static String MPD_COMMAND_REQUEST_ARTISTS_SORT(boolean groupMBID) {
-        if ( !groupMBID ) {
+        if (!groupMBID) {
             return "list artistsort";
         } else {
             return "list artistsort group MUSICBRAINZ_ARTISTID";
@@ -116,7 +116,7 @@ public class MPDCommands {
     }
 
     public static String MPD_COMMAND_REQUEST_ALBUMARTISTS_SORT(boolean groupMBID) {
-        if ( !groupMBID ) {
+        if (!groupMBID) {
             return "list albumartistsort";
         } else {
             return "list albumartistsort group MUSICBRAINZ_ARTISTID";
@@ -142,7 +142,7 @@ public class MPDCommands {
     public static final String MPD_COMMAND_GET_CURRENT_PLAYLIST = "playlistinfo";
 
     public static final String MPD_COMMAND_GET_CURRENT_PLAYLIST_WINDOW(int start, int end) {
-        return "playlistinfo " + String.valueOf(start) + ':' + String.valueOf(end);
+        return "playlistinfo " + start + ':' + end;
     }
 
     public static String MPD_COMMAND_GET_SAVED_PLAYLIST(String playlistName) {
@@ -170,7 +170,7 @@ public class MPDCommands {
     }
 
     public static String MPD_COMMAND_REMOVE_TRACK_FROM_PLAYLIST(String playlistName, int position) {
-        return "playlistdelete \"" + escapeString(playlistName) + "\" " + String.valueOf(position);
+        return "playlistdelete \"" + escapeString(playlistName) + "\" " + position;
     }
 
     public static final String MPD_COMMAND_GET_CURRENT_SONG = "currentsong";
@@ -181,24 +181,24 @@ public class MPDCommands {
     public static final String MPD_START_COMMAND_LIST = "command_list_begin";
     public static final String MPD_END_COMMAND_LIST = "command_list_end";
 
-    public static  String MPD_COMMAND_ADD_FILE(String url) {
+    public static String MPD_COMMAND_ADD_FILE(String url) {
         return "add \"" + escapeString(url) + "\"";
     }
 
-    public static  String MPD_COMMAND_ADD_FILE_AT_INDEX(String url, int index) {
-        return "addid \"" + escapeString(url) + "\"  " + String.valueOf(index);
+    public static String MPD_COMMAND_ADD_FILE_AT_INDEX(String url, int index) {
+        return "addid \"" + escapeString(url) + "\"  " + index;
     }
 
     public static String MPD_COMMAND_REMOVE_SONG_FROM_CURRENT_PLAYLIST(int index) {
-        return "delete " + String.valueOf(index);
+        return "delete " + index;
     }
 
     public static String MPD_COMMAND_REMOVE_RANGE_FROM_CURRENT_PLAYLIST(int start, int end) {
-        return "delete " + String.valueOf(start) + ':' + String.valueOf(end);
+        return "delete " + start + ':' + end;
     }
 
     public static String MPD_COMMAND_MOVE_SONG_FROM_INDEX_TO_INDEX(int from, int to) {
-        return "move " + String.valueOf(from) + ' ' + String.valueOf(to);
+        return "move " + from + ' ' + to;
     }
 
     public static final String MPD_COMMAND_CLEAR_PLAYLIST = "clear";
@@ -221,21 +221,21 @@ public class MPDCommands {
 
 
     public static String MPD_COMMAND_PLAY_SONG_INDEX(int index) {
-        return "play " + String.valueOf(index);
+        return "play " + index;
     }
 
     public static String MPD_COMMAND_SEEK_SECONDS(int index, int seconds) {
-        return "seek " + String.valueOf(index) + ' ' + String.valueOf(seconds);
+        return "seek " + index + ' ' + seconds;
     }
 
     public static String MPD_COMMAND_SEEK_CURRENT_SECONDS(int seconds) {
-        return "seekcur " + String.valueOf(seconds);
+        return "seekcur " + seconds;
     }
 
     public static String MPD_COMMAND_SET_VOLUME(int volume) {
-        if ( volume > 100 ) {
+        if (volume > 100) {
             volume = 100;
-        } else if ( volume < 0 ) {
+        } else if (volume < 0) {
             volume = 0;
         }
         return "setvol " + volume;
@@ -244,15 +244,15 @@ public class MPDCommands {
     public static final String MPD_COMMAND_GET_OUTPUTS = "outputs";
 
     public static String MPD_COMMAND_TOGGLE_OUTPUT(int id) {
-        return "toggleoutput " + String.valueOf(id);
+        return "toggleoutput " + id;
     }
 
     public static String MPD_COMMAND_ENABLE_OUTPUT(int id) {
-        return "enableoutput " + String.valueOf(id);
+        return "enableoutput " + id;
     }
 
     public static String MPD_COMMAND_DISABLE_OUTPUT(int id) {
-        return "disableoutput " + String.valueOf(id);
+        return "disableoutput " + id;
     }
 
     public static String MPD_COMMAND_UPDATE_DATABASE(String path) {
@@ -314,6 +314,7 @@ public class MPDCommands {
     /**
      * Searches the song of an given URL in the current playlist. MPD will respond by
      * returning a track object if found or nothing else.
+     *
      * @param url URL to search for.
      * @return command string for MPD
      */
@@ -329,6 +330,6 @@ public class MPDCommands {
     }
 
     public static String MPD_COMMAND_GET_ALBUMART(String url, int offset) {
-        return "albumart \"" + escapeString(url) + "\" " + String.valueOf(offset);
+        return "albumart \"" + escapeString(url) + "\" " + offset;
     }
 }

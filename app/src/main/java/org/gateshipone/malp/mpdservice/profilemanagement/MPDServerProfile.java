@@ -266,6 +266,7 @@ public class MPDServerProfile implements MPDGenericItem, Parcelable {
      * it includes potential passwords.
      * @return The profile in string form.
      */
+    @NonNull
     @Override
     public String toString() {
         String retString = "";

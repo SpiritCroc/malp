@@ -174,6 +174,7 @@ public class MPDAlbum implements MPDGenericItem, Comparable<MPDAlbum>, Parcelabl
         return 0;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return mName + "_" + mArtistName + "_" + mMBID + "_" + mDate;

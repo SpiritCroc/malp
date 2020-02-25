@@ -72,7 +72,7 @@
         <activity
             android:name=".application.activities.ContributorsActivity"
             android:label="Contributors"
-            android:parentActivityName=".application.activities.MainActivity"></activity>
+            android:parentActivityName=".application.activities.MainActivity" />
 
         <service
             android:name=".application.artwork.BulkDownloadService"

@@ -82,13 +82,14 @@ public class OutputsFragment extends GenericMPDFragment<List<MPDOutput>> impleme
         mAdapter.setOutputActive(position,!output.getOutputState());
     }
 
+    @NonNull
     @Override
     public Loader<List<MPDOutput>> onCreateLoader(int id, Bundle args) {
         return new OutputsLoader(getActivity());
     }
 
     @Override
-    public void onLoadFinished(Loader<List<MPDOutput>> loader, List<MPDOutput> data) {
+    public void onLoadFinished(@NonNull Loader<List<MPDOutput>> loader, List<MPDOutput> data) {
         mAdapter.swapModel(data);
     }
 

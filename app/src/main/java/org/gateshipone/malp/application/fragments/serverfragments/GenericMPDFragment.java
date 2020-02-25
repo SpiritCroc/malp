@@ -25,6 +25,8 @@ package org.gateshipone.malp.application.fragments.serverfragments;
 
 import android.app.Activity;
 import android.os.Looper;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -122,12 +124,12 @@ public abstract class GenericMPDFragment<T extends Object> extends DialogFragmen
      * @param model  Data of the loader
      */
     @Override
-    public void onLoadFinished(Loader<T> loader, T model) {
+    public void onLoadFinished(@NonNull Loader<T> loader, T model) {
         finishedLoading();
     }
 
     @Override
-    public void onLoaderReset(Loader<T> loader) {
+    public void onLoaderReset(@NonNull Loader<T> loader) {
         finishedLoading();
     }
 

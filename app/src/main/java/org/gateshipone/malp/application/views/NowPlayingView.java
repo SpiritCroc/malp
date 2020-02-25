@@ -86,8 +86,6 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-;
-
 public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuItemClickListener, ArtworkManager.onNewAlbumImageListener, ArtworkManager.onNewArtistImageListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -1246,8 +1244,8 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
         mVolumeText.setText(String.valueOf(volume) + '%');
 
-        mPlaylistNo.setText(String.valueOf(status.getCurrentSongIndex() + 1) + getResources().getString(R.string.track_number_album_count_separator) +
-                String.valueOf(status.getPlaylistLength()));
+        mPlaylistNo.setText((status.getCurrentSongIndex() + 1) + getResources().getString(R.string.track_number_album_count_separator) +
+                status.getPlaylistLength());
 
         mLastStatus = status;
 
@@ -1333,8 +1331,8 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
         mTrackURI.setText(track.getPath());
         if (track.getAlbumTrackCount() != 0) {
-            mTrackNo.setText(String.valueOf(track.getTrackNumber()) + getResources().getString(R.string.track_number_album_count_separator) +
-                    String.valueOf(track.getAlbumTrackCount()));
+            mTrackNo.setText(track.getTrackNumber() + getResources().getString(R.string.track_number_album_count_separator) +
+                    track.getAlbumTrackCount());
         } else {
             mTrackNo.setText(String.valueOf(track.getTrackNumber()));
         }

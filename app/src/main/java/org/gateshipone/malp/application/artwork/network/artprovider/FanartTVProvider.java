@@ -86,7 +86,7 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
     /**
      * Constant URL format to limit results
      */
-    private static final String MUSICBRAINZ_LIMIT_RESULT = "&limit=" + String.valueOf(MUSICBRAINZ_LIMIT_RESULT_COUNT);
+    private static final String MUSICBRAINZ_LIMIT_RESULT = "&limit=" + MUSICBRAINZ_LIMIT_RESULT_COUNT;
 
     /**
      * Maximum number of fanart images to return an URL for.

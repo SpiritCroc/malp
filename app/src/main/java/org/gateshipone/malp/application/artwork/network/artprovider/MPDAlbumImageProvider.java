@@ -61,8 +61,6 @@ public class MPDAlbumImageProvider extends ArtProvider {
         }
         switch (model.getType()) {
             case ALBUM:
-                // not used for this provider
-                break;
             case ARTIST:
                 // not used for this provider
                 break;

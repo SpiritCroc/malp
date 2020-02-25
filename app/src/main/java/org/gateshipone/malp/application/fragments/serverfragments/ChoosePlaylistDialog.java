@@ -72,6 +72,7 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<List<MPDFileEntry>>
      * @param args Optional arguments
      * @return Return a new Loader instance that is ready to start loading.
      */
+    @NonNull
     @Override
     public Loader<List<MPDFileEntry>> onCreateLoader(int id, Bundle args) {
         return new PlaylistsLoader(getActivity(),mShowNewEntry);
@@ -84,7 +85,7 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<List<MPDFileEntry>>
      * @param data   Data of the loader
      */
     @Override
-    public void onLoadFinished(Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
+    public void onLoadFinished(@NonNull Loader<List<MPDFileEntry>> loader, List<MPDFileEntry> data) {
         mPlaylistsListViewAdapter.swapModel(data);
     }
 

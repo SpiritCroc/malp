@@ -26,15 +26,14 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.utils.FormatHelper;
@@ -90,13 +89,13 @@ public class SongDetailsDialog extends DialogFragment {
             albumArtistSort.setText(mFile.getTrackAlbumArtistSort());
 
             if (mFile.getAlbumTrackCount() != 0) {
-                mTrackNo.setText(String.valueOf(mFile.getTrackNumber()) + '/' + String.valueOf(mFile.getAlbumTrackCount()));
+                mTrackNo.setText(String.valueOf(mFile.getTrackNumber()) + '/' + mFile.getAlbumTrackCount());
             } else {
                 mTrackNo.setText(String.valueOf(mFile.getTrackNumber()));
             }
 
             if (mFile.getAlbumDiscCount() != 0) {
-                mTrackDisc.setText(String.valueOf(mFile.getDiscNumber()) + '/' + String.valueOf(mFile.getAlbumDiscCount()));
+                mTrackDisc.setText(String.valueOf(mFile.getDiscNumber()) + '/' + mFile.getAlbumDiscCount());
             } else {
                 mTrackDisc.setText(String.valueOf(mFile.getDiscNumber()));
             }

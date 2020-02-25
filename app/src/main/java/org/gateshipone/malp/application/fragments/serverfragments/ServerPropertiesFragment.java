@@ -110,7 +110,7 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
      * Called when the fragment is first attached to its context.
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
 
@@ -168,6 +168,7 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
             return POSITION_NONE;
         }
 
+        @NonNull
         @Override
         public Fragment getItem(int i) {
             switch (i) {

@@ -1008,7 +1008,7 @@ public class MPDInterface {
 
         int chunkSize = 0;
 
-        byte imageData[] = null;
+        byte[] imageData = null;
 
 
         boolean firstRun = true;
@@ -1038,7 +1038,7 @@ public class MPDInterface {
                     // This means that after this line a binary chunk is incoming
                     chunkSize = Integer.valueOf(line.substring(MPDResponses.MPD_RESPONSE_BINARY_SIZE.length()));
 
-                    byte readData[] = new byte[0];
+                    byte[] readData = new byte[0];
                     try {
                         readData = mConnection.readBinary(chunkSize);
                     } catch (MPDException e) {

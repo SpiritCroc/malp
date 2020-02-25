@@ -25,6 +25,7 @@ package org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 public class MPDCurrentStatus implements Parcelable {
@@ -374,28 +375,29 @@ public class MPDCurrentStatus implements Parcelable {
     };
 
 
+    @NonNull
     @Override
     public String toString() {
         /* String output for debug purposes */
         String retString = "";
 
-        retString += "Volume: " + String.valueOf(pVolume) + "\n";
-        retString += "Repeat: " + String.valueOf(pRepeat) + "\n";
-        retString += "Random: " + String.valueOf(pRandom) + "\n";
-        retString += "Single: " + String.valueOf(pSinglePlayback) + "\n";
-        retString += "Consume: " + String.valueOf(pConsume) + "\n";
-        retString += "Playlist version: " + String.valueOf(pPlaylistVersion) + "\n";
-        retString += "Playlist length: " + String.valueOf(pPlaylistLength) + "\n";
-        retString += "Current song index: " + String.valueOf(pCurrentSongIndex) + "\n";
-        retString += "Next song index: " + String.valueOf(pNextSongIndex) + "\n";
-        retString += "Samplerate: " + String.valueOf(pSamplerate) + "\n";
+        retString += "Volume: " + pVolume + "\n";
+        retString += "Repeat: " + pRepeat + "\n";
+        retString += "Random: " + pRandom + "\n";
+        retString += "Single: " + pSinglePlayback + "\n";
+        retString += "Consume: " + pConsume + "\n";
+        retString += "Playlist version: " + pPlaylistVersion + "\n";
+        retString += "Playlist length: " + pPlaylistLength + "\n";
+        retString += "Current song index: " + pCurrentSongIndex + "\n";
+        retString += "Next song index: " + pNextSongIndex + "\n";
+        retString += "Samplerate: " + pSamplerate + "\n";
         retString += "Bitdepth: " + pBitDepth + "\n";
-        retString += "Channel count: " + String.valueOf(pChannelCount) + "\n";
-        retString += "Bitrate: " + String.valueOf(pBitrate) + "\n";
-        retString += "Elapsed time: " + String.valueOf(pElapsedTime) + "\n";
-        retString += "Track length: " + String.valueOf(pTrackLength) + "\n";
-        retString += "UpdateDB job id: " + String.valueOf(pUpdateDBJob) + "\n";
-        retString += "Playback state: " + String.valueOf(pPlaybackState.ordinal()) + "\n";
+        retString += "Channel count: " + pChannelCount + "\n";
+        retString += "Bitrate: " + pBitrate + "\n";
+        retString += "Elapsed time: " + pElapsedTime + "\n";
+        retString += "Track length: " + pTrackLength + "\n";
+        retString += "UpdateDB job id: " + pUpdateDBJob + "\n";
+        retString += "Playback state: " + pPlaybackState.ordinal() + "\n";
 
         return retString;
     }

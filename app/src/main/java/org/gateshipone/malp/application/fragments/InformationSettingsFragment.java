@@ -24,6 +24,8 @@ package org.gateshipone.malp.application.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.gateshipone.malp.R;
@@ -44,7 +46,7 @@ public class InformationSettingsFragment extends PreferenceFragmentCompat {
      * Called when the fragment is first attached to its context.
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         try {

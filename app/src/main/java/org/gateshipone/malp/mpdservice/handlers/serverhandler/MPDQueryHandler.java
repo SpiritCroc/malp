@@ -26,7 +26,6 @@ package org.gateshipone.malp.mpdservice.handlers.serverhandler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumArt;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumList;

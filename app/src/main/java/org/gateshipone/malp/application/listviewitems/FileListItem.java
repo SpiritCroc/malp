@@ -25,18 +25,19 @@ package org.gateshipone.malp.application.listviewitems;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import androidx.core.graphics.drawable.DrawableCompat;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.ScrollSpeedAdapter;
 import org.gateshipone.malp.application.utils.FormatHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 
 /**
@@ -62,7 +63,8 @@ public class FileListItem extends AbsImageListViewItem {
 
     /**
      * Base constructor to create a not section-type element
-     * @param context Context used for creation of View
+     *
+     * @param context  Context used for creation of View
      * @param showIcon If left file/dir icon should be shown. It is not changeable after creation.
      */
     public FileListItem(Context context, boolean showIcon) {
@@ -93,7 +95,8 @@ public class FileListItem extends AbsImageListViewItem {
 
     /**
      * Base constructor to create a section-type element
-     * @param context Context used for creation of View
+     *
+     * @param context  Context used for creation of View
      * @param showIcon If left file/dir icon should be shown. It is not changeable after creation.
      */
     public FileListItem(Context context, String sectionTitle, boolean showIcon, ScrollSpeedAdapter adapter) {
@@ -167,16 +170,17 @@ public class FileListItem extends AbsImageListViewItem {
 
     /**
      * Extracts the information from a MPDTrack.
-     * @param track Track to show the view for.
+     *
+     * @param track   Track to show the view for.
      * @param context Context used for String extraction
      */
     public void setTrack(MPDTrack track, boolean useTags, Context context) {
-        if ( track != null ) {
+        if (track != null) {
             String trackNumber;
 
-            if(useTags) {
+            if (useTags) {
                 if (track.getAlbumDiscCount() > 0) {
-                    trackNumber = String.valueOf(track.getDiscNumber()) + '-' + String.valueOf(track.getTrackNumber());
+                    trackNumber = String.valueOf(track.getDiscNumber()) + '-' + track.getTrackNumber();
                 } else {
                     trackNumber = String.valueOf(track.getTrackNumber());
                 }
@@ -250,8 +254,9 @@ public class FileListItem extends AbsImageListViewItem {
 
     /**
      * Extracts the information from a MPDDirectory
+     *
      * @param directory Directory to show the view for.
-     * @param context Context used for image extraction
+     * @param context   Context used for image extraction
      */
     public void setDirectory(MPDDirectory directory, Context context) {
         mTitleView.setText(directory.getSectionTitle());
@@ -276,8 +281,9 @@ public class FileListItem extends AbsImageListViewItem {
 
     /**
      * Extracts the information from a MPDPlaylist
+     *
      * @param playlist Playlist to show the view for.
-     * @param context Context used for image extraction
+     * @param context  Context used for image extraction
      */
     public void setPlaylist(MPDPlaylist playlist, Context context) {
         mTitleView.setText(playlist.getSectionTitle());
@@ -302,11 +308,12 @@ public class FileListItem extends AbsImageListViewItem {
 
     /**
      * Sets the header of the view (if one is available)
+     *
      * @param header Text to show in the header.
      */
     public void setSectionHeader(String header) {
         if (mIsSectionHeader) {
-                mSectionHeader.setText(header);
+            mSectionHeader.setText(header);
         }
     }
 

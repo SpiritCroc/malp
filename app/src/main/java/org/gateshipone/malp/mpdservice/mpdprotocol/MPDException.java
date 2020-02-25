@@ -63,7 +63,7 @@ public class MPDException extends Exception {
                 subStringStop = error.indexOf(']');
             }
 
-            if (subStringStart != -1 && subStringStop != -1 ) {
+            if (subStringStart != -1 && subStringStop != -1) {
                 substring = error.substring(error.indexOf('[') + 1, error.lastIndexOf('@'));
                 try {
                     mErrorCode = Integer.valueOf(substring);
@@ -75,7 +75,7 @@ public class MPDException extends Exception {
             subStringStart = error.indexOf('@');
             subStringStop = error.indexOf(']');
 
-            if (subStringStart != -1 && subStringStop != -1 ) {
+            if (subStringStart != -1 && subStringStop != -1) {
                 substring = error.substring(error.indexOf('@') + 1, error.lastIndexOf(']'));
                 try {
                     mCommandOffset = Integer.valueOf(substring);
@@ -88,7 +88,7 @@ public class MPDException extends Exception {
 
             subStringStart = error.indexOf('{');
             subStringStop = error.indexOf('}');
-            if (subStringStart != -1 && subStringStop != -1 ) {
+            if (subStringStart != -1 && subStringStop != -1) {
                 substring = error.substring(error.indexOf('{') + 1, error.lastIndexOf('}'));
                 mCommand = substring;
             }
@@ -96,7 +96,7 @@ public class MPDException extends Exception {
             // Get the message from } on.
             subStringStart = error.indexOf('}');
             if (subStringStart != -1) {
-                substring = error.substring(error.lastIndexOf('}') + 2, error.length());
+                substring = error.substring(error.lastIndexOf('}') + 2);
                 mErrorMessage = substring;
             }
         }

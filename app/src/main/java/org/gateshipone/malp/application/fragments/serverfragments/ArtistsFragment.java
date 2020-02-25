@@ -153,7 +153,7 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
      * Called when the fragment is first attached to its context.
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         // This makes sure that the container activity has implemented
@@ -180,6 +180,7 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
      * @param args
      * @return
      */
+    @NonNull
     @Override
     public Loader<List<MPDArtist>> onCreateLoader(int id, Bundle args) {
         // Read albumartists/artists preference
@@ -196,7 +197,7 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
      * @param data   Data of the loader
      */
     @Override
-    public void onLoadFinished(Loader<List<MPDArtist>> loader, List<MPDArtist> data) {
+    public void onLoadFinished(@NonNull Loader<List<MPDArtist>> loader, List<MPDArtist> data) {
         super.onLoadFinished(loader, data);
         // Set the actual data to the adapter.
         mArtistAdapter.swapModel(data);
@@ -223,7 +224,7 @@ public class ArtistsFragment extends GenericMPDFragment<List<MPDArtist>> impleme
      * Create the context menu.
      */
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_artist, menu);
