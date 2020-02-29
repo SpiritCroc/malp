@@ -63,6 +63,7 @@ public class ServerStatisticFragment extends Fragment {
 
     private TextView mServerFeatures;
 
+    private MPDCurrentStatus mLastStatus;
     private ServerStatusHandler mServerStatusHandler;
 
     @Override
@@ -162,8 +163,7 @@ public class ServerStatisticFragment extends Fragment {
         }
     }
 
-    private class DBUpdateBtnListener implements View.OnClickListener {
-
+    private static class DBUpdateBtnListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
             // Update the whole database => no path
@@ -174,14 +174,17 @@ public class ServerStatisticFragment extends Fragment {
     private static class ServerStatusHandler extends MPDStatusChangeHandler {
         WeakReference<ServerStatisticFragment> mFragment;
 
-        public ServerStatusHandler(ServerStatisticFragment fragment) {
+        ServerStatusHandler(ServerStatisticFragment fragment) {
             mFragment = new WeakReference<>(fragment);
         }
 
 
         @Override
         protected void onNewStatusReady(MPDCurrentStatus status) {
-            mFragment.get().showDatabaseUpdating(status.getUpdateDBJob() >= 0);
+            if (mFragment.get().mLastStatus != null && mFragment.get().mLastStatus.getUpdateDBJob() != status.getUpdateDBJob()) {
+                mFragment.get().showDatabaseUpdating(status.getUpdateDBJob() >= 0);
+            }
+            mFragment.get().mLastStatus = status;
         }
 
         @Override
