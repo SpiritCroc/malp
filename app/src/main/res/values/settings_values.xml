@@ -148,6 +148,9 @@
         <item>@string/pref_artist_albums_sort_year_key</item>
     </string-array>
 
+    <string name="pref_slide_animations_key" translatable="false">slide_animations_key</string>
+    <bool name="pref_slide_animations_default">true</bool>
+
     <!--
 
       Artwork specific settings

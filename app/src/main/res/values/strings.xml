@@ -266,6 +266,9 @@
         while playback is active
     </string>
 
+    <string name="preference_slide_animations_title">Slide animations</string>
+    <string name="preference_slide_animations_text">Animate library navigation with slides</string>
+
     <string name="preference_default_view_title">Default view</string>
     <string name="preference_default_view_message">Select default view</string>
     <string name="preference_default_view_summary">Select the default view of the application.</string>

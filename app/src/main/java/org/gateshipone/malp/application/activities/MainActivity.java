@@ -593,8 +593,7 @@ public class MainActivity extends GenericActivity
         // fragment,
         // and add the transaction to the back stack so the user can navigate
         // back
-        newFragment.setEnterTransition(new Slide(Gravity.BOTTOM));
-        newFragment.setExitTransition(new Slide(Gravity.TOP));
+        setupUpwardsSlideTransition(newFragment);
         transaction.replace(R.id.fragment_container, newFragment, AlbumTracksFragment.TAG);
         transaction.addToBackStack("AlbumTracksFragment");
 
@@ -630,8 +629,7 @@ public class MainActivity extends GenericActivity
         newFragment.setArguments(args);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        newFragment.setEnterTransition(new Slide(Gravity.BOTTOM));
-        newFragment.setExitTransition(new Slide(Gravity.TOP));
+        setupUpwardsSlideTransition(newFragment);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -698,8 +696,7 @@ public class MainActivity extends GenericActivity
         newFragment.setArguments(args);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        setupHorizontalSlideTransition(newFragment);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -724,8 +721,7 @@ public class MainActivity extends GenericActivity
         newFragment.setArguments(args);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        setupHorizontalSlideTransition(newFragment);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -850,8 +846,7 @@ public class MainActivity extends GenericActivity
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        setupHorizontalSlideTransition(newFragment);
 
         transaction.addToBackStack("FilesFragment" + path);
         transaction.replace(R.id.fragment_container, newFragment);
@@ -859,6 +854,24 @@ public class MainActivity extends GenericActivity
         // Commit the transaction
         transaction.commit();
 
+    }
+
+    private void setupHorizontalSlideTransition(Fragment fragment) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean slideEnabled = sharedPref.getBoolean(getString(R.string.pref_slide_animations_key), getResources().getBoolean(R.bool.pref_slide_animations_default));
+        if (slideEnabled) {
+            fragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
+            fragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        }
+    }
+
+    private void setupUpwardsSlideTransition(Fragment fragment) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean slideEnabled = sharedPref.getBoolean(getString(R.string.pref_slide_animations_key), getResources().getBoolean(R.bool.pref_slide_animations_default));
+        if (slideEnabled) {
+            fragment.setEnterTransition(new Slide(Gravity.BOTTOM));
+            fragment.setExitTransition(new Slide(Gravity.TOP));
+        }
     }
 
     @Override
@@ -880,8 +893,7 @@ public class MainActivity extends GenericActivity
         newFragment.setArguments(args);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        setupHorizontalSlideTransition(newFragment);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -918,8 +930,7 @@ public class MainActivity extends GenericActivity
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        setupHorizontalSlideTransition(newFragment);
 
         transaction.addToBackStack("ArtworkSettingsFragment");
         transaction.replace(R.id.fragment_container, newFragment);
