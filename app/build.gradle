@@ -43,7 +43,7 @@ android {
     }
     compileSdkVersion 28
     defaultConfig {
-        applicationId "org.gateshipone.malp"
+        applicationId "de.spiritcroc.malp"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 32
