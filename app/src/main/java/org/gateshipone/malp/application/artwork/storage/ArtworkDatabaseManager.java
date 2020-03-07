@@ -31,6 +31,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import org.gateshipone.malp.application.utils.FileUtils;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 import java.io.IOException;
@@ -47,13 +48,15 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
     /**
      * The version of the database
      */
-    private static final int DATABASE_VERSION = 22;
+    private static final int DATABASE_VERSION = 23;
 
     private static ArtworkDatabaseManager mInstance;
 
     private static final String DIRECTORY_ALBUM_IMAGES = "albumArt";
 
     private static final String DIRECTORY_ARTIST_IMAGES = "artistArt";
+
+    private static final String DIRECTORY_DIRECTORY_IMAGES = "directoryArt";
 
     private final Context mApplicationContext;
 
@@ -79,14 +82,23 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         AlbumArtTable.createTable(db);
         ArtistArtTable.createTable(db);
+        DirectoryArtTable.createTable(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion == 22) {
-            AlbumArtTable.dropTable(db);
-            ArtistArtTable.dropTable(db);
-            onCreate(db);
+        if (newVersion == DATABASE_VERSION) {
+            if (oldVersion == 22) {
+                DirectoryArtTable.createTable(db);
+            } else {
+                AlbumArtTable.dropTable(db);
+                ArtistArtTable.dropTable(db);
+                if (oldVersion >= 23) {
+                    // Directory table added in database version 23
+                    DirectoryArtTable.dropTable(db);
+                }
+                onCreate(db);
+            }
         }
     }
 
@@ -228,6 +240,51 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
     }
 
     /**
+     * Tries to fetch an image for given directory
+     *
+     * @param directory The track to search for
+     * @return The path to the raw image file.
+     * @throws ImageNotFoundException If the image is not in the database and it was not searched for before.
+     */
+    public synchronized String getDirectoryImage(final MPDDirectory directory) throws ImageNotFoundException {
+        final SQLiteDatabase database = getReadableDatabase();
+
+        final String path = directory.getPath();
+
+        String selection;
+        String[] selectionArguments;
+
+        selection = DirectoryArtTable.COLUMN_DIRECTORY_PATH + "=?";
+        selectionArguments = new String[]{path};
+
+        final Cursor requestCursor = database.query(DirectoryArtTable.TABLE_NAME, new String[]{DirectoryArtTable.COLUMN_DIRECTORY_PATH, DirectoryArtTable.COLUMN_IMAGE_FILE_PATH, DirectoryArtTable.COLUMN_IMAGE_NOT_FOUND},
+                selection, selectionArguments, null, null, null);
+
+        // Check if an image was found
+        if (requestCursor.moveToFirst()) {
+            // If the not_found flag is set then return null here, to indicate that the image is not here but was searched for before.
+            if (requestCursor.getInt(requestCursor.getColumnIndexOrThrow(DirectoryArtTable.COLUMN_IMAGE_NOT_FOUND)) == 1) {
+                requestCursor.close();
+                database.close();
+                return null;
+            }
+
+            // get the filename for the image
+            final String artworkFilename = requestCursor.getString(requestCursor.getColumnIndexOrThrow(DirectoryArtTable.COLUMN_IMAGE_FILE_PATH));
+
+            requestCursor.close();
+            database.close();
+
+            return FileUtils.getFullArtworkFilePath(mApplicationContext, artworkFilename, DIRECTORY_DIRECTORY_IMAGES);
+        }
+
+        // If we reach this, no entry was found for the given request. Throw an exception
+        requestCursor.close();
+        database.close();
+        throw new ImageNotFoundException();
+    }
+
+    /**
      * Inserts the given byte[] image to the artists table.
      *
      * @param artist Artist for the associated image byte[].
@@ -320,6 +377,48 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
     }
 
     /**
+     * Inserts the given byte[] image to the directory table.
+     *
+     * @param directory Directory for the associated image byte[].
+     * @param image byte[] containing the raw image that was downloaded. This can be null in which case
+     *              the database entry will have the not_found flag set.
+     */
+    public synchronized void insertDirectoryImage(final MPDDirectory directory, final byte[] image) {
+        final SQLiteDatabase database = getWritableDatabase();
+
+        final String path = directory.getPath();
+
+        String artworkFilename = null;
+        if (image != null) {
+            try {
+                artworkFilename = FileUtils.createSHA256HashForString(path) + ".jpg";
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            try {
+                FileUtils.saveArtworkFile(mApplicationContext, artworkFilename, DIRECTORY_DIRECTORY_IMAGES, image);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
+        final ContentValues values = new ContentValues();
+        values.put(DirectoryArtTable.COLUMN_DIRECTORY_PATH, directory.getPath());
+        values.put(DirectoryArtTable.COLUMN_IMAGE_FILE_PATH, artworkFilename);
+
+        // If null was given as byte[] set the not_found flag for this entry.
+        values.put(DirectoryArtTable.COLUMN_IMAGE_NOT_FOUND, image == null ? 1 : 0);
+
+        database.replace(DirectoryArtTable.TABLE_NAME, "", values);
+
+        database.close();
+    }
+
+
+    /**
      * Removes all lines from the artists table
      */
     public synchronized void clearArtistImages() {
@@ -344,6 +443,20 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
 
         FileUtils.removeArtworkDirectory(mApplicationContext, DIRECTORY_ALBUM_IMAGES);
     }
+
+    /**
+     * Removes all lines from the directories table
+     */
+    public synchronized void clearDirectoryImages() {
+        SQLiteDatabase database = getWritableDatabase();
+
+        database.delete(DirectoryArtTable.TABLE_NAME, null, null);
+
+        database.close();
+
+        FileUtils.removeArtworkDirectory(mApplicationContext, DIRECTORY_DIRECTORY_IMAGES);
+    }
+
 
     public synchronized void clearBlockedArtistImages() {
         SQLiteDatabase database = getWritableDatabase();
@@ -425,5 +538,9 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
         requestCursor.close();
         database.close();
     }
+
+    /*
+    TODO removeDirectoryImage and reset image functionality for directories
+     */
 
 }

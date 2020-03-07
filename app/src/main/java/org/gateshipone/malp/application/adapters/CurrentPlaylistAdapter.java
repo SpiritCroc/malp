@@ -313,7 +313,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
             if (type == VIEW_TYPES.TYPE_TRACK_ITEM) {
                 if (convertView == null) {
                     // If not create a new Listitem
-                    convertView = new FileListItem(mContext, false, null);
+                    convertView = new FileListItem(mContext, false, this);
                 }
                 FileListItem tracksListViewItem = (FileListItem) convertView;
                 tracksListViewItem.setTrack(track, true);
@@ -350,7 +350,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
             // the running fetch.
             if (convertView == null) {
                 // If not create a new Listitem
-                convertView = new FileListItem(mContext, false, null);
+                convertView = new FileListItem(mContext, false, this);
             } else {
                 FileListItem tracksListViewItem = (FileListItem) convertView;
                 tracksListViewItem.setTrack(null, true);

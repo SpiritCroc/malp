@@ -46,6 +46,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
+import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.callbacks.AddPathToPlaylist;
 import org.gateshipone.malp.application.callbacks.PlaylistCallback;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
@@ -179,7 +180,17 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
                 }
             }
         }
+
+        ArtworkManager.getInstance(getContext().getApplicationContext()).registerOnNewDirectoryImageListener((ArtworkManager.onNewDirectoryImageListener) mAdapter);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ArtworkManager.getInstance(getContext().getApplicationContext()).unregisterOnNewDirectoryImageListener((ArtworkManager.onNewDirectoryImageListener) mAdapter);
+    }
+
 
     /**
      * Called when the observed {@link androidx.lifecycle.LiveData} is changed.

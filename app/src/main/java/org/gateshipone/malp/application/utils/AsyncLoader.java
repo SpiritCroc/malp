@@ -31,6 +31,7 @@ import org.gateshipone.malp.application.artwork.storage.ImageNotFoundException;
 import org.gateshipone.malp.application.listviewitems.CoverLoadable;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -110,6 +111,20 @@ public class AsyncLoader extends AsyncTask<AsyncLoader.CoverViewHolder, Void, Bi
                     // If not set it as ongoing and request the image fetch.
                     mCover.artworkManager.fetchImage(track);
                     track.setFetching(true);
+                }
+            }
+        } else if (mCover.modelItem instanceof MPDDirectory) {
+            MPDDirectory directory = (MPDDirectory) mCover.modelItem;
+            try {
+                // Check if image is available. If it is not yet fetched it will throw an exception.
+                // If it was already searched for and not found, this will be null.
+                image = mCover.artworkManager.getImage(directory, mCover.imageDimension.first, mCover.imageDimension.second, false);
+            } catch (ImageNotFoundException e) {
+                // Check if fetching for this item is already ongoing
+                if (!directory.getFetching()) {
+                    // If not set it as ongoing and request the image fetch.
+                    mCover.artworkManager.fetchImage(directory);
+                    directory.setFetching(true);
                 }
             }
         }

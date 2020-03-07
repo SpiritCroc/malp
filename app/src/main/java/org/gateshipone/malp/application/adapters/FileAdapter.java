@@ -27,6 +27,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.listviewitems.FileListItem;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
@@ -38,7 +39,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 /**
  * Adapter class that creates all the listitems for an album track view
  */
-public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
+public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> implements ArtworkManager.onNewDirectoryImageListener {
     private static final String TAG = FileAdapter.class.getSimpleName();
     private final Context mContext;
 
@@ -55,6 +56,10 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
     private final boolean mShowSectionItems;
 
     private final boolean mUseTags;
+
+    private int mListItemHeight;
+
+    private ArtworkManager mArtworkManager;
 
     private enum VIEW_TYPES {
         TYPE_FILE_ITEM,
@@ -90,6 +95,10 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
         mShowSectionItems = showSectionItems;
 
         mUseTags = useTags;
+
+        mListItemHeight = (int)context.getResources().getDimension(R.dimen.material_list_item_height);
+
+        mArtworkManager = ArtworkManager.getInstance(context.getApplicationContext());
 
         // Disable sections as they cause troubles for directories,files,playlists order and repeating starting letters
         enableSections(false);
@@ -162,7 +171,7 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
             // Normal file entry
             if (!mShowSectionItems || (VIEW_TYPES.values()[getItemViewType(position)] == VIEW_TYPES.TYPE_FILE_ITEM)) {
                 if (convertView == null) {
-                    convertView = new FileListItem(mContext, mShowIcons, null);
+                    convertView = new FileListItem(mContext, mShowIcons, this);
                 }
                 ((FileListItem) convertView).setTrack(track, mUseTags);
                 if (!mShowTrackNumbers) {
@@ -197,20 +206,37 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
                 return convertView;
             }
         } else if (file instanceof MPDDirectory) {
+            FileListItem listItem;
             if (convertView == null) {
-                convertView = new FileListItem(mContext, mShowIcons, null);
+                listItem = new FileListItem(mContext, mShowIcons, this);
+            } else {
+                listItem = (FileListItem) convertView;
             }
 
-            ((FileListItem) convertView).setDirectory((MPDDirectory) file);
-            return convertView;
+            listItem.setDirectory((MPDDirectory) file);
+
+            // This will prepare the view for fetching the image from the internet if not already saved in local database.
+            listItem.prepareArtworkFetching(mArtworkManager, file);
+
+            // Check if the scroll speed currently is already 0, then start the image task right away.
+            if (mScrollSpeed == 0) {
+                listItem.setImageDimension(mListItemHeight, mListItemHeight);
+                listItem.startCoverImageTask();
+            }
+            return listItem;
         } else if (file instanceof MPDPlaylist) {
             if (convertView == null) {
-                convertView = new FileListItem(mContext, mShowIcons, null);
+                convertView = new FileListItem(mContext, mShowIcons, this);
             }
 
             ((FileListItem) convertView).setPlaylist((MPDPlaylist) file);
             return convertView;
         }
-        return new FileListItem(mContext, mShowIcons, null);
+        return new FileListItem(mContext, mShowIcons, this);
+    }
+
+    @Override
+    public void newDirectoryImage(MPDDirectory directory) {
+        notifyDataSetChanged();
     }
 }

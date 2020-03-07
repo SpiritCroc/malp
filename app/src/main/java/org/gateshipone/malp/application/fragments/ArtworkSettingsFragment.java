@@ -69,6 +69,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
         clearAlbums.setOnPreferenceClickListener(preference -> {
             final Context context = getContext();
             ArtworkDatabaseManager.getInstance(context).clearAlbumImages();
+            ArtworkDatabaseManager.getInstance(context).clearDirectoryImages();
             return true;
         });
 

@@ -54,6 +54,7 @@ import org.gateshipone.malp.application.utils.BitmapUtils;
 import org.gateshipone.malp.application.utils.NetworkUtils;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import org.json.JSONException;
 
@@ -75,6 +76,14 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
     public interface onNewAlbumImageListener {
         void newAlbumImage(MPDAlbum album);
     }
+
+    /**
+     * Interface used for adapters to be notified about data set changes
+     */
+    public interface onNewDirectoryImageListener {
+        void newDirectoryImage(MPDDirectory directory);
+    }
+
 
     /**
      * Broadcast constants
@@ -126,6 +135,11 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
     private final ArrayList<onNewAlbumImageListener> mAlbumListeners;
 
     /**
+     * List of observers that needs updating if a new DirectoryImage is downloaded.
+     */
+    private final ArrayList<onNewDirectoryImageListener> mDirectoryListeners;
+
+    /**
      * Private {@link Context} used for all kinds of things like Broadcasts.
      * It is using the ApplicationContext so it should be safe against
      * memory leaks.
@@ -140,6 +154,7 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
 
         mArtistListeners = new ArrayList<>();
         mAlbumListeners = new ArrayList<>();
+        mDirectoryListeners = new ArrayList<>();
 
         ConnectionStateReceiver receiver = new ConnectionStateReceiver();
         IntentFilter filter = new IntentFilter();
@@ -324,6 +339,31 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
         return null;
     }
 
+    public Bitmap getImage(final MPDDirectory directory, int width, int height, boolean skipCache) throws ImageNotFoundException {
+        if (null == directory || directory.getPath().isEmpty()) {
+            return null;
+        }
+
+        if (!skipCache) {
+            // Try cache first
+            Bitmap cacheBitmap = BitmapCache.getInstance().requestDirectoryBitmap(directory);
+            if (null != cacheBitmap && width <= cacheBitmap.getWidth() && height <= cacheBitmap.getWidth()) {
+                return cacheBitmap;
+            }
+        }
+
+        final String image = mDBManager.getDirectoryImage(directory);
+
+        // Checks if the database has an image for the requested album
+        if (null != image) {
+            // Create a bitmap from the data blob in the database
+            Bitmap bm = BitmapUtils.decodeSampledBitmapFromFile(image, width, height);
+            BitmapCache.getInstance().putDirectoryBitmap(directory, bm);
+            return bm;
+        }
+        return null;
+    }
+
     /**
      * Starts an asynchronous fetch for the image of the given artist.
      *
@@ -458,6 +498,28 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
         fetchImage(album, imageSavedCallback, errorCallback, true);
     }
 
+    public void fetchImage(final MPDDirectory directory) {
+        fetchImage(directory, this, this);
+    }
+
+    public void fetchImage(final MPDDirectory directory,
+                           final InsertImageTask.ImageSavedCallback imageSavedCallback,
+                           final ArtProvider.ArtFetchError errorCallback) {
+        final ArtworkRequestModel requestModel = new ArtworkRequestModel(directory);
+
+        if (MPDAlbumImageProvider.getInstance().getActive()) {
+            // Check if MPD cover transfer is activated
+            MPDAlbumImageProvider.getInstance().fetchImage(requestModel,
+                    response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
+                    errorCallback);
+        } else if (HTTPAlbumImageProvider.getInstance(mApplicationContext).getActive()) {
+            // Check if user-specified HTTP cover download is activated
+            HTTPAlbumImageProvider.getInstance(mApplicationContext).fetchImage(requestModel,
+                    response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
+                    errorCallback);
+        }
+    }
+
     /**
      * Registers a listener that gets notified when a new artist image was added to the dataset.
      *
@@ -510,6 +572,32 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
         }
     }
 
+    /**
+     * Registers a listener that gets notified when a new directory image was added to the dataset.
+     *
+     * @param listener Listener to register
+     */
+    public void registerOnNewDirectoryImageListener(onNewDirectoryImageListener listener) {
+        if (null != listener) {
+            synchronized (mDirectoryListeners) {
+                mDirectoryListeners.add(listener);
+            }
+        }
+    }
+
+    /**
+     * Unregisters a listener that got notified when a new directory image was added to the dataset.
+     *
+     * @param listener Listener to unregister
+     */
+    public void unregisterOnNewDirectoryImageListener(onNewDirectoryImageListener listener) {
+        if (null != listener) {
+            synchronized (mDirectoryListeners) {
+                mDirectoryListeners.remove(listener);
+            }
+        }
+    }
+
     @Override
     public void onImageSaved(final ArtworkRequestModel artworkRequestModel) {
         broadcastNewArtworkInfo(artworkRequestModel);
@@ -537,6 +625,13 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
                 synchronized (mAlbumListeners) {
                     for (onNewAlbumImageListener albumListener : mAlbumListeners) {
                         albumListener.newAlbumImage(album);
+                    }
+                }
+                break;
+            case DIRECTORY:
+                synchronized (mDirectoryListeners) {
+                    for (onNewDirectoryImageListener directoryListener : mDirectoryListeners) {
+                        directoryListener.newDirectoryImage((MPDDirectory) artworkRequestModel.getGenericModel());
                     }
                 }
                 break;

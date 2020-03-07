@@ -67,6 +67,7 @@ import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import org.json.JSONException;
@@ -395,6 +396,16 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
                     return true;
                 }
             }
+            break;
+            case DIRECTORY: {
+                try {
+                    mDatabaseManager.getDirectoryImage((MPDDirectory) requestModel.getGenericModel());
+                } catch (ImageNotFoundException e) {
+                    return true;
+                }
+
+            }
+            break;
         }
         return false;
     }
@@ -409,6 +420,9 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
                 break;
             case TRACK:
                 mArtworkManager.fetchImage((MPDTrack) requestModel.getGenericModel(), this, this, skipLocal);
+                break;
+            case DIRECTORY:
+                mArtworkManager.fetchImage((MPDDirectory) requestModel.getGenericModel(), this, this);
                 break;
         }
     }

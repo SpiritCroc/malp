@@ -98,7 +98,13 @@ public class HTTPAlbumImageProvider extends ArtProvider {
                 // not used for this provider
                 break;
             case TRACK:
-                final String url = resolveRegex(model.getPath());
+            case DIRECTORY:
+                final String url;
+                if (model.getType() == ArtworkRequestModel.ArtworkRequestType.DIRECTORY) {
+                    url = resolveDirectoryRegex(model.getPath());
+                } else {
+                    url = resolveRegex(model.getPath());
+                }
 
                 // Check if URL ends with a file or directory
                 if (url.endsWith("/")) {
@@ -139,9 +145,13 @@ public class HTTPAlbumImageProvider extends ArtProvider {
     }
 
     private String resolveRegex(String path) {
+        return resolveDirectoryRegex(FormatHelper.getDirectoryFromPath(path));
+    }
+
+    private String resolveDirectoryRegex(String directory) {
         String result;
 
-        result = mRegex.replaceAll("%d", Uri.encode(FormatHelper.getDirectoryFromPath(path)));
+        result = mRegex.replaceAll("%d", Uri.encode(directory));
 
         return result;
     }
