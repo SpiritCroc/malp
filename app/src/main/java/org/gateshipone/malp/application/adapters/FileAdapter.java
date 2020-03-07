@@ -178,6 +178,17 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> implements 
                     ((FileListItem) convertView).setTrackNumber(String.valueOf(position + 1));
                 }
 
+                // This will prepare the view for fetching the image from the internet if not already saved in local database.
+                // Dummy MPDAlbum
+                MPDAlbum tmpAlbum = track.getAlbum();
+                ((FileListItem) convertView).prepareArtworkFetching(ArtworkManager.getInstance(mContext.getApplicationContext()), tmpAlbum);
+
+                // Start async image loading if not scrolling at the moment. Otherwise the ScrollSpeedListener
+                // starts the loading.
+                if (mScrollSpeed == 0) {
+                    ((FileListItem) convertView).startCoverImageTask();
+                }
+
                 return convertView;
             } else {
                 // Section items
