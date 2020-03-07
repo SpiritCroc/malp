@@ -32,6 +32,7 @@ import org.gateshipone.malp.application.artwork.network.responses.ImageResponse;
 import org.gateshipone.malp.application.artwork.storage.ArtworkDatabaseManager;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 import java.io.ByteArrayOutputStream;
@@ -126,6 +127,9 @@ public class InsertImageTask extends AsyncTask<ImageResponse, Object, ArtworkReq
                 fakeAlbum.setArtistName(artist);
                 fakeAlbum.setMBID(track.getTrackAlbumMBID());
                 artworkDatabase.insertAlbumImage(mApplicationContext, fakeAlbum, image);
+                break;
+            case DIRECTORY:
+                artworkDatabase.insertDirectoryImage(mApplicationContext, (MPDDirectory) model.getGenericModel(), image);
                 break;
         }
     }

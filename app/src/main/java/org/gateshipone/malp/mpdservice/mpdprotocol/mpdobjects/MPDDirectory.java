@@ -27,6 +27,8 @@ import androidx.annotation.NonNull;
 
 public class MPDDirectory extends MPDFileEntry implements MPDGenericItem {
 
+    private boolean mImageFetching;
+
     public MPDDirectory(@NonNull String path) {
         super(path);
     }
@@ -39,5 +41,13 @@ public class MPDDirectory extends MPDFileEntry implements MPDGenericItem {
 
     public int compareTo(@NonNull MPDDirectory another) {
         return getSectionTitle().toLowerCase().compareTo(another.getSectionTitle().toLowerCase());
+    }
+
+    public synchronized void setFetching(boolean fetching) {
+        mImageFetching = fetching;
+    }
+
+    public synchronized boolean getFetching() {
+        return mImageFetching;
     }
 }

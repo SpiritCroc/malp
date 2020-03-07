@@ -27,6 +27,7 @@ import android.net.Uri;
 import org.gateshipone.malp.application.utils.FormatHelper;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -35,7 +36,8 @@ public class ArtworkRequestModel {
     public enum ArtworkRequestType {
         ALBUM,
         ARTIST,
-        TRACK
+        TRACK,
+        DIRECTORY
     }
 
     private MPDGenericItem mModel;
@@ -52,6 +54,10 @@ public class ArtworkRequestModel {
 
     public ArtworkRequestModel(MPDTrack trackModel) {
         this(trackModel, ArtworkRequestType.TRACK);
+    }
+
+    public ArtworkRequestModel(MPDDirectory directoryModel) {
+        this(directoryModel, ArtworkRequestType.DIRECTORY);
     }
 
     private ArtworkRequestModel(MPDGenericItem model, ArtworkRequestType type) {
@@ -82,6 +88,7 @@ public class ArtworkRequestModel {
                 }
                 break;
             case TRACK:
+            case DIRECTORY:
                 break;
         }
         return null;
@@ -94,6 +101,8 @@ public class ArtworkRequestModel {
                 break;
             case TRACK:
                 return ((MPDTrack) mModel).getPath();
+            case DIRECTORY:
+                return ((MPDDirectory) mModel).getPath();
         }
         return null;
     }
@@ -107,6 +116,7 @@ public class ArtworkRequestModel {
                 break;
             case ARTIST:
             case TRACK:
+            case DIRECTORY:
                 break;
         }
 
@@ -122,6 +132,7 @@ public class ArtworkRequestModel {
                 break;
             case ARTIST:
             case TRACK:
+            case DIRECTORY:
                 break;
         }
 
@@ -137,6 +148,7 @@ public class ArtworkRequestModel {
                 break;
             case ARTIST:
             case TRACK:
+            case DIRECTORY:
                 break;
         }
 
@@ -154,6 +166,7 @@ public class ArtworkRequestModel {
                 artistName = ((MPDArtist) mModel).getArtistName();
                 break;
             case TRACK:
+            case DIRECTORY:
                 break;
         }
 
@@ -171,6 +184,7 @@ public class ArtworkRequestModel {
                 encodedArtistName = Uri.encode(((MPDArtist) mModel).getArtistName().replaceAll("/", " "));
                 break;
             case TRACK:
+            case DIRECTORY:
                 break;
         }
 
@@ -188,6 +202,7 @@ public class ArtworkRequestModel {
                 escapedArtistName = FormatHelper.escapeSpecialCharsLucene(((MPDArtist) mModel).getArtistName());
                 break;
             case TRACK:
+            case DIRECTORY:
                 break;
         }
 
@@ -207,6 +222,9 @@ public class ArtworkRequestModel {
                 break;
             case TRACK:
                 loggingString = ((MPDTrack) mModel).getTrackAlbum();
+                break;
+            case DIRECTORY:
+                loggingString = ((MPDDirectory) mModel).getPath();
                 break;
         }
 

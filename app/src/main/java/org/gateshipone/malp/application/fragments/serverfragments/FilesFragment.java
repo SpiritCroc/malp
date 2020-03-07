@@ -46,6 +46,7 @@ import androidx.loader.content.Loader;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
+import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.callbacks.AddPathToPlaylist;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.callbacks.PlaylistCallback;
@@ -171,7 +172,17 @@ public class FilesFragment extends GenericMPDFragment<List<MPDFileEntry>> implem
                 }
             }
         }
+
+        ArtworkManager.getInstance(getContext()).registerOnNewDirectoryImageListener(mAdapter);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ArtworkManager.getInstance(getContext()).unregisterOnNewDirectoryImageListener(mAdapter);
+    }
+
 
     /**
      * Called when the fragment is first attached to its context.

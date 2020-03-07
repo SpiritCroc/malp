@@ -27,6 +27,7 @@ import android.util.Log;
 
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 import androidx.annotation.NonNull;
@@ -55,6 +56,11 @@ public class BitmapCache {
      * Hash prefix for artist images
      */
     private static final String ARTIST_PREFIX = "B_";
+
+    /**
+     * Hash prefix for directory images
+     */
+    private static final String DIRECTORY_PREFIX = "C_";
 
     /**
      * Private cache instance
@@ -107,6 +113,16 @@ public class BitmapCache {
     }
 
     /**
+     * Tries to get a directory image from the cache
+     *
+     * @param directory Directory object to use for cache key
+     * @return Bitmap if cache hit, null otherwise
+     */
+    public synchronized Bitmap requestDirectoryBitmap(final MPDDirectory directory) {
+        return mCache.get(getDirectoryHash(directory));
+    }
+
+    /**
      * Puts an album image to the cache
      *
      * @param album Album object to use for cache key
@@ -128,6 +144,18 @@ public class BitmapCache {
     public synchronized void putTrackBitmap(final MPDTrack track, final Bitmap bm) {
         if (bm != null) {
             mCache.put(getAlbumHash(track), bm);
+        }
+    }
+
+    /**
+     * Puts a directory image to the cache.
+     *
+     * @param directory Track object to use for cache key
+     * @param bm        Bitmap to store in cache
+     */
+    public synchronized void putDirectoryBitmap(final MPDDirectory directory, final Bitmap bm) {
+        if (bm != null) {
+            mCache.put(getDirectoryHash(directory), bm);
         }
     }
 
@@ -193,6 +221,17 @@ public class BitmapCache {
      */
     private String getAlbumHashMBID(final String mbid) {
         return ALBUM_PREFIX + mbid;
+    }
+
+    /**
+     * Private hash method for cache key
+     *
+     * @param directory Directory to calculate the key from
+     * @return Hash string for cache key
+     */
+    private String getDirectoryHash(final MPDDirectory directory) {
+        final String path = directory.getPath();
+        return DIRECTORY_PREFIX + path;
     }
 
     /**

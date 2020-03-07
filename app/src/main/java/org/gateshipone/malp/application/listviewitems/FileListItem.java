@@ -28,11 +28,13 @@ import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.ScrollSpeedAdapter;
+import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.utils.FormatHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
@@ -67,8 +69,8 @@ public class FileListItem extends AbsImageListViewItem {
      * @param context  Context used for creation of View
      * @param showIcon If left file/dir icon should be shown. It is not changeable after creation.
      */
-    public FileListItem(Context context, boolean showIcon) {
-        super(context, R.layout.listview_item_file, 0, 0, null);
+    public FileListItem(Context context, boolean showIcon, ScrollSpeedAdapter adapter) {
+        super(context, R.layout.listview_item_file, R.id.item_image, R.id.item_image_viewswitcher, adapter);
 
         mTitleView = findViewById(R.id.track_title);
         mAdditionalInfoView = findViewById(R.id.track_additional_information);
@@ -76,16 +78,17 @@ public class FileListItem extends AbsImageListViewItem {
         mDurationView = findViewById(R.id.track_duration);
         mNumberView = findViewById(R.id.track_number);
 
-        mItemIcon = findViewById(R.id.item_icon);
+        mItemIcon = findViewById(R.id.item_image_placeholder);
         mTextLayout = findViewById(R.id.item_track_text_layout);
         mIsSectionHeader = false;
 
         mShowIcon = showIcon;
+        ViewSwitcher viewSwitcher = findViewById(R.id.item_image_viewswitcher);
         if (showIcon) {
-            mItemIcon.setVisibility(VISIBLE);
-            mTextLayout.setPadding(0, mTextLayout.getPaddingTop(), mTextLayout.getPaddingRight(), mTextLayout.getBottom());
+            viewSwitcher.setVisibility(VISIBLE);
+            //mTextLayout.setPadding(0, mTextLayout.getPaddingTop(), mTextLayout.getPaddingRight(), mTextLayout.getBottom());
         } else {
-            mItemIcon.setVisibility(GONE);
+            viewSwitcher.setVisibility(GONE);
         }
 
         /* Show loading text */
@@ -118,14 +121,15 @@ public class FileListItem extends AbsImageListViewItem {
         mDurationView = findViewById(R.id.track_duration);
         mNumberView = findViewById(R.id.track_number);
 
-        mItemIcon = findViewById(R.id.item_icon);
+        mItemIcon = findViewById(R.id.item_image_placeholder);
         mTextLayout = findViewById(R.id.item_track_text_layout);
         mShowIcon = showIcon;
+        ViewSwitcher viewSwitcher = findViewById(R.id.item_image_viewswitcher);
         if (showIcon) {
-            mItemIcon.setVisibility(VISIBLE);
-            mTextLayout.setPadding(0, mTextLayout.getPaddingTop(), mTextLayout.getPaddingRight(), mTextLayout.getBottom());
+            viewSwitcher.setVisibility(VISIBLE);
+            //mTextLayout.setPadding(0, mTextLayout.getPaddingTop(), mTextLayout.getPaddingRight(), mTextLayout.getBottom());
         } else {
-            mItemIcon.setVisibility(GONE);
+            viewSwitcher.setVisibility(GONE);
         }
 
         /* Show loading text */

@@ -297,7 +297,7 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
             if (type == VIEW_TYPES.TYPE_TRACK_ITEM) {
                 if (convertView == null) {
                     // If not create a new Listitem
-                    convertView = new FileListItem(mContext, false);
+                    convertView = new FileListItem(mContext, false, this);
                 }
                 FileListItem tracksListViewItem = (FileListItem) convertView;
                 tracksListViewItem.setTrack(track, true, mContext);
@@ -334,7 +334,7 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
             // the running fetch.
             if (convertView == null) {
                 // If not create a new Listitem
-                convertView = new FileListItem(mContext, false);
+                convertView = new FileListItem(mContext, false, this);
             } else {
                 FileListItem tracksListViewItem = (FileListItem) convertView;
                 tracksListViewItem.setTrack(null, true, mContext);
