@@ -73,8 +73,6 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
      */
     private ListView mListView;
 
-    private FABFragmentCallback mFABCallback = null;
-
     private FilesCallback mCallback;
 
     private PlaylistCallback mPlaylistCallback;
@@ -215,14 +213,6 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
             mPlaylistCallback = (PlaylistCallback) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
-        }
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mFABCallback = (FABFragmentCallback) context;
-        } catch (ClassCastException e) {
-            mFABCallback = null;
         }
     }
 

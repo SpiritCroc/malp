@@ -22,7 +22,6 @@
 
 package org.gateshipone.malp.application.fragments.serverfragments;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -36,66 +35,45 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
-import org.gateshipone.malp.application.adapters.AlbumsAdapter;
+import org.gateshipone.malp.application.adapters.AlbumsRecyclerViewAdapter;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.callbacks.AlbumCallback;
-import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.listviewitems.AbsImageListViewItem;
+import org.gateshipone.malp.application.listviewitems.GenericViewItemHolder;
 import org.gateshipone.malp.application.utils.CoverBitmapLoader;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
-import org.gateshipone.malp.application.utils.ScrollSpeedListener;
+import org.gateshipone.malp.application.utils.RecyclerScrollSpeedListener;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.viewmodels.AlbumsViewModel;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
+import org.gateshipone.malp.application.views.MalpRecyclerView;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
 import java.util.List;
 
-public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements AdapterView.OnItemClickListener, CoverBitmapLoader.CoverBitmapListener, ArtworkManager.onNewArtistImageListener {
-    public final static String TAG = AlbumsFragment.class.getSimpleName();
+public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, GenericViewItemHolder> implements CoverBitmapLoader.CoverBitmapListener, ArtworkManager.onNewArtistImageListener, MalpRecyclerView.OnItemClickListener {
+    public final static String TAG = ArtistAlbumsFragment.class.getSimpleName();
 
     /**
      * Definition of bundled extras
      */
-    public static final String BUNDLE_STRING_EXTRA_ARTISTNAME = "artistname";
+    private static final String BUNDLE_STRING_EXTRA_ARTIST = "artist";
 
-    public static final String BUNDLE_STRING_EXTRA_ARTIST = "artist";
-
-    public static final String BUNDLE_STRING_EXTRA_PATH = "album_path";
-
-    public static final String BUNDLE_STRING_EXTRA_BITMAP = "bitmap";
-
-    /**
-     * Save the root GridView for later usage.
-     */
-    private AbsListView mAdapterView;
-
-    /**
-     * Save the last position here. Gets reused when the user returns to this view after selecting sme
-     * albums.
-     */
-    private int mLastPosition = -1;
-
-    private String mAlbumsPath;
+    private static final String BUNDLE_STRING_EXTRA_BITMAP = "bitmap";
 
     private MPDArtist mArtist;
 
     private AlbumCallback mAlbumSelectCallback;
-
-    private boolean mUseList = false;
 
     private boolean mUseArtistSort;
 
@@ -105,53 +83,61 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
     private MPDAlbum.MPD_ALBUM_SORT_ORDER mSortOrder;
 
+    /**
+     * Save the last position here. Gets reused when the user returns to this view after selecting sme
+     * albums.
+     */
+    private int mLastPosition = -1;
+
+    public static ArtistAlbumsFragment newInstance(@NonNull final MPDArtist artist, @Nullable final Bitmap bitmap) {
+        final Bundle args = new Bundle();
+        args.putParcelable(BUNDLE_STRING_EXTRA_ARTIST, artist);
+        if (bitmap != null) {
+            args.putParcelable(BUNDLE_STRING_EXTRA_BITMAP, bitmap);
+        }
+
+        final ArtistAlbumsFragment fragment = new ArtistAlbumsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.recycler_list_refresh, container, false);
+
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         String libraryView = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
 
-        if (libraryView.equals(getString(R.string.pref_library_view_list_key))) {
-            mUseList = true;
-        }
+        final boolean useList = libraryView.equals(getString(R.string.pref_library_view_list_key));
 
-        View rootView;
-        // get gridview
-        if (mUseList) {
-            rootView = inflater.inflate(R.layout.listview_layout_refreshable, container, false);
-            mAdapterView = (ListView) rootView.findViewById(R.id.main_listview);
+        mRecyclerView = rootView.findViewById(R.id.recycler_view);
+
+        mAdapter = new AlbumsRecyclerViewAdapter(getContext().getApplicationContext(), useList);
+
+        if (useList) {
+            mRecyclerView.setAdapter(mAdapter);
+
+            setLinearLayoutManagerAndDecoration();
         } else {
-            // Inflate the layout for this fragment
-            rootView = inflater.inflate(R.layout.fragment_gridview, container, false);
-            mAdapterView = (GridView) rootView.findViewById(R.id.grid_refresh_gridview);
+            mRecyclerView.setAdapter(mAdapter);
+
+            setGridLayoutManagerAndDecoration();
         }
 
+        mRecyclerView.addOnScrollListener(new RecyclerScrollSpeedListener(mAdapter));
+        mRecyclerView.addOnItemClicklistener(this);
+
+        registerForContextMenu(mRecyclerView);
         mSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, getContext());
 
         mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
 
-        mAdapter = new AlbumsAdapter(getActivity(), mAdapterView, mUseList);
-
         /* Check if an artistname was given in the extras */
         Bundle args = getArguments();
-        if (null != args) {
-            mAlbumsPath = args.getString(BUNDLE_STRING_EXTRA_PATH);
-            mArtist = args.getParcelable(BUNDLE_STRING_EXTRA_ARTIST);
-            mBitmap = args.getParcelable(BUNDLE_STRING_EXTRA_BITMAP);
-        } else {
-            mAlbumsPath = "";
-            // Create dummy album
-            mArtist = new MPDArtist("");
-        }
-
-        mAdapterView.setAdapter(mAdapter);
-        mAdapterView.setOnItemClickListener(this);
-        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter, mAdapterView));
-
-        // register for context menu
-        registerForContextMenu(mAdapterView);
-
+        mArtist = args.getParcelable(BUNDLE_STRING_EXTRA_ARTIST);
+        mBitmap = args.getParcelable(BUNDLE_STRING_EXTRA_BITMAP);
 
         setHasOptionsMenu(true);
 
@@ -172,7 +158,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
     @Override
     GenericViewModel<MPDAlbum> getViewModel() {
-        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(getActivity().getApplication(), mArtist == null ? "" : mArtist.getArtistName(), mAlbumsPath)).get(AlbumsViewModel.class);
+        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(getActivity().getApplication(), mArtist.getArtistName(), null)).get(AlbumsViewModel.class);
     }
 
     @Override
@@ -182,7 +168,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
         setupToolbarAndStuff();
 
         ArtworkManager.getInstance(getContext()).registerOnNewArtistImageListener(this);
-        ArtworkManager.getInstance(getContext()).registerOnNewAlbumImageListener((AlbumsAdapter) mAdapter);
+        ArtworkManager.getInstance(getContext()).registerOnNewAlbumImageListener((AlbumsRecyclerViewAdapter) mAdapter);
     }
 
     /**
@@ -214,7 +200,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
         // Reset old scroll position
         if (mLastPosition >= 0) {
-            mAdapterView.setSelection(mLastPosition);
+            mRecyclerView.getLayoutManager().scrollToPosition(mLastPosition);
             mLastPosition = -1;
         }
     }
@@ -224,7 +210,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
         super.onPause();
 
         ArtworkManager.getInstance(getContext()).unregisterOnNewArtistImageListener(this);
-        ArtworkManager.getInstance(getContext()).unregisterOnNewAlbumImageListener((AlbumsAdapter) mAdapter);
+        ArtworkManager.getInstance(getContext()).unregisterOnNewAlbumImageListener((AlbumsRecyclerViewAdapter) mAdapter);
     }
 
     /**
@@ -245,7 +231,8 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        MalpRecyclerView.RecyclerViewContextMenuInfo info =
+                (MalpRecyclerView.RecyclerViewContextMenuInfo) item.getMenuInfo();
 
         if (info == null) {
             return super.onContextItemSelected(item);
@@ -321,11 +308,13 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemClick(int position) {
         mLastPosition = position;
 
-        MPDAlbum album = (MPDAlbum) mAdapter.getItem(position);
+        MPDAlbum album = mAdapter.getItem(position);
         Bitmap bitmap = null;
+
+        final View view = mRecyclerView.getChildAt(position);
 
         // Check if correct view type, to be safe
         if (view instanceof AbsImageListViewItem) {
@@ -339,7 +328,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
             album.setArtistSortName(mArtist.getArtistName());
         }
 
-        // Check if the album already has an artist set. If not use the artist of the fragment
+        // send the event to the host activity
         mAlbumSelectCallback.onAlbumSelected(album, bitmap);
     }
 
@@ -388,18 +377,6 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
                         }
                     });
                 }
-            } else if (null != mAlbumsPath && !mAlbumsPath.equals("")) {
-                String lastPath = mAlbumsPath;
-                String[] pathSplit = mAlbumsPath.split("/");
-                if (pathSplit.length > 0) {
-                    lastPath = pathSplit[pathSplit.length - 1];
-                }
-                mFABCallback.setupFAB(true, v -> MPDQueryHandler.playAlbumsInPath(mAlbumsPath));
-                mFABCallback.setupToolbar(lastPath, false, false, false);
-            } else {
-                mFABCallback.setupFAB(false, null);
-                mFABCallback.setupToolbar(getString(R.string.app_name), true, true, false);
-
             }
         }
     }
@@ -457,13 +434,5 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
      */
     private void enqueueArtist() {
         MPDQueryHandler.addArtist(mArtist.getArtistName(), mSortOrder);
-    }
-
-    public void applyFilter(String name) {
-        mAdapter.applyFilter(name);
-    }
-
-    public void removeFilter() {
-        mAdapter.removeFilter();
     }
 }

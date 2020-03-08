@@ -45,7 +45,6 @@ import androidx.lifecycle.ViewModelProvider;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.ArtistsAdapter;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
-import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.listviewitems.AbsImageListViewItem;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ScrollSpeedListener;
@@ -70,11 +69,7 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
      */
     private int mLastPosition = -1;
 
-
     private ArtistSelectedCallback mSelectedCallback;
-
-
-    private FABFragmentCallback mFABCallback = null;
 
     private boolean mUseList = false;
 
@@ -169,14 +164,6 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
             mSelectedCallback = (ArtistSelectedCallback) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
-        }
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mFABCallback = (FABFragmentCallback) context;
-        } catch (ClassCastException e) {
-            mFABCallback = null;
         }
     }
 

@@ -24,18 +24,36 @@ package org.gateshipone.malp.application.adapters;
 
 
 import android.os.AsyncTask;
-import androidx.core.util.Pair;
+import android.widget.BaseAdapter;
 import android.widget.SectionIndexer;
+
+import androidx.core.util.Pair;
+
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
-
-public abstract class GenericSectionAdapter<T extends MPDGenericItem> extends ScrollSpeedAdapter implements SectionIndexer {
+public abstract class GenericSectionAdapter<T extends MPDGenericItem> extends BaseAdapter implements ScrollSpeedAdapter, SectionIndexer {
     private static final String TAG = "GenericSectionAdapter";
+
+    /**
+     * Variable to store the current scroll speed. Used for image view optimizations
+     */
+    int mScrollSpeed;
+
+    /**
+     * Determines how the new time value affects the average (0.0(new value has no effect) - 1.0(average is only the new value, no smoothing)
+     */
+    private static final float mSmoothingFactor = 0.3f;
+
+    /**
+     * Smoothed average(exponential smoothing) value
+     */
+    private long mAvgImageTime;
+
     /**
      * Variables used for sectioning (fast scroll).
      */
@@ -335,6 +353,7 @@ public abstract class GenericSectionAdapter<T extends MPDGenericItem> extends Sc
      * Allows to enable/disable the support for sections of this adapter.
      * In case of enabling it creates the sections.
      * In case of disabling it will clear the data.
+     *
      * @param enabled
      */
     public void enableSections(boolean enabled) {
@@ -349,5 +368,40 @@ public abstract class GenericSectionAdapter<T extends MPDGenericItem> extends Sc
             mLock.writeLock().unlock();
         }
         notifyDataSetChanged();
+    }
+
+    /**
+     * Sets the scrollspeed in items per second.
+     *
+     * @param speed Items per seconds as Integer.
+     */
+    public void setScrollSpeed(int speed) {
+        mScrollSpeed = speed;
+    }
+
+    /**
+     * Returns the smoothed average loading time of images.
+     * This value is used by the scrollspeed listener to determine if
+     * the scrolling is slow enough to render images (artist, album images)
+     *
+     * @return Average time to load an image in ms
+     */
+    public long getAverageImageLoadTime() {
+        return mAvgImageTime == 0 ? 1 : mAvgImageTime;
+    }
+
+    /**
+     * This method adds new loading times to the smoothed average.
+     * Should only be called from the async cover loader.
+     *
+     * @param time Time in ms to load a image
+     */
+    public void addImageLoadTime(long time) {
+        // Implement exponential smoothing here
+        if (mAvgImageTime == 0) {
+            mAvgImageTime = time;
+        } else {
+            mAvgImageTime = (long) (((1 - mSmoothingFactor) * mAvgImageTime) + (mSmoothingFactor * time));
+        }
     }
 }

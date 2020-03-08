@@ -25,6 +25,7 @@ package org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 /**
@@ -414,6 +415,20 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
     }
 
     /**
+     * Only used for recyclerview adapter as stable id.
+     *
+     * @return The return value of {@link #hashCode()} call.
+     */
+    public long getTrackId() {
+        return hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return (pTrackTitle + pTrackAlbum + pTrackMBID).hashCode();
+    }
+
+    /**
      * Returns either the track title, name or filename depending on which is set.
      */
     @NonNull
@@ -435,8 +450,6 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
     public String getSectionTitle() {
         return pTrackTitle.equals("") ? mPath : pTrackTitle;
     }
-
-
 
     public int indexCompare(MPDTrack compFile) {
         if (!pTrackAlbumMBID.equals(compFile.pTrackAlbumMBID)) {

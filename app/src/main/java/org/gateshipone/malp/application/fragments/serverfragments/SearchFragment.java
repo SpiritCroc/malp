@@ -72,8 +72,6 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
      */
     private ListView mListView;
 
-    private FABFragmentCallback mFABCallback = null;
-
     private Spinner mSelectSpinner;
 
     private SearchView mSearchView;
@@ -157,23 +155,6 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
             showFAB(true);
         } else {
             showFAB(false);
-        }
-    }
-
-    /**
-     * Called when the fragment is first attached to its context.
-     */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mFABCallback = (FABFragmentCallback) context;
-            showFAB(false);
-        } catch (ClassCastException e) {
-            mFABCallback = null;
         }
     }
 

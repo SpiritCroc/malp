@@ -30,6 +30,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import org.gateshipone.malp.BuildConfig;
@@ -64,7 +65,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * This decreases the memory footprint because the adapter is able to clear unneeded list blocks when
  * not longer needed (e.g. the user scrolled away)
  */
-public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements ArtworkManager.onNewAlbumImageListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManager.onNewAlbumImageListener, ScrollSpeedAdapter, SharedPreferences.OnSharedPreferenceChangeListener {
     /**
      * States of list blocks.
      */
@@ -82,6 +83,21 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
         TYPE_SECTION_TRACK_ITEM,
         TYPE_COUNT
     }
+
+    /**
+     * Variable to store the current scroll speed. Used for image view optimizations
+     */
+    private int mScrollSpeed;
+
+    /**
+     * Determines how the new time value affects the average (0.0(new value has no effect) - 1.0(average is only the new value, no smoothing)
+     */
+    private static final float mSmoothingFactor = 0.3f;
+
+    /**
+     * Smoothed average(exponential smoothing) value
+     */
+    private long mAvgImageTime;
 
     /**
      * Time to wait until old list blocks are removed from the memory. (30s)
@@ -297,10 +313,10 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
             if (type == VIEW_TYPES.TYPE_TRACK_ITEM) {
                 if (convertView == null) {
                     // If not create a new Listitem
-                    convertView = new FileListItem(mContext, false);
+                    convertView = new FileListItem(mContext, false, null);
                 }
                 FileListItem tracksListViewItem = (FileListItem) convertView;
-                tracksListViewItem.setTrack(track, true, mContext);
+                tracksListViewItem.setTrack(track, true);
                 tracksListViewItem.setTrackNumber(String.valueOf(position + 1));
             } else if (type == VIEW_TYPES.TYPE_SECTION_TRACK_ITEM) { // Section track type.
                 if (convertView == null) {
@@ -309,7 +325,7 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
                 }
                 FileListItem tracksListViewItem = (FileListItem) convertView;
                 tracksListViewItem.setSectionHeader(trackAlbum);
-                tracksListViewItem.setTrack(track, true, mContext);
+                tracksListViewItem.setTrack(track, true);
                 tracksListViewItem.setTrackNumber(String.valueOf(position + 1));
 
                 // This will prepare the view for fetching the image from the internet if not already saved in local database.
@@ -334,10 +350,10 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
             // the running fetch.
             if (convertView == null) {
                 // If not create a new Listitem
-                convertView = new FileListItem(mContext, false);
+                convertView = new FileListItem(mContext, false, null);
             } else {
                 FileListItem tracksListViewItem = (FileListItem) convertView;
-                tracksListViewItem.setTrack(null, true, mContext);
+                tracksListViewItem.setTrack(null, true);
             }
         }
 
@@ -719,6 +735,41 @@ public class CurrentPlaylistAdapter extends ScrollSpeedAdapter implements Artwor
         if (key.equals(mContext.getString(R.string.pref_show_playlist_sections_key))) {
             mSectionsEnabled = sharedPreferences.getBoolean(mContext.getString(R.string.pref_show_playlist_sections_key), mContext.getResources().getBoolean(R.bool.pref_show_playlist_sections_default));
             notifyDataSetInvalidated();
+        }
+    }
+
+    /**
+     * Sets the scrollspeed in items per second.
+     *
+     * @param speed Items per seconds as Integer.
+     */
+    public void setScrollSpeed(int speed) {
+        mScrollSpeed = speed;
+    }
+
+    /**
+     * Returns the smoothed average loading time of images.
+     * This value is used by the scrollspeed listener to determine if
+     * the scrolling is slow enough to render images (artist, album images)
+     *
+     * @return Average time to load an image in ms
+     */
+    public long getAverageImageLoadTime() {
+        return mAvgImageTime == 0 ? 1 : mAvgImageTime;
+    }
+
+    /**
+     * This method adds new loading times to the smoothed average.
+     * Should only be called from the async cover loader.
+     *
+     * @param time Time in ms to load a image
+     */
+    public void addImageLoadTime(long time) {
+        // Implement exponential smoothing here
+        if (mAvgImageTime == 0) {
+            mAvgImageTime = time;
+        } else {
+            mAvgImageTime = (long) (((1 - mSmoothingFactor) * mAvgImageTime) + (mSmoothingFactor * time));
         }
     }
 }

@@ -41,7 +41,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
-import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.callbacks.PlaylistCallback;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
@@ -62,9 +61,6 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
      * Callback for activity this fragment gets attached to
      */
     private PlaylistCallback mCallback;
-
-    private FABFragmentCallback mFABCallback = null;
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -129,14 +125,6 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
             mCallback = (PlaylistCallback) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
-        }
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mFABCallback = (FABFragmentCallback) context;
-        } catch (ClassCastException e) {
-            mFABCallback = null;
         }
     }
 

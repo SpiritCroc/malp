@@ -31,9 +31,9 @@ import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.listviewitems.FileListItem;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 /**
  * Adapter class that creates all the listitems for an album track view
@@ -151,7 +151,7 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
         // Get MPDTrack at the given index used for this item.
         MPDFileEntry file = (MPDFileEntry) getItem(position);
 
-        /**
+        /*
          * Check which type of {@link MPDFileEntry} is necessary to draw ({@link MPDTrack}, {@link MPDDirectory}, {@link MPDPlaylist})
          *
          * For {@link MPDTrack} objects it optionally checks if a new album is started and shows the album cover and name.
@@ -162,9 +162,9 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
             // Normal file entry
             if (!mShowSectionItems || (VIEW_TYPES.values()[getItemViewType(position)] == VIEW_TYPES.TYPE_FILE_ITEM)) {
                 if (convertView == null) {
-                    convertView = new FileListItem(mContext, mShowIcons);
+                    convertView = new FileListItem(mContext, mShowIcons, null);
                 }
-                ((FileListItem) convertView).setTrack(track, mUseTags, mContext);
+                ((FileListItem) convertView).setTrack(track, mUseTags);
                 if (!mShowTrackNumbers) {
                     ((FileListItem) convertView).setTrackNumber(String.valueOf(position + 1));
                 }
@@ -179,7 +179,7 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
 
                 FileListItem tracksListViewItem = (FileListItem) convertView;
                 tracksListViewItem.setSectionHeader(track.getTrackAlbum());
-                tracksListViewItem.setTrack(track, mUseTags, mContext);
+                tracksListViewItem.setTrack(track, mUseTags);
                 if (!mShowTrackNumbers) {
                     tracksListViewItem.setTrackNumber(String.valueOf(position + 1));
                 }
@@ -199,19 +199,19 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
             }
         } else if (file instanceof MPDDirectory) {
             if (convertView == null) {
-                convertView = new FileListItem(mContext, mShowIcons);
+                convertView = new FileListItem(mContext, mShowIcons, null);
             }
 
-            ((FileListItem) convertView).setDirectory((MPDDirectory) file, mContext);
+            ((FileListItem) convertView).setDirectory((MPDDirectory) file);
             return convertView;
         } else if (file instanceof MPDPlaylist) {
             if (convertView == null) {
-                convertView = new FileListItem(mContext, mShowIcons);
+                convertView = new FileListItem(mContext, mShowIcons, null);
             }
-            
-            ((FileListItem) convertView).setPlaylist((MPDPlaylist) file, mContext);
+
+            ((FileListItem) convertView).setPlaylist((MPDPlaylist) file);
             return convertView;
         }
-        return new FileListItem(mContext, mShowIcons);
+        return new FileListItem(mContext, mShowIcons, null);
     }
 }

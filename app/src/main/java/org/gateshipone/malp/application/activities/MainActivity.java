@@ -28,7 +28,11 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.transition.Slide;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.Gravity;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -54,11 +58,27 @@ import com.google.android.material.snackbar.Snackbar;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.CurrentPlaylistAdapter;
 import org.gateshipone.malp.application.callbacks.AddPathToPlaylist;
+import org.gateshipone.malp.application.callbacks.AlbumCallback;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.callbacks.PlaylistCallback;
 import org.gateshipone.malp.application.callbacks.ProfileManageCallbacks;
-import org.gateshipone.malp.application.fragments.*;
-import org.gateshipone.malp.application.fragments.serverfragments.*;
+import org.gateshipone.malp.application.fragments.ArtworkSettingsFragment;
+import org.gateshipone.malp.application.fragments.EditProfileFragment;
+import org.gateshipone.malp.application.fragments.InformationSettingsFragment;
+import org.gateshipone.malp.application.fragments.ProfilesFragment;
+import org.gateshipone.malp.application.fragments.SettingsFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.AlbumTracksFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.AlbumsFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.ArtistAlbumsFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.ArtistsFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.ChoosePlaylistDialog;
+import org.gateshipone.malp.application.fragments.serverfragments.FilesFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.MyMusicTabsFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.PlaylistTracksFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.SavedPlaylistsFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.SearchFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.ServerPropertiesFragment;
+import org.gateshipone.malp.application.fragments.serverfragments.SongDetailsDialog;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.views.CurrentPlaylistView;
 import org.gateshipone.malp.application.views.NowPlayingView;
@@ -74,7 +94,7 @@ import org.gateshipone.malp.mpdservice.profilemanagement.MPDProfileManager;
 import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
 
 public class MainActivity extends GenericActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AlbumsFragment.AlbumSelectedCallback, ArtistsFragment.ArtistSelectedCallback,
+        implements NavigationView.OnNavigationItemSelectedListener, AlbumCallback, ArtistsFragment.ArtistSelectedCallback,
         ProfileManageCallbacks, PlaylistCallback,
         NowPlayingView.NowPlayingDragStatusReceiver, FilesFragment.FilesCallback,
         FABFragmentCallback, SettingsFragment.OnArtworkSettingsRequestedCallback {
@@ -319,75 +339,81 @@ public class MainActivity extends GenericActivity
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        final ContextMenu.ContextMenuInfo menuInfo = item.getMenuInfo();
 
-        if (info == null) {
+        if (menuInfo == null) {
             return super.onContextItemSelected(item);
         }
 
-        CurrentPlaylistView currentPlaylistView = findViewById(R.id.now_playing_playlist);
+        // we have two types of adapter context menuinfo classes so we have to make sure the current item contains the correct type of menuinfo
+        if (menuInfo instanceof AdapterView.AdapterContextMenuInfo) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
-        if (currentPlaylistView != null && mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
+            CurrentPlaylistView currentPlaylistView = findViewById(R.id.now_playing_playlist);
 
-            MPDTrack track = (MPDTrack) currentPlaylistView.getItem(info.position);
+            if (currentPlaylistView != null && mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
 
-            switch (item.getItemId()) {
+                MPDTrack track = (MPDTrack) currentPlaylistView.getItem(info.position);
 
-                case R.id.action_song_play_next:
-                    MPDQueryHandler.playIndexAsNext(info.position);
-                    return true;
-                case R.id.action_add_to_saved_playlist:
-                    // open dialog in order to save the current playlist as a playlist in the mediastore
-                    ChoosePlaylistDialog choosePlaylistDialog = new ChoosePlaylistDialog();
-                    Bundle args = new Bundle();
-                    args.putBoolean(ChoosePlaylistDialog.EXTRA_SHOW_NEW_ENTRY, true);
-                    choosePlaylistDialog.setCallback(new AddPathToPlaylist(track, this));
-                    choosePlaylistDialog.setArguments(args);
-                    choosePlaylistDialog.show(getSupportFragmentManager(), "ChoosePlaylistDialog");
-                    return true;
-                case R.id.action_remove_song:
-                    MPDQueryHandler.removeSongFromCurrentPlaylist(info.position);
-                    return true;
-                case R.id.action_remove_album:
-                    currentPlaylistView.removeAlbumFrom(info.position);
-                    return true;
-                case R.id.action_show_artist:
-                    if (mUseArtistSort) {
-                        onArtistSelected(new MPDArtist(track.getTrackArtistSort()), null);
-                    } else {
-                        onArtistSelected(new MPDArtist(track.getTrackArtist()), null);
-                    }
-                    return true;
-                case R.id.action_show_album:
-                    MPDAlbum tmpAlbum = new MPDAlbum(track.getTrackAlbum());
-                    // Set album artist
-                    if (!track.getTrackAlbumArtist().isEmpty()) {
-                        tmpAlbum.setArtistName(track.getTrackAlbumArtist());
-                    } else {
-                        tmpAlbum.setArtistName(track.getTrackArtist());
-                    }
+                switch (item.getItemId()) {
 
-                    // Set albumartistsort
-                    if (!track.getTrackAlbumArtistSort().isEmpty()) {
-                        tmpAlbum.setArtistSortName(track.getTrackAlbumArtistSort());
-                    } else {
-                        tmpAlbum.setArtistSortName(track.getTrackArtistSort());
-                    }
+                    case R.id.action_song_play_next:
+                        MPDQueryHandler.playIndexAsNext(info.position);
+                        return true;
+                    case R.id.action_add_to_saved_playlist:
+                        // open dialog in order to save the current playlist as a playlist in the mediastore
+                        ChoosePlaylistDialog choosePlaylistDialog = new ChoosePlaylistDialog();
+                        Bundle args = new Bundle();
+                        args.putBoolean(ChoosePlaylistDialog.EXTRA_SHOW_NEW_ENTRY, true);
+                        choosePlaylistDialog.setCallback(new AddPathToPlaylist(track, this));
+                        choosePlaylistDialog.setArguments(args);
+                        choosePlaylistDialog.show(getSupportFragmentManager(), "ChoosePlaylistDialog");
+                        return true;
+                    case R.id.action_remove_song:
+                        MPDQueryHandler.removeSongFromCurrentPlaylist(info.position);
+                        return true;
+                    case R.id.action_remove_album:
+                        currentPlaylistView.removeAlbumFrom(info.position);
+                        return true;
+                    case R.id.action_show_artist:
+                        if (mUseArtistSort) {
+                            onArtistSelected(new MPDArtist(track.getTrackArtistSort()), null);
+                        } else {
+                            onArtistSelected(new MPDArtist(track.getTrackArtist()), null);
+                        }
+                        return true;
+                    case R.id.action_show_album:
+                        MPDAlbum tmpAlbum = new MPDAlbum(track.getTrackAlbum());
+                        // Set album artist
+                        if (!track.getTrackAlbumArtist().isEmpty()) {
+                            tmpAlbum.setArtistName(track.getTrackAlbumArtist());
+                        } else {
+                            tmpAlbum.setArtistName(track.getTrackArtist());
+                        }
 
-                    tmpAlbum.setMBID(track.getTrackAlbumMBID());
-                    onAlbumSelected(tmpAlbum, null);
-                    return true;
-                case R.id.action_show_details:
-                    // Open song details dialog
-                    SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
-                    Bundle songArgs = new Bundle();
-                    songArgs.putParcelable(SongDetailsDialog.EXTRA_FILE, track);
-                    songDetailsDialog.setArguments(songArgs);
-                    songDetailsDialog.show(getSupportFragmentManager(), "SongDetails");
-                    return true;
+                        // Set albumartistsort
+                        if (!track.getTrackAlbumArtistSort().isEmpty()) {
+                            tmpAlbum.setArtistSortName(track.getTrackAlbumArtistSort());
+                        } else {
+                            tmpAlbum.setArtistSortName(track.getTrackArtistSort());
+                        }
+
+                        tmpAlbum.setMBID(track.getTrackAlbumMBID());
+                        onAlbumSelected(tmpAlbum, null);
+                        return true;
+                    case R.id.action_show_details:
+                        // Open song details dialog
+                        SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
+                        Bundle songArgs = new Bundle();
+                        songArgs.putParcelable(SongDetailsDialog.EXTRA_FILE, track);
+                        songDetailsDialog.setArguments(songArgs);
+                        songDetailsDialog.show(getSupportFragmentManager(), "SongDetails");
+                        return true;
+                }
             }
         }
-        return false;
+
+        return super.onContextItemSelected(item);
     }
 
 
@@ -617,17 +643,7 @@ public class MainActivity extends GenericActivity
         }
 
         // Create fragment and give it an argument for the selected article
-        AlbumsFragment newFragment = new AlbumsFragment();
-        Bundle args = new Bundle();
-        args.putString(AlbumsFragment.BUNDLE_STRING_EXTRA_ARTISTNAME, artist.getArtistName());
-        args.putParcelable(AlbumsFragment.BUNDLE_STRING_EXTRA_ARTIST, artist);
-
-        // Transfer the bitmap to the next fragment
-        if (bitmap != null) {
-            args.putParcelable(AlbumsFragment.BUNDLE_STRING_EXTRA_BITMAP, bitmap);
-        }
-
-        newFragment.setArguments(args);
+        ArtistAlbumsFragment newFragment = ArtistAlbumsFragment.newInstance(artist, bitmap);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         newFragment.setEnterTransition(new Slide(Gravity.BOTTOM));
@@ -636,7 +652,7 @@ public class MainActivity extends GenericActivity
         // fragment,
         // and add the transaction to the back stack so the user can navigate
         // back
-        transaction.replace(R.id.fragment_container, newFragment, AlbumsFragment.TAG);
+        transaction.replace(R.id.fragment_container, newFragment, ArtistAlbumsFragment.TAG);
         transaction.addToBackStack("ArtistAlbumsFragment");
 
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -754,7 +770,8 @@ public class MainActivity extends GenericActivity
     }
 
     @Override
-    public void setupToolbar(String title, boolean scrollingEnabled, boolean drawerIndicatorEnabled, boolean showImage) {
+    public void setupToolbar(String title, boolean scrollingEnabled,
+                             boolean drawerIndicatorEnabled, boolean showImage) {
         // set drawer state
         mDrawerToggle.setDrawerIndicatorEnabled(drawerIndicatorEnabled);
 

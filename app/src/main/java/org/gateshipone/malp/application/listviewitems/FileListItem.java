@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.gateshipone.malp.R;
@@ -67,8 +68,8 @@ public class FileListItem extends AbsImageListViewItem {
      * @param context  Context used for creation of View
      * @param showIcon If left file/dir icon should be shown. It is not changeable after creation.
      */
-    public FileListItem(Context context, boolean showIcon) {
-        super(context, R.layout.listview_item_file, 0, 0, null);
+    public FileListItem(final Context context, final boolean showIcon, @Nullable final ScrollSpeedAdapter adapter) {
+        super(context, R.layout.listview_item_file, 0, 0, adapter);
 
         mTitleView = findViewById(R.id.track_title);
         mAdditionalInfoView = findViewById(R.id.track_additional_information);
@@ -171,10 +172,11 @@ public class FileListItem extends AbsImageListViewItem {
     /**
      * Extracts the information from a MPDTrack.
      *
-     * @param track   Track to show the view for.
-     * @param context Context used for String extraction
+     * @param track Track to show the view for.
      */
-    public void setTrack(MPDTrack track, boolean useTags, Context context) {
+    public void setTrack(MPDTrack track, boolean useTags) {
+        final Context context = getContext();
+
         if (track != null) {
             String trackNumber;
 
@@ -256,9 +258,10 @@ public class FileListItem extends AbsImageListViewItem {
      * Extracts the information from a MPDDirectory
      *
      * @param directory Directory to show the view for.
-     * @param context   Context used for image extraction
      */
-    public void setDirectory(MPDDirectory directory, Context context) {
+    public void setDirectory(MPDDirectory directory) {
+        final Context context = getContext();
+
         mTitleView.setText(directory.getSectionTitle());
         mAdditionalInfoView.setText(directory.getLastModifiedString());
 
@@ -283,9 +286,10 @@ public class FileListItem extends AbsImageListViewItem {
      * Extracts the information from a MPDPlaylist
      *
      * @param playlist Playlist to show the view for.
-     * @param context  Context used for image extraction
      */
-    public void setPlaylist(MPDPlaylist playlist, Context context) {
+    public void setPlaylist(MPDPlaylist playlist) {
+        final Context context = getContext();
+
         mTitleView.setText(playlist.getSectionTitle());
         mAdditionalInfoView.setText(playlist.getLastModifiedString());
 

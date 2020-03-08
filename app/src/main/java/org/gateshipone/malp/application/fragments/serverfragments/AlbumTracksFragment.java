@@ -22,7 +22,6 @@
 
 package org.gateshipone.malp.application.fragments.serverfragments;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -35,8 +34,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,22 +42,23 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
-import org.gateshipone.malp.application.adapters.FileAdapter;
+import org.gateshipone.malp.application.adapters.TracksRecyclerViewAdapter;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.callbacks.AddPathToPlaylist;
-import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
+import org.gateshipone.malp.application.listviewitems.GenericViewItemHolder;
 import org.gateshipone.malp.application.utils.CoverBitmapLoader;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.viewmodels.AlbumTracksViewModel;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
+import org.gateshipone.malp.application.views.MalpRecyclerView;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
-public class AlbumTracksFragment extends GenericMPDFragment<MPDFileEntry> implements AdapterView.OnItemClickListener, CoverBitmapLoader.CoverBitmapListener, ArtworkManager.onNewAlbumImageListener {
+public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry, GenericViewItemHolder> implements CoverBitmapLoader.CoverBitmapListener, ArtworkManager.onNewAlbumImageListener, MalpRecyclerView.OnItemClickListener {
     public final static String TAG = AlbumTracksFragment.class.getSimpleName();
     /**
      * Parameters for bundled extra arguments for this fragment. Necessary to define which album to
@@ -74,13 +72,6 @@ public class AlbumTracksFragment extends GenericMPDFragment<MPDFileEntry> implem
      */
     private MPDAlbum mAlbum;
 
-    /**
-     * Main ListView of this fragment
-     */
-    private ListView mListView;
-
-    private FABFragmentCallback mFABCallback = null;
-
     private Bitmap mBitmap;
 
     private CoverBitmapLoader mBitmapLoader;
@@ -92,10 +83,10 @@ public class AlbumTracksFragment extends GenericMPDFragment<MPDFileEntry> implem
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.listview_layout_refreshable, container, false);
+        View rootView = inflater.inflate(R.layout.recycler_list_refresh, container, false);
 
         // Get the main ListView of this fragment
-        mListView = rootView.findViewById(R.id.main_listview);
+        mRecyclerView = rootView.findViewById(R.id.recycler_view);
 
         /* Check if an artistname/albumame was given in the extras */
         Bundle args = getArguments();
@@ -106,12 +97,15 @@ public class AlbumTracksFragment extends GenericMPDFragment<MPDFileEntry> implem
         }
 
         // Create the needed adapter for the ListView
-        mAdapter = new FileAdapter(getActivity(), false, true);
+        mAdapter = new TracksRecyclerViewAdapter();
 
         // Combine the two to a happy couple
-        mListView.setAdapter(mAdapter);
-        registerForContextMenu(mListView);
-        mListView.setOnItemClickListener(this);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addOnItemClicklistener(this);
+
+        setLinearLayoutManagerAndDecoration();
+
+        registerForContextMenu(mRecyclerView);
 
         // get swipe layout
         mSwipeRefreshLayout = rootView.findViewById(R.id.refresh_layout);
@@ -142,14 +136,12 @@ public class AlbumTracksFragment extends GenericMPDFragment<MPDFileEntry> implem
         return new ViewModelProvider(this, new AlbumTracksViewModel.AlbumTracksModelFactory(getActivity().getApplication(), mAlbum, mUseArtistSort)).get(AlbumTracksViewModel.class);
     }
 
-
     /**
      * Starts the loader to make sure the data is up-to-date after resuming the fragment (from background)
      */
     @Override
     public void onResume() {
         super.onResume();
-
 
         if (null != mFABCallback) {
             mFABCallback.setupFAB(true, new FABOnClickListener());
@@ -192,24 +184,8 @@ public class AlbumTracksFragment extends GenericMPDFragment<MPDFileEntry> implem
         ArtworkManager.getInstance(getContext()).unregisterOnNewAlbumImageListener(this);
     }
 
-    /**
-     * Called when the fragment is first attached to its context.
-     */
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mFABCallback = (FABFragmentCallback) context;
-        } catch (ClassCastException e) {
-            mFABCallback = null;
-        }
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemClick(int position) {
         switch (mClickAction) {
             case ACTION_SHOW_DETAILS: {
                 // Open song details dialog
@@ -257,7 +233,8 @@ public class AlbumTracksFragment extends GenericMPDFragment<MPDFileEntry> implem
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        MalpRecyclerView.RecyclerViewContextMenuInfo info =
+                (MalpRecyclerView.RecyclerViewContextMenuInfo) item.getMenuInfo();
 
         if (info == null) {
             return super.onContextItemSelected(item);
@@ -368,13 +345,13 @@ public class AlbumTracksFragment extends GenericMPDFragment<MPDFileEntry> implem
 
 
     private void enqueueTrack(int index) {
-        MPDFileEntry entry = (MPDFileEntry) mAdapter.getItem(index);
+        MPDFileEntry entry = mAdapter.getItem(index);
 
         MPDQueryHandler.addPath(entry.getPath());
     }
 
     private void prependTrack(int index) {
-        MPDFileEntry entry = (MPDFileEntry) mAdapter.getItem(index);
+        MPDFileEntry entry = mAdapter.getItem(index);
 
         MPDQueryHandler.addPathAtStart(entry.getPath());
     }
@@ -417,7 +394,7 @@ public class AlbumTracksFragment extends GenericMPDFragment<MPDFileEntry> implem
     @Override
     public void newAlbumImage(MPDAlbum album) {
         if (album.equals(mAlbum)) {
-            int width = getView().getWidth();
+            int width = getView().getMeasuredWidth();
             mBitmapLoader.getAlbumImage(mAlbum, false, width, width);
         }
     }

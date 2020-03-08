@@ -23,7 +23,6 @@
 package org.gateshipone.malp.application.fragments.serverfragments;
 
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -47,7 +46,6 @@ import androidx.lifecycle.ViewModelProvider;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
 import org.gateshipone.malp.application.callbacks.AddPathToPlaylist;
-import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
@@ -70,8 +68,6 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
      * Name of the playlist to load
      */
     private String mPath;
-
-    private FABFragmentCallback mFABCallback = null;
 
     private PreferenceHelper.LIBRARY_TRACK_CLICK_ACTION mClickAction;
 
@@ -134,22 +130,6 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
             mFABCallback.setupToolbar(mPath, false, false, false);
         }
 
-    }
-
-    /**
-     * Called when the fragment is first attached to its context.
-     */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mFABCallback = (FABFragmentCallback) context;
-        } catch (ClassCastException e) {
-            mFABCallback = null;
-        }
     }
 
     /**

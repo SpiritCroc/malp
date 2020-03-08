@@ -20,31 +20,15 @@
  *
  */
 
-package org.gateshipone.malp.application.listviewitems;
+package org.gateshipone.malp.application.callbacks;
 
+import android.graphics.Bitmap;
 
-import android.content.Context;
-import android.widget.TextView;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 
-import org.gateshipone.malp.R;
-import org.gateshipone.malp.application.adapters.ScrollSpeedAdapter;
-
-public class GenericGridItem extends AbsImageListViewItem {
-
-    protected final TextView mTitleView;
-
-    public GenericGridItem(Context context, String labelText, ScrollSpeedAdapter adapter) {
-        super(context, R.layout.gridview_item, R.id.item_artists_cover_image, R.id.item_grid_viewswitcher, adapter);
-
-        mTitleView = findViewById(R.id.item_grid_text);
-
-        mTitleView.setText(labelText);
-    }
-
-    /*
-     * Sets the title for the GridItem
-     */
-    public void setTitle(String text) {
-        mTitleView.setText(text);
-    }
+/**
+ * Interface to implement for the activity containing this fragment
+ */
+public interface AlbumCallback {
+    void onAlbumSelected(MPDAlbum album, Bitmap bitmap);
 }

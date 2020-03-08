@@ -25,6 +25,7 @@ package org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import java.text.Collator;
@@ -129,6 +130,15 @@ public class MPDAlbum implements MPDGenericItem, Comparable<MPDAlbum>, Parcelabl
         return mDate;
     }
 
+    /**
+     * Only used for recyclerview adapter as stable id.
+     *
+     * @return The return value of {@link #hashCode()} call.
+     */
+    public long getAlbumId() {
+        return hashCode();
+    }
+
     @Override
     @NonNull
     public String getSectionTitle() {
@@ -153,7 +163,7 @@ public class MPDAlbum implements MPDGenericItem, Comparable<MPDAlbum>, Parcelabl
         }
 
         Collator collator = Collator.getInstance();
-        return collator.compare(mName,another.mName);
+        return collator.compare(mName, another.mName);
     }
 
     @Override
