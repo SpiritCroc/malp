@@ -45,8 +45,8 @@
                 android:id="@+id/now_playing_topCover"
                 android:layout_width="?attr/actionBarSize"
                 android:layout_height="?attr/actionBarSize"
-                android:layout_alignParentEnd="false"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="false"
                 android:layout_marginStart="0dp"
                 android:layout_marginTop="0dp"
                 android:src="@drawable/cover_placeholder_128dp" />
@@ -55,18 +55,19 @@
                 android:id="@+id/now_playing_header_textLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_toEndOf="@+id/now_playing_topCover"
                 android:layout_toStartOf="@+id/now_playing_layout_dragged_down"
+                android:layout_toEndOf="@+id/now_playing_topCover"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
-                android:paddingEnd="@dimen/material_content_spacing"
-                android:paddingStart="@dimen/material_content_spacing">
+                android:paddingStart="@dimen/material_content_spacing"
+                android:paddingEnd="@dimen/material_content_spacing">
 
                 <!-- FIXME Workround for scrolling text jumping back, when position seekbar is updated -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/now_playing_trackName"
                         android:layout_width="wrap_content"
@@ -114,18 +115,18 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
-                    android:background="?android:selectableItemBackground"
+                    android:background="?attr/actionBarItemBackground"
                     android:baselineAlignBottom="false"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_queue_music_24dp"
-                    android:tint="?attr/malp_color_text_accent"/>
+                    android:tint="?attr/malp_color_text_accent" />
 
                 <ImageButton
                     android:id="@+id/now_playing_topMenuButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
-                    android:background="?android:selectableItemBackground"
+                    android:background="?attr/actionBarItemBackground"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_more_vert_24dp"
                     android:tint="?attr/malp_color_text_accent" />
@@ -155,8 +156,8 @@
             android:id="@+id/now_playing_bodyLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
             android:layout_below="@+id/now_playing_headerLayout"
+            android:layout_alignParentBottom="true"
             android:background="?attr/malp_color_background">
 
 
@@ -164,10 +165,9 @@
                 android:id="@+id/now_playing_view_switcher"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inAnimation="@anim/fade_in"
-                android:outAnimation="@anim/fade_out"
                 android:layout_above="@+id/now_playing_control_layout"
-                >
+                android:inAnimation="@anim/fade_in"
+                android:outAnimation="@anim/fade_out">
 
                 <ScrollView
                     android:id="@+id/now_playing_view_cover_layout"
@@ -190,9 +190,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:paddingBottom="@dimen/material_content_spacing"
+                            android:paddingStart="@dimen/material_screen_edge_spacing"
                             android:paddingEnd="@dimen/material_screen_edge_spacing"
-                            android:paddingStart="@dimen/material_screen_edge_spacing">
+                            android:paddingBottom="@dimen/material_content_spacing">
 
                             <TextView
                                 android:layout_width="match_parent"
@@ -286,11 +286,8 @@
                 <org.gateshipone.malp.application.views.CurrentPlaylistView
                     android:id="@+id/now_playing_playlist"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
             </ViewSwitcher>
-
-
-
 
 
             <LinearLayout
@@ -307,8 +304,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/material_standard_horizontal_spacing"
-                    android:paddingRight="@dimen/material_standard_horizontal_spacing"
-                    android:paddingTop="@dimen/material_content_spacing">
+                    android:paddingTop="@dimen/material_content_spacing"
+                    android:paddingRight="@dimen/material_standard_horizontal_spacing">
 
                     <TextView
                         android:id="@+id/now_playing_elapsedTime"
@@ -416,8 +413,8 @@
                             android:id="@+id/volume_seekbar_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:paddingEnd="@dimen/material_screen_edge_spacing"
                             android:paddingStart="@dimen/material_screen_edge_spacing"
+                            android:paddingEnd="@dimen/material_screen_edge_spacing"
                             android:visibility="gone">
 
                             <ImageView
@@ -439,8 +436,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:paddingEnd="@dimen/material_screen_edge_spacing"
-                            android:paddingStart="@dimen/material_screen_edge_spacing">
+                            android:paddingStart="@dimen/material_screen_edge_spacing"
+                            android:paddingEnd="@dimen/material_screen_edge_spacing">
 
                             <ImageButton
                                 android:id="@+id/volume_button_minus"
