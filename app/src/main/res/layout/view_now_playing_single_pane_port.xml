@@ -45,8 +45,8 @@
                 android:id="@+id/now_playing_topCover"
                 android:layout_width="?attr/actionBarSize"
                 android:layout_height="?attr/actionBarSize"
-                android:layout_alignParentEnd="false"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="false"
                 android:layout_marginStart="0dp"
                 android:layout_marginTop="0dp"
                 android:src="@drawable/cover_placeholder_128dp" />
@@ -55,17 +55,18 @@
                 android:id="@+id/now_playing_header_textLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_toEndOf="@+id/now_playing_topCover"
                 android:layout_toStartOf="@+id/now_playing_layout_dragged_down"
+                android:layout_toEndOf="@+id/now_playing_topCover"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
-                android:paddingEnd="@dimen/material_content_spacing"
-                android:paddingStart="@dimen/material_content_spacing">
+                android:paddingStart="@dimen/material_content_spacing"
+                android:paddingEnd="@dimen/material_content_spacing">
                 <!-- FIXME Workround for scrolling text jumping back, when position seekbar is updated -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/now_playing_trackName"
                         android:layout_width="wrap_content"
@@ -75,8 +76,8 @@
                         android:fontFamily="sans-serif-medium"
                         android:marqueeRepeatLimit="3"
                         android:scrollHorizontally="true"
-                        android:textColor="?attr/malp_color_text_accent"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:textColor="?attr/malp_color_text_accent" />
                 </LinearLayout>
 
                 <!-- FIXME Workround for scrolling text jumping back, when position seekbar is updated -->
@@ -113,7 +114,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
-                    android:background="?android:selectableItemBackground"
+                    android:background="?attr/actionBarItemBackground"
                     android:baselineAlignBottom="false"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_queue_music_24dp"
@@ -124,7 +125,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
-                    android:background="?android:selectableItemBackground"
+                    android:background="?attr/actionBarItemBackground"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_more_vert_24dp"
                     android:tint="?attr/malp_color_text_accent" />
@@ -154,17 +155,17 @@
             android:id="@+id/now_playing_bodyLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@+id/now_playing_headerLayout">
+            android:layout_below="@+id/now_playing_headerLayout"
+            android:layout_alignParentBottom="true">
 
             <ViewSwitcher
                 android:id="@+id/now_playing_view_switcher"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inAnimation="@anim/fade_in"
-                android:outAnimation="@anim/fade_out"
                 android:layout_above="@+id/now_playing_control_layout"
-                android:background="?attr/malp_color_background">
+                android:background="?attr/malp_color_background"
+                android:inAnimation="@anim/fade_in"
+                android:outAnimation="@anim/fade_out">
 
                 <ScrollView
                     android:id="@+id/now_playing_view_cover_layout"
@@ -188,10 +189,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:paddingBottom="@dimen/material_content_spacing"
                             android:paddingStart="@dimen/material_screen_edge_spacing"
                             android:paddingEnd="@dimen/material_screen_edge_spacing"
-                            >
+                            android:paddingBottom="@dimen/material_content_spacing">
+
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -212,11 +213,11 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/material_content_spacing"
                                 android:fontFamily="sans-serif-regular"
                                 android:text="@string/song_playlist_no"
                                 android:textColor="?attr/malp_color_text_background_secondary"
-                                android:textSize="@dimen/material_font_style_size_body_1"
-                                android:layout_marginTop="@dimen/material_content_spacing"/>
+                                android:textSize="@dimen/material_font_style_size_body_1" />
 
                             <TextView
                                 android:id="@+id/now_playing_text_playlist_no"
@@ -229,11 +230,11 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/material_content_spacing"
                                 android:fontFamily="sans-serif-regular"
                                 android:text="@string/song_bitrate"
                                 android:textColor="?attr/malp_color_text_background_secondary"
-                                android:textSize="@dimen/material_font_style_size_body_1"
-                                android:layout_marginTop="@dimen/material_content_spacing"/>
+                                android:textSize="@dimen/material_font_style_size_body_1" />
 
                             <TextView
                                 android:id="@+id/now_playing_text_bitrate"
@@ -246,11 +247,11 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/material_content_spacing"
                                 android:fontFamily="sans-serif-regular"
                                 android:text="@string/song_audio_properties"
                                 android:textColor="?attr/malp_color_text_background_secondary"
-                                android:textSize="@dimen/material_font_style_size_body_1"
-                                android:layout_marginTop="@dimen/material_content_spacing"/>
+                                android:textSize="@dimen/material_font_style_size_body_1" />
 
                             <TextView
                                 android:id="@+id/now_playing_text_audio_properties"
@@ -263,11 +264,11 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/material_content_spacing"
                                 android:fontFamily="sans-serif-regular"
                                 android:text="@string/song_uri"
                                 android:textColor="?attr/malp_color_text_background_secondary"
-                                android:textSize="@dimen/material_font_style_size_body_1"
-                                android:layout_marginTop="@dimen/material_content_spacing"/>
+                                android:textSize="@dimen/material_font_style_size_body_1" />
 
                             <TextView
                                 android:id="@+id/now_playing_text_track_uri"
@@ -293,8 +294,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:orientation="vertical"
                 android:background="?attr/colorPrimary"
+                android:orientation="vertical"
                 android:paddingBottom="?attr/actionBarSize">
 
                 <RelativeLayout
@@ -302,24 +303,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/material_standard_horizontal_spacing"
-                    android:paddingRight="@dimen/material_standard_horizontal_spacing"
-                    android:paddingTop="@dimen/material_content_spacing">
+                    android:paddingTop="@dimen/material_content_spacing"
+                    android:paddingRight="@dimen/material_standard_horizontal_spacing">
 
                     <TextView
                         android:id="@+id/now_playing_elapsedTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
-                        android:textColor="?attr/malp_color_text_accent"
-                        android:gravity="center" />
+                        android:gravity="center"
+                        android:textColor="?attr/malp_color_text_accent" />
 
                     <TextView
                         android:id="@+id/now_playing_duration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:textColor="?attr/malp_color_text_accent"
-                        android:gravity="center" />
+                        android:gravity="center"
+                        android:textColor="?attr/malp_color_text_accent" />
 
 
                 </RelativeLayout>
@@ -328,9 +329,9 @@
                     android:id="@+id/volume_seekbar_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
+                    android:paddingStart="@dimen/material_screen_edge_spacing"
                     android:paddingEnd="@dimen/material_screen_edge_spacing"
-                    android:paddingStart="@dimen/material_screen_edge_spacing">
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/volume_icon"
@@ -351,8 +352,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:paddingEnd="@dimen/material_screen_edge_spacing"
-                    android:paddingStart="@dimen/material_screen_edge_spacing">
+                    android:paddingStart="@dimen/material_screen_edge_spacing"
+                    android:paddingEnd="@dimen/material_screen_edge_spacing">
 
                     <ImageButton
                         android:id="@+id/volume_button_minus"
@@ -360,8 +361,9 @@
                         android:layout_height="48dp"
                         android:layout_marginEnd="4dp"
                         android:background="?android:selectableItemBackground"
-                        android:tint="?attr/malp_color_text_accent"
-                        android:src="@drawable/ic_minus_black_48dp"/>
+                        android:src="@drawable/ic_minus_black_48dp"
+                        android:tint="?attr/malp_color_text_accent" />
+
                     <ImageView
                         android:id="@+id/volume_icon_buttons"
                         android:layout_width="32dp"
@@ -370,22 +372,24 @@
                         android:layout_marginEnd="4dp"
                         android:src="@drawable/ic_volume_high_black_48dp"
                         android:tint="?android:textColor" />
+
                     <TextView
                         android:id="@+id/volume_button_text"
                         android:layout_width="48dp"
                         android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:textColor="?attr/malp_color_text_accent"
                         android:layout_marginEnd="4dp"
-                        android:text="100%"/>
+                        android:gravity="center"
+                        android:text="100%"
+                        android:textColor="?attr/malp_color_text_accent" />
+
                     <ImageButton
                         android:id="@+id/volume_button_plus"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_marginEnd="4dp"
                         android:background="?android:selectableItemBackground"
-                        android:tint="?attr/malp_color_text_accent"
-                        android:src="@drawable/ic_plus_black_48dp"/>
+                        android:src="@drawable/ic_plus_black_48dp"
+                        android:tint="?attr/malp_color_text_accent" />
 
                 </LinearLayout>
 

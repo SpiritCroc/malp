@@ -31,24 +31,27 @@ import org.gateshipone.malp.application.adapters.ScrollSpeedAdapter;
 
 public class ImageListItem extends AbsImageListViewItem {
 
-    TextView mMainView;
-    TextView mDetailsView;
+    private TextView mMainView;
 
+    private TextView mDetailsView;
 
     public ImageListItem(Context context, String text, String details, ScrollSpeedAdapter adapter) {
         super(context, R.layout.listview_item_image, R.id.item_image, R.id.item_image_viewswitcher, adapter);
 
-        mMainView = findViewById(R.id.item_text);
-        mDetailsView = findViewById(R.id.item_details);
+        mMainView = findViewById(R.id.item_title);
+        mDetailsView = findViewById(R.id.item_subtitle);
 
-        if ( details == null || details.isEmpty() ) {
+        if (details == null || details.isEmpty()) {
             mDetailsView.setVisibility(GONE);
         } else {
             mDetailsView.setText(details);
         }
 
-        mMainView.setText(text);
+        // hide not used textview
+        final TextView additionalDetailsView = findViewById(R.id.item_additional_subtitle);
+        additionalDetailsView.setVisibility(GONE);
 
+        mMainView.setText(text);
     }
 
     public void setText(String text) {
@@ -59,7 +62,7 @@ public class ImageListItem extends AbsImageListViewItem {
         if (null != mDetailsView && !text.isEmpty()) {
             mDetailsView.setText(text);
             mDetailsView.setVisibility(VISIBLE);
-        } else if ( null != mDetailsView ) {
+        } else if (null != mDetailsView) {
             mDetailsView.setText("");
             mDetailsView.setVisibility(GONE);
         }

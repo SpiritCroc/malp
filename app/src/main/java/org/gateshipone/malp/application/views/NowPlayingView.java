@@ -54,6 +54,7 @@ import android.widget.ViewSwitcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
@@ -936,19 +937,11 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         // Add listeners to top playlist button
         mTopPlaylistButton.setOnClickListener(v -> {
 
-            // get color for playlist button
-            int color;
             if (mViewSwitcher.getCurrentView() != mPlaylistView) {
-                color = ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent);
+                setViewSwitcherStatus(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.PLAYLIST_VIEW);
             } else {
-                color = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+                setViewSwitcherStatus(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.COVER_VIEW);
             }
-
-            // tint the button
-            mTopPlaylistButton.setImageTintList(ColorStateList.valueOf(color));
-
-            // toggle between cover and playlistview
-            mViewSwitcher.showNext();
 
             // report the change of the view
             if (mDragStatusReceiver != null) {
@@ -964,8 +957,11 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             }
         });
 
+        TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_playlist));
+
         // Add listener to top menu button
         mTopMenuButton.setOnClickListener(this::showAdditionalOptionsMenu);
+        TooltipCompat.setTooltipText(mTopMenuButton, getResources().getString(R.string.action_npv_more_options));
 
         // Add listener to bottom repeat button
         mBottomRepeatButton.setOnClickListener(arg0 -> {
@@ -1384,13 +1380,19 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         switch (view) {
             case COVER_VIEW:
                 // change the view only if the requested view is not displayed
-                mViewSwitcher.setDisplayedChild(0);
+                if (mViewSwitcher.getCurrentView() != mCoverImage) {
+                    mViewSwitcher.showNext();
+                }
                 color = ThemeUtils.getThemeColor(getContext(), android.R.attr.textColor);
+                TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_playlist));
                 break;
             case PLAYLIST_VIEW:
                 // change the view only if the requested view is not displayed
-                mViewSwitcher.setDisplayedChild(1);
+                if (mViewSwitcher.getCurrentView() != mPlaylistView) {
+                    mViewSwitcher.showNext();
+                }
                 color = ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent);
+                TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_cover));
                 break;
         }
 

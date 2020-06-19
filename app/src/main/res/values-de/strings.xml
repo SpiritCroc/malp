@@ -280,4 +280,7 @@
     <string name="fragment_profile_use_mpd_covers_text">Nutze MPD-Cover falls verfügbar</string>
     <string name="action_enqueue_at_start">An Liste voranstellen</string>
     <string name="action_add_at_start">Voranstellen</string>
+    <string name="action_npv_show_playlist">Zeige Wiedergabeliste</string>
+    <string name="action_npv_show_cover">Zeige Cover</string>
+    <string name="action_npv_more_options">Weitere Optionen</string>
 </resources>
