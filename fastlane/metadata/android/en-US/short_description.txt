@@ -1,1 +1,1 @@
-M.A.L.P. - MPD Client
+MPD Client
