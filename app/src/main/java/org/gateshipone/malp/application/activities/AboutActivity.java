@@ -39,7 +39,7 @@ public class AboutActivity extends GenericActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this,R.attr.malp_color_primary_dark));
+        getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_primary_dark));
 
 
         String versionName = "";
@@ -50,7 +50,7 @@ public class AboutActivity extends GenericActivity {
             e.printStackTrace();
         }
 
-        ((TextView)findViewById(R.id.activity_about_version)).setText(versionName);
+        ((TextView) findViewById(R.id.activity_about_version)).setText(versionName);
 
         findViewById(R.id.button_contributors).setOnClickListener(view -> {
             Intent myIntent = new Intent(AboutActivity.this, ContributorsActivity.class);
@@ -76,7 +76,7 @@ public class AboutActivity extends GenericActivity {
             startActivity(urlIntent);
         });
 
-        findViewById(R.id.thirdparty_licenses).setOnClickListener(view -> LicensesDialog.newInstance().show(getFragmentManager(), LicensesDialog.class.getSimpleName()));
+        findViewById(R.id.thirdparty_licenses).setOnClickListener(view -> LicensesDialog.newInstance().show(getSupportFragmentManager(), LicensesDialog.class.getSimpleName()));
     }
 
     @Override
