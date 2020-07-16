@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  Copyright (C) 2020 Team Gateship-One
   ~  (Hendrik Borghorst & Frederik Luetkes)
   ~
@@ -22,6 +21,7 @@
   -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -36,6 +36,7 @@
             android:id="@+id/activity_about_logo"
             android:layout_width="match_parent"
             android:layout_height="@dimen/about_icon_size"
+            android:contentDescription="@null"
             android:scaleType="fitCenter"
             android:src="@drawable/icon_512" />
 
@@ -57,7 +58,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
+                android:layout_marginEnd="4dp"
+                android:fontFamily="sans-serif-light"
                 android:gravity="center"
                 android:text="@string/activity_about_version"
                 android:textColor="?attr/malp_color_text_background_secondary"
@@ -67,11 +69,41 @@
                 android:id="@+id/activity_about_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
+                android:fontFamily="sans-serif-light"
                 android:gravity="center"
-                android:text="@string/app_name"
+                android:textColor="?attr/malp_color_text_background_secondary"
+                android:textSize="@dimen/material_font_style_size_subheading"
+                tools:text="1.2.5" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/activity_about_git_hash_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center"
+                android:text="@string/activity_about_git_hash"
                 android:textColor="?attr/malp_color_text_background_secondary"
                 android:textSize="@dimen/material_font_style_size_subheading" />
+
+            <TextView
+                android:id="@+id/activity_about_git_hash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center"
+                android:textColor="?attr/malp_color_text_background_secondary"
+                android:textSize="@dimen/material_font_style_size_subheading"
+                tools:text="2a0f134" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -108,6 +140,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:layout_weight="1"
+                android:contentDescription="@null"
                 android:scaleType="fitCenter"
                 android:src="@drawable/musicbrainz_logo" />
 
@@ -117,6 +150,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:layout_weight="1"
+                android:contentDescription="@null"
                 android:scaleType="fitCenter"
                 android:src="@drawable/lastfm_logo" />
 
@@ -126,10 +160,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:layout_weight="1"
+                android:contentDescription="@null"
                 android:scaleType="fitCenter"
                 android:src="@drawable/fanart_tv_logo" />
         </LinearLayout>
-
 
         <TextView
             android:layout_width="match_parent"

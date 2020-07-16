@@ -23,11 +23,12 @@
 package org.gateshipone.malp.application.activities;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.fragments.LicensesDialog;
 import org.gateshipone.malp.application.utils.ThemeUtils;
@@ -41,15 +42,15 @@ public class AboutActivity extends GenericActivity {
 
         getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_primary_dark));
 
+        String versionName = BuildConfig.VERSION_NAME;
+        ((TextView) findViewById(R.id.activity_about_version)).setText(versionName);
 
-        String versionName = "";
-        // get version from manifest
-        try {
-            versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+        if (BuildConfig.DEBUG) {
+            findViewById(R.id.activity_about_git_hash_container).setVisibility(View.VISIBLE);
+
+            String gitHash = BuildConfig.GIT_COMMIT_HASH;
+            ((TextView) findViewById(R.id.activity_about_git_hash)).setText(gitHash);
         }
-
         ((TextView) findViewById(R.id.activity_about_version)).setText(versionName);
 
         findViewById(R.id.button_contributors).setOnClickListener(view -> {
