@@ -23,6 +23,9 @@
 package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 
+import android.util.Log;
+
+import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
 import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
@@ -40,14 +43,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MPDInterface {
     private final String TAG = MPDInterface.class.getSimpleName();
+    private final int ARTWORK_TIMEOUT = 60000;
 
     private final MPDConnection mConnection;
 
+    private String mHostname;
+    private int mPort;
+    private String mPassword;
+
     // Singleton instance
     public static MPDInterface mInstance = new MPDInterface();
+
+    private MPDConnection mArtworkConnection = null;
+    private Timer mArtworkTimeout = null;
+    private ReentrantLock mArtworkLock = new ReentrantLock();
 
     private MPDInterface() {
         mConnection = new MPDConnection();
@@ -57,6 +73,9 @@ public class MPDInterface {
 
     public void setServerParameters(String hostname, String password, int port) {
         mConnection.setServerParameters(hostname, password, port);
+        mHostname = hostname;
+        mPassword = password;
+        mPort = port;
     }
 
     public synchronized void connect() throws MPDException {
@@ -999,10 +1018,26 @@ public class MPDInterface {
         mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_UPDATE_DATABASE(path));
     }
 
-    public synchronized byte[] getAlbumArt(String path) {
-        if (!mConnection.getServerCapabilities().hasAlbumArt()) {
+    public byte[] getAlbumArt(String path) throws MPDException {
+        mArtworkLock.lock();
+        if (mArtworkTimeout != null) {
+            mArtworkTimeout.cancel();
+            mArtworkTimeout = null;
+        }
+        if (mArtworkConnection == null) {
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG,"Creating artwork connection");
+            }
+            mArtworkConnection = new MPDConnection();
+            mArtworkConnection.setServerParameters(mHostname, mPassword, mPort);
+            mArtworkConnection.connectToServer();
+        }
+
+        if (!mArtworkConnection.getServerCapabilities().hasAlbumArt()) {
+            mArtworkLock.unlock();
             return null;
         }
+
         int imageSize = 0;
         int dataToRead = -1;
 
@@ -1016,13 +1051,14 @@ public class MPDInterface {
         while (dataToRead != 0) {
             // Request the image
             if (firstRun) {
-                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, 0));
+                mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, 0));
             } else {
-                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, (imageSize - dataToRead)));
+                mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, (imageSize - dataToRead)));
             }
             try {
-                line = mConnection.readLine();
+                line = mArtworkConnection.readLine();
             } catch (MPDException e) {
+                mArtworkLock.unlock();
                 return null;
             }
 
@@ -1040,8 +1076,9 @@ public class MPDInterface {
 
                     byte[] readData = new byte[0];
                     try {
-                        readData = mConnection.readBinary(chunkSize);
+                        readData = mArtworkConnection.readBinary(chunkSize);
                     } catch (MPDException e) {
+                        mArtworkLock.unlock();
                         return null;
                     }
 
@@ -1051,13 +1088,33 @@ public class MPDInterface {
                 }
 
                 try {
-                    line = mConnection.readLine();
+                    line = mArtworkConnection.readLine();
                 } catch (MPDException e) {
+                    mArtworkLock.unlock();
                     return null;
                 }
             }
         }
 
+        mArtworkTimeout = new Timer();
+        mArtworkTimeout.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                mArtworkLock.lock();
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "Disconnecting artwork connection");
+                }
+                mArtworkTimeout = null;
+                if (mArtworkConnection.isConnected()) {
+                    mArtworkConnection.disconnectFromServer();
+                }
+                mArtworkConnection = null;
+                mArtworkLock.unlock();
+
+            }
+        }, ARTWORK_TIMEOUT);
+        mArtworkLock.unlock();
         return imageData;
     }
+
 }

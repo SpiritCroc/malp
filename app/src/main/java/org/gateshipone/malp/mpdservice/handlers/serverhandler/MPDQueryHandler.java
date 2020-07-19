@@ -321,15 +321,6 @@ public class MPDQueryHandler extends MPDGenericHandler {
                 List<MPDFileEntry> playlistList = MPDInterface.mInstance.getPlaylists();
 
                 ((MPDResponseFileList) responseHandler).sendFileList(playlistList);
-            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ALBUM_ART) {
-                responseHandler = mpdAction.getResponseHandler();
-                if (!(responseHandler instanceof MPDResponseAlbumArt)) {
-                    return;
-                }
-                String url = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PATH);
-                byte[] imageData = MPDInterface.mInstance.getAlbumArt(url);
-
-                ((MPDResponseAlbumArt) responseHandler).sendAlbumArtwork(imageData, url);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_SAVE_PLAYLIST) {
                 String playlistName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PLAYLIST_NAME);
 
@@ -1159,14 +1150,5 @@ public class MPDQueryHandler extends MPDGenericHandler {
         genericStringIntAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_PLAY_SEARCH_FILES,
                 MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SEARCH_TERM, term,
                 MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SEARCH_TYPE, type.ordinal());
-    }
-
-    public static void getAlbumArtwork(String url, MPDResponseAlbumArt responseHandler) {
-        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ALBUM_ART);
-
-        action.setResponseHandler(responseHandler);
-        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PATH, url);
-
-        sendMsg(action);
     }
 }

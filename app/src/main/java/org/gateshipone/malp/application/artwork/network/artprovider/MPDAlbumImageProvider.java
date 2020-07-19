@@ -32,6 +32,7 @@ import com.android.volley.VolleyError;
 import org.gateshipone.malp.application.artwork.network.ArtworkRequestModel;
 import org.gateshipone.malp.application.artwork.network.responses.ImageResponse;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumArt;
+import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDArtworkHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 
 public class MPDAlbumImageProvider extends ArtProvider {
@@ -65,7 +66,7 @@ public class MPDAlbumImageProvider extends ArtProvider {
                 // not used for this provider
                 break;
             case TRACK:
-                MPDQueryHandler.getAlbumArtwork(model.getPath(), new AlbumArtResponseListener(mResponseLooper, model, context, listener, errorListener));
+                MPDArtworkHandler.getAlbumArtwork(model.getPath(), new AlbumArtResponseListener(mResponseLooper, model, context, listener, errorListener));
                 break;
         }
     }
