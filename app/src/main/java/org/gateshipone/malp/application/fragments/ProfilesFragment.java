@@ -69,7 +69,6 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
 
     private FABFragmentCallback mFABCallback = null;
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -92,6 +91,15 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
 
         // Return the ready inflated and configured fragment view.
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // clear view references because the fragment itself won't take care of it
+        mListView = null;
+        mAdapter = null;
     }
 
     /**

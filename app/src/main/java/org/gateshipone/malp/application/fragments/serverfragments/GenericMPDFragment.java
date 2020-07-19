@@ -23,6 +23,8 @@
 package org.gateshipone.malp.application.fragments.serverfragments;
 
 
+import android.widget.AbsListView;
+
 import org.gateshipone.malp.application.adapters.GenericSectionAdapter;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
 
@@ -32,9 +34,23 @@ public abstract class GenericMPDFragment<T extends MPDGenericItem> extends BaseM
     private static final String TAG = GenericMPDFragment.class.getSimpleName();
 
     /**
+     * The reference to the possible abstract list view
+     */
+    protected AbsListView mListView;
+
+    /**
      * The generic adapter for the view model
      */
     protected GenericSectionAdapter<T> mAdapter;
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // clear view references because the fragment itself won't take care of it
+        mListView = null;
+        mAdapter = null;
+    }
 
     @Override
     void swapModel(List<T> model) {

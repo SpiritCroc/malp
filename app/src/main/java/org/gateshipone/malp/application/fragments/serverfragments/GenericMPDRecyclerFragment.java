@@ -50,6 +50,15 @@ abstract public class GenericMPDRecyclerFragment<T extends MPDGenericItem, VH ex
     protected GenericRecyclerViewAdapter<T, VH> mAdapter;
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // clear view references because the fragment itself won't take care of it
+        mRecyclerView = null;
+        mAdapter = null;
+    }
+
+    @Override
     void swapModel(List<T> model) {
         // Transfer the data to the adapter so that the views can use it
         mAdapter.swapModel(model);
@@ -95,14 +104,20 @@ abstract public class GenericMPDRecyclerFragment<T extends MPDGenericItem, VH ex
                     // the minimum spancount should always be 2
                     final int newSpanCount = Math.max((int) Math.floor(recyclerViewWidth / gridItemWidth), 2);
 
-                    final GridLayoutManager layoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
-                    layoutManager.setSpanCount(newSpanCount);
+                    final RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+                    if (layoutManager instanceof GridLayoutManager) {
+                        ((GridLayoutManager) layoutManager).setSpanCount(newSpanCount);
+                    }
 
                     mRecyclerView.requestLayout();
 
                     // pass the columnWidth to the adapter to adjust the size of the griditems
                     final int columnWidth = recyclerViewWidth / newSpanCount;
-                    ((GenericRecyclerViewAdapter) mRecyclerView.getAdapter()).setItemSize(columnWidth);
+                    final RecyclerView.Adapter<?> adapter = mRecyclerView.getAdapter();
+
+                    if (adapter != null) {
+                        ((GenericRecyclerViewAdapter<?, ?>) adapter).setItemSize(columnWidth);
+                    }
                 }
             }
         });

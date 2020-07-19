@@ -36,7 +36,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
@@ -78,11 +77,6 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     public static final String BUNDLE_STRING_EXTRA_BITMAP = "bitmap";
 
     /**
-     * Save the root GridView for later usage.
-     */
-    private AbsListView mAdapterView;
-
-    /**
      * Save the last position here. Gets reused when the user returns to this view after selecting sme
      * albums.
      */
@@ -119,18 +113,18 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
         // get gridview
         if (mUseList) {
             rootView = inflater.inflate(R.layout.listview_layout_refreshable, container, false);
-            mAdapterView = (ListView) rootView.findViewById(R.id.main_listview);
+            mListView = (ListView) rootView.findViewById(R.id.main_listview);
         } else {
             // Inflate the layout for this fragment
             rootView = inflater.inflate(R.layout.fragment_gridview, container, false);
-            mAdapterView = (GridView) rootView.findViewById(R.id.grid_refresh_gridview);
+            mListView = (GridView) rootView.findViewById(R.id.grid_refresh_gridview);
         }
 
         mSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, getContext());
 
         mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
 
-        mAdapter = new AlbumsAdapter(getActivity(), mAdapterView, mUseList);
+        mAdapter = new AlbumsAdapter(getActivity(), mListView, mUseList);
 
         /* Check if an artistname was given in the extras */
         Bundle args = getArguments();
@@ -144,12 +138,12 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
             mArtist = new MPDArtist("");
         }
 
-        mAdapterView.setAdapter(mAdapter);
-        mAdapterView.setOnItemClickListener(this);
-        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter, mAdapterView));
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(this);
+        mListView.setOnScrollListener(new ScrollSpeedListener(mAdapter));
 
         // register for context menu
-        registerForContextMenu(mAdapterView);
+        registerForContextMenu(mListView);
 
 
         setHasOptionsMenu(true);
@@ -213,7 +207,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
         // Reset old scroll position
         if (mLastPosition >= 0) {
-            mAdapterView.setSelection(mLastPosition);
+            mListView.setSelection(mLastPosition);
             mLastPosition = -1;
         }
     }

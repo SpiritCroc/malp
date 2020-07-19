@@ -34,7 +34,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
@@ -55,13 +54,10 @@ import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
+import java.util.List;
+
 public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements AdapterView.OnItemClickListener {
     public final static String TAG = ArtistsFragment.class.getSimpleName();
-
-    /**
-     * Save the root GridView for later usage.
-     */
-    private AbsListView mAdapterView;
 
     /**
      * Save the last position here. Gets reused when the user returns to this view after selecting sme
@@ -97,22 +93,22 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
         // get gridview
         if (mUseList) {
             rootView = inflater.inflate(R.layout.listview_layout_refreshable, container, false);
-            mAdapterView = (ListView) rootView.findViewById(R.id.main_listview);
+            mListView = (ListView) rootView.findViewById(R.id.main_listview);
         } else {
             // Inflate the layout for this fragment
             rootView = inflater.inflate(R.layout.fragment_gridview, container, false);
-            mAdapterView = (GridView) rootView.findViewById(R.id.grid_refresh_gridview);
+            mListView = (GridView) rootView.findViewById(R.id.grid_refresh_gridview);
         }
 
-        mAdapter = new ArtistsAdapter(getActivity(), mAdapterView, mUseList);
+        mAdapter = new ArtistsAdapter(getActivity(), mListView, mUseList);
 
-        mAdapterView.setAdapter(mAdapter);
-        mAdapterView.setOnItemClickListener(this);
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(this);
 
-        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter, mAdapterView));
+        mListView.setOnScrollListener(new ScrollSpeedListener(mAdapter));
 
         // register for context menu
-        registerForContextMenu(mAdapterView);
+        registerForContextMenu(mListView);
 
 
         // get swipe layout
@@ -142,6 +138,24 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
             mFABCallback.setupToolbar(getString(R.string.app_name), true, true, false);
         }
         ArtworkManager.getInstance(getContext().getApplicationContext()).registerOnNewArtistImageListener((ArtistsAdapter) mAdapter);
+    }
+
+    /**
+     * Called when the observed {@link androidx.lifecycle.LiveData} is changed.
+     * <p>
+     * This method will update the related adapter and the {@link androidx.swiperefreshlayout.widget.SwipeRefreshLayout} if present.
+     *
+     * @param model The data observed by the {@link androidx.lifecycle.LiveData}.
+     */
+    @Override
+    protected void onDataReady(List<MPDArtist> model) {
+        super.onDataReady(model);
+
+        // Reset old scroll position
+        if (mLastPosition >= 0) {
+            mListView.setSelection(mLastPosition);
+            mLastPosition = -1;
+        }
     }
 
     @Override

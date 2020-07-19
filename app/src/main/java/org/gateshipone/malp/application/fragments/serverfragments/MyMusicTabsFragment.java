@@ -27,20 +27,22 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.widget.SearchView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
@@ -137,10 +139,19 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // clear view references because the fragment itself won't take care of it
+        mViewPager = null;
+        mSearchView = null;
+    }
+
+    @Override
     public void onTabSelected(TabLayout.Tab tab) {
         View view = this.getView();
 
-        if (view != null ) {
+        if (view != null) {
             // dismiss searchview
             if (mSearchView != null && mOptionMenu != null && !mSearchView.isIconified()) {
                 mSearchView.setIconified(true);
@@ -151,7 +162,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
             ViewPager myMusicViewPager = view.findViewById(R.id.my_music_viewpager);
             myMusicViewPager.setCurrentItem(tab.getPosition());
 
-            GenericMPDFragment fragment = mMyMusicPagerAdapter.getRegisteredFragment(tab.getPosition());
+            final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(tab.getPosition());
             if (fragment != null) {
                 fragment.getContent();
             }
@@ -225,9 +236,11 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
             // Set the query string
             mSearchView.setQuery(mSearchString, false);
 
-            GenericMPDFragment fragment = mMyMusicPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
-            // Notify the adapter
-            fragment.applyFilter(mSearchString);
+            final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
+            if (fragment != null) {
+                // Notify the adapter
+                fragment.applyFilter(mSearchString);
+            }
         }
 
         mSearchView.setOnQueryTextListener(new SearchTextObserver());
@@ -237,8 +250,8 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
     @Override
     public void onTabUnselected(TabLayout.Tab tab) {
-        GenericMPDFragment fragment = mMyMusicPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
-        if ( null != fragment ) {
+        final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
+        if (fragment != null) {
             fragment.removeFilter();
         }
     }
@@ -249,13 +262,13 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
     }
 
-    private class MyMusicPagerAdapter extends FragmentStatePagerAdapter {
+    private static class MyMusicPagerAdapter extends FragmentStatePagerAdapter {
         static final int NUMBER_OF_PAGES = 2;
 
-        private SparseArray<GenericMPDFragment> mRegisteredFragments;
+        private SparseArray<GenericMPDFragment<?>> mRegisteredFragments;
 
         public MyMusicPagerAdapter(FragmentManager fm) {
-            super(fm);
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
             mRegisteredFragments = new SparseArray<>();
         }
 
@@ -266,14 +279,14 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         @NonNull
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            GenericMPDFragment fragment = (GenericMPDFragment) super.instantiateItem(container, position);
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            final GenericMPDFragment<?> fragment = (GenericMPDFragment<?>) super.instantiateItem(container, position);
             mRegisteredFragments.put(position, fragment);
             return fragment;
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             mRegisteredFragments.remove(position);
             super.destroyItem(container, position, object);
         }
@@ -287,7 +300,8 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
                 case 1:
                     return new AlbumsFragment();
                 default:
-                    return null;
+                    // should not happen throw exception
+                    throw new IllegalStateException("No fragment defined to return");
             }
         }
 
@@ -297,7 +311,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
             return NUMBER_OF_PAGES;
         }
 
-        public GenericMPDFragment getRegisteredFragment(int position) {
+        public GenericMPDFragment<?> getRegisteredFragment(int position) {
             return mRegisteredFragments.get(position);
         }
     }
@@ -318,13 +332,24 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         }
 
         private void applyFilter(String filter) {
-            GenericMPDFragment fragment = mMyMusicPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
+            // clear filter string first
             if (filter.isEmpty()) {
                 mSearchString = null;
-                fragment.removeFilter();
             } else {
                 mSearchString = filter;
-                fragment.applyFilter(filter);
+            }
+
+            // check if fragment has to be reset
+            if (mViewPager != null) {
+                final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
+
+                if (fragment != null) {
+                    if (mSearchString != null) {
+                        fragment.applyFilter(mSearchString);
+                    } else {
+                        fragment.removeFilter();
+                    }
+                }
             }
         }
     }

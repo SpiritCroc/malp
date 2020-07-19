@@ -36,7 +36,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -66,11 +65,6 @@ import java.util.List;
 public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements AbsListView.OnItemClickListener {
     public static final String EXTRA_FILENAME = "filename";
     public static final String TAG = FilesFragment.class.getSimpleName();
-
-    /**
-     * Main ListView of this fragment
-     */
-    private ListView mListView;
 
     private FilesCallback mCallback;
 

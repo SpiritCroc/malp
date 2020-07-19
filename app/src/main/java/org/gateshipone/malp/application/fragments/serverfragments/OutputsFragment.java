@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -43,10 +42,6 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
 public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements AbsListView.OnItemClickListener {
     public final static String TAG = OutputsFragment.class.getSimpleName();
-    /**
-     * Main ListView of this fragment
-     */
-    private ListView mListView;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

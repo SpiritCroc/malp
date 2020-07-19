@@ -60,11 +60,6 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
     public final static String EXTRA_PLAYLIST_NAME = "name";
 
     /**
-     * Main ListView of this fragment
-     */
-    private ListView mListView;
-
-    /**
      * Name of the playlist to load
      */
     private String mPath;
