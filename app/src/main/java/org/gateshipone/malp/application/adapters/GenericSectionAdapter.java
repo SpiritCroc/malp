@@ -230,6 +230,9 @@ public abstract class GenericSectionAdapter<T extends MPDGenericItem> extends Ba
         return position;
     }
 
+    public void setItemSize(int size) {
+        // method only needed if adapter supports grid view
+    }
 
     private void createSections() {
         // Get write lock, to ensure count does not change during execution
