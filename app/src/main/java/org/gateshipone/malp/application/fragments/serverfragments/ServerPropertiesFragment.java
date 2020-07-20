@@ -47,8 +47,6 @@ import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTabSelectedListener {
     public static final String TAG = ServerPropertiesFragment.class.getSimpleName();
 
-    private ServerPropertiesTabAdapter mTabAdapter;
-
     private FABFragmentCallback mFABCallback = null;
 
     private ViewPager mViewPager;
@@ -60,13 +58,12 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_tab_pager, container, false);
 
-
         // create tabs
         TabLayout tabLayout = rootView.findViewById(R.id.my_music_tab_layout);
 
         mViewPager = rootView.findViewById(R.id.my_music_viewpager);
-        mTabAdapter = new ServerPropertiesTabAdapter(getChildFragmentManager());
-        mViewPager.setAdapter(mTabAdapter);
+        ServerPropertiesTabAdapter tabAdapter = new ServerPropertiesTabAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(tabAdapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(this);
 
@@ -151,7 +148,7 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
 
     }
 
-    private class ServerPropertiesTabAdapter extends FragmentStatePagerAdapter {
+    private static class ServerPropertiesTabAdapter extends FragmentStatePagerAdapter {
         static final int NUMBER_OF_PAGES = 2;
 
         ServerPropertiesTabAdapter(FragmentManager fm) {
@@ -177,7 +174,8 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
                 case 1:
                     return new OutputsFragment();
                 default:
-                    return null;
+                    // should not happen throw exception
+                    throw new IllegalStateException("No fragment defined to return");
             }
         }
     }
