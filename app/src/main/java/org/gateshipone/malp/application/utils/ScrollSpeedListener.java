@@ -22,7 +22,6 @@
 
 package org.gateshipone.malp.application.utils;
 
-
 import android.widget.AbsListView;
 import android.widget.GridView;
 
@@ -81,24 +80,24 @@ public class ScrollSpeedListener implements AbsListView.OnScrollListener {
         // New row started if this is true.
         if (firstVisibleItem != mLastFirstVisibleItem) {
             long currentTime = System.currentTimeMillis();
-            if (currentTime == mLastTime) {
-                return;
-            }
+
             // Calculate the duration of scroll per line
             long timeScrollPerRow = currentTime - mLastTime;
 
-
-            if ( view instanceof GridView ) {
-                GridView gw = (GridView)view;
-                mScrollSpeed = (int) (1000 / timeScrollPerRow) * gw.getNumColumns();
+            if (timeScrollPerRow != 0) {
+                if (view instanceof GridView) {
+                    GridView gw = (GridView) view;
+                    mScrollSpeed = (int) (1000 / timeScrollPerRow) * gw.getNumColumns();
+                } else {
+                    mScrollSpeed = (int) (1000 / timeScrollPerRow);
+                }
             } else {
-                mScrollSpeed = (int) (1000 / timeScrollPerRow);
+                mScrollSpeed = Integer.MAX_VALUE;
             }
 
             // Calculate how many items per second of loading images is possible
-            int possibleItems = (int)(1000/mAdapter.getAverageImageLoadTime());
-
-
+            int imageLoadingRate = (int)(1000/mAdapter.getAverageImageLoadTime());
+            
             // Set the scrollspeed in the adapter
             mAdapter.setScrollSpeed(mScrollSpeed);
 
@@ -107,7 +106,7 @@ public class ScrollSpeedListener implements AbsListView.OnScrollListener {
             mLastTime = currentTime;
             // Start the items image loader task only if scroll speed is slow enough:
             // The devices is able to render the images needed for the scroll speed
-            if (mScrollSpeed < possibleItems) {
+            if (mScrollSpeed < imageLoadingRate) {
                 for (int i = 0; i < visibleItemCount; i++) {
                     AbsImageListViewItem listItem = (AbsImageListViewItem) mListView.getChildAt(i);
                     listItem.startCoverImageTask();
