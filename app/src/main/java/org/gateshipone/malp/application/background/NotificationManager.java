@@ -36,10 +36,11 @@ import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.media.MediaMetadataCompat;
-import androidx.media.VolumeProviderCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+
 import androidx.core.app.NotificationCompat;
+import androidx.media.VolumeProviderCompat;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
 import org.gateshipone.malp.R;
@@ -491,7 +492,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
      * Callback class for MediaControls controlled by android system like BT remotes, etc and
      * Volume keys on some android versions.
      */
-    private class MALPMediaSessionCallback extends MediaSessionCompat.Callback {
+    private static class MALPMediaSessionCallback extends MediaSessionCompat.Callback {
 
         @Override
         public void onPlay() {

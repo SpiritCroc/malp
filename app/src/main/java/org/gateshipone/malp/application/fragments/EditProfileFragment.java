@@ -26,10 +26,6 @@ package org.gateshipone.malp.application.fragments;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.textfield.TextInputEditText;
-import androidx.fragment.app.Fragment;
-import androidx.core.graphics.drawable.DrawableCompat;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -40,6 +36,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Switch;
+
+import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
@@ -158,7 +160,7 @@ public class EditProfileFragment extends Fragment {
         mStreamingEnabledView.setChecked(mStreamingEnabled);
         mStreamingEnabledView.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                if ( mStreamingURLView.getText().toString().isEmpty()) {
+                if (mStreamingURLView.getText().toString().isEmpty()) {
                     // Check if a text was already set otherwise show an example
                     mStreamingURL = "http://" + mHostnameView.getText().toString() + ":8080";
                     mStreamingURLView.setText(mStreamingURL);
@@ -281,7 +283,7 @@ public class EditProfileFragment extends Fragment {
 
         if (profileChanged) {
             if (null != mOldProfile) {
-                ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile(mOldProfile,getActivity());
+                ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile(mOldProfile, getActivity());
             } else {
                 mOldProfile = new MPDServerProfile(mProfilename, true);
             }
@@ -308,7 +310,7 @@ public class EditProfileFragment extends Fragment {
         }
     }
 
-    private class PortNumberFilter implements InputFilter {
+    private static class PortNumberFilter implements InputFilter {
         public CharSequence filter(CharSequence source, int start, int end,
                                    Spanned dest, int dstart, int dend) {
             if (end > start) {
@@ -375,7 +377,7 @@ public class EditProfileFragment extends Fragment {
                 getActivity().onBackPressed();
                 return true;
             case R.id.action_delete:
-                ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile(mOldProfile,getContext());
+                ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile(mOldProfile, getContext());
                 mOptionsMenuHandled = true;
                 getActivity().onBackPressed();
                 return true;

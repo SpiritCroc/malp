@@ -540,7 +540,7 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
     /**
      * Listener class for the position seekbar.
      */
-    private class PositionSeekbarListener implements SeekBar.OnSeekBarChangeListener {
+    private static class PositionSeekbarListener implements SeekBar.OnSeekBarChangeListener {
         /**
          * Called if the user drags the seekbar to a new position or the seekbar is altered from
          * outside. Just do some seeking, if the action is done by the user.

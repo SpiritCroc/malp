@@ -1282,7 +1282,7 @@ class MPDConnection {
     }
 
     // FIXME remove when stable. Only a helper class to ensure correct locking order
-    private class ConnectionSemaphore extends Semaphore {
+    private static class ConnectionSemaphore extends Semaphore {
 
         private ConnectionSemaphore(int permits) {
             super(permits);

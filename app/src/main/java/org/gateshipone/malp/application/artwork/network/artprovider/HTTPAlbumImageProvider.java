@@ -166,7 +166,7 @@ public class HTTPAlbumImageProvider extends ArtProvider {
         mRequestQueue.add(byteResponse);
     }
 
-    private class HTTPMultiRequest {
+    private static class HTTPMultiRequest {
 
         private int mFailureCount;
 

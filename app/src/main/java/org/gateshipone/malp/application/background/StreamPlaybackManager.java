@@ -133,7 +133,7 @@ public class StreamPlaybackManager {
         }
     }
 
-    private class CompletionListener implements MediaPlayer.OnCompletionListener {
+    private static class CompletionListener implements MediaPlayer.OnCompletionListener {
 
         @Override
         public void onCompletion(MediaPlayer mp) {

@@ -267,7 +267,7 @@ public class WidgetProvider extends AppWidgetProvider {
         updateWidget(context);
     }
 
-    private class CoverReceiver implements CoverBitmapLoader.CoverBitmapListener {
+    private static class CoverReceiver implements CoverBitmapLoader.CoverBitmapListener {
         WeakReference<Context> mContext;
         WeakReference<WidgetProvider> mProvider;
 

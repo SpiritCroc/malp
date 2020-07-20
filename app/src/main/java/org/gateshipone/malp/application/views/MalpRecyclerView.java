@@ -89,7 +89,7 @@ public class MalpRecyclerView extends RecyclerView {
         }
     }
 
-    private class RecyclerViewOnItemClickListener implements RecyclerView.OnItemTouchListener {
+    private static class RecyclerViewOnItemClickListener implements RecyclerView.OnItemTouchListener {
 
         private final OnItemClickListener mOnItemClickListener;
 

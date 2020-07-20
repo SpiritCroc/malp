@@ -1483,7 +1483,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         }
     }
 
-    private class PositionSeekbarListener implements SeekBar.OnSeekBarChangeListener {
+    private static class PositionSeekbarListener implements SeekBar.OnSeekBarChangeListener {
         /**
          * Called if the user drags the seekbar to a new position or the seekbar is altered from
          * outside. Just do some seeking, if the action is done by the user.
