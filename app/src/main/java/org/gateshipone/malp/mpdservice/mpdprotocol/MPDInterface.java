@@ -49,8 +49,8 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MPDInterface {
-    private final String TAG = MPDInterface.class.getSimpleName();
-    private final int ARTWORK_TIMEOUT = 60000;
+    private final static String TAG = MPDInterface.class.getSimpleName();
+    private final static int ARTWORK_TIMEOUT = 60000;
 
     private final MPDConnection mConnection;
 
@@ -65,6 +65,8 @@ public class MPDInterface {
     private Timer mArtworkTimeout = null;
     private ReentrantLock mArtworkLock = new ReentrantLock();
 
+    private MPDCache mCache;
+
     private MPDInterface() {
         mConnection = new MPDConnection();
     }
@@ -76,10 +78,12 @@ public class MPDInterface {
         mHostname = hostname;
         mPassword = password;
         mPort = port;
+        mCache = new MPDCache(0);
     }
 
     public synchronized void connect() throws MPDException {
         mConnection.connectToServer();
+        invalidateCache();
     }
 
     public synchronized void disconnect() {
@@ -122,6 +126,12 @@ public class MPDInterface {
      */
     public List<MPDAlbum> getAlbums() throws MPDException {
         List<MPDAlbum> albums;
+        checkCacheState();
+
+        albums = mCache.getAlbums();
+        if (albums != null) {
+            return albums;
+        }
         synchronized (this) {
             // Get a list of albums. Check if server is new enough for MB and AlbumArtist filtering
             mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMS(mConnection.getServerCapabilities()));
@@ -138,6 +148,8 @@ public class MPDInterface {
                 break;
             }
         }
+
+        mCache.cacheAlbums(albums);
         return albums;
     }
 
@@ -254,15 +266,21 @@ public class MPDInterface {
      * @return List of MPDArtist objects
      */
     public synchronized List<MPDArtist> getArtists() throws MPDException {
+        checkCacheState();
+        List<MPDArtist> artists = mCache.getArtists();
+        if (artists != null) {
+            return artists;
+        }
         // Get a list of artists. If server is new enough this will contain MBIDs for artists, that are tagged correctly.
         mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS(mConnection.getServerCapabilities().hasListGroup() && mConnection.getServerCapabilities().hasMusicBrainzTags()));
 
         // Remove first empty artist
-        List<MPDArtist> artists = MPDResponseParser.parseMPDArtists(mConnection, mConnection.getServerCapabilities().hasMusicBrainzTags(), mConnection.getServerCapabilities().hasListGroup());
+        artists = MPDResponseParser.parseMPDArtists(mConnection, mConnection.getServerCapabilities().hasMusicBrainzTags(), mConnection.getServerCapabilities().hasListGroup());
         if (artists.size() > 0 && artists.get(0).getArtistName().isEmpty()) {
             artists.remove(0);
         }
 
+        mCache.cacheArtists(artists);
         return artists;
     }
 
@@ -272,6 +290,12 @@ public class MPDInterface {
      * @return List of MPDArtist objects
      */
     public synchronized List<MPDArtist> getArtistsSort() throws MPDException {
+        checkCacheState();
+        List<MPDArtist> artists = mCache.getArtistsSort();
+        if (artists != null) {
+            return artists;
+        }
+
         MPDCapabilities capabilities = mConnection.getServerCapabilities();
         // Check if tag is supported
         if (!capabilities.hasTagArtistSort()) {
@@ -282,11 +306,12 @@ public class MPDInterface {
         mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS_SORT(mConnection.getServerCapabilities().hasListGroup() && mConnection.getServerCapabilities().hasMusicBrainzTags()));
 
         // Remove first empty artist
-        List<MPDArtist> artists = MPDResponseParser.parseMPDArtists(mConnection, mConnection.getServerCapabilities().hasMusicBrainzTags(), mConnection.getServerCapabilities().hasListGroup());
+        artists = MPDResponseParser.parseMPDArtists(mConnection, mConnection.getServerCapabilities().hasMusicBrainzTags(), mConnection.getServerCapabilities().hasListGroup());
         if (artists.size() > 0 && artists.get(0).getArtistName().isEmpty()) {
             artists.remove(0);
         }
 
+        mCache.cacheArtistsSort(artists);
         return artists;
     }
 
@@ -297,8 +322,13 @@ public class MPDInterface {
      * @return List of MPDArtist objects
      */
     public List<MPDArtist> getAlbumArtists() throws MPDException {
+        checkCacheState();
         // Get list of artists for MBID correction
-        List<MPDArtist> normalArtists = getArtists();
+        List<MPDArtist> normalArtists = mCache.getAlbumArtists();
+        if (normalArtists != null) {
+            return normalArtists;
+        }
+        normalArtists = getArtists();
 
         MPDCapabilities capabilities = mConnection.getServerCapabilities();
 
@@ -333,6 +363,7 @@ public class MPDInterface {
             artists.remove(0);
         }
 
+        mCache.cacheAlbumArtists(artists);
         return artists;
     }
 
@@ -342,6 +373,12 @@ public class MPDInterface {
      * @return List of MPDArtist objects
      */
     public List<MPDArtist> getAlbumArtistsSort() throws MPDException {
+        checkCacheState();
+
+        List<MPDArtist> normalArtists = mCache.getAlbumArtistsSort();
+        if (normalArtists != null) {
+            return normalArtists;
+        }
         MPDCapabilities capabilities = mConnection.getServerCapabilities();
 
         // Check if tag is supported
@@ -350,7 +387,7 @@ public class MPDInterface {
         }
 
         // Get list of artists for MBID correction
-        List<MPDArtist> normalArtists = getArtistsSort();
+        normalArtists = getArtistsSort();
 
 
         List<MPDArtist> artists;
@@ -383,6 +420,7 @@ public class MPDInterface {
         if (artists.size() > 0 && artists.get(0).getArtistName().isEmpty()) {
             artists.remove(0);
         }
+        mCache.cacheAlbumArtistsSort(artists);
         return artists;
     }
 
@@ -1117,4 +1155,14 @@ public class MPDInterface {
         return imageData;
     }
 
+    private void checkCacheState() throws MPDException {
+        if (mCache.getVersion() != getServerStatistics().getLastDBUpdate()) {
+            invalidateCache();
+        }
+    }
+
+    private void invalidateCache() throws MPDException {
+        Log.v(TAG, "MPD cache invalidate");
+        mCache = new MPDCache(getServerStatistics().getLastDBUpdate());
+    }
 }
