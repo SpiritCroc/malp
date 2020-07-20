@@ -25,6 +25,8 @@ package org.gateshipone.malp.application.adapters;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.GridView;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
@@ -32,30 +34,26 @@ import org.gateshipone.malp.application.listviewitems.GenericGridItem;
 import org.gateshipone.malp.application.listviewitems.ImageListItem;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
-public class ArtistsAdapter extends GenericSectionAdapter<MPDArtist> implements ArtworkManager.onNewArtistImageListener {
+public class ArtistsAdapter extends GenericSectionAdapter<MPDArtist> implements ArtworkManager.onNewArtistImageListener{
 
+    private final AbsListView mListView;
     private final Context mContext;
 
     private boolean mUseList;
+    private int mListItemHeight;
 
     private ArtworkManager mArtworkManager;
 
-    /**
-     * the size of the item in pixel
-     * this will be used to adjust griditems and select a proper dimension for the image loading process
-     */
-    private int mItemSize;
 
-    public ArtistsAdapter(final Context context, final boolean useList) {
+    public ArtistsAdapter(Context context, AbsListView rootGrid, boolean useList) {
         super();
 
         mContext = context;
+        mListView = rootGrid;
 
         mUseList = useList;
         if (mUseList) {
-            mItemSize = (int) context.getResources().getDimension(R.dimen.material_list_item_height);
-        } else {
-            mItemSize = (int) context.getResources().getDimension(R.dimen.grid_item_height);
+            mListItemHeight = (int)context.getResources().getDimension(R.dimen.material_list_item_height);
         }
         mArtworkManager = ArtworkManager.getInstance(context.getApplicationContext());
 
@@ -63,14 +61,14 @@ public class ArtistsAdapter extends GenericSectionAdapter<MPDArtist> implements 
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        MPDArtist artist = (MPDArtist) getItem(position);
+        MPDArtist artist = (MPDArtist)getItem(position);
         String label = artist.getArtistName();
 
-        if (label.isEmpty()) {
+        if ( label.isEmpty() ) {
             label = mContext.getResources().getString(R.string.no_artist_tag);
         }
 
-        if (mUseList) {
+        if ( mUseList ) {
             // Check if a view can be recycled
             ImageListItem listItem;
             if (convertView != null) {
@@ -86,24 +84,25 @@ public class ArtistsAdapter extends GenericSectionAdapter<MPDArtist> implements 
             listItem.prepareArtworkFetching(mArtworkManager, artist);
             // Check if the scroll speed currently is already 0, then start the image task right away.
             if (mScrollSpeed == 0) {
-                listItem.setImageDimension(mItemSize, mItemSize);
+                listItem.setImageDimension(mListItemHeight, mListItemHeight);
                 listItem.startCoverImageTask();
             }
             return listItem;
         } else {
             GenericGridItem gridItem;
             ViewGroup.LayoutParams layoutParams;
-
+            int width = ((GridView)mListView).getColumnWidth();
             // Check if a view can be recycled
-            if (convertView != null) {
+            if (convertView == null) {
+                // Create new view if no reusable is available
+                gridItem = new GenericGridItem(mContext, label, this);
+                layoutParams = new android.widget.AbsListView.LayoutParams(width, width);
+            } else {
                 gridItem = (GenericGridItem) convertView;
                 gridItem.setTitle(label);
                 layoutParams = gridItem.getLayoutParams();
-                layoutParams.height = mItemSize;
-            } else {
-                // Create new view if no reusable is available
-                gridItem = new GenericGridItem(mContext, label, this);
-                layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mItemSize);
+                layoutParams.height = width;
+                layoutParams.width = width;
             }
 
             // Make sure to reset the layoutParams in case of change (rotation for example)
@@ -114,7 +113,7 @@ public class ArtistsAdapter extends GenericSectionAdapter<MPDArtist> implements 
 
             // Check if the scroll speed currently is already 0, then start the image task right away.
             if (mScrollSpeed == 0) {
-                gridItem.setImageDimension(mItemSize, mItemSize);
+                gridItem.setImageDimension(width, width);
                 gridItem.startCoverImageTask();
             }
             return gridItem;
@@ -123,20 +122,6 @@ public class ArtistsAdapter extends GenericSectionAdapter<MPDArtist> implements 
 
     @Override
     public void newArtistImage(MPDArtist artist) {
-        notifyDataSetChanged();
-    }
-
-    /**
-     * Sets the itemsize for each item.
-     * This value will adjust the height of a griditem and will be used for image loading.
-     * Calling this method will notify any registered observers that the data set has changed.
-     *
-     * @param size The new size in pixel.
-     */
-    @Override
-    public void setItemSize(int size) {
-        mItemSize = size;
-
         notifyDataSetChanged();
     }
 }

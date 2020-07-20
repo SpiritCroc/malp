@@ -23,12 +23,8 @@
 package org.gateshipone.malp.application.fragments.serverfragments;
 
 
-import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
-import android.widget.GridView;
-import android.widget.ListAdapter;
 
-import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.GenericSectionAdapter;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
 
@@ -77,43 +73,5 @@ public abstract class GenericMPDFragment<T extends MPDGenericItem> extends BaseM
      */
     public void removeFilter() {
         throw new IllegalStateException("removeFilter hasn't been implemented in the subclass");
-    }
-
-    /**
-     * This method will add an observer to adjust the spancount of the grid after an orientation change.
-     * <p>
-     * You should only call this method if the mListView was initialized as a {@link GridView} and has a valid adapter.
-     */
-    protected void observeGridLayoutSize() {
-        mListView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                final int listViewWidth = mListView.getWidth();
-
-                if (listViewWidth > 0) {
-                    // layout finished so remove observer
-                    mListView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                    final float gridItemWidth = getResources().getDimensionPixelSize(R.dimen.grid_item_height);
-
-                    // the minimum spancount should always be 2
-                    final int newSpanCount = Math.max((int) Math.floor(listViewWidth / gridItemWidth), 2);
-
-                    if (mListView instanceof GridView) {
-                        ((GridView) mListView).setNumColumns(newSpanCount);
-                    }
-
-                    mListView.requestLayout();
-
-                    // pass the columnWidth to the adapter to adjust the size of the griditems
-                    final int columnWidth = listViewWidth / newSpanCount;
-                    final ListAdapter adapter = mListView.getAdapter();
-
-                    if (adapter != null) {
-                        ((GenericSectionAdapter<?>) adapter).setItemSize(columnWidth);
-                    }
-                }
-            }
-        });
     }
 }

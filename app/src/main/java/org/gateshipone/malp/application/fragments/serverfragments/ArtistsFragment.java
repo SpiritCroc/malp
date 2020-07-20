@@ -100,18 +100,16 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
             mListView = (GridView) rootView.findViewById(R.id.grid_refresh_gridview);
         }
 
-        mAdapter = new ArtistsAdapter(getActivity(), mUseList);
+        mAdapter = new ArtistsAdapter(getActivity(), mListView, mUseList);
 
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
-        mListView.setOnScrollListener(new ScrollSpeedListener(mAdapter));
 
-        if (!mUseList) {
-            observeGridLayoutSize();
-        }
+        mListView.setOnScrollListener(new ScrollSpeedListener(mAdapter));
 
         // register for context menu
         registerForContextMenu(mListView);
+
 
         // get swipe layout
         mSwipeRefreshLayout = rootView.findViewById(R.id.refresh_layout);
