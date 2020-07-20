@@ -198,8 +198,8 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
         super();
         mContext = context;
 
-        mTrackResponseHandler = new PlaylistFetchResponseHandler();
-        mStateListener = new PlaylistStateListener();
+        mTrackResponseHandler = new PlaylistFetchResponseHandler(this);
+        mStateListener = new PlaylistStateListener(this);
         mConnectionListener = new ConnectionStateChangeListener(this, context.getMainLooper());
 
         if (null != listView) {
@@ -377,47 +377,27 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
         }
     }
 
-
     /**
      * Private class used to receive status updates from MPDStateMonitoringHandler
      */
-    private class PlaylistStateListener extends MPDStatusChangeHandler {
+    private static class PlaylistStateListener extends MPDStatusChangeHandler {
+
+        private final WeakReference<CurrentPlaylistAdapter> mCurrentPlaylistAdapter;
+
+        PlaylistStateListener(final CurrentPlaylistAdapter currentPlaylistAdapter) {
+            mCurrentPlaylistAdapter = new WeakReference<>(currentPlaylistAdapter);
+        }
+
         /**
          * Will be called from the MPDStateMonitoringHandler if a new MPDCurrentStatus is ready.
          *
          * @param status
          */
         protected void onNewStatusReady(MPDCurrentStatus status) {
-            boolean newPl = false;
-            // Check if the playlist changed or this is called the first time.
-            if ((null == mLastStatus) || (mLastStatus.getPlaylistVersion() != status.getPlaylistVersion())) {
-                newPl = true;
-            }
+            final CurrentPlaylistAdapter currentPlaylistAdapter = mCurrentPlaylistAdapter.get();
 
-            // If it is the first status update set the highlighted song to the index of the status.
-            if (null == mLastStatus) {
-                // The current song index has changed. Set the old one to false and the new one to true.
-                int index = status.getCurrentSongIndex();
-
-                if (index < getCount()) {
-                    setCurrentIndex(index);
-                }
-            } else {
-                // If it is not the first status check if the song index changed and only then move the view.
-                if (mLastStatus.getCurrentSongIndex() != status.getCurrentSongIndex()) {
-                    // The current song index has changed. Set the old one to false and the new one to true.
-                    int index = status.getCurrentSongIndex();
-
-                    setCurrentIndex(index);
-                }
-            }
-
-            // Save the status for use in other methods of this adapter
-            mLastStatus = status;
-
-            // If the playlist changed on the server side, update the internal list state of this adapter.
-            if (newPl) {
-                updatePlaylist();
+            if (currentPlaylistAdapter != null) {
+                currentPlaylistAdapter.updateStatus(status);
             }
         }
 
@@ -427,7 +407,41 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
          * @param track
          */
         protected void onNewTrackReady(MPDTrack track) {
+            /* not needed here */
+        }
+    }
 
+    private void updateStatus(final MPDCurrentStatus status) {
+        boolean newPl = false;
+        // Check if the playlist changed or this is called the first time.
+        if ((null == mLastStatus) || (mLastStatus.getPlaylistVersion() != status.getPlaylistVersion())) {
+            newPl = true;
+        }
+
+        // If it is the first status update set the highlighted song to the index of the status.
+        if (null == mLastStatus) {
+            // The current song index has changed. Set the old one to false and the new one to true.
+            int index = status.getCurrentSongIndex();
+
+            if (index < getCount()) {
+                setCurrentIndex(index);
+            }
+        } else {
+            // If it is not the first status check if the song index changed and only then move the view.
+            if (mLastStatus.getCurrentSongIndex() != status.getCurrentSongIndex()) {
+                // The current song index has changed. Set the old one to false and the new one to true.
+                int index = status.getCurrentSongIndex();
+
+                setCurrentIndex(index);
+            }
+        }
+
+        // Save the status for use in other methods of this adapter
+        mLastStatus = status;
+
+        // If the playlist changed on the server side, update the internal list state of this adapter.
+        if (newPl) {
+            updatePlaylist();
         }
     }
 
@@ -435,7 +449,13 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
      * Private class to handle asynchronous track responses from MPDQueryHandler. This is used
      * to handle the requested song list.
      */
-    private class PlaylistFetchResponseHandler extends MPDResponseFileList {
+    private static class PlaylistFetchResponseHandler extends MPDResponseFileList {
+
+        private final WeakReference<CurrentPlaylistAdapter> mCurrentPlaylistAdapter;
+
+        PlaylistFetchResponseHandler(final CurrentPlaylistAdapter currentPlaylistAdapter) {
+            mCurrentPlaylistAdapter = new WeakReference<>(currentPlaylistAdapter);
+        }
 
         /**
          * Called when a list of songs is ready.
@@ -446,55 +466,61 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
          */
         @Override
         public void handleTracks(List<MPDFileEntry> trackList, int start, int end) {
-            // If the ranged playlist feature is disabled
-            if (!mWindowEnabled) {
-                // Save the new playlist
-                mPlaylist = trackList;
+            final CurrentPlaylistAdapter currentPlaylistAdapter = mCurrentPlaylistAdapter.get();
 
-                // Set the index active for the currently playing/paused song (if any)
-                if (null != mLastStatus) {
-                    int index = mLastStatus.getCurrentSongIndex();
-                    if ((null != mPlaylist) && (index < mPlaylist.size())) {
-                        setCurrentIndex(index);
-                    }
+            if (currentPlaylistAdapter != null) {
+                currentPlaylistAdapter.updatePlaylist(trackList, start);
+            }
+        }
+    }
+
+    private void updatePlaylist(final List<MPDFileEntry> trackList, final int start) {
+        // If the ranged playlist feature is disabled
+        if (!mWindowEnabled) {
+            // Save the new playlist
+            mPlaylist = trackList;
+
+            // Set the index active for the currently playing/paused song (if any)
+            if (null != mLastStatus) {
+                int index = mLastStatus.getCurrentSongIndex();
+                if ((null != mPlaylist) && (index < mPlaylist.size())) {
+                    setCurrentIndex(index);
                 }
-                // Notify the listener for this adapter
-                notifyDataSetChanged();
-            } else {
-                // Get the lock to prevent race-conditions.
-                mListsLock.writeLock().lock();
+            }
+            // Notify the listener for this adapter
+            notifyDataSetChanged();
+        } else {
+            // Get the lock to prevent race-conditions.
+            mListsLock.writeLock().lock();
 
-                if (mWindowedPlaylists.length <= start / WINDOW_SIZE) {
-                    // Obviously we received old data here. Abort handling.
-                    // Crash reported via Google Play (07.11.2016)
-                    mListsLock.writeLock().unlock();
-                    return;
-                }
-
-                // If a ranged playlist is used, then the list block is saved into the array of list blocks at
-                // the position depending on the start position and the WINDOW_SIZE
-                mWindowedPlaylists[start / WINDOW_SIZE] = trackList;
-
-                // Set the list state to ready.
-                mWindowedListStates[start / WINDOW_SIZE] = LIST_STATE.LIST_READY;
-
-                // Check if a clean up timer is already running and cancel it in case.
-                if (null != mClearTimer) {
-                    mClearTimer.cancel();
-                }
-                // Start a new cleanup task to cleanup old mess
-                mClearTimer = new Timer();
-                mClearTimer.schedule(new ListCleanUp(), CLEANUP_TIMEOUT);
-
-                // Relinquish the lock again
+            if (mWindowedPlaylists.length <= start / WINDOW_SIZE) {
+                // Obviously we received old data here. Abort handling.
+                // Crash reported via Google Play (07.11.2016)
                 mListsLock.writeLock().unlock();
-
-                // Notify the system that the internal data changed. This will change "loading" track
-                // views to the finished ones.
-                notifyDataSetChanged();
+                return;
             }
 
+            // If a ranged playlist is used, then the list block is saved into the array of list blocks at
+            // the position depending on the start position and the WINDOW_SIZE
+            mWindowedPlaylists[start / WINDOW_SIZE] = trackList;
 
+            // Set the list state to ready.
+            mWindowedListStates[start / WINDOW_SIZE] = LIST_STATE.LIST_READY;
+
+            // Check if a clean up timer is already running and cancel it in case.
+            if (null != mClearTimer) {
+                mClearTimer.cancel();
+            }
+            // Start a new cleanup task to cleanup old mess
+            mClearTimer = new Timer();
+            mClearTimer.schedule(new ListCleanUp(), CLEANUP_TIMEOUT);
+
+            // Relinquish the lock again
+            mListsLock.writeLock().unlock();
+
+            // Notify the system that the internal data changed. This will change "loading" track
+            // views to the finished ones.
+            notifyDataSetChanged();
         }
     }
 

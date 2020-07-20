@@ -296,34 +296,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
                 Log.v(TAG, "Try to get all tracks from MPD");
             }
 
-            MPDQueryHandler.getAllTracks(new MPDResponseFileList() {
-                @Override
-                public void handleTracks(List<MPDFileEntry> trackList, int windowstart, int windowend) {
-                    if (BuildConfig.DEBUG) {
-                        Log.v(TAG, "Received track count: " + trackList.size());
-                    }
-
-                    final HashMap<String, MPDTrack> albumPaths = new HashMap<>();
-
-                    // Get a list of unique album folders
-                    for (MPDFileEntry track : trackList) {
-                        String dirPath = FormatHelper.getDirectoryFromPath(track.getPath());
-                        if (track instanceof MPDTrack && !albumPaths.containsKey(dirPath)) {
-                            albumPaths.put(FormatHelper.getDirectoryFromPath(track.getPath()), (MPDTrack) track);
-                        }
-                    }
-
-                    if (BuildConfig.DEBUG) {
-                        Log.v(TAG, "Unique path count: " + albumPaths.size());
-                    }
-
-                    for (MPDTrack track : albumPaths.values()) {
-                        mArtworkRequestQueue.add(new ArtworkRequestModel(track));
-                    }
-
-                    fetchAllArtists();
-                }
-            });
+            MPDQueryHandler.getAllTracks(new TracksResponseHandler(this));
         } else {
             fetchAllAlbums();
         }
@@ -331,20 +304,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     private void fetchAllAlbums() {
         if (!mAlbumProvider.equals(getApplicationContext().getString((R.string.pref_artwork_provider_none_key)))) {
-            MPDQueryHandler.getAlbums(new MPDResponseAlbumList() {
-                @Override
-                public void handleAlbums(List<MPDAlbum> albumList) {
-                    if (BuildConfig.DEBUG) {
-                        Log.v(TAG, "Received " + albumList.size() + " albums for bulk loading");
-                    }
-
-                    for (MPDAlbum album : albumList) {
-                        mArtworkRequestQueue.add(new ArtworkRequestModel(album));
-                    }
-
-                    fetchAllArtists();
-                }
-            });
+            MPDQueryHandler.getAlbums(new AlbumsResponseHandler(this));
         } else {
             fetchAllArtists();
         }
@@ -352,20 +312,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     private void fetchAllArtists() {
         if (!mArtistProvider.equals(getApplicationContext().getString((R.string.pref_artwork_provider_none_key)))) {
-            MPDQueryHandler.getArtists(new MPDResponseArtistList() {
-                @Override
-                public void handleArtists(List<MPDArtist> artistList) {
-                    if (BuildConfig.DEBUG) {
-                        Log.v(TAG, "Received " + artistList.size() + " artists for bulk loading");
-                    }
-
-                    for (MPDArtist artist : artistList) {
-                        mArtworkRequestQueue.add(new ArtworkRequestModel(artist));
-                    }
-
-                    startBulkDownload();
-                }
-            });
+            MPDQueryHandler.getArtists(new ArtistsResponseHandler(this));
         } else {
             startBulkDownload();
         }
@@ -556,5 +503,106 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
             }
 
         }
+    }
+
+    private static class ArtistsResponseHandler extends MPDResponseArtistList {
+        private final WeakReference<BulkDownloadService> mBulkDownloadService;
+
+        ArtistsResponseHandler(final BulkDownloadService bulkDownloadService) {
+            mBulkDownloadService = new WeakReference<>(bulkDownloadService);
+        }
+
+        @Override
+        public void handleArtists(List<MPDArtist> artistList) {
+            final BulkDownloadService bulkDownloadService = mBulkDownloadService.get();
+
+            if (bulkDownloadService != null) {
+                bulkDownloadService.addArtistsAndStartDownload(artistList);
+            }
+        }
+    }
+
+    private static class AlbumsResponseHandler extends MPDResponseAlbumList {
+        private final WeakReference<BulkDownloadService> mBulkDownloadService;
+
+        AlbumsResponseHandler(final BulkDownloadService bulkDownloadService) {
+            mBulkDownloadService = new WeakReference<>(bulkDownloadService);
+        }
+
+        @Override
+        public void handleAlbums(List<MPDAlbum> albumList) {
+            final BulkDownloadService bulkDownloadService = mBulkDownloadService.get();
+
+            if (bulkDownloadService != null) {
+                bulkDownloadService.addAlbumsAndFetchArtists(albumList);
+            }
+        }
+    }
+
+    private static class TracksResponseHandler extends MPDResponseFileList {
+        private final WeakReference<BulkDownloadService> mBulkDownloadService;
+
+        TracksResponseHandler(final BulkDownloadService bulkDownloadService) {
+            mBulkDownloadService = new WeakReference<>(bulkDownloadService);
+        }
+
+        @Override
+        public void handleTracks(List<MPDFileEntry> fileList, int windowstart, int windowend) {
+            final BulkDownloadService bulkDownloadService = mBulkDownloadService.get();
+
+            if (bulkDownloadService != null) {
+                bulkDownloadService.addTracksAndStartDownload(fileList);
+            }
+        }
+    }
+
+    private void addAlbumsAndFetchArtists(final List<MPDAlbum> albumList) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Received " + albumList.size() + " albums for bulk loading");
+        }
+
+        for (MPDAlbum album : albumList) {
+            mArtworkRequestQueue.add(new ArtworkRequestModel(album));
+        }
+
+        fetchAllArtists();
+    }
+
+    private void addArtistsAndStartDownload(final List<MPDArtist> artistList) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Received " + artistList.size() + " artists for bulk loading");
+        }
+
+        for (MPDArtist artist : artistList) {
+            mArtworkRequestQueue.add(new ArtworkRequestModel(artist));
+        }
+
+        startBulkDownload();
+    }
+
+    private void addTracksAndStartDownload(final List<MPDFileEntry> trackList) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Received track count: " + trackList.size());
+        }
+
+        final HashMap<String, MPDTrack> albumPaths = new HashMap<>();
+
+        // Get a list of unique album folders
+        for (MPDFileEntry track : trackList) {
+            String dirPath = FormatHelper.getDirectoryFromPath(track.getPath());
+            if (track instanceof MPDTrack && !albumPaths.containsKey(dirPath)) {
+                albumPaths.put(FormatHelper.getDirectoryFromPath(track.getPath()), (MPDTrack) track);
+            }
+        }
+
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Unique path count: " + albumPaths.size());
+        }
+
+        for (MPDTrack track : albumPaths.values()) {
+            mArtworkRequestQueue.add(new ArtworkRequestModel(track));
+        }
+
+        fetchAllArtists();
     }
 }

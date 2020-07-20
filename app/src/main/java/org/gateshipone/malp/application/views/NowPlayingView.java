@@ -245,7 +245,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
     public NowPlayingView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mDragHelper = ViewDragHelper.create(this, 1f, new BottomDragCallbackHelper());
-        mStateListener = new ServerStatusListener();
+        mStateListener = new ServerStatusListener(this);
         mConnectionStateListener = new ServerConnectionListener(this, getContext().getMainLooper());
         mLastStatus = new MPDCurrentStatus();
         mLastTrack = new MPDTrack("");
@@ -1449,16 +1449,30 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         void onStartDrag();
     }
 
-    private class ServerStatusListener extends MPDStatusChangeHandler {
+    private static class ServerStatusListener extends MPDStatusChangeHandler {
+
+        private final WeakReference<NowPlayingView> mNowPlayingView;
+
+        ServerStatusListener(final NowPlayingView nowPlayingView) {
+            mNowPlayingView = new WeakReference<>(nowPlayingView);
+        }
 
         @Override
         protected void onNewStatusReady(MPDCurrentStatus status) {
-            updateMPDStatus(status);
+            final NowPlayingView nowPlayingView = mNowPlayingView.get();
+
+            if (nowPlayingView != null) {
+                nowPlayingView.updateMPDStatus(status);
+            }
         }
 
         @Override
         protected void onNewTrackReady(MPDTrack track) {
-            updateMPDCurrentTrack(track);
+            final NowPlayingView nowPlayingView = mNowPlayingView.get();
+
+            if (nowPlayingView != null) {
+                nowPlayingView.updateMPDCurrentTrack(track);
+            }
         }
     }
 

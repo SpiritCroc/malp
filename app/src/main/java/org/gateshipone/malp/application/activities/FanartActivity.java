@@ -49,6 +49,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.MPDException;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
+import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -138,7 +139,7 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
         mPlayPauseButton.setOnClickListener(view -> MPDCommandHandler.togglePause());
 
         if (null == mStateListener) {
-            mStateListener = new ServerStatusListener();
+            mStateListener = new ServerStatusListener(this);
         }
 
         mSwitcher.setOnClickListener(v -> {
@@ -356,16 +357,30 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
     /**
      * Callback handler to react to changes in server status or a new playing track.
      */
-    private class ServerStatusListener extends MPDStatusChangeHandler {
+    private static class ServerStatusListener extends MPDStatusChangeHandler {
+
+        private final WeakReference<FanartActivity> mFanartActivity;
+
+        ServerStatusListener(final FanartActivity fanartActivity) {
+            mFanartActivity = new WeakReference<>(fanartActivity);
+        }
 
         @Override
         protected void onNewStatusReady(MPDCurrentStatus status) {
-            updateMPDStatus(status);
+            final FanartActivity fanartActivity = mFanartActivity.get();
+
+            if (fanartActivity != null) {
+                fanartActivity.updateMPDStatus(status);
+            }
         }
 
         @Override
         protected void onNewTrackReady(MPDTrack track) {
-            updateMPDCurrentTrack(track);
+            final FanartActivity fanartActivity = mFanartActivity.get();
+
+            if (fanartActivity != null) {
+                fanartActivity.updateMPDCurrentTrack(track);
+            }
         }
     }
 

@@ -95,7 +95,7 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
         mHostname = null;
         mPassword = null;
         mUseCounter = 0;
-        mContext = context;
+        mContext = context.getApplicationContext();
     }
 
     public synchronized static ConnectionManager getInstance(Context context) {
