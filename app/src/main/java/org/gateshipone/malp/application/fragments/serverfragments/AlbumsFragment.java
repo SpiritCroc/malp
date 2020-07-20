@@ -130,7 +130,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
         mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
 
-        mAdapter = new AlbumsAdapter(getActivity(), mAdapterView, mUseList);
+        mAdapter = new AlbumsAdapter(getActivity(), mUseList);
 
         /* Check if an artistname was given in the extras */
         Bundle args = getArguments();
@@ -146,7 +146,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
         mAdapterView.setAdapter(mAdapter);
         mAdapterView.setOnItemClickListener(this);
-        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter, mAdapterView));
+        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter));
 
         // register for context menu
         registerForContextMenu(mAdapterView);

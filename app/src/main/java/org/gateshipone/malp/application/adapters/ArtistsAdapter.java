@@ -25,7 +25,6 @@ package org.gateshipone.malp.application.adapters;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.GridView;
 
 import org.gateshipone.malp.R;
@@ -34,26 +33,24 @@ import org.gateshipone.malp.application.listviewitems.GenericGridItem;
 import org.gateshipone.malp.application.listviewitems.ImageListItem;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
-public class ArtistsAdapter extends GenericSectionAdapter<MPDArtist> implements ArtworkManager.onNewArtistImageListener{
+public class ArtistsAdapter extends GenericSectionAdapter<MPDArtist> implements ArtworkManager.onNewArtistImageListener {
 
-    private final AbsListView mListView;
     private final Context mContext;
 
     private boolean mUseList;
+
     private int mListItemHeight;
 
     private ArtworkManager mArtworkManager;
 
-
-    public ArtistsAdapter(Context context, AbsListView rootGrid, boolean useList) {
+    public ArtistsAdapter(Context context, boolean useList) {
         super();
 
         mContext = context;
-        mListView = rootGrid;
 
         mUseList = useList;
         if (mUseList) {
-            mListItemHeight = (int)context.getResources().getDimension(R.dimen.material_list_item_height);
+            mListItemHeight = (int) context.getResources().getDimension(R.dimen.material_list_item_height);
         }
         mArtworkManager = ArtworkManager.getInstance(context.getApplicationContext());
 
@@ -61,14 +58,14 @@ public class ArtistsAdapter extends GenericSectionAdapter<MPDArtist> implements 
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        MPDArtist artist = (MPDArtist)getItem(position);
+        MPDArtist artist = (MPDArtist) getItem(position);
         String label = artist.getArtistName();
 
-        if ( label.isEmpty() ) {
+        if (label.isEmpty()) {
             label = mContext.getResources().getString(R.string.no_artist_tag);
         }
 
-        if ( mUseList ) {
+        if (mUseList) {
             // Check if a view can be recycled
             ImageListItem listItem;
             if (convertView != null) {
@@ -91,7 +88,7 @@ public class ArtistsAdapter extends GenericSectionAdapter<MPDArtist> implements 
         } else {
             GenericGridItem gridItem;
             ViewGroup.LayoutParams layoutParams;
-            int width = ((GridView)mListView).getColumnWidth();
+            int width = ((GridView) parent).getColumnWidth();
             // Check if a view can be recycled
             if (convertView == null) {
                 // Create new view if no reusable is available

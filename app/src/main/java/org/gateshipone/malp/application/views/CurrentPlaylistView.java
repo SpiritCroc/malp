@@ -57,7 +57,7 @@ public class CurrentPlaylistView extends LinearLayout implements AdapterView.OnI
         mPlaylistAdapter = new CurrentPlaylistAdapter(getContext(), listView);
 
         listView.setOnItemClickListener(this);
-        listView.setOnScrollListener(new ScrollSpeedListener(mPlaylistAdapter, listView));
+        listView.setOnScrollListener(new ScrollSpeedListener(mPlaylistAdapter));
 
         // Return the ready inflated and configured fragment view.
         mContext = context;
@@ -80,8 +80,8 @@ public class CurrentPlaylistView extends LinearLayout implements AdapterView.OnI
     }
 
     public MPDFileEntry getItem(int position) {
-        if (null != mPlaylistAdapter ) {
-            return (MPDFileEntry)mPlaylistAdapter.getItem(position);
+        if (null != mPlaylistAdapter) {
+            return (MPDFileEntry) mPlaylistAdapter.getItem(position);
         }
         return null;
     }

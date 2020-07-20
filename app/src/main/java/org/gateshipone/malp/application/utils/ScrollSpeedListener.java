@@ -39,31 +39,28 @@ public class ScrollSpeedListener implements AbsListView.OnScrollListener {
     private int mScrollSpeed = 0;
 
     private final ScrollSpeedAdapter mAdapter;
-    private final AbsListView mListView;
 
-    public ScrollSpeedListener(ScrollSpeedAdapter adapter, AbsListView listView) {
+    public ScrollSpeedListener(ScrollSpeedAdapter adapter) {
         super();
-        mListView = listView;
         mAdapter = adapter;
     }
 
     /**
      * Called when a scroll is started/ended and resets the values.
-     * If scrolling stops this will start coverimage tasks
-     * @param view View that has a scrolling state change
+     * If scrolling stops this will start CoverImageTasks
+     *
+     * @param view        View that has a scrolling state change
      * @param scrollState New scrolling state of the view
      */
+    @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
             mScrollSpeed = 0;
             mAdapter.setScrollSpeed(0);
-            for (int i = 0; i <= mListView.getLastVisiblePosition() - mListView.getFirstVisiblePosition(); i++) {
-                AbsImageListViewItem listItem = (AbsImageListViewItem) mListView.getChildAt(i);
+            for (int i = 0; i <= view.getLastVisiblePosition() - view.getFirstVisiblePosition(); i++) {
+                AbsImageListViewItem listItem = (AbsImageListViewItem) view.getChildAt(i);
                 listItem.startCoverImageTask();
             }
-        } else if ( scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL ) {
-            // Reset time values
-            mLastTime = System.currentTimeMillis();
         }
     }
 
@@ -71,11 +68,12 @@ public class ScrollSpeedListener implements AbsListView.OnScrollListener {
      * Called when the associated Listview/GridView is scrolled by the user.
      * This method evaluates if the view is scrolled slow enough to start loading images.
      *
-     * @param view View that is being scrolled.
+     * @param view             View that is being scrolled.
      * @param firstVisibleItem Index of the first visible item
      * @param visibleItemCount Count of visible items
-     * @param totalItemCount Total item count
+     * @param totalItemCount   Total item count
      */
+    @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         // New row started if this is true.
         if (firstVisibleItem != mLastFirstVisibleItem) {
@@ -96,19 +94,19 @@ public class ScrollSpeedListener implements AbsListView.OnScrollListener {
             }
 
             // Calculate how many items per second of loading images is possible
-            int imageLoadingRate = (int)(1000/mAdapter.getAverageImageLoadTime());
-            
-            // Set the scrollspeed in the adapter
+            int imageLoadingRate = (int) (1000 / mAdapter.getAverageImageLoadTime());
+
+            // Set the scroll speed in the adapter
             mAdapter.setScrollSpeed(mScrollSpeed);
 
-            // Save values for next comparsion
+            // Save values for next comparison
             mLastFirstVisibleItem = firstVisibleItem;
             mLastTime = currentTime;
             // Start the items image loader task only if scroll speed is slow enough:
             // The devices is able to render the images needed for the scroll speed
             if (mScrollSpeed < imageLoadingRate) {
                 for (int i = 0; i < visibleItemCount; i++) {
-                    AbsImageListViewItem listItem = (AbsImageListViewItem) mListView.getChildAt(i);
+                    AbsImageListViewItem listItem = (AbsImageListViewItem) view.getChildAt(i);
                     listItem.startCoverImageTask();
                 }
             }

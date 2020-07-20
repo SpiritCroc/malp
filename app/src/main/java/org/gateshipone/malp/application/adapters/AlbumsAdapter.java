@@ -25,7 +25,6 @@ package org.gateshipone.malp.application.adapters;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.GridView;
 
 import org.gateshipone.malp.R;
@@ -36,24 +35,23 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 
 public class AlbumsAdapter extends GenericSectionAdapter<MPDAlbum> implements ArtworkManager.onNewAlbumImageListener {
     private static final String TAG = AlbumsAdapter.class.getSimpleName();
-    private final AbsListView mListView;
+
     private final Context mContext;
 
     private boolean mUseList;
-    private int mListItemHeight;
 
+    private int mListItemHeight;
 
     private ArtworkManager mArtworkManager;
 
-    public AlbumsAdapter(Context context, AbsListView listView, boolean useList) {
+    public AlbumsAdapter(Context context, boolean useList) {
         super();
 
         mContext = context;
-        mListView = listView;
 
         mUseList = useList;
         if (mUseList) {
-            mListItemHeight = (int)context.getResources().getDimension(R.dimen.material_list_item_height);
+            mListItemHeight = (int) context.getResources().getDimension(R.dimen.material_list_item_height);
         }
 
         mArtworkManager = ArtworkManager.getInstance(context.getApplicationContext());
@@ -61,23 +59,23 @@ public class AlbumsAdapter extends GenericSectionAdapter<MPDAlbum> implements Ar
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        MPDAlbum album = (MPDAlbum)getItem(position);
+        MPDAlbum album = (MPDAlbum) getItem(position);
         String label = album.getName();
 
-        if ( label.isEmpty() ) {
+        if (label.isEmpty()) {
             label = mContext.getResources().getString(R.string.no_album_tag);
         }
 
         String albumArtist = album.getArtistName();
 
-        if ( mUseList ) {
+        if (mUseList) {
             // Check if a view can be recycled
             ImageListItem listItem;
             if (convertView != null) {
                 listItem = (ImageListItem) convertView;
                 // Make sure to reset the layoutParams in case of change (rotation for example)
                 listItem.setText(label);
-                listItem.setDetails(albumArtist );
+                listItem.setDetails(albumArtist);
             } else {
                 // Create new view if no reusable is available
                 listItem = new ImageListItem(mContext, label, albumArtist, this);
@@ -95,7 +93,7 @@ public class AlbumsAdapter extends GenericSectionAdapter<MPDAlbum> implements Ar
         } else {
             GenericGridItem gridItem;
             ViewGroup.LayoutParams layoutParams;
-            int width = ((GridView)mListView).getColumnWidth();
+            int width = ((GridView) parent).getColumnWidth();
             // Check if a view can be recycled
             if (convertView == null) {
                 // Create new view if no reusable is available
