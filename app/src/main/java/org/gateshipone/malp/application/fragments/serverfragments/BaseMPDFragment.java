@@ -108,11 +108,7 @@ public abstract class BaseMPDFragment<T extends MPDGenericItem> extends DialogFr
      */
     public void refreshContent() {
         if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.post(() -> {
-                if (mSwipeRefreshLayout != null) {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-            });
+            mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
         }
 
         mDataReady = false;
@@ -130,11 +126,7 @@ public abstract class BaseMPDFragment<T extends MPDGenericItem> extends DialogFr
         // Check if data was fetched already or not (or removed because of trimming)
         if (!mDataReady) {
             if (mSwipeRefreshLayout != null) {
-                mSwipeRefreshLayout.post(() -> {
-                    if (mSwipeRefreshLayout != null) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                });
+                mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
             }
 
             getViewModel().reloadData();
@@ -150,11 +142,7 @@ public abstract class BaseMPDFragment<T extends MPDGenericItem> extends DialogFr
      */
     protected void onDataReady(List<T> model) {
         if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.post(() -> {
-                if (mSwipeRefreshLayout != null) {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-            });
+            mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(false));
         }
 
         // Indicate that the data is ready now.
@@ -164,12 +152,8 @@ public abstract class BaseMPDFragment<T extends MPDGenericItem> extends DialogFr
     }
 
     private void finishedLoading() {
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.post(() -> {
-                if (mSwipeRefreshLayout != null) {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-            });
+        if (null != mSwipeRefreshLayout) {
+            mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(false));
         }
     }
 
