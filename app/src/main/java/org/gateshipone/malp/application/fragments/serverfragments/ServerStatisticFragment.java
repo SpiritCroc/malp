@@ -99,22 +99,6 @@ public class ServerStatisticFragment extends GenericMPDFragment<MPDStatistics> {
         return rootView;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        // clear view references because the fragment itself won't take care of it
-        mArtistCount = null;
-        mAlbumsCount = null;
-        mSongsCount = null;
-        mUptime = null;
-        mPlaytime = null;
-        mLastUpdate = null;
-        mDBLength = null;
-        mDBUpdating = null;
-        mServerFeatures = null;
-    }
-
     /**
      * Attaches callbacks
      */

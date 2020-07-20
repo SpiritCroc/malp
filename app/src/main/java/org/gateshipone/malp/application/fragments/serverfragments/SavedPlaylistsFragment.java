@@ -53,6 +53,11 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
     public final static String TAG = SavedPlaylistsFragment.class.getSimpleName();
 
     /**
+     * Main ListView of this fragment
+     */
+    private ListView mListView;
+
+    /**
      * Callback for activity this fragment gets attached to
      */
     private PlaylistCallback mCallback;

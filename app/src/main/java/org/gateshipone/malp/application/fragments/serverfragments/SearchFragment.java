@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
 
@@ -64,6 +65,11 @@ import java.util.List;
 
 public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements AdapterView.OnItemClickListener, View.OnFocusChangeListener {
     public static final String TAG = SearchFragment.class.getSimpleName();
+
+    /**
+     * Main ListView of this fragment
+     */
+    private ListView mListView;
 
     private Spinner mSelectSpinner;
 
@@ -133,15 +139,6 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
 
         // Return the ready inflated and configured fragment view.
         return rootView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        // clear view references because the fragment itself won't take care of it
-        mSearchView = null;
-        mSelectSpinner = null;
     }
 
     @Override
