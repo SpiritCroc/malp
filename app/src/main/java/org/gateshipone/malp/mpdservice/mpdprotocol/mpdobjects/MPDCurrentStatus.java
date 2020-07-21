@@ -105,12 +105,12 @@ public class MPDCurrentStatus implements Parcelable {
     /**
      * Position of the player in current song
      */
-    private int pElapsedTime;
+    private float pElapsedTime;
 
     /**
      * Length of the currently playing song.
      */
-    private int pTrackLength;
+    private float pTrackLength;
 
     /**
      * If an updating job of the database is running, the id gets saved here.
@@ -139,8 +139,8 @@ public class MPDCurrentStatus implements Parcelable {
         pBitDepth = in.readString();
         pChannelCount = in.readInt();
         pBitrate = in.readInt();
-        pElapsedTime = in.readInt();
-        pTrackLength = in.readInt();
+        pElapsedTime = in.readFloat();
+        pTrackLength = in.readFloat();
         pUpdateDBJob = in.readInt();
         pPlaybackState = MPD_PLAYBACK_STATE.values()[in.readInt()];
     }
@@ -300,19 +300,19 @@ public class MPDCurrentStatus implements Parcelable {
         this.pBitrate = pBitrate;
     }
 
-    public int getElapsedTime() {
+    public float getElapsedTime() {
         return pElapsedTime;
     }
 
-    public void setElapsedTime(int pElapsedTime) {
+    public void setElapsedTime(float pElapsedTime) {
         this.pElapsedTime = pElapsedTime;
     }
 
-    public int getTrackLength() {
+    public float getTrackLength() {
         return pTrackLength;
     }
 
-    public void setTrackLength(int pTrackLength) {
+    public void setTrackLength(float pTrackLength) {
         this.pTrackLength = pTrackLength;
     }
 
@@ -350,8 +350,8 @@ public class MPDCurrentStatus implements Parcelable {
         dest.writeString(pBitDepth);
         dest.writeInt(pChannelCount);
         dest.writeInt(pBitrate);
-        dest.writeInt(pElapsedTime);
-        dest.writeInt(pTrackLength);
+        dest.writeFloat(pElapsedTime);
+        dest.writeFloat(pTrackLength);
         dest.writeInt(pUpdateDBJob);
         /* Convert enum-type to int here and back when deserializing */
         dest.writeInt(pPlaybackState.ordinal());

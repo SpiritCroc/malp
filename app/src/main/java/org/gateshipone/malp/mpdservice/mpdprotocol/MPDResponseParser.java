@@ -61,42 +61,50 @@ class MPDResponseParser {
 
         /* Parse the MPD response and create a list of MPD albums (pre 0.21.11), broken grouping */
         if (!connection.getServerCapabilities().hasListGroupingFixed()) {
-            String albumName;
-
             MPDAlbum tempAlbum = null;
 
-            String responseString = connection.readLine();
-            while (responseString != null && !responseString.startsWith("OK")) {
-                /* Check if the response is an album */
-                if (responseString.startsWith(MPDResponses.MPD_RESPONSE_ALBUM_NAME)) {
-                    /* We found an album, add it to the list. */
-                    if (null != tempAlbum) {
-                        albumList.add(tempAlbum);
-                    }
-                    albumName = responseString.substring(MPDResponses.MPD_RESPONSE_ALBUM_NAME.length());
-                    tempAlbum = new MPDAlbum(albumName);
+            MPDResponses.MPD_RESPONSE_KEY key = null;
+            key = connection.readKey();
+
+            String value = "";
+            while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+                try {
+                    value = connection.readValue();
+                } catch (MPDSocketInterface.NoKeyReadException e) {
+                    e.printStackTrace();
                 }
-                if (tempAlbum != null) {
-                    if (responseString.startsWith(MPDResponses.MPD_RESPONSE_ALBUM_MBID)) {
-                        tempAlbum.setMBID(responseString.substring(MPDResponses.MPD_RESPONSE_ALBUM_MBID.length()));
-                    } else if (responseString.startsWith(MPDResponses.MPD_RESPONSE_ALBUMARTIST_NAME)) {
-                        /* Check if the responseString is a album artist. */
-                        tempAlbum.setArtistName(responseString.substring(MPDResponses.MPD_RESPONSE_ALBUMARTIST_NAME.length()));
-                    } else if (responseString.startsWith(MPDResponses.MPD_RESPONSE_ALBUMARTIST_SORT_NAME)) {
-                        /* Check if the responseString is a album artist. */
-                        tempAlbum.setArtistSortName(responseString.substring(MPDResponses.MPD_RESPONSE_ALBUMARTIST_SORT_NAME.length()));
-                    } else if (responseString.startsWith(MPDResponses.MPD_RESPONSE_DATE)) {
+                switch (key) {
+                    case RESPONSE_ALBUM:
+                        /* We found an album, add it to the list. */
+                        if (null != tempAlbum) {
+                            albumList.add(tempAlbum);
+                        }
+                        tempAlbum = new MPDAlbum(value);
+                        break;
+                    case RESPONSE_ALBUM_MBID:
+                        tempAlbum.setMBID(value);
+                        break;
+                    case RESPONSE_ALBUMARTIST:
+                        tempAlbum.setArtistName(value);
+                        break;
+                    case RESPONSE_ALBUMARTISTSORT:
+                        tempAlbum.setArtistSortName(value);
+                        break;
+                    case RESPONSE_DATE: {
                         // Try to parse Date
-                        String dateString = responseString.substring(MPDResponses.MPD_RESPONSE_DATE.length());
                         SimpleDateFormat format = new SimpleDateFormat("yyyy");
                         try {
-                            tempAlbum.setDate(format.parse(dateString));
+                            tempAlbum.setDate(format.parse(value));
                         } catch (ParseException e) {
-                            Log.w(TAG, "Error parsing date: " + dateString);
+                            Log.w(TAG, "Error parsing date: " + value);
                         }
                     }
+                    break;
+                    default:
+                        break;
                 }
-                responseString = connection.readLine();
+
+                key = connection.readKey();
             }
 
         /* Because of the loop structure the last album has to be added because no
@@ -112,47 +120,59 @@ class MPDResponseParser {
             String albumArtist = "";
             String albumArtistSort = "";
 
-            String responseString = connection.readLine();
-            while (responseString != null && !responseString.startsWith("OK")) {
-                /* Check if the response is an album */
-                if (responseString.startsWith(MPDResponses.MPD_RESPONSE_ALBUM_NAME)) {
-                    String albumName = responseString.substring(MPDResponses.MPD_RESPONSE_ALBUM_NAME.length());
-                    MPDAlbum tempAlbum = new MPDAlbum(albumName);
+            MPDResponses.MPD_RESPONSE_KEY key = null;
 
-                    if (!albumArtist.isEmpty()) {
-                        tempAlbum.setArtistName(albumArtist);
-                    }
-                    if (!albumArtistSort.isEmpty()) {
-                        tempAlbum.setArtistSortName(albumArtistSort);
-                    }
-                    if (!albumMBID.isEmpty()) {
-                        tempAlbum.setMBID(albumMBID);
-                    }
-                    if (!albumDate.isEmpty()) {
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy");
-                        try {
-                            tempAlbum.setDate(format.parse(albumDate));
-                        } catch (ParseException e) {
-                            Log.w(TAG, "Error parsing date: " + albumDate);
+            key = connection.readKey();
+
+            String value = "";
+            while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+                try {
+                    value = connection.readValue();
+                } catch (MPDSocketInterface.NoKeyReadException e) {
+                    e.printStackTrace();
+                }
+
+                switch (key) {
+                    case RESPONSE_ALBUM: {
+                        MPDAlbum tempAlbum = new MPDAlbum(value);
+
+                        if (!albumArtist.isEmpty()) {
+                            tempAlbum.setArtistName(albumArtist);
                         }
+                        if (!albumArtistSort.isEmpty()) {
+                            tempAlbum.setArtistSortName(albumArtistSort);
+                        }
+                        if (!albumMBID.isEmpty()) {
+                            tempAlbum.setMBID(albumMBID);
+                        }
+                        if (!albumDate.isEmpty()) {
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy");
+                            try {
+                                tempAlbum.setDate(format.parse(albumDate));
+                            } catch (ParseException e) {
+                                Log.w(TAG, "Error parsing date: " + albumDate);
+                            }
+                        }
+
+                        albumList.add(tempAlbum);
                     }
-
-                    albumList.add(tempAlbum);
+                    break;
+                    case RESPONSE_ALBUM_MBID:
+                        albumMBID = value;
+                        break;
+                    case RESPONSE_ALBUMARTIST:
+                        albumArtist = value;
+                        break;
+                    case RESPONSE_ALBUMARTISTSORT:
+                        albumArtistSort = value;
+                        break;
+                    case RESPONSE_DATE:
+                        albumDate = value;
+                        break;
+                    default:
+                        break;
                 }
-                if (responseString.startsWith(MPDResponses.MPD_RESPONSE_ALBUM_MBID)) {
-                    albumMBID = responseString.substring(MPDResponses.MPD_RESPONSE_ALBUM_MBID.length());
-                } else if (responseString.startsWith(MPDResponses.MPD_RESPONSE_ALBUMARTIST_NAME)) {
-                    /* Check if the responseString is a album artist. */
-                    albumArtist = responseString.substring(MPDResponses.MPD_RESPONSE_ALBUMARTIST_NAME.length());
-                } else if (responseString.startsWith(MPDResponses.MPD_RESPONSE_ALBUMARTIST_SORT_NAME)) {
-                    /* Check if the responseString is a album artist. */
-                    albumArtistSort = responseString.substring(MPDResponses.MPD_RESPONSE_ALBUMARTIST_SORT_NAME.length());
-                } else if (responseString.startsWith(MPDResponses.MPD_RESPONSE_DATE)) {
-                    // Try to parse Date
-                    albumDate = responseString.substring(MPDResponses.MPD_RESPONSE_DATE.length());
-
-                }
-                responseString = connection.readLine();
+                key = connection.readKey();
             }
         }
 
@@ -173,9 +193,8 @@ class MPDResponseParser {
             return artistList;
         }
 
-        /* Parse MPD artist return values and create a list of MPDArtist objects */
-        String response = connection.readLine();
-
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+        String value = "";
         /* Parse the MPD response and create a list of MPD albums (pre 0.21.11), broken grouping */
         if (!connection.getServerCapabilities().hasListGroupingFixed()) {
             /* Artist properties */
@@ -184,42 +203,39 @@ class MPDResponseParser {
 
             MPDArtist tempArtist = null;
 
-            while (response != null && !response.startsWith("OK")) {
-                // Handle new artist entry
-                if (response.startsWith(MPDResponses.MPD_RESPONSE_ARTIST_NAME)) {
-                    if (null != tempArtist) {
-                        artistList.add(tempArtist);
+            key = connection.readKey();
+
+            while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+                try {
+                    value = connection.readValue();
+                } catch (MPDSocketInterface.NoKeyReadException e) {
+                    e.printStackTrace();
+                }
+                switch (key) {
+                    case RESPONSE_ARTIST:
+                    case RESPONSE_ALBUMARTIST:
+                    case RESPONSE_ARTISTSORT:
+                    case RESPONSE_ALBUMARTISTSORT: {
+                        if (null != tempArtist) {
+                            artistList.add(tempArtist);
+                        }
+                        artistName = value;
+                        tempArtist = new MPDArtist(artistName);
                     }
-                    artistName = response.substring(MPDResponses.MPD_RESPONSE_ARTIST_NAME.length());
-                    tempArtist = new MPDArtist(artistName);
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ALBUMARTIST_NAME)) {
-                    if (null != tempArtist) {
-                        artistList.add(tempArtist);
+                    break;
+                    case RESPONSE_ARTIST_MBID: {
+                        if (tempArtist != null) {
+                            artistMBID = value;
+                            tempArtist.addMBID(artistMBID);
+                        }
+
                     }
-                    artistName = response.substring(MPDResponses.MPD_RESPONSE_ALBUMARTIST_NAME.length());
-                    tempArtist = new MPDArtist(artistName);
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ARTIST_SORT_NAME)) {
-                    if (null != tempArtist) {
-                        artistList.add(tempArtist);
-                    }
-                    artistName = response.substring(MPDResponses.MPD_RESPONSE_ARTIST_SORT_NAME.length());
-                    tempArtist = new MPDArtist(artistName);
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ALBUMARTIST_SORT_NAME)) {
-                    if (null != tempArtist) {
-                        artistList.add(tempArtist);
-                    }
-                    artistName = response.substring(MPDResponses.MPD_RESPONSE_ALBUMARTIST_SORT_NAME.length());
-                    tempArtist = new MPDArtist(artistName);
+                    break;
+                    default:
+                        break;
                 }
 
-                // Handle artist properties
-                if (tempArtist != null) {
-                    if (response.startsWith(MPDResponses.MPD_RESPONSE_ARTIST_MBID)) {
-                        artistMBID = response.substring(MPDResponses.MPD_RESPONSE_ARTIST_MBID.length());
-                        tempArtist.addMBID(artistMBID);
-                    }
-                }
-                response = connection.readLine();
+                key = connection.readKey();
             }
 
 
@@ -233,40 +249,34 @@ class MPDResponseParser {
             ArrayList<String> mbids = new ArrayList<>();
             String artistName;
 
-            while (response != null && !response.startsWith("OK")) {
-                // Handle new artist entry
-                if (response.startsWith(MPDResponses.MPD_RESPONSE_ARTIST_NAME)) {
-                    artistName = response.substring(MPDResponses.MPD_RESPONSE_ARTIST_NAME.length());
-                    MPDArtist tempArtist = new MPDArtist(artistName);
-                    tempArtist.setMBIDs(mbids);
-                    artistList.add(tempArtist);
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ALBUMARTIST_NAME)) {
-                    artistName = response.substring(MPDResponses.MPD_RESPONSE_ALBUMARTIST_NAME.length());
-                    MPDArtist tempArtist = new MPDArtist(artistName);
-                    tempArtist.setMBIDs(mbids);
-                    artistList.add(tempArtist);
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ARTIST_SORT_NAME)) {
-                    artistName = response.substring(MPDResponses.MPD_RESPONSE_ARTIST_SORT_NAME.length());
-                    MPDArtist tempArtist = new MPDArtist(artistName);
-                    tempArtist.setMBIDs(mbids);
-                    artistList.add(tempArtist);
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ALBUMARTIST_SORT_NAME)) {
-                    artistName = response.substring(MPDResponses.MPD_RESPONSE_ALBUMARTIST_SORT_NAME.length());
-                    MPDArtist tempArtist = new MPDArtist(artistName);
-                    tempArtist.setMBIDs(mbids);
-                    artistList.add(tempArtist);
-                }
+            key = connection.readKey();
 
-                // Handle artist properties
-                if (response.startsWith(MPDResponses.MPD_RESPONSE_ARTIST_MBID)) {
-                    mbids.clear();
-                    String mbid = response.substring(MPDResponses.MPD_RESPONSE_ARTIST_MBID.length());
-                    if (!mbid.isEmpty()) {
-                        String[] mbidsSplit = mbid.split("/");
-                        mbids.addAll(Arrays.asList(mbidsSplit));
+            while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+                try {
+                    value = connection.readValue();
+                } catch (MPDSocketInterface.NoKeyReadException e) {
+                    e.printStackTrace();
+                }
+                switch (key) {
+                    case RESPONSE_ARTIST:
+                    case RESPONSE_ALBUMARTIST:
+                    case RESPONSE_ARTISTSORT:
+                    case RESPONSE_ALBUMARTISTSORT: {
+                        MPDArtist tempArtist = new MPDArtist(value);
+                        tempArtist.setMBIDs(mbids);
+                        artistList.add(tempArtist);
+                        break;
+                    }
+                    case RESPONSE_ARTIST_MBID: {
+                        mbids.clear();
+                        if (!value.isEmpty()) {
+                            String[] mbidsSplit = value.split("/");
+                            mbids.addAll(Arrays.asList(mbidsSplit));
+                        }
                     }
                 }
-                response = connection.readLine();
+
+                key = connection.readKey();
             }
         }
 
@@ -295,7 +305,6 @@ class MPDResponseParser {
                 }
             }
 
-
             return clearedList;
         } else {
             return artistList;
@@ -322,129 +331,171 @@ class MPDResponseParser {
         /* Temporary file entry (added to list later) */
         MPDFileEntry tempFileEntry = null;
 
-        /* Response line from MPD */
-        String response = connection.readLine();
-        while (response != null && !response.startsWith("OK")) {
-            /* This if block will just check all the different response possible by MPDs file/dir/playlist response */
-            if (response.startsWith(MPDResponses.MPD_RESPONSE_FILE)) {
-                if (null != tempFileEntry) {
-                    trackList.add(tempFileEntry);
-                }
-                tempFileEntry = new MPDTrack(response.substring(MPDResponses.MPD_RESPONSE_FILE.length()));
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_PLAYLIST)) {
-                if (null != tempFileEntry) {
-                    trackList.add(tempFileEntry);
-                }
-                tempFileEntry = new MPDPlaylist(response.substring(MPDResponses.MPD_RESPONSE_PLAYLIST.length()));
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_DIRECTORY)) {
-                if (null != tempFileEntry) {
-                    trackList.add(tempFileEntry);
-                }
-                tempFileEntry = new MPDDirectory(response.substring(MPDResponses.MPD_RESPONSE_DIRECTORY.length()));
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+
+        key = connection.readKey();
+
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
             }
+
+            /* This if block will just check all the different response possible by MPDs file/dir/playlist response */
+            switch (key) {
+                case RESPONSE_FILE:
+                    if (null != tempFileEntry) {
+                        trackList.add(tempFileEntry);
+                    }
+                    tempFileEntry = new MPDTrack(value);
+                    break;
+                case RESPONSE_PLAYLIST:
+                    if (null != tempFileEntry) {
+                        trackList.add(tempFileEntry);
+                    }
+                    Log.v(TAG, "New Playlist item");
+                    tempFileEntry = new MPDPlaylist(value);
+                    break;
+                case RESPONSE_DIRECTORY:
+                    if (null != tempFileEntry) {
+                        trackList.add(tempFileEntry);
+                    }
+                    Log.v(TAG, "New Dir item");
+                    tempFileEntry = new MPDDirectory(value);
+                    break;
+                default:
+                    break;
+            }
+
 
             // Currently parsing a file (check its properties)
             if (tempFileEntry instanceof MPDTrack) {
-                if (response.startsWith(MPDResponses.MPD_RESPONSE_TRACK_TITLE)) {
-                    ((MPDTrack) tempFileEntry).setTrackTitle(response.substring(MPDResponses.MPD_RESPONSE_TRACK_TITLE.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ARTIST_NAME)) {
-                    ((MPDTrack) tempFileEntry).setTrackArtist(response.substring(MPDResponses.MPD_RESPONSE_ARTIST_NAME.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ARTIST_SORT_NAME)) {
-                    ((MPDTrack) tempFileEntry).setTrackArtistSort(response.substring(MPDResponses.MPD_RESPONSE_ARTIST_SORT_NAME.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_TRACK_NAME)) {
-                    ((MPDTrack) tempFileEntry).setTrackName(response.substring(MPDResponses.MPD_RESPONSE_TRACK_NAME.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ALBUMARTIST_NAME)) {
-                    ((MPDTrack) tempFileEntry).setTrackAlbumArtist(response.substring(MPDResponses.MPD_RESPONSE_ALBUMARTIST_NAME.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ALBUMARTIST_SORT_NAME)) {
-                    ((MPDTrack) tempFileEntry).setTrackAlbumArtistSort(response.substring(MPDResponses.MPD_RESPONSE_ALBUMARTIST_SORT_NAME.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ALBUM_NAME)) {
-                    ((MPDTrack) tempFileEntry).setTrackAlbum(response.substring(MPDResponses.MPD_RESPONSE_ALBUM_NAME.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_DATE)) {
-                    ((MPDTrack) tempFileEntry).setDate(response.substring(MPDResponses.MPD_RESPONSE_DATE.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ALBUM_MBID)) {
-                    ((MPDTrack) tempFileEntry).setTrackAlbumMBID(response.substring(MPDResponses.MPD_RESPONSE_ALBUM_MBID.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ARTIST_MBID)) {
-                    ((MPDTrack) tempFileEntry).setTrackArtistMBID(response.substring(MPDResponses.MPD_RESPONSE_ARTIST_MBID.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ALBUM_ARTIST_MBID)) {
-                    ((MPDTrack) tempFileEntry).setTrackAlbumArtistMBID(response.substring(MPDResponses.MPD_RESPONSE_ALBUM_ARTIST_MBID.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_TRACK_MBID)) {
-                    ((MPDTrack) tempFileEntry).setTrackMBID(response.substring(MPDResponses.MPD_RESPONSE_TRACK_MBID.length()));
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_TRACK_TIME)) {
-                    try {
-                        ((MPDTrack) tempFileEntry).setLength(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_TRACK_TIME.length())));
-                    } catch (NumberFormatException ignored) {
-                    }
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_SONG_ID)) {
-                    try {
-                        ((MPDTrack) tempFileEntry).setSongID(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_SONG_ID.length())));
-                    } catch (NumberFormatException ignored) {
-                    }
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_SONG_POS)) {
-                    try {
-                        ((MPDTrack) tempFileEntry).setSongPosition(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_SONG_POS.length())));
-                    } catch (NumberFormatException ignored) {
-                    }
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_DISC_NUMBER)) {
-                /*
-                * Check if MPD returned a discnumber like: "1" or "1/3" and set disc count accordingly.
-                */
-                    String discNumber = response.substring(MPDResponses.MPD_RESPONSE_DISC_NUMBER.length());
-                    discNumber = discNumber.replaceAll(" ", "");
-                    String[] discNumberSep = discNumber.split("/");
-                    if (discNumberSep.length > 0) {
+                switch (key) {
+                    case RESPONSE_TITLE:
+                        ((MPDTrack) tempFileEntry).setTrackTitle(value);
+                        break;
+                    case RESPONSE_ARTIST:
+                        ((MPDTrack) tempFileEntry).setTrackArtist(value);
+                        break;
+                    case RESPONSE_ARTISTSORT:
+                        ((MPDTrack) tempFileEntry).setTrackArtistSort(value);
+                        break;
+                    case RESPONSE_NAME:
+                        ((MPDTrack) tempFileEntry).setTrackName(value);
+                        break;
+                    case RESPONSE_ALBUMARTIST:
+                        ((MPDTrack) tempFileEntry).setTrackAlbumArtist(value);
+                        break;
+                    case RESPONSE_ALBUMARTISTSORT:
+                        ((MPDTrack) tempFileEntry).setTrackAlbumArtistSort(value);
+                        break;
+                    case RESPONSE_ALBUM:
+                        ((MPDTrack) tempFileEntry).setTrackAlbum(value);
+                        break;
+                    case RESPONSE_DATE:
+                        ((MPDTrack) tempFileEntry).setDate(value);
+                        break;
+                    case RESPONSE_ALBUM_MBID:
+                        ((MPDTrack) tempFileEntry).setTrackAlbumMBID(value);
+                        break;
+                    case RESPONSE_ARTIST_MBID:
+                        ((MPDTrack) tempFileEntry).setTrackArtistMBID(value);
+                        break;
+                    case RESPONSE_ALBUMARTIST_MBID:
+                        ((MPDTrack) tempFileEntry).setTrackAlbumArtistMBID(value);
+                        break;
+                    case RESPONSE_TRACK_MBID:
+                        ((MPDTrack) tempFileEntry).setTrackMBID(value);
+                        break;
+                    case RESPONSE_TIME:
                         try {
-                            ((MPDTrack) tempFileEntry).setDiscNumber(Integer.valueOf(discNumberSep[0]));
+                            ((MPDTrack) tempFileEntry).setLength(Integer.parseInt(value));
                         } catch (NumberFormatException ignored) {
                         }
+                        break;
+                    case RESPONSE_SONG_ID:
+                        try {
+                            ((MPDTrack) tempFileEntry).setSongID(Integer.parseInt(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                        break;
+                    case RESPONSE_POS:
+                        try {
+                            ((MPDTrack) tempFileEntry).setSongPosition(Integer.parseInt(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                        break;
+                    case RESPONSE_DISC: {
+                        /*
+                         * Check if MPD returned a discnumber like: "1" or "1/3" and set disc count accordingly.
+                         */
+                        String discNumber = value;
+                        discNumber = discNumber.replaceAll(" ", "");
+                        String[] discNumberSep = discNumber.split("/");
+                        if (discNumberSep.length > 0) {
+                            try {
+                                ((MPDTrack) tempFileEntry).setDiscNumber(Integer.valueOf(discNumberSep[0]));
+                            } catch (NumberFormatException ignored) {
+                            }
 
-                        if (discNumberSep.length > 1) {
+                            if (discNumberSep.length > 1) {
+                                try {
+                                    ((MPDTrack) tempFileEntry).psetAlbumDiscCount(Integer.parseInt(discNumberSep[1]));
+                                } catch (NumberFormatException ignored) {
+                                }
+                            }
+                        } else {
                             try {
-                                ((MPDTrack) tempFileEntry).psetAlbumDiscCount(Integer.valueOf(discNumberSep[1]));
+                                ((MPDTrack) tempFileEntry).setDiscNumber(Integer.parseInt(discNumber));
                             } catch (NumberFormatException ignored) {
                             }
                         }
-                    } else {
-                        try {
-                            ((MPDTrack) tempFileEntry).setDiscNumber(Integer.valueOf(discNumber));
-                        } catch (NumberFormatException ignored) {
-                        }
                     }
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_TRACK_NUMBER)) {
-                /*
-                 * Check if MPD returned a tracknumber like: "12" or "12/42" and set albumtrack count accordingly.
-                 */
-                    String trackNumber = response.substring(MPDResponses.MPD_RESPONSE_TRACK_NUMBER.length());
-                    trackNumber = trackNumber.replaceAll(" ", "");
-                    String[] trackNumbersSep = trackNumber.split("/");
-                    if (trackNumbersSep.length > 0) {
-                        try {
-                            ((MPDTrack) tempFileEntry).setTrackNumber(Integer.valueOf(trackNumbersSep[0]));
-                        } catch (NumberFormatException ignored) {
-                        }
-                        if (trackNumbersSep.length > 1) {
+                    break;
+                    case RESPONSE_TRACK: {
+                        /*
+                         * Check if MPD returned a tracknumber like: "12" or "12/42" and set albumtrack count accordingly.
+                         */
+                        String trackNumber = value;
+                        trackNumber = trackNumber.replaceAll(" ", "");
+                        String[] trackNumbersSep = trackNumber.split("/");
+                        if (trackNumbersSep.length > 0) {
                             try {
-                                ((MPDTrack) tempFileEntry).setAlbumTrackCount(Integer.valueOf(trackNumbersSep[1]));
+                                ((MPDTrack) tempFileEntry).setTrackNumber(Integer.parseInt(trackNumbersSep[0]));
+                            } catch (NumberFormatException ignored) {
+                            }
+                            if (trackNumbersSep.length > 1) {
+                                try {
+                                    ((MPDTrack) tempFileEntry).setAlbumTrackCount(Integer.parseInt(trackNumbersSep[1]));
+                                } catch (NumberFormatException ignored) {
+                                }
+                            }
+                        } else {
+                            try {
+                                ((MPDTrack) tempFileEntry).setTrackNumber(Integer.parseInt(trackNumber));
                             } catch (NumberFormatException ignored) {
                             }
                         }
-                    } else {
-                        try {
-                            ((MPDTrack) tempFileEntry).setTrackNumber(Integer.valueOf(trackNumber));
-                        } catch (NumberFormatException ignored) {
-                        }
                     }
-                } else if (response.startsWith(MPDResponses.MPD_RESPONSE_LAST_MODIFIED)) {
-                    tempFileEntry.setLastModified(response.substring(MPDResponses.MPD_RESPONSE_LAST_MODIFIED.length()));
+                    break;
+                    case RESPONSE_LAST_MODIFIED:
+                        tempFileEntry.setLastModified(value);
+                        break;
+                    default:
+                        break;
                 }
+
             } else if (tempFileEntry != null) {
-                // Other case tempFileEntry is a playlist or a directory (properties of generic files)
-                if (response.startsWith(MPDResponses.MPD_RESPONSE_LAST_MODIFIED)) {
-                    tempFileEntry.setLastModified(response.substring(MPDResponses.MPD_RESPONSE_LAST_MODIFIED.length()));
+                if (key == MPDResponses.MPD_RESPONSE_KEY.RESPONSE_LAST_MODIFIED) {
+                    tempFileEntry.setLastModified(value);
                 }
             }
 
-            // Move to the next line.
-            response = connection.readLine();
+            // Move to the next key.
+            key = connection.readKey();
+
         }
 
         /* Add last remaining track to list. */
@@ -460,118 +511,107 @@ class MPDResponseParser {
             return status;
         }
 
-        /* Response line from MPD */
-        String response = connection.readLine();
-        while (response != null && !response.startsWith("OK")) {
-            if (response.startsWith(MPDResponses.MPD_RESPONSE_VOLUME)) {
-                try {
-                    status.setVolume(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_VOLUME.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_REPEAT)) {
-                try {
-                    status.setRepeat(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_REPEAT.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_RANDOM)) {
-                try {
-                    status.setRandom(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_RANDOM.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_SINGLE)) {
-                try {
-                    status.setSinglePlayback(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_SINGLE.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_CONSUME)) {
-                try {
-                    status.setConsume(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_CONSUME.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_PLAYLIST_VERSION)) {
-                try {
-                    status.setPlaylistVersion(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_PLAYLIST_VERSION.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_PLAYLIST_LENGTH)) {
-                try {
-                    status.setPlaylistLength(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_PLAYLIST_LENGTH.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_PLAYBACK_STATE)) {
-                String state = response.substring(MPDResponses.MPD_RESPONSE_PLAYBACK_STATE.length());
+        MPDResponses.MPD_RESPONSE_KEY key = null;
 
-                switch (state) {
-                    case MPDResponses.MPD_PLAYBACK_STATE_RESPONSE_PLAY:
-                        status.setPlaybackState(MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING);
-                        break;
-                    case MPDResponses.MPD_PLAYBACK_STATE_RESPONSE_PAUSE:
-                        status.setPlaybackState(MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PAUSING);
-                        break;
-                    case MPDResponses.MPD_PLAYBACK_STATE_RESPONSE_STOP:
-                        status.setPlaybackState(MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_STOPPED);
-                        break;
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_CURRENT_SONG_INDEX)) {
-                try {
-                    status.setCurrentSongIndex(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_CURRENT_SONG_INDEX.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_NEXT_SONG_INDEX)) {
-                try {
-                    status.setNextSongIndex(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_NEXT_SONG_INDEX.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_TIME_INFORMATION_OLD)) {
-                String timeInfo = response.substring(MPDResponses.MPD_RESPONSE_TIME_INFORMATION_OLD.length());
+        key = connection.readKey();
 
-                String[] timeInfoSep = timeInfo.split(":");
-                if (timeInfoSep.length == 2) {
-                    try {
-                        status.setElapsedTime(Integer.valueOf(timeInfoSep[0]));
-                        status.setTrackLength(Integer.valueOf(timeInfoSep[1]));
-                    } catch (NumberFormatException ignored) {
-                    }
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_ELAPSED_TIME)) {
-                try {
-                    status.setElapsedTime(Math.round(Float.valueOf(response.substring(MPDResponses.MPD_RESPONSE_ELAPSED_TIME.length()))));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_DURATION)) {
-                try {
-                    status.setTrackLength(Math.round(Float.valueOf(response.substring(MPDResponses.MPD_RESPONSE_DURATION.length()))));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_BITRATE)) {
-                try {
-                    status.setBitrate(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_BITRATE.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_AUDIO_INFORMATION)) {
-                String audioInfo = response.substring(MPDResponses.MPD_RESPONSE_AUDIO_INFORMATION.length());
-
-                String[] audioInfoSep = audioInfo.split(":");
-                if (audioInfoSep.length == 3) {
-                /* Extract the separate pieces */
-                    try {
-                /* First is sampleRate */
-                        status.setSamplerate(Integer.valueOf(audioInfoSep[0]));
-                /* Second is bitresolution */
-                        status.setBitDepth(audioInfoSep[1]);
-                /* Third is channel count */
-                        status.setChannelCount(Integer.valueOf(audioInfoSep[2]));
-                    } catch (NumberFormatException ignored) {
-                    }
-                }
-            } else if (response.startsWith(MPDResponses.MPD_RESPONSE_UPDATING_DB)) {
-                try {
-                    status.setUpdateDBJob(Integer.valueOf(response.substring(MPDResponses.MPD_RESPONSE_UPDATING_DB.length())));
-                } catch (NumberFormatException ignored) {
-                }
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
             }
 
-            response = connection.readLine();
+            try {
+                switch (key) {
+                    case RESPONSE_VOLUME:
+                        status.setVolume(Integer.parseInt(value));
+                        break;
+                    case RESPONSE_REPEAT:
+                        status.setRepeat(Integer.parseInt(value));
+                        break;
+                    case RESPONSE_RANDOM:
+                        status.setRandom(Integer.parseInt(value));
+                        break;
+                    case RESPONSE_SINGLE:
+                        status.setSinglePlayback(Integer.parseInt(value));
+                        break;
+                    case RESPONSE_CONSUME:
+                        status.setConsume(Integer.parseInt(value));
+                        break;
+                    case RESPONSE_PLAYLIST:
+                        status.setPlaylistVersion(Integer.parseInt(value));
+                        break;
+                    case RESPONSE_PLAYLISTLENGTH:
+                        status.setPlaylistLength(Integer.parseInt(value));
+                        break;
+                    case RESPONSE_STATE:
+                        switch (value) {
+                            case MPDResponses.MPD_PLAYBACK_STATE_RESPONSE_PLAY:
+                                status.setPlaybackState(MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING);
+                                break;
+                            case MPDResponses.MPD_PLAYBACK_STATE_RESPONSE_PAUSE:
+                                status.setPlaybackState(MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PAUSING);
+                                break;
+                            case MPDResponses.MPD_PLAYBACK_STATE_RESPONSE_STOP:
+                                status.setPlaybackState(MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_STOPPED);
+                                break;
+                        }
+                        break;
+                    case RESPONSE_SONG:
+                        status.setCurrentSongIndex(Integer.parseInt(value));
+                        break;
+                    case RESPONSE_NEXT_SONG:
+                        status.setNextSongIndex(Integer.parseInt(value));
+                        break;
+                    case RESPONSE_TIME_OLD: {
+                        String[] timeInfoSep = value.split(":");
+                        if (timeInfoSep.length == 2) {
+                            try {
+                                status.setElapsedTime(Integer.parseInt(timeInfoSep[0]));
+                                status.setTrackLength(Integer.parseInt(timeInfoSep[1]));
+                            } catch (NumberFormatException ignored) {
+                            }
+                        }
+                    }
+                    break;
+                    case RESPONSE_DURATION:
+                        status.setTrackLength(Float.parseFloat(value));
+                        break;
+                    case RESPONSE_ELAPSED:
+                        status.setElapsedTime(Float.parseFloat(value));
+                        break;
+                    case RESPONSE_BITRATE:
+                        status.setBitrate(Integer.parseInt(value));
+                        break;
+                    case RESPONSE_AUDIO: {
+                        String[] audioInfoSep = value.split(":");
+                        if (audioInfoSep.length == 3) {
+                            /* Extract the separate pieces */
+                            try {
+                                /* First is sampleRate */
+                                status.setSamplerate(Integer.parseInt(audioInfoSep[0]));
+                                /* Second is bitresolution */
+                                status.setBitDepth(audioInfoSep[1]);
+                                /* Third is channel count */
+                                status.setChannelCount(Integer.parseInt(audioInfoSep[2]));
+                            } catch (NumberFormatException ignored) {
+                            }
+                        }
+                    }
+                    break;
+                    case RESPONSE_UPDATING_DB:
+                        status.setUpdateDBJob(Integer.parseInt(value));
+                        break;
+                    default:
+                        break;
+                }
+            } catch (NumberFormatException error) {
+                Log.e(TAG, "Error parsing number: " + error.getMessage() + " for key: " + key);
+            }
+
+            key = connection.readKey();
         }
         return status;
     }
@@ -586,47 +626,65 @@ class MPDResponseParser {
     static MPDStatistics parseMPDStatistic(final MPDConnection connection) throws MPDException {
         MPDStatistics stats = new MPDStatistics();
 
-        /* Response line from MPD */
-        String response = connection.readLine();
-        while (response != null && !response.startsWith("OK")) {
-            if (response.startsWith(MPDResponses.MPD_STATS_UPTIME)) {
-                try {
-                    stats.setServerUptime(Integer.valueOf(response.substring(MPDResponses.MPD_STATS_UPTIME.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_STATS_PLAYTIME)) {
-                try {
-                    stats.setPlayDuration(Integer.valueOf(response.substring(MPDResponses.MPD_STATS_PLAYTIME.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_STATS_ARTISTS)) {
-                try {
-                    stats.setArtistsCount(Integer.valueOf(response.substring(MPDResponses.MPD_STATS_ARTISTS.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_STATS_ALBUMS)) {
-                try {
-                    stats.setAlbumCount(Integer.valueOf(response.substring(MPDResponses.MPD_STATS_ALBUMS.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_STATS_SONGS)) {
-                try {
-                    stats.setSongCount(Integer.valueOf(response.substring(MPDResponses.MPD_STATS_SONGS.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_STATS_DB_PLAYTIME)) {
-                try {
-                    stats.setAllSongDuration(Integer.valueOf(response.substring(MPDResponses.MPD_STATS_DB_PLAYTIME.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            } else if (response.startsWith(MPDResponses.MPD_STATS_DB_LAST_UPDATE)) {
-                try {
-                    stats.setLastDBUpdate(Long.valueOf(response.substring(MPDResponses.MPD_STATS_DB_LAST_UPDATE.length())));
-                } catch (NumberFormatException ignored) {
-                }
-            }
+        MPDResponses.MPD_RESPONSE_KEY key;
+        String value;
 
-            response = connection.readLine();
+        /* Read key from MPD */
+        try {
+            key = connection.readKey();
+            while (key != null && (key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK)) {
+                value = connection.readValue();
+                switch (key) {
+                    case RESPONSE_UPTIME:
+                        try {
+                            stats.setServerUptime(Integer.parseInt(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                        break;
+                    case RESPONSE_PLAYTIME:
+                        try {
+                            stats.setPlayDuration(Integer.parseInt(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                        break;
+                    case RESPONSE_ARTISTS:
+                        try {
+                            stats.setArtistsCount(Integer.parseInt(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                        break;
+                    case RESPONSE_ALBUMS:
+                        try {
+                            stats.setAlbumCount(Integer.parseInt(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                        break;
+                    case RESPONSE_SONGS:
+                        try {
+                            stats.setSongCount(Integer.parseInt(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                    case RESPONSE_DB_PLAYTIME:
+                        try {
+                            stats.setAllSongDuration(Integer.parseInt(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                        break;
+                    case RESPONSE_DB_UPDATE:
+                        try {
+                            stats.setLastDBUpdate(Long.parseLong(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                key = connection.readKey();
+            }
+        } catch (MPDSocketInterface.NoKeyReadException e) {
+            e.printStackTrace();
+            throw new MPDException("Read value before key");
         }
         return stats;
     }
@@ -635,25 +693,28 @@ class MPDResponseParser {
      * Private parsing method for MPDs command list
      *
      * @return A list of Strings of commands that are allowed on the server
-     * @throws IOException If an IO error occurs during read
+     * @throws IOException  If an IO error occurs during read
      * @throws MPDException if an error from MPD was received during reading
      */
     static List<String> parseMPDCommands(final MPDConnection connection) throws IOException, MPDException {
         ArrayList<String> commandList = new ArrayList<>();
-        // Parse outputs
-        String commandName;
-        /*if (!connection.isConnected()) {
-            return commandList;
-        }*/
 
-        /* Response line from MPD */
-        String response = connection.readLine();
-        while (response != null && !response.startsWith("OK")) {
-            if (response.startsWith(MPDResponses.MPD_COMMAND)) {
-                commandName = response.substring(MPDResponses.MPD_COMMAND.length());
-                commandList.add(commandName);
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+
+        key = connection.readKey();
+
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
             }
-            response = connection.readLine();
+            if (key == MPDResponses.MPD_RESPONSE_KEY.RESPONSE_COMMAND) {
+                commandList.add(value);
+            }
+
+            key = connection.readKey();
         }
         return commandList;
 
@@ -663,25 +724,28 @@ class MPDResponseParser {
      * Parses the response of MPDs supported tag types
      *
      * @return List of tags supported by the connected MPD host
-     * @throws IOException If an IO error occurs during read
+     * @throws IOException  If an IO error occurs during read
      * @throws MPDException if an error from MPD was received during reading
      */
-    static List<String> parseMPDTagTypes(final MPDConnection connection) throws IOException, MPDException {
+    static List<String> parseMPDTagTypes(final MPDConnection connection) throws MPDException {
         ArrayList<String> tagList = new ArrayList<>();
-        // Parse outputs
-        String tagName;
-        /*if (!connection.isConnected()) {
-            return tagList;
-        }*/
 
-        /* Response line from MPD */
-        String response = connection.readLine();
-        while (response != null && !response.startsWith("OK") && !response.startsWith("ACK")) {
-            if (response.startsWith(MPDResponses.MPD_TAGTYPE)) {
-                tagName = response.substring(MPDResponses.MPD_TAGTYPE.length());
-                tagList.add(tagName);
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+
+        key = connection.readKey();
+
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
             }
-            response = connection.readLine();
+            if (key == MPDResponses.MPD_RESPONSE_KEY.RESPONSE_TAGTYPE) {
+                tagList.add(value);
+            }
+
+            key = connection.readKey();
         }
 
         return tagList;
@@ -700,26 +764,35 @@ class MPDResponseParser {
         boolean outputActive = false;
         int outputId = -1;
 
-        if (!connection.isConnected()) {
-            return null;
-        }
+        MPDResponses.MPD_RESPONSE_KEY key = null;
 
-        /* Response line from MPD */
-        String response = connection.readLine();
-        while (response != null && !response.startsWith("OK")) {
-            if (response.startsWith(MPDResponses.MPD_OUTPUT_ID)) {
-                if (null != outputName) {
-                    MPDOutput tempOutput = new MPDOutput(outputName, outputActive, outputId);
-                    outputList.add(tempOutput);
-                }
-                outputId = Integer.valueOf(response.substring(MPDResponses.MPD_OUTPUT_ID.length()));
-            } else if (response.startsWith(MPDResponses.MPD_OUTPUT_NAME)) {
-                outputName = response.substring(MPDResponses.MPD_OUTPUT_NAME.length());
-            } else if (response.startsWith(MPDResponses.MPD_OUTPUT_ACTIVE)) {
-                String activeRespsonse = response.substring(MPDResponses.MPD_OUTPUT_ACTIVE.length());
-                outputActive = activeRespsonse.equals("1");
+        key = connection.readKey();
+
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
             }
-            response = connection.readLine();
+            switch (key) {
+                case RESPONSE_OUTPUT_ID:
+                    if (null != outputName) {
+                        MPDOutput tempOutput = new MPDOutput(outputName, outputActive, outputId);
+                        outputList.add(tempOutput);
+                    }
+                    outputId = Integer.parseInt(value);
+                    break;
+                case RESPONSE_OUTPUT_NAME:
+                    outputName = value;
+                    break;
+                case RESPONSE_OUTPUT_ENABLED:
+                    outputActive = value.equals("1");
+                default:
+                    break;
+            }
+
+            key = connection.readKey();
         }
 
         // Add remaining output to list

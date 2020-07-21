@@ -45,7 +45,6 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MPDInterface {
@@ -1064,7 +1063,7 @@ public class MPDInterface {
         }
         if (mArtworkConnection == null) {
             if (BuildConfig.DEBUG) {
-                Log.v(TAG,"Creating artwork connection");
+                Log.v(TAG, "Creating artwork connection");
             }
             mArtworkConnection = new MPDConnection();
             mArtworkConnection.setServerParameters(mHostname, mPassword, mPort);

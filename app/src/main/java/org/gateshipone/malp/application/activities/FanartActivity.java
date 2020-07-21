@@ -313,8 +313,8 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
         mVolumeText.setText(String.valueOf(volume) + '%');
 
         // Update position seekbar & textviews
-        mPositionSeekbar.setMax(status.getTrackLength());
-        mPositionSeekbar.setProgress(status.getElapsedTime());
+        mPositionSeekbar.setMax(Math.round(status.getTrackLength()));
+        mPositionSeekbar.setProgress(Math.round(status.getElapsedTime()));
     }
 
     /**

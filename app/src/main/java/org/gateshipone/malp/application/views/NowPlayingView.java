@@ -1210,14 +1210,16 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 break;
         }
 
+        int elapsed = Math.round(status.getElapsedTime());
+        int length = Math.round(status.getTrackLength());
         // Update position seekbar & textviews
-        mPositionSeekbar.setMax(status.getTrackLength());
+        mPositionSeekbar.setMax(length);
         if (!mPositionSeekbar.isPressed()) {
-            mPositionSeekbar.setProgress(status.getElapsedTime());
+            mPositionSeekbar.setProgress(elapsed);
         }
 
-        mElapsedTime.setText(FormatHelper.formatTracktimeFromS(status.getElapsedTime()));
-        mDuration.setText(FormatHelper.formatTracktimeFromS(status.getTrackLength()));
+        mElapsedTime.setText(FormatHelper.formatTracktimeFromS(elapsed));
+        mDuration.setText(FormatHelper.formatTracktimeFromS(length));
 
         // Update volume seekbar
         int volume = status.getVolume();

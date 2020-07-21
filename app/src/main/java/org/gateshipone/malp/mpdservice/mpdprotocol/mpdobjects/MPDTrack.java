@@ -141,6 +141,22 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
      */
     private int pSongID;
 
+    private int pChannelCount;
+
+    private int pSampleRate;
+
+    private int pBitDepth;
+
+    private String pPerformer;
+
+    private String pConductor;
+
+    private String pWork;
+
+    private String pLabel;
+
+    private String pGenre;
+
     /**
      * Used for {@link org.gateshipone.malp.application.adapters.CurrentPlaylistAdapter} to save if an
      * image is already being fetchted from the internet for this item

@@ -25,6 +25,7 @@ package org.gateshipone.malp.mpdservice.mpdprotocol;
 import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.gateshipone.malp.BuildConfig;
@@ -377,13 +378,8 @@ class MPDConnection {
                     throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
                 }
                 List<String> tags;
-                try {
-                    tags = MPDResponseParser.parseMPDTagTypes(this);
-                } catch (IOException e) {
-                    handleSocketError();
-                    mConnectionLock.release();
-                    throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
-                }
+                tags = MPDResponseParser.parseMPDTagTypes(this);
+
 
                 mServerCapabilities = new MPDCapabilities(versionString, commands, tags);
                 mCapabilitiesChanged = false;
@@ -1045,6 +1041,73 @@ class MPDConnection {
         return null;
     }
 
+    /**
+     * Central method to read a key or value from the sockets reader
+     *
+     * @return The read string. null if no data is available.
+     */
+    @NonNull
+    String readValue() throws MPDException, MPDSocketInterface.NoKeyReadException {
+        if (mSocketInterface != null) {
+            String keyValue;
+            try {
+                keyValue = mSocketInterface.readValue();
+            } catch (IOException e) {
+                handleSocketError();
+                mConnectionLock.release();
+                return "";
+            }
+
+            return keyValue;
+        }
+        return "";
+    }
+
+    @Nullable
+    MPDResponses.MPD_RESPONSE_KEY readKey() throws MPDException {
+        if (mSocketInterface != null) {
+            MPDResponses.MPD_RESPONSE_KEY key;
+            try {
+                key = mSocketInterface.readKey();
+            } catch (IOException e) {
+                handleSocketError();
+                mConnectionLock.release();
+                return null;
+            } catch (MPDException mpdException) {
+                String errorLine = mpdException.getError();
+
+                // Check for mopidy grouping error signature
+                if (errorLine != null && (errorLine.contains(MPDResponses.MPD_PARSE_ARGS_LIST_ERROR) || errorLine.contains(MPDResponses.MPD_UNKNOWN_FILTER_TYPE_ERROR))) {
+                    mConnectionLock.release();
+                    enableMopidyWorkaround();
+                    return null;
+                }
+
+                mConnectionLock.release();
+                changeState(CONNECTION_STATES.READY_FOR_COMMANDS);
+                scheduleIDLE();
+
+                // Forward the error
+                throw mpdException;
+            }
+
+            if (key == MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK) {
+                if (mConnectionState == CONNECTION_STATES.RECEIVING) {
+                    if (BuildConfig.DEBUG) {
+                        Log.v(TAG, "OK read, releasing connection");
+                    }
+                    changeState(CONNECTION_STATES.READY_FOR_COMMANDS);
+                    mConnectionLock.release();
+                    scheduleIDLE();
+                    return null;
+                }
+            }
+            return key;
+        }
+        return null;
+    }
+
+
     byte[] readBinary(int size) throws MPDException {
         if (mSocketInterface != null) {
             try {
@@ -1201,47 +1264,47 @@ class MPDConnection {
             switch (mConnectionState) {
                 case CONNECTING:
                     if (newState != CONNECTION_STATES.DISCONNECTED && newState != CONNECTION_STATES.READY_FOR_COMMANDS && newState != CONNECTION_STATES.DISCONNECTING) {
-                        Log.e(TAG, "Invalid transition");
+                        Log.e(TAG, "Invalid transition from " + mConnectionState + " to " + newState);
                     }
                     break;
                 case DISCONNECTING:
                     if (newState != CONNECTION_STATES.DISCONNECTED) {
-                        Log.e(TAG, "Invalid transition");
+                        Log.e(TAG, "Invalid transition from " + mConnectionState + " to " + newState);
                     }
                     break;
                 case DISCONNECTED:
                     if (newState != CONNECTION_STATES.CONNECTING && newState != CONNECTION_STATES.DISCONNECTED && newState != CONNECTION_STATES.DISCONNECTING) {
-                        Log.e(TAG, "Invalid transition");
+                        Log.e(TAG, "Invalid transition from " + mConnectionState + " to " + newState);
                     }
                     break;
                 case GOING_IDLE:
                     if (newState != CONNECTION_STATES.IDLE) {
-                        Log.e(TAG, "Invalid transition");
+                        Log.e(TAG, "Invalid transition from " + mConnectionState + " to " + newState);
                     }
                     break;
                 case IDLE:
                     if (newState != CONNECTION_STATES.READY_FOR_COMMANDS && newState != CONNECTION_STATES.GOING_NOIDLE && newState != CONNECTION_STATES.DISCONNECTING) {
-                        Log.e(TAG, "Invalid transition");
+                        Log.e(TAG, "Invalid transition from " + mConnectionState + " to " + newState);
                     }
                     break;
                 case GOING_NOIDLE:
                     if (newState != CONNECTION_STATES.READY_FOR_COMMANDS && newState != CONNECTION_STATES.DISCONNECTED && newState != CONNECTION_STATES.GOING_NOIDLE_TIMEOUT) {
-                        Log.e(TAG, "Invalid transition");
+                        Log.e(TAG, "Invalid transition from " + mConnectionState + " to " + newState);
                     }
                     break;
                 case READY_FOR_COMMANDS:
                     if (newState != CONNECTION_STATES.WAITING_FOR_RESPONSE && newState != CONNECTION_STATES.DISCONNECTING && newState != CONNECTION_STATES.GOING_IDLE) {
-                        Log.e(TAG, "Invalid transition");
+                        Log.e(TAG, "Invalid transition from " + mConnectionState + " to " + newState);
                     }
                     break;
                 case WAITING_FOR_RESPONSE:
                     if (newState != CONNECTION_STATES.RECEIVING && newState != CONNECTION_STATES.DISCONNECTED) {
-                        Log.e(TAG, "Invalid transition");
+                        Log.e(TAG, "Invalid transition from " + mConnectionState + " to " + newState);
                     }
                     break;
                 case RECEIVING:
                     if (newState != CONNECTION_STATES.READY_FOR_COMMANDS && newState != CONNECTION_STATES.DISCONNECTED) {
-                        Log.e(TAG, "Invalid transition");
+                        Log.e(TAG, "Invalid transition from " + mConnectionState + " to " + newState);
                     }
                     break;
             }
