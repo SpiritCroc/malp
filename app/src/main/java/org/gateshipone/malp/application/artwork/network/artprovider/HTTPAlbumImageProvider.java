@@ -72,18 +72,17 @@ public class HTTPAlbumImageProvider extends ArtProvider {
      */
     private RequestQueue mRequestQueue;
 
-
-    private HTTPAlbumImageProvider(Context context) {
+    private HTTPAlbumImageProvider(final Context context) {
         // Don't use MALPRequestQueue because we do not need to limit the load on the local server
         Network network = new BasicNetwork(new HurlStack());
         // 10MB disk cache
-        Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024 * 10);
+        Cache cache = new DiskBasedCache(context.getApplicationContext().getCacheDir(), 1024 * 1024 * 10);
 
         mRequestQueue = new RequestQueue(cache, network);
         mRequestQueue.start();
     }
 
-    public static synchronized HTTPAlbumImageProvider getInstance(Context context) {
+    public static synchronized HTTPAlbumImageProvider getInstance(final Context context) {
         if (mInstance == null) {
             mInstance = new HTTPAlbumImageProvider(context);
         }
@@ -92,7 +91,7 @@ public class HTTPAlbumImageProvider extends ArtProvider {
     }
 
     @Override
-    public void fetchImage(ArtworkRequestModel model, Context context, Response.Listener<ImageResponse> listener, ArtFetchError errorListener) {
+    public void fetchImage(ArtworkRequestModel model, Response.Listener<ImageResponse> listener, ArtFetchError errorListener) {
         switch (model.getType()) {
             case ALBUM:
             case ARTIST:
@@ -108,12 +107,12 @@ public class HTTPAlbumImageProvider extends ArtProvider {
                     for (String filename : COVER_FILENAMES) {
                         for (String fileextension : COVER_FILEEXTENSIIONS) {
                             String fileURL = url + filename + '.' + fileextension;
-                            getAlbumImage(fileURL, model, listener, error -> multiRequest.increaseFailure(context, error));
+                            getAlbumImage(fileURL, model, listener, multiRequest::increaseFailure);
                         }
                     }
                 } else {
                     // File, just check the file
-                    getAlbumImage(url, model, listener, error -> errorListener.fetchVolleyError(model, context, error));
+                    getAlbumImage(url, model, listener, error -> errorListener.fetchVolleyError(model, error));
                 }
                 break;
         }
@@ -179,10 +178,10 @@ public class HTTPAlbumImageProvider extends ArtProvider {
             mErrorListener = errorListener;
         }
 
-        synchronized void increaseFailure(final Context context, final VolleyError error) {
+        synchronized void increaseFailure(final VolleyError error) {
             mFailureCount++;
             if (mFailureCount == COVER_FILENAMES.length * COVER_FILEEXTENSIIONS.length) {
-                mErrorListener.fetchVolleyError(mModel, context, error);
+                mErrorListener.fetchVolleyError(mModel, error);
             }
         }
     }

@@ -71,20 +71,19 @@ public class MusicBrainzProvider extends ArtProvider {
     }
 
     @Override
-    public void fetchImage(final ArtworkRequestModel model, final Context context,
-                           final Response.Listener<ImageResponse> listener, final ArtFetchError errorListener) {
+    public void fetchImage(final ArtworkRequestModel model, final Response.Listener<ImageResponse> listener, final ArtFetchError errorListener) {
         switch (model.getType()) {
             case ALBUM:
                 if (model.getMBID().isEmpty()) {
-                    resolveAlbumMBID(model, context, listener, errorListener);
+                    resolveAlbumMBID(model, listener, errorListener);
                 } else {
                     String url = COVERART_ARCHIVE_API_URL + "/" + "release/" + model.getMBID() + "/front-500";
                     getAlbumImage(url, model, listener, error -> {
                         if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
                             // Try without MBID from MPD
-                            resolveAlbumMBID(model, context, listener, errorListener);
+                            resolveAlbumMBID(model, listener, errorListener);
                         } else {
-                            errorListener.fetchVolleyError(model, context, error);
+                            errorListener.fetchVolleyError(model, error);
                         }
                     });
                 }
@@ -103,11 +102,10 @@ public class MusicBrainzProvider extends ArtProvider {
      * @param listener      Callback listener to handle the response
      * @param errorListener Callback to handle lookup errors
      */
-    private void resolveAlbumMBID(final ArtworkRequestModel album, final Context context,
-                                  final Response.Listener<ImageResponse> listener, final ArtFetchError errorListener) {
+    private void resolveAlbumMBID(final ArtworkRequestModel album, final Response.Listener<ImageResponse> listener, final ArtFetchError errorListener) {
         getAlbumMBID(album,
-                response -> parseMusicBrainzReleaseJSON(album, 0, response, context, listener, errorListener),
-                error -> errorListener.fetchVolleyError(album, context, error));
+                response -> parseMusicBrainzReleaseJSON(album, 0, response, listener, errorListener),
+                error -> errorListener.fetchVolleyError(album, error));
     }
 
     /**
@@ -116,14 +114,13 @@ public class MusicBrainzProvider extends ArtProvider {
      * @param model         Album to check for an image
      * @param releaseIndex  Index of the requested release to check for an image
      * @param response      Response to check use to search for an image
-     * @param context       Context used for lookup
      * @param listener      Callback to handle the response
      * @param errorListener Callback to handle errors
      */
-    private void parseMusicBrainzReleaseJSON(final ArtworkRequestModel model, final int releaseIndex, final JSONObject response, final Context context,
+    private void parseMusicBrainzReleaseJSON(final ArtworkRequestModel model, final int releaseIndex, final JSONObject response,
                                              final Response.Listener<ImageResponse> listener, final ArtFetchError errorListener) {
         if (releaseIndex >= MUSICBRAINZ_LIMIT_RESULT_COUNT) {
-            errorListener.fetchVolleyError(model, context, null);
+            errorListener.fetchVolleyError(model, null);
             return;
         }
 
@@ -148,9 +145,9 @@ public class MusicBrainzProvider extends ArtProvider {
                         }
 
                         if (releaseIndex + 1 < releases.length()) {
-                            parseMusicBrainzReleaseJSON(model, releaseIndex + 1, response, context, listener, errorListener);
+                            parseMusicBrainzReleaseJSON(model, releaseIndex + 1, response, listener, errorListener);
                         } else {
-                            errorListener.fetchVolleyError(model, context, error);
+                            errorListener.fetchVolleyError(model, error);
                         }
                     });
                 } else {
@@ -160,16 +157,16 @@ public class MusicBrainzProvider extends ArtProvider {
                     }
 
                     if (releaseIndex + 1 < releases.length()) {
-                        parseMusicBrainzReleaseJSON(model, releaseIndex + 1, response, context, listener, errorListener);
+                        parseMusicBrainzReleaseJSON(model, releaseIndex + 1, response, listener, errorListener);
                     } else {
-                        errorListener.fetchVolleyError(model, context, null);
+                        errorListener.fetchVolleyError(model, null);
                     }
                 }
             } else {
-                errorListener.fetchVolleyError(model, context, null);
+                errorListener.fetchVolleyError(model, null);
             }
         } catch (JSONException e) {
-            errorListener.fetchJSONException(model, context, e);
+            errorListener.fetchJSONException(model, e);
         }
 
     }
