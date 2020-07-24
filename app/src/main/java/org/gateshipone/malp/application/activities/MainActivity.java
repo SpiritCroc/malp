@@ -889,12 +889,7 @@ public class MainActivity extends GenericActivity
             }
         }
         // Create fragment and give it an argument for the selected article
-        AlbumsFragment newFragment = new AlbumsFragment();
-        Bundle args = new Bundle();
-        args.putString(AlbumsFragment.BUNDLE_STRING_EXTRA_PATH, path);
-
-
-        newFragment.setArguments(args);
+        AlbumsFragment newFragment = AlbumsFragment.newInstance(path);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
@@ -929,7 +924,6 @@ public class MainActivity extends GenericActivity
     public void openArtworkSettings() {
         // Create fragment and give it an argument for the selected directory
         ArtworkSettingsFragment newFragment = new ArtworkSettingsFragment();
-
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
