@@ -24,18 +24,19 @@ package org.gateshipone.malp.application.fragments;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
 import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.callbacks.TextDialogCallback;
 
 
 public class TextDialog extends DialogFragment {
-    public final static String EXTRA_DIALOG_TITLE = "dialog_title";
-    public final static String EXTRA_DIALOG_TEXT = "dialog_text";
+    private final static String EXTRA_DIALOG_TITLE = "dialog_title";
+    private final static String EXTRA_DIALOG_TEXT = "dialog_text";
 
     TextDialogCallback mSaveCallback;
 
@@ -43,6 +44,16 @@ public class TextDialog extends DialogFragment {
     private String mText;
 
     private boolean mFirstClick;
+
+    public static TextDialog newInstance(final String dialogTitle, final String dialogText) {
+        final Bundle args = new Bundle();
+        args.putString(EXTRA_DIALOG_TITLE, dialogTitle);
+        args.putString(EXTRA_DIALOG_TEXT, dialogText);
+
+        TextDialog fragment = new TextDialog();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public void setCallback(TextDialogCallback callback) {
         mSaveCallback = callback;
@@ -53,7 +64,7 @@ public class TextDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
 
-        if ( null != args ) {
+        if (null != args) {
             mTitle = args.getString(EXTRA_DIALOG_TITLE);
             mText = args.getString(EXTRA_DIALOG_TEXT);
         }
@@ -68,7 +79,7 @@ public class TextDialog extends DialogFragment {
 
         // Add a listener that just removes the text on first clicking
         editTextTitle.setOnClickListener(v -> {
-            if ( !mFirstClick ) {
+            if (!mFirstClick) {
                 editTextTitle.setText("");
                 mFirstClick = true;
             }

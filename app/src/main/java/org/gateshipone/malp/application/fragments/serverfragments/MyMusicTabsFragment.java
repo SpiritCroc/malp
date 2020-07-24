@@ -50,7 +50,8 @@ import org.gateshipone.malp.application.utils.ThemeUtils;
 
 public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSelectedListener {
     public final static String TAG = MyMusicTabsFragment.class.getSimpleName();
-    public final static String MY_MUSIC_REQUESTED_TAB = "ARG_REQUESTED_TAB";
+
+    private final static String MY_MUSIC_REQUESTED_TAB = "ARG_REQUESTED_TAB";
 
     private MyMusicPagerAdapter mMyMusicPagerAdapter;
 
@@ -71,6 +72,15 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
      * Constant for state saving
      */
     public final static String MYMUSICFRAGMENT_SAVED_INSTANCE_SEARCH_STRING = "MyMusicFragment.SearchString";
+
+    public static MyMusicTabsFragment newInstance(final DEFAULTTAB defaulttab) {
+        final Bundle args = new Bundle();
+        args.putInt(MY_MUSIC_REQUESTED_TAB, defaulttab.ordinal());
+
+        final MyMusicTabsFragment fragment = new MyMusicTabsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -271,7 +281,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         public Fragment getItem(int i) {
             switch (i) {
                 case 0:
-                    return new ArtistsFragment();
+                    return ArtistsFragment.newInstance();
                 case 1:
                     return AlbumsFragment.newInstance(null);
                 default:

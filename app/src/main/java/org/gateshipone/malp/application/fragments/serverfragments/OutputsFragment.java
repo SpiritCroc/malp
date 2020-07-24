@@ -48,6 +48,10 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
      */
     private ListView mListView;
 
+    public static OutputsFragment newInstance() {
+        return new OutputsFragment();
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment

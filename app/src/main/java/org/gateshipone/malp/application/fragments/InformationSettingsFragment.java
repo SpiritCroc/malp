@@ -37,6 +37,10 @@ public class InformationSettingsFragment extends PreferenceFragmentCompat {
      */
     private FABFragmentCallback mToolbarAndFABCallback;
 
+    public static InformationSettingsFragment newInstance() {
+        return new InformationSettingsFragment();
+    }
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.information_settings);
@@ -70,7 +74,7 @@ public class InformationSettingsFragment extends PreferenceFragmentCompat {
             // set toolbar behaviour and title
             mToolbarAndFABCallback.setupToolbar(getString(R.string.menu_information), false, true, false);
             // set up play button
-            mToolbarAndFABCallback.setupFAB(false,null);
+            mToolbarAndFABCallback.setupFAB(false, null);
         }
     }
 }

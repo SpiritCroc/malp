@@ -84,9 +84,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
     public static AlbumsFragment newInstance(@Nullable final String albumPath) {
         final Bundle args = new Bundle();
-        if (albumPath != null) {
-            args.putString(BUNDLE_STRING_EXTRA_PATH, albumPath);
-        }
+        args.putString(BUNDLE_STRING_EXTRA_PATH, albumPath);
 
         final AlbumsFragment fragment = new AlbumsFragment();
         fragment.setArguments(args);

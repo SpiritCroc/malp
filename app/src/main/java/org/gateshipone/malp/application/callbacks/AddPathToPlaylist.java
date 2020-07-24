@@ -23,7 +23,7 @@
 package org.gateshipone.malp.application.callbacks;
 
 import android.content.Context;
-import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.gateshipone.malp.R;
@@ -43,7 +43,7 @@ public class AddPathToPlaylist implements OnSaveDialogListener {
 
     @Override
     public void onSaveObject(String title) {
-        if ( null != mFile) {
+        if (null != mFile) {
             MPDQueryHandler.addURLToSavedPlaylist(title, mFile.getPath());
         }
     }
@@ -51,13 +51,10 @@ public class AddPathToPlaylist implements OnSaveDialogListener {
     @Override
     public void onCreateNewObject() {
         // open dialog in order to save the current playlist as a playlist in the mediastore
-        TextDialog textDialog = new TextDialog();
-        Bundle args = new Bundle();
-        args.putString(TextDialog.EXTRA_DIALOG_TITLE, mContext.getResources().getString(R.string.dialog_save_playlist));
-        args.putString(TextDialog.EXTRA_DIALOG_TEXT, mContext.getResources().getString(R.string.default_playlist_title));
+        TextDialog textDialog = TextDialog.newInstance(mContext.getResources().getString(R.string.dialog_save_playlist),
+                mContext.getResources().getString(R.string.default_playlist_title));
 
         textDialog.setCallback(text -> MPDQueryHandler.addURLToSavedPlaylist(text, mFile.getPath()));
-        textDialog.setArguments(args);
-        textDialog.show(((AppCompatActivity)mContext).getSupportFragmentManager(), "SavePLTextDialog");
+        textDialog.show(((AppCompatActivity) mContext).getSupportFragmentManager(), "SavePLTextDialog");
     }
 }

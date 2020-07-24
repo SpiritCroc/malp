@@ -92,9 +92,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
     public static ArtistAlbumsFragment newInstance(@NonNull final MPDArtist artist, @Nullable final Bitmap bitmap) {
         final Bundle args = new Bundle();
         args.putParcelable(BUNDLE_STRING_EXTRA_ARTIST, artist);
-        if (bitmap != null) {
-            args.putParcelable(BUNDLE_STRING_EXTRA_BITMAP, bitmap);
-        }
+        args.putParcelable(BUNDLE_STRING_EXTRA_BITMAP, bitmap);
 
         final ArtistAlbumsFragment fragment = new ArtistAlbumsFragment();
         fragment.setArguments(args);

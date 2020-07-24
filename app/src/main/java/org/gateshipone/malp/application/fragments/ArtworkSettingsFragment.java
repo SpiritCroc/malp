@@ -49,6 +49,10 @@ import org.gateshipone.malp.application.utils.ThemeUtils;
 public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
     private FABFragmentCallback mFABCallback = null;
 
+    public static ArtworkSettingsFragment newInstance() {
+        return new ArtworkSettingsFragment();
+    }
+
     /**
      * Called to do initial creation of a fragment.
      * <p>

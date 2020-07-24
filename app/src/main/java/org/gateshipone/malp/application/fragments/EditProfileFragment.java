@@ -38,6 +38,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 
@@ -52,8 +53,8 @@ import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
 
 public class EditProfileFragment extends Fragment {
     public final static String TAG = EditProfileFragment.class.getSimpleName();
-    public static final String EXTRA_PROFILE = "profile";
 
+    private static final String EXTRA_PROFILE = "profile";
 
     private String mProfilename;
     private String mHostname;
@@ -89,11 +90,19 @@ public class EditProfileFragment extends Fragment {
 
     private boolean mOptionsMenuHandled = false;
 
+    public static EditProfileFragment newInstance(@Nullable final MPDServerProfile profile) {
+        final Bundle args = new Bundle();
+        args.putParcelable(EXTRA_PROFILE, profile);
+
+        final EditProfileFragment fragment = new EditProfileFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_edit_profile, container, false);
-
 
         mProfilenameView = rootView.findViewById(R.id.fragment_profile_profilename);
         mHostnameView = rootView.findViewById(R.id.fragment_profile_hostname);
@@ -108,12 +117,10 @@ public class EditProfileFragment extends Fragment {
 
         mMPDCoverEnabledView = rootView.findViewById(R.id.fragment_profile_use_mpd_cover);
 
-
         // Set to maximum tcp port
         InputFilter portFilter = new PortNumberFilter();
 
         mPortView.setFilters(new InputFilter[]{portFilter});
-
 
         /* Check if an artistname/albumame was given in the extras */
         Bundle args = getArguments();

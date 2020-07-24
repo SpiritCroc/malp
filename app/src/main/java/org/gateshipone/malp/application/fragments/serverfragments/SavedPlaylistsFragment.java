@@ -62,6 +62,10 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
      */
     private PlaylistCallback mCallback;
 
+    public static SavedPlaylistsFragment newInstance() {
+        return new SavedPlaylistsFragment();
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment

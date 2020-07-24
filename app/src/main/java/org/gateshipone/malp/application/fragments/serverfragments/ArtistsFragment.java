@@ -55,6 +55,8 @@ import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
+import java.util.List;
+
 public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements AdapterView.OnItemClickListener {
     public final static String TAG = ArtistsFragment.class.getSimpleName();
 
@@ -78,6 +80,10 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
     private boolean mUseAlbumArtists;
 
     private boolean mUseArtistSort;
+
+    public static ArtistsFragment newInstance() {
+        return new ArtistsFragment();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -142,6 +148,24 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
             mFABCallback.setupToolbar(getString(R.string.app_name), true, true, false);
         }
         ArtworkManager.getInstance(getContext().getApplicationContext()).registerOnNewArtistImageListener((ArtistsAdapter) mAdapter);
+    }
+
+    /**
+     * Called when the observed {@link androidx.lifecycle.LiveData} is changed.
+     * <p>
+     * This method will update the related adapter and the {@link androidx.swiperefreshlayout.widget.SwipeRefreshLayout} if present.
+     *
+     * @param model The data observed by the {@link androidx.lifecycle.LiveData}.
+     */
+    @Override
+    protected void onDataReady(List<MPDArtist> model) {
+        super.onDataReady(model);
+
+        // Reset old scroll position
+        if (mLastPosition >= 0) {
+            mAdapterView.setSelection(mLastPosition);
+            mLastPosition = -1;
+        }
     }
 
     @Override

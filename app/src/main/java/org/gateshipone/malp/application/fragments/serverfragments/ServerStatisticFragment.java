@@ -68,6 +68,10 @@ public class ServerStatisticFragment extends GenericMPDFragment<MPDStatistics> {
     private MPDCurrentStatus mLastStatus;
     private ServerStatusHandler mServerStatusHandler;
 
+    public static ServerStatisticFragment newInstance() {
+        return new ServerStatisticFragment();
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
