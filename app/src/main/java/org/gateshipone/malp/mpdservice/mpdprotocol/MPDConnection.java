@@ -510,6 +510,22 @@ class MPDConnection {
      * @param command Command string to send to the MPD server
      */
     void sendMPDCommand(String command) {
+        sendMPDCommand(command, RESPONSE_TIMEOUT);
+    }
+
+    /**
+     * This functions sends the command to the MPD server.
+     * If the server is currently idling then it will deidle it first.
+     * <p>
+     * CAUTION: After using this command it is important to clear the input buffer and read until
+     * either "OK" or "ACK ..." is sent. Otherwise the connection will remain in an undefined state.
+     * <p>
+     * If you want to submit a simple command (without a response other than OK/ACK)
+     * like pause/play use sendSimpleMPDCommand.
+     *
+     * @param command Command string to send to the MPD server
+     */
+    void sendMPDCommand(String command, long responseTimeout) {
         if (BuildConfig.DEBUG) {
             Log.v(TAG, "Send command: " + command);
         }
@@ -548,7 +564,7 @@ class MPDConnection {
 
         // This waits until the server sends a response (OK,ACK(failure) or the requested data)
         try {
-            waitForResponse();
+            waitForResponse(responseTimeout);
         } catch (IOException e) {
             handleSocketError();
             mConnectionLock.release();
@@ -751,11 +767,15 @@ class MPDConnection {
         }
     }
 
+    private void waitForResponse() throws IOException {
+        waitForResponse(RESPONSE_TIMEOUT);
+    }
+
     /**
      * Function only actively waits for reader to get ready for
      * the response.
      */
-    private void waitForResponse() throws IOException {
+    private void waitForResponse(long timeOut) throws IOException {
         if (BuildConfig.DEBUG) {
             Log.v(TAG, "Waiting for response");
         }
@@ -765,7 +785,7 @@ class MPDConnection {
             while (!readyRead()) {
                 long compareTime = System.nanoTime() - currentTime;
                 // Terminate waiting after waiting to long. This indicates that the server is not responding
-                if (compareTime > RESPONSE_TIMEOUT) {
+                if (compareTime > timeOut) {
                     if (BuildConfig.DEBUG) {
                         Log.v(TAG, "Stuck waiting for server response");
                     }

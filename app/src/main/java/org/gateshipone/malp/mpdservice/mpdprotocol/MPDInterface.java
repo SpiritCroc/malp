@@ -445,7 +445,7 @@ public class MPDInterface {
      * @return A list of all tracks in MPDTrack objects
      */
     public synchronized List<MPDFileEntry> getAllTracks() throws MPDException {
-        mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALL_FILES);
+        mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALL_FILES, 120L * 1000L * 1000L * 1000L);
 
         return MPDResponseParser.parseMPDTracks(mConnection);
     }
