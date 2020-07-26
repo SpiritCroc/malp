@@ -42,9 +42,18 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 public class SongDetailsDialog extends DialogFragment {
 
-    public static final String EXTRA_FILE = "file";
+    private static final String EXTRA_FILE = "file";
 
     private MPDTrack mFile;
+
+    public static SongDetailsDialog newInstance(final MPDTrack file) {
+        final Bundle args = new Bundle();
+        args.putParcelable(EXTRA_FILE, file);
+
+        final SongDetailsDialog fragment = new SongDetailsDialog();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @NonNull
     @Override

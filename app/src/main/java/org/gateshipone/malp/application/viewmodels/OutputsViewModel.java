@@ -32,22 +32,40 @@ import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseOutpu
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class OutputsViewModel extends GenericViewModel<MPDOutput> {
 
+    private final OutputsHandler mOutputsHandler;
+
     private OutputsViewModel(@NonNull final Application application) {
         super(application);
+
+        mOutputsHandler = new OutputsHandler(this);
     }
 
     @Override
     void loadData() {
-        MPDQueryHandler.getOutputs(new MPDResponseOutputList() {
-            @Override
-            public void handleOutputs(List<MPDOutput> outputList) {
-                setData(outputList);
+        MPDQueryHandler.getOutputs(mOutputsHandler);
+    }
+
+    private static class OutputsHandler extends MPDResponseOutputList {
+
+        private final WeakReference<OutputsViewModel> mOutputsViewModel;
+
+        OutputsHandler(final OutputsViewModel outputsViewModel) {
+            mOutputsViewModel = new WeakReference<>(outputsViewModel);
+        }
+
+        @Override
+        public void handleOutputs(List<MPDOutput> outputList) {
+            final OutputsViewModel viewModel = mOutputsViewModel.get();
+
+            if (viewModel != null) {
+                viewModel.setData(outputList);
             }
-        });
+        }
     }
 
     public static class OutputsViewModelFactory extends ViewModelProvider.NewInstanceFactory {

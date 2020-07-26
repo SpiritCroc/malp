@@ -32,27 +32,46 @@ import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseServe
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StatisticsViewModel extends GenericViewModel<MPDStatistics> {
 
+    private final ServerStatisticsHandler mServerStatisticsHandler;
+
     private StatisticsViewModel(@NonNull final Application application) {
         super(application);
+
+        mServerStatisticsHandler = new ServerStatisticsHandler(this);
     }
 
     @Override
     void loadData() {
-        MPDQueryHandler.getStatistics(new MPDResponseServerStatistics() {
-            @Override
-            public void handleStatistic(MPDStatistics statistics) {
-                final List<MPDStatistics> mpdStatisticsList = new ArrayList<>();
-                mpdStatisticsList.add(statistics);
-
-                setData(mpdStatisticsList);
-            }
-        });
+        MPDQueryHandler.getStatistics(mServerStatisticsHandler);
     }
+
+    private static class ServerStatisticsHandler extends MPDResponseServerStatistics {
+
+        private final WeakReference<StatisticsViewModel> mStatisticsViewModel;
+
+        ServerStatisticsHandler(final StatisticsViewModel statisticsViewModel) {
+            mStatisticsViewModel = new WeakReference<>(statisticsViewModel);
+        }
+
+        @Override
+        public void handleStatistic(MPDStatistics statistics) {
+            final List<MPDStatistics> mpdStatisticsList = new ArrayList<>();
+            mpdStatisticsList.add(statistics);
+
+            final StatisticsViewModel viewModel = mStatisticsViewModel.get();
+
+            if (viewModel != null) {
+                viewModel.setData(mpdStatisticsList);
+            }
+        }
+    }
+
 
     public static class StatisticsViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 

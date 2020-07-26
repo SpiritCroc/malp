@@ -87,7 +87,7 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
 
     private MPDServerProfile mServerProfile = new MPDServerProfile();
 
-    private Context mContext;
+    private Context mApplicationContext;
 
     private ConnectionManager(Context context) {
         super(context.getMainLooper());
@@ -95,7 +95,7 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
         mHostname = null;
         mPassword = null;
         mUseCounter = 0;
-        mContext = context;
+        mApplicationContext = context.getApplicationContext();
     }
 
     public synchronized static ConnectionManager getInstance(Context context) {
@@ -185,7 +185,7 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
                 mDisconnectTimer.purge();
             }
             mDisconnectTimer = new Timer();
-            mDisconnectTimer.schedule(new DisconnectTask(context), DISCONNECT_DELAY_TIME);
+            mDisconnectTimer.schedule(new DisconnectTask(), DISCONNECT_DELAY_TIME);
 
             if (BuildConfig.DEBUG) {
                 Log.v(TAG, "Delayed disconnect started");
@@ -224,7 +224,7 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
 
         // Check if this profile has user-specified HTTP cover loading active
         if (mServerProfile.getHTTPCoverEnabled()) {
-            HTTPAlbumImageProvider.getInstance(mContext).setRegex(mServerProfile.getHTTPRegex());
+            HTTPAlbumImageProvider.getInstance(mApplicationContext).setRegex(mServerProfile.getHTTPRegex());
         }
 
         // Check if current server can deliver artwork over MPD protocol
@@ -251,7 +251,7 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
                 mReconnectTimer.schedule(new ReconnectTask(), LONG_RECONNECT_TIME);
             }
         }
-        HTTPAlbumImageProvider.getInstance(mContext).setRegex(null);
+        HTTPAlbumImageProvider.getInstance(mApplicationContext).setRegex(null);
     }
 
     /**
@@ -280,30 +280,24 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
      */
     private class DisconnectTask extends TimerTask {
 
-        private Context mContext;
-
-        public DisconnectTask(Context context) {
-            mContext = context;
-        }
-
         @Override
         public void run() {
             MPDCurrentStatus status = MPDStateMonitoringHandler.getHandler().getLastStatus();
 
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mApplicationContext);
 
             // Check if the notification setting is enabled (necessary for both the widget and notification)
-            boolean showNotification = sharedPref.getBoolean(mContext.getString(R.string.pref_show_notification_key), mContext.getResources().getBoolean(R.bool.pref_show_notification_default));
+            boolean showNotification = sharedPref.getBoolean(mApplicationContext.getString(R.string.pref_show_notification_key), mApplicationContext.getResources().getBoolean(R.bool.pref_show_notification_default));
             if (showNotification && status.getPlaybackState() != MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_STOPPED) {
 
                 // Notify the widget to also connect if possible
-                Intent connectIntent = new Intent(mContext, BackgroundService.class);
+                Intent connectIntent = new Intent(mApplicationContext, BackgroundService.class);
                 connectIntent.setAction(BackgroundService.ACTION_CONNECT);
-                mContext.startService(connectIntent);
+                mApplicationContext.startService(connectIntent);
 
-                Intent showNotificationIntent = new Intent(mContext, BackgroundService.class);
+                Intent showNotificationIntent = new Intent(mApplicationContext, BackgroundService.class);
                 showNotificationIntent.setAction(BackgroundService.ACTION_SHOW_NOTIFICATION);
-                mContext.startService(showNotificationIntent);
+                mApplicationContext.startService(showNotificationIntent);
             }
 
             disconnectFromServer();

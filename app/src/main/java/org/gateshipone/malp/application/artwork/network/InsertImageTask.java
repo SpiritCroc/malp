@@ -22,7 +22,6 @@
 
 package org.gateshipone.malp.application.artwork.network;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -39,7 +38,7 @@ import java.io.ByteArrayOutputStream;
 public class InsertImageTask extends AsyncTask<ImageResponse, Object, ArtworkRequestModel> {
 
     public interface ImageSavedCallback {
-        void onImageSaved(ArtworkRequestModel artworkRequestModel, Context context);
+        void onImageSaved(ArtworkRequestModel artworkRequestModel);
     }
 
     /**
@@ -57,13 +56,12 @@ public class InsertImageTask extends AsyncTask<ImageResponse, Object, ArtworkReq
      */
     private static final int MAXIMUM_IMAGE_SIZE = 1024 * 1024;
 
-    @SuppressLint("StaticFieldLeak")
-    private final Context mApplicationContext;
+    private final ArtworkDatabaseManager mArtworkDatabaseManager;
 
     private final ImageSavedCallback mImageSavedCallback;
 
-    public InsertImageTask(final Context applicationContext, final ImageSavedCallback imageSavedCallback) {
-        mApplicationContext = applicationContext;
+    public InsertImageTask(final Context context, final ImageSavedCallback imageSavedCallback) {
+        mArtworkDatabaseManager = ArtworkDatabaseManager.getInstance(context);
         mImageSavedCallback = imageSavedCallback;
     }
 
@@ -103,18 +101,16 @@ public class InsertImageTask extends AsyncTask<ImageResponse, Object, ArtworkReq
 
     @Override
     protected void onPostExecute(ArtworkRequestModel artworkRequestModel) {
-        mImageSavedCallback.onImageSaved(artworkRequestModel, mApplicationContext);
+        mImageSavedCallback.onImageSaved(artworkRequestModel);
     }
 
     private void insertImage(final ArtworkRequestModel model, final byte[] image) {
-        final ArtworkDatabaseManager artworkDatabase = ArtworkDatabaseManager.getInstance(mApplicationContext);
-
         switch (model.getType()) {
             case ALBUM:
-                artworkDatabase.insertAlbumImage(mApplicationContext, (MPDAlbum) model.getGenericModel(), image);
+                mArtworkDatabaseManager.insertAlbumImage((MPDAlbum) model.getGenericModel(), image);
                 break;
             case ARTIST:
-                artworkDatabase.insertArtistImage(mApplicationContext, (MPDArtist) model.getGenericModel(), image);
+                mArtworkDatabaseManager.insertArtistImage((MPDArtist) model.getGenericModel(), image);
                 break;
             case TRACK:
                 final MPDTrack track = (MPDTrack) model.getGenericModel();
@@ -125,7 +121,7 @@ public class InsertImageTask extends AsyncTask<ImageResponse, Object, ArtworkReq
                 }
                 fakeAlbum.setArtistName(artist);
                 fakeAlbum.setMBID(track.getTrackAlbumMBID());
-                artworkDatabase.insertAlbumImage(mApplicationContext, fakeAlbum, image);
+                mArtworkDatabaseManager.insertAlbumImage(fakeAlbum, image);
                 break;
         }
     }

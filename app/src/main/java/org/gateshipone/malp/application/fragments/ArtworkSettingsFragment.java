@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.artwork.BulkDownloadService;
@@ -47,6 +48,10 @@ import org.gateshipone.malp.application.utils.ThemeUtils;
 
 public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
     private FABFragmentCallback mFABCallback = null;
+
+    public static ArtworkSettingsFragment newInstance() {
+        return new ArtworkSettingsFragment();
+    }
 
     /**
      * Called to do initial creation of a fragment.
@@ -61,7 +66,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
         Preference clearAlbums = findPreference(getString(R.string.pref_clear_album_key));
         clearAlbums.setOnPreferenceClickListener(preference -> {
             final Context context = getContext();
-            ArtworkDatabaseManager.getInstance(context).clearAlbumImages(context);
+            ArtworkDatabaseManager.getInstance(context).clearAlbumImages();
             return true;
         });
 
@@ -69,7 +74,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
         Preference clearArtist = findPreference(getString(R.string.pref_clear_artist_key));
         clearArtist.setOnPreferenceClickListener(preference -> {
             final Context context = getContext();
-            ArtworkDatabaseManager.getInstance(context).clearArtistImages(context);
+            ArtworkDatabaseManager.getInstance(context).clearArtistImages();
             return true;
         });
 
@@ -103,7 +108,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
                         getString(R.string.pref_artwork_provider_album_default)));
                 serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_WIFI_ONLY, sharedPref.getBoolean(getString(R.string.pref_download_wifi_only_key),
                         getResources().getBoolean(R.bool.pref_download_wifi_default)));
-                serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_HTTP_COVER_REGEX, HTTPAlbumImageProvider.getInstance(getContext().getApplicationContext()).getRegex());
+                serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_HTTP_COVER_REGEX, HTTPAlbumImageProvider.getInstance(getContext()).getRegex());
                 serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_MPD_COVER_ENABLED, MPDAlbumImageProvider.getInstance().getActive());
                 getActivity().startService(serviceIntent);
             });
@@ -194,9 +199,9 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
             Intent nextIntent = new Intent(BulkDownloadService.ACTION_CANCEL);
             getActivity().getApplicationContext().sendBroadcast(nextIntent);
 
-            ArtworkManager artworkManager = ArtworkManager.getInstance(getContext().getApplicationContext());
+            ArtworkManager artworkManager = ArtworkManager.getInstance(getContext());
 
-            artworkManager.cancelAllRequests(getContext().getApplicationContext());
+            artworkManager.cancelAllRequests();
 
             if (key.equals(albumProviderKey)) {
                 artworkManager.setAlbumProvider(sharedPreferences.getString(albumProviderKey, getString(R.string.pref_artwork_provider_album_default)));

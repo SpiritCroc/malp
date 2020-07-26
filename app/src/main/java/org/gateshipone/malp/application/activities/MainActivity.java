@@ -226,33 +226,28 @@ public class MainActivity extends GenericActivity
 
             switch (navId) {
                 case R.id.nav_saved_playlists:
-                    fragment = new SavedPlaylistsFragment();
+                    fragment = SavedPlaylistsFragment.newInstance();
                     fragmentTag = SavedPlaylistsFragment.TAG;
                     break;
                 case R.id.nav_files:
-                    fragment = new FilesFragment();
+                    fragment = FilesFragment.newInstance("");
                     fragmentTag = FilesFragment.TAG;
                     break;
                 case R.id.nav_profiles:
-                    fragment = new ProfilesFragment();
+                    fragment = ProfilesFragment.newInstance();
                     fragmentTag = ProfilesFragment.TAG;
                     break;
                 case R.id.nav_app_settings:
-                    fragment = new SettingsFragment();
+                    fragment = SettingsFragment.newInstance();
                     fragmentTag = SettingsFragment.TAG;
                     break;
                 case R.id.nav_search:
-                    fragment = new SearchFragment();
+                    fragment = SearchFragment.newInstance();
                     fragmentTag = SearchFragment.TAG;
                     break;
                 case R.id.nav_library:
                 default:
-                    fragment = new MyMusicTabsFragment();
-                    MyMusicTabsFragment.DEFAULTTAB defaultTab = getDefaultTab();
-                    Bundle args = new Bundle();
-                    args.putInt(MyMusicTabsFragment.MY_MUSIC_REQUESTED_TAB, defaultTab.ordinal());
-
-                    fragment.setArguments(args);
+                    fragment = MyMusicTabsFragment.newInstance(getDefaultTab());
                     fragmentTag = MyMusicTabsFragment.TAG;
                     break;
             }
@@ -362,11 +357,8 @@ public class MainActivity extends GenericActivity
                         return true;
                     case R.id.action_add_to_saved_playlist:
                         // open dialog in order to save the current playlist as a playlist in the mediastore
-                        ChoosePlaylistDialog choosePlaylistDialog = new ChoosePlaylistDialog();
-                        Bundle args = new Bundle();
-                        args.putBoolean(ChoosePlaylistDialog.EXTRA_SHOW_NEW_ENTRY, true);
+                        ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
                         choosePlaylistDialog.setCallback(new AddPathToPlaylist(track, this));
-                        choosePlaylistDialog.setArguments(args);
                         choosePlaylistDialog.show(getSupportFragmentManager(), "ChoosePlaylistDialog");
                         return true;
                     case R.id.action_remove_song:
@@ -403,10 +395,7 @@ public class MainActivity extends GenericActivity
                         return true;
                     case R.id.action_show_details:
                         // Open song details dialog
-                        SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
-                        Bundle songArgs = new Bundle();
-                        songArgs.putParcelable(SongDetailsDialog.EXTRA_FILE, track);
-                        songDetailsDialog.setArguments(songArgs);
+                        SongDetailsDialog songDetailsDialog = SongDetailsDialog.newInstance(track);
                         songDetailsDialog.show(getSupportFragmentManager(), "SongDetails");
                         return true;
                 }
@@ -438,43 +427,33 @@ public class MainActivity extends GenericActivity
         String fragmentTag = "";
 
         if (id == R.id.nav_library) {
-            fragment = new MyMusicTabsFragment();
-            MyMusicTabsFragment.DEFAULTTAB defaultTab = getDefaultTab();
-            Bundle args = new Bundle();
-            args.putInt(MyMusicTabsFragment.MY_MUSIC_REQUESTED_TAB, defaultTab.ordinal());
-
-            fragment.setArguments(args);
+            fragment = MyMusicTabsFragment.newInstance(getDefaultTab());
             fragmentTag = MyMusicTabsFragment.TAG;
         } else if (id == R.id.nav_saved_playlists) {
-            fragment = new SavedPlaylistsFragment();
+            fragment = SavedPlaylistsFragment.newInstance();
             fragmentTag = SavedPlaylistsFragment.TAG;
         } else if (id == R.id.nav_files) {
-            fragment = new FilesFragment();
+            fragment = FilesFragment.newInstance("");
             fragmentTag = FilesFragment.TAG;
-
-            Bundle args = new Bundle();
-            args.putString(FilesFragment.EXTRA_FILENAME, "");
-
         } else if (id == R.id.nav_search) {
-            fragment = new SearchFragment();
+            fragment = SearchFragment.newInstance();
             fragmentTag = SearchFragment.TAG;
         } else if (id == R.id.nav_profiles) {
-            fragment = new ProfilesFragment();
+            fragment = ProfilesFragment.newInstance();
             fragmentTag = ProfilesFragment.TAG;
         } else if (id == R.id.nav_app_settings) {
-            fragment = new SettingsFragment();
+            fragment = SettingsFragment.newInstance();
             fragmentTag = SettingsFragment.TAG;
         } else if (id == R.id.nav_server_properties) {
-            fragment = new ServerPropertiesFragment();
+            fragment = ServerPropertiesFragment.newInstance();
             fragmentTag = ServerPropertiesFragment.TAG;
         } else if (id == R.id.nav_information) {
-            fragment = new InformationSettingsFragment();
+            fragment = InformationSettingsFragment.newInstance();
             fragmentTag = InformationSettingsFragment.class.getSimpleName();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-
 
         // Do the actual fragment transaction
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -605,14 +584,7 @@ public class MainActivity extends GenericActivity
         }
 
         // Create fragment and give it an argument for the selected article
-        AlbumTracksFragment newFragment = new AlbumTracksFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(AlbumTracksFragment.BUNDLE_STRING_EXTRA_ALBUM, album);
-        if (bitmap != null) {
-            args.putParcelable(AlbumTracksFragment.BUNDLE_STRING_EXTRA_BITMAP, bitmap);
-        }
-
-        newFragment.setArguments(args);
+        AlbumTracksFragment newFragment = AlbumTracksFragment.newInstance(album, bitmap);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         // Replace whatever is in the fragment_container view with this
@@ -707,11 +679,7 @@ public class MainActivity extends GenericActivity
         }
 
         // Create fragment and give it an argument for the selected article
-        EditProfileFragment newFragment = new EditProfileFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(EditProfileFragment.EXTRA_PROFILE, profile);
-
-        newFragment.setArguments(args);
+        EditProfileFragment newFragment = EditProfileFragment.newInstance(profile);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
@@ -732,12 +700,7 @@ public class MainActivity extends GenericActivity
     @Override
     public void openPlaylist(String name) {
         // Create fragment and give it an argument for the selected article
-        PlaylistTracksFragment newFragment = new PlaylistTracksFragment();
-        Bundle args = new Bundle();
-        args.putString(PlaylistTracksFragment.EXTRA_PLAYLIST_NAME, name);
-
-
-        newFragment.setArguments(args);
+        PlaylistTracksFragment newFragment = PlaylistTracksFragment.newInstance(name);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
@@ -857,11 +820,7 @@ public class MainActivity extends GenericActivity
     @Override
     public void openPath(String path) {
         // Create fragment and give it an argument for the selected directory
-        FilesFragment newFragment = new FilesFragment();
-        Bundle args = new Bundle();
-        args.putString(FilesFragment.EXTRA_FILENAME, path);
-
-        newFragment.setArguments(args);
+        FilesFragment newFragment = FilesFragment.newInstance(path);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -889,12 +848,7 @@ public class MainActivity extends GenericActivity
             }
         }
         // Create fragment and give it an argument for the selected article
-        AlbumsFragment newFragment = new AlbumsFragment();
-        Bundle args = new Bundle();
-        args.putString(AlbumsFragment.BUNDLE_STRING_EXTRA_PATH, path);
-
-
-        newFragment.setArguments(args);
+        AlbumsFragment newFragment = AlbumsFragment.newInstance(path);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
@@ -928,8 +882,7 @@ public class MainActivity extends GenericActivity
     @Override
     public void openArtworkSettings() {
         // Create fragment and give it an argument for the selected directory
-        ArtworkSettingsFragment newFragment = new ArtworkSettingsFragment();
-
+        ArtworkSettingsFragment newFragment = ArtworkSettingsFragment.newInstance();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 

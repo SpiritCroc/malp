@@ -51,6 +51,10 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
 
     private ViewPager mViewPager;
 
+    public static ServerPropertiesFragment newInstance() {
+        return new ServerPropertiesFragment();
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -170,9 +174,9 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
         public Fragment getItem(int i) {
             switch (i) {
                 case 0:
-                    return new ServerStatisticFragment();
+                    return ServerStatisticFragment.newInstance();
                 case 1:
-                    return new OutputsFragment();
+                    return OutputsFragment.newInstance();
                 default:
                     // should not happen throw exception
                     throw new IllegalStateException("No fragment defined to return");

@@ -48,6 +48,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     private FABFragmentCallback mFABCallback = null;
     private OnArtworkSettingsRequestedCallback mArtworkCallback;
 
+    public static SettingsFragment newInstance() {
+        return new SettingsFragment();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

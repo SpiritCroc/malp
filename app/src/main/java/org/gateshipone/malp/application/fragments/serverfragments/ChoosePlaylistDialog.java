@@ -41,7 +41,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
 
 public class ChoosePlaylistDialog extends GenericMPDFragment<MPDFileEntry> {
 
-    public static final String EXTRA_SHOW_NEW_ENTRY = "show_newentry";
+    private static final String EXTRA_SHOW_NEW_ENTRY = "show_newentry";
 
     /**
      * Listener to save the bookmark
@@ -49,6 +49,15 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<MPDFileEntry> {
     private OnSaveDialogListener mSaveCallback;
 
     private boolean mShowNewEntry;
+
+    public static ChoosePlaylistDialog newInstance(final boolean showNewEntry) {
+        final Bundle args = new Bundle();
+        args.putBoolean(EXTRA_SHOW_NEW_ENTRY, showNewEntry);
+
+        final ChoosePlaylistDialog fragment = new ChoosePlaylistDialog();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public void setCallback(OnSaveDialogListener callback) {
         mSaveCallback = callback;

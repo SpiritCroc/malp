@@ -55,7 +55,7 @@ public class FanartManager implements FanartProvider.FanartFetchError {
      * It is using the ApplicationContext so it should be safe against
      * memory leaks.
      */
-    private final Context mContext;
+    private final Context mApplicationContext;
 
     /**
      * Flag if the artist provider is not disabled in the settings.
@@ -73,14 +73,14 @@ public class FanartManager implements FanartProvider.FanartFetchError {
     private FanartCache mFanartCache;
 
     private FanartManager(final Context context) {
-        mContext = context.getApplicationContext();
+        mApplicationContext = context.getApplicationContext();
 
-        mFanartCache = FanartCache.getInstance(mContext);
+        mFanartCache = FanartCache.getInstance(mApplicationContext);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        final String artistProvider = sharedPref.getString(mContext.getString(R.string.pref_artist_provider_key), mContext.getString(R.string.pref_artwork_provider_artist_default));
-        mUseFanartProvider = !artistProvider.equals(mContext.getString(R.string.provider_off));
-        mWifiOnly = sharedPref.getBoolean(mContext.getString(R.string.pref_download_wifi_only_key), mContext.getResources().getBoolean(R.bool.pref_download_wifi_default));
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mApplicationContext);
+        final String artistProvider = sharedPref.getString(mApplicationContext.getString(R.string.pref_artist_provider_key), mApplicationContext.getString(R.string.pref_artwork_provider_artist_default));
+        mUseFanartProvider = !artistProvider.equals(mApplicationContext.getString(R.string.provider_off));
+        mWifiOnly = sharedPref.getBoolean(mApplicationContext.getString(R.string.pref_download_wifi_only_key), mApplicationContext.getResources().getBoolean(R.bool.pref_download_wifi_default));
     }
 
     public static synchronized FanartManager getInstance(final Context context) {
@@ -127,13 +127,13 @@ public class FanartManager implements FanartProvider.FanartFetchError {
      * @param fanartCacheChangeListener Callback if a new fanart was added to the cache.
      */
     public void syncFanart(final MPDTrack track, final OnFanartCacheChangeListener fanartCacheChangeListener) {
-        if (!mUseFanartProvider && !NetworkUtils.isDownloadAllowed(mContext, mWifiOnly)) {
+        if (!mUseFanartProvider && !NetworkUtils.isDownloadAllowed(mApplicationContext, mWifiOnly)) {
             return;
         }
 
         if (track.getTrackArtistMBID().isEmpty()) {
             // resolve mbid
-            FanartTVProvider.getInstance(mContext).getTrackArtistMBID(track, trackMBID -> {
+            FanartTVProvider.getInstance(mApplicationContext).getTrackArtistMBID(track, trackMBID -> {
                 track.setTrackArtistMBID(trackMBID);
 
                 loadFanartImages(track, fanartCacheChangeListener);
@@ -174,7 +174,7 @@ public class FanartManager implements FanartProvider.FanartFetchError {
     private void loadFanartImages(final MPDTrack track, final OnFanartCacheChangeListener fanartCacheChangeListener) {
         fanartCacheChangeListener.fanartInitialCacheCount(mFanartCache.getFanartCount(track.getTrackArtistMBID()));
 
-        FanartTVProvider.getInstance(mContext).getArtistFanartURLs(track.getTrackArtistMBID(),
+        FanartTVProvider.getInstance(mApplicationContext).getArtistFanartURLs(track.getTrackArtistMBID(),
                 artistURLs -> {
                     for (final String url : artistURLs) {
                         // Check if the given image is in the cache already.
@@ -197,7 +197,7 @@ public class FanartManager implements FanartProvider.FanartFetchError {
      * @param fanartCacheChangeListener Callback if a new fanart was added to the cache.
      */
     private void loadSingleFanartImage(final MPDTrack track, final String imageURL, final OnFanartCacheChangeListener fanartCacheChangeListener) {
-        FanartTVProvider.getInstance(mContext).getFanartImage(track, imageURL,
+        FanartTVProvider.getInstance(mApplicationContext).getFanartImage(track, imageURL,
                 response -> {
                     mFanartCache.addFanart(track.getTrackArtistMBID(), String.valueOf(response.hashCode()), response.image);
 

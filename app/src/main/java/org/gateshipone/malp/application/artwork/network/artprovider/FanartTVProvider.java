@@ -100,11 +100,11 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
      */
     private static final String API_KEY = "c0cc5d1b6e807ce93e49d75e0e5d371b";
 
-    private FanartTVProvider(Context context) {
-        mRequestQueue = MALPRequestQueue.getInstance(context);
+    private FanartTVProvider(final Context context) {
+        mRequestQueue = MALPRequestQueue.getInstance(context.getApplicationContext());
     }
 
-    public static synchronized FanartTVProvider getInstance(Context context) {
+    public static synchronized FanartTVProvider getInstance(final Context context) {
         if (mInstance == null) {
             mInstance = new FanartTVProvider(context);
         }
@@ -112,14 +112,13 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
     }
 
     @Override
-    public void fetchImage(final ArtworkRequestModel model, final Context context,
-                           final Response.Listener<ImageResponse> listener, final ArtFetchError errorListener) {
+    public void fetchImage(final ArtworkRequestModel model, final Response.Listener<ImageResponse> listener, final ArtFetchError errorListener) {
         switch (model.getType()) {
             case ALBUM:
                 // not used for this provider
                 break;
             case ARTIST:
-                tryArtistMBID(0, model, context, listener, errorListener);
+                tryArtistMBID(0, model, listener, errorListener);
                 break;
         }
     }
@@ -132,7 +131,7 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
      * @param listener      Response listener called when an image is found
      * @param errorListener Error listener called when an error occurs during communication
      */
-    private void tryArtistMBID(final int mbidIndex, final ArtworkRequestModel model, final Context context,
+    private void tryArtistMBID(final int mbidIndex, final ArtworkRequestModel model,
                                final Response.Listener<ImageResponse> listener, final ArtFetchError errorListener) {
         final String mbid = model.getMBID(mbidIndex);
 
@@ -148,14 +147,14 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
 
                     getArtistImage(firstThumbImage.getString("url"), model, listener, error -> {
                         // If we have multiple artist mbids try the next one
-                        tryArtistMBID(mbidIndex + 1, model, context, listener, errorListener);
+                        tryArtistMBID(mbidIndex + 1, model, listener, errorListener);
                     });
 
                 } catch (JSONException e) {
                     // If we have multiple artist mbids try the next one
-                    tryArtistMBID(mbidIndex + 1, model, context, listener, errorListener);
+                    tryArtistMBID(mbidIndex + 1, model, listener, errorListener);
                 }
-            }, error -> errorListener.fetchVolleyError(model, context, error));
+            }, error -> errorListener.fetchVolleyError(model, error));
         } else {
             // If no MBID is set at this point try to resolve one with musicbrainz database.
             final String artistURLName = model.getLuceneEscapedEncodedArtistName();
@@ -188,25 +187,25 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
                                     final JSONObject firstThumbImage = thumbImages.getJSONObject(0);
 
                                     // Get the image for the artist.
-                                    getArtistImage(firstThumbImage.getString("url"), model, listener, error -> errorListener.fetchVolleyError(model, context, error));
+                                    getArtistImage(firstThumbImage.getString("url"), model, listener, error -> errorListener.fetchVolleyError(model, error));
 
                                 } catch (JSONException e) {
-                                    errorListener.fetchJSONException(model, context, e);
+                                    errorListener.fetchJSONException(model, e);
                                 }
-                            }, error -> errorListener.fetchVolleyError(model, context, error));
+                            }, error -> errorListener.fetchVolleyError(model, error));
                         } else {
                             if (BuildConfig.DEBUG) {
                                 Log.v(TAG, "Response ( " + artist + " )" + " doesn't match requested model: " +
                                         "( " + model.getLoggingString() + " )");
                             }
 
-                            errorListener.fetchVolleyError(model, context, null);
+                            errorListener.fetchVolleyError(model, null);
                         }
                     }
                 } catch (JSONException e) {
-                    errorListener.fetchJSONException(model, context, e);
+                    errorListener.fetchJSONException(model, e);
                 }
-            }, error -> errorListener.fetchVolleyError(model, context, error));
+            }, error -> errorListener.fetchVolleyError(model, error));
         }
     }
 

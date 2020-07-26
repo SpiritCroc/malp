@@ -89,6 +89,10 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
      */
     private int mContextMenuPosition;
 
+    public static SearchFragment newInstance() {
+        return new SearchFragment();
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -247,20 +251,16 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
                 return true;
             case R.id.action_add_to_saved_playlist: {
                 // open dialog in order to save the current playlist as a playlist in the mediastore
-                ChoosePlaylistDialog choosePlaylistDialog = new ChoosePlaylistDialog();
-                Bundle args = new Bundle();
-                args.putBoolean(ChoosePlaylistDialog.EXTRA_SHOW_NEW_ENTRY, true);
+                ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+
                 choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(position), getContext()));
-                choosePlaylistDialog.setArguments(args);
                 choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
                 return true;
             }
             case R.id.action_show_details: {
                 // Open song details dialog
-                SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
-                Bundle args = new Bundle();
-                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(position));
-                songDetailsDialog.setArguments(args);
+                SongDetailsDialog songDetailsDialog = SongDetailsDialog.newInstance((MPDTrack) mAdapter.getItem(position));
+
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 return true;
             }
@@ -341,10 +341,8 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
         switch (mClickAction) {
             case ACTION_SHOW_DETAILS: {
                 // Open song details dialog
-                SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
-                Bundle args = new Bundle();
-                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(position));
-                songDetailsDialog.setArguments(args);
+                SongDetailsDialog songDetailsDialog = SongDetailsDialog.newInstance((MPDTrack) mAdapter.getItem(position));
+
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
             }
             break;

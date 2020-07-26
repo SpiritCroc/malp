@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -64,8 +65,8 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
      * Parameters for bundled extra arguments for this fragment. Necessary to define which album to
      * retrieve from the MPD server.
      */
-    public static final String BUNDLE_STRING_EXTRA_ALBUM = "album";
-    public static final String BUNDLE_STRING_EXTRA_BITMAP = "bitmap";
+    private static final String BUNDLE_STRING_EXTRA_ALBUM = "album";
+    private static final String BUNDLE_STRING_EXTRA_BITMAP = "bitmap";
 
     /**
      * Album definition variables
@@ -79,6 +80,16 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
     private PreferenceHelper.LIBRARY_TRACK_CLICK_ACTION mClickAction;
 
     private boolean mUseArtistSort;
+
+    public static AlbumTracksFragment newInstance(@NonNull final MPDAlbum album, @Nullable final Bitmap bitmap) {
+        final Bundle args = new Bundle();
+        args.putParcelable(BUNDLE_STRING_EXTRA_ALBUM, album);
+        args.putParcelable(BUNDLE_STRING_EXTRA_BITMAP, bitmap);
+
+        final AlbumTracksFragment fragment = new AlbumTracksFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -189,10 +200,8 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         switch (mClickAction) {
             case ACTION_SHOW_DETAILS: {
                 // Open song details dialog
-                SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
-                Bundle args = new Bundle();
-                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(position));
-                songDetailsDialog.setArguments(args);
+                SongDetailsDialog songDetailsDialog = SongDetailsDialog.newInstance((MPDTrack) mAdapter.getItem(position));
+
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 break;
             }
@@ -255,20 +264,16 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
                 return true;
             case R.id.action_add_to_saved_playlist: {
                 // open dialog in order to save the current playlist as a playlist in the mediastore
-                ChoosePlaylistDialog choosePlaylistDialog = new ChoosePlaylistDialog();
-                Bundle args = new Bundle();
-                args.putBoolean(ChoosePlaylistDialog.EXTRA_SHOW_NEW_ENTRY, true);
+                ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+
                 choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
-                choosePlaylistDialog.setArguments(args);
                 choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
                 return true;
             }
             case R.id.action_show_details: {
                 // Open song details dialog
-                SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
-                Bundle args = new Bundle();
-                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(info.position));
-                songDetailsDialog.setArguments(args);
+                SongDetailsDialog songDetailsDialog = SongDetailsDialog.newInstance((MPDTrack) mAdapter.getItem(info.position));
+
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 return true;
             }

@@ -24,6 +24,7 @@ package org.gateshipone.malp.application.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.artwork.BitmapCache;
 import org.gateshipone.malp.application.artwork.storage.ImageNotFoundException;
@@ -33,11 +34,13 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 public class CoverBitmapLoader {
     private static final String TAG = CoverBitmapLoader.class.getSimpleName();
+
     private final CoverBitmapListener mListener;
-    private final Context mContext;
+
+    private final Context mApplicationContext;
 
     public CoverBitmapLoader(Context context, CoverBitmapListener listener) {
-        mContext = context;
+        mApplicationContext = context.getApplicationContext();
         mListener = listener;
     }
 
@@ -121,12 +124,12 @@ public class CoverBitmapLoader {
             try {
                 // If image was to small get it in the right resolution
                 if (image == null || !(mWidth <= image.getWidth() && mHeight <= image.getHeight())) {
-                    Bitmap albumImage = ArtworkManager.getInstance(mContext.getApplicationContext()).getImage(mTrack, mWidth, mHeight, true);
+                    Bitmap albumImage = ArtworkManager.getInstance(mApplicationContext).getImage(mTrack, mWidth, mHeight, true);
                     mListener.receiveBitmap(albumImage, IMAGE_TYPE.ALBUM_IMAGE);
                 }
             } catch (ImageNotFoundException e) {
                 if (mFetchImage) {
-                    ArtworkManager.getInstance(mContext.getApplicationContext()).fetchImage(mTrack);
+                    ArtworkManager.getInstance(mApplicationContext).fetchImage(mTrack);
                 }
             }
         }
@@ -159,12 +162,12 @@ public class CoverBitmapLoader {
             try {
                 // If image was to small get it in the right resolution
                 if (image == null || !(mWidth <= image.getWidth() && mHeight <= image.getHeight())) {
-                    image = ArtworkManager.getInstance(mContext.getApplicationContext()).getImage(mArtist, mWidth, mHeight, true);
+                    image = ArtworkManager.getInstance(mApplicationContext).getImage(mArtist, mWidth, mHeight, true);
                     mListener.receiveBitmap(image, IMAGE_TYPE.ARTIST_IMAGE);
                 }
             } catch (ImageNotFoundException e) {
                 if (mFetchImage) {
-                    ArtworkManager.getInstance(mContext.getApplicationContext()).fetchImage(mArtist);
+                    ArtworkManager.getInstance(mApplicationContext).fetchImage(mArtist);
                 }
             }
         }
@@ -200,12 +203,12 @@ public class CoverBitmapLoader {
             try {
                 // If image was to small get it in the right resolution
                 if (image == null || !(mWidth <= image.getWidth() && mHeight <= image.getHeight())) {
-                    image = ArtworkManager.getInstance(mContext.getApplicationContext()).getImage(mArtist, mWidth, mHeight, true);
+                    image = ArtworkManager.getInstance(mApplicationContext).getImage(mArtist, mWidth, mHeight, true);
                     mListener.receiveBitmap(image, IMAGE_TYPE.ARTIST_IMAGE);
                 }
             } catch (ImageNotFoundException e) {
                 if (mFetchImage) {
-                    ArtworkManager.getInstance(mContext.getApplicationContext()).fetchImage(mArtist);
+                    ArtworkManager.getInstance(mApplicationContext).fetchImage(mArtist);
                 }
             }
         }
@@ -238,12 +241,12 @@ public class CoverBitmapLoader {
             try {
                 // If image was to small get it in the right resolution
                 if (image == null || !(mWidth <= image.getWidth() && mHeight <= image.getHeight())) {
-                    Bitmap albumImage = ArtworkManager.getInstance(mContext.getApplicationContext()).getImage(mAlbum, mWidth, mHeight, true);
+                    Bitmap albumImage = ArtworkManager.getInstance(mApplicationContext).getImage(mAlbum, mWidth, mHeight, true);
                     mListener.receiveBitmap(albumImage, IMAGE_TYPE.ALBUM_IMAGE);
                 }
             } catch (ImageNotFoundException e) {
                 if (mFetchImage) {
-                    ArtworkManager.getInstance(mContext.getApplicationContext()).fetchImage(mAlbum);
+                    ArtworkManager.getInstance(mApplicationContext).fetchImage(mAlbum);
                 }
             }
         }

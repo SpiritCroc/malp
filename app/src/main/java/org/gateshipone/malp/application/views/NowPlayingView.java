@@ -32,7 +32,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -245,7 +244,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
     public NowPlayingView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mDragHelper = ViewDragHelper.create(this, 1f, new BottomDragCallbackHelper());
-        mStateListener = new ServerStatusListener();
+        mStateListener = new ServerStatusListener(this);
         mConnectionStateListener = new ServerConnectionListener(this, getContext().getMainLooper());
         mLastStatus = new MPDCurrentStatus();
         mLastTrack = new MPDTrack("");
@@ -385,43 +384,31 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                     @Override
                     public void onCreateNewObject() {
                         // open dialog in order to save the current playlist as a playlist in the mediastore
-                        TextDialog textDialog = new TextDialog();
-                        Bundle args = new Bundle();
-                        args.putString(TextDialog.EXTRA_DIALOG_TITLE, getResources().getString(R.string.dialog_save_playlist));
-                        args.putString(TextDialog.EXTRA_DIALOG_TEXT, getResources().getString(R.string.default_playlist_title));
+                        TextDialog textDialog = TextDialog.newInstance(getResources().getString(R.string.dialog_save_playlist),
+                                getResources().getString(R.string.default_playlist_title));
 
                         textDialog.setCallback(MPDQueryHandler::savePlaylist);
-                        textDialog.setArguments(args);
                         textDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SavePLTextDialog");
                     }
                 };
 
                 // open dialog in order to save the current playlist as a playlist in the mediastore
-                ChoosePlaylistDialog choosePlaylistDialog = new ChoosePlaylistDialog();
-                Bundle args = new Bundle();
-                args.putBoolean(ChoosePlaylistDialog.EXTRA_SHOW_NEW_ENTRY, true);
+                ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
 
                 choosePlaylistDialog.setCallback(plDialogCallback);
-                choosePlaylistDialog.setArguments(args);
                 choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
                 break;
             case R.id.action_add_url: {
-                TextDialog addURLDialog = new TextDialog();
+                TextDialog addURLDialog = TextDialog.newInstance(getResources().getString(R.string.action_add_url), "http://...");
+
                 addURLDialog.setCallback(MPDQueryHandler::addPath);
-                Bundle textDialogArgs = new Bundle();
-                textDialogArgs.putString(TextDialog.EXTRA_DIALOG_TEXT, "http://...");
-                textDialogArgs.putString(TextDialog.EXTRA_DIALOG_TITLE, getResources().getString(R.string.action_add_url));
-                addURLDialog.setArguments(textDialogArgs);
                 addURLDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "AddURLDialog");
             }
             break;
             case R.id.action_add_url_playlist: {
-                TextDialog addURLDialog = new TextDialog();
+                TextDialog addURLDialog = TextDialog.newInstance(getResources().getString(R.string.action_add_url), "http://...");
+
                 addURLDialog.setCallback(MPDQueryHandler::loadPlaylist);
-                Bundle textDialogArgs = new Bundle();
-                textDialogArgs.putString(TextDialog.EXTRA_DIALOG_TEXT, "http://...");
-                textDialogArgs.putString(TextDialog.EXTRA_DIALOG_TITLE, getResources().getString(R.string.action_add_url));
-                addURLDialog.setArguments(textDialogArgs);
                 addURLDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "AddURLDialog");
             }
             break;
@@ -1449,16 +1436,30 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         void onStartDrag();
     }
 
-    private class ServerStatusListener extends MPDStatusChangeHandler {
+    private static class ServerStatusListener extends MPDStatusChangeHandler {
+
+        private final WeakReference<NowPlayingView> mNowPlayingView;
+
+        ServerStatusListener(final NowPlayingView nowPlayingView) {
+            mNowPlayingView = new WeakReference<>(nowPlayingView);
+        }
 
         @Override
         protected void onNewStatusReady(MPDCurrentStatus status) {
-            updateMPDStatus(status);
+            final NowPlayingView nowPlayingView = mNowPlayingView.get();
+
+            if (nowPlayingView != null) {
+                nowPlayingView.updateMPDStatus(status);
+            }
         }
 
         @Override
         protected void onNewTrackReady(MPDTrack track) {
-            updateMPDCurrentTrack(track);
+            final NowPlayingView nowPlayingView = mNowPlayingView.get();
+
+            if (nowPlayingView != null) {
+                nowPlayingView.updateMPDCurrentTrack(track);
+            }
         }
     }
 

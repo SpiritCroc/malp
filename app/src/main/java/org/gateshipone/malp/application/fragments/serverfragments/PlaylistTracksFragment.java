@@ -57,7 +57,8 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> implements AdapterView.OnItemClickListener {
     public final static String TAG = PlaylistTracksFragment.class.getSimpleName();
-    public final static String EXTRA_PLAYLIST_NAME = "name";
+
+    private final static String EXTRA_PLAYLIST_NAME = "name";
 
     /**
      * Main ListView of this fragment
@@ -70,6 +71,15 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
     private String mPath;
 
     private PreferenceHelper.LIBRARY_TRACK_CLICK_ACTION mClickAction;
+
+    public static PlaylistTracksFragment newInstance(final String path) {
+        final Bundle args = new Bundle();
+        args.putString(EXTRA_PLAYLIST_NAME, path);
+
+        final PlaylistTracksFragment fragment = new PlaylistTracksFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -175,11 +185,9 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
                 return true;
             case R.id.action_add_to_saved_playlist: {
                 // open dialog in order to save the current playlist as a playlist in the mediastore
-                ChoosePlaylistDialog choosePlaylistDialog = new ChoosePlaylistDialog();
-                Bundle args = new Bundle();
-                args.putBoolean(ChoosePlaylistDialog.EXTRA_SHOW_NEW_ENTRY, true);
+                ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+
                 choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
-                choosePlaylistDialog.setArguments(args);
                 choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
                 return true;
             }
@@ -189,10 +197,8 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
                 return true;
             case R.id.action_show_details: {
                 // Open song details dialog
-                SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
-                Bundle args = new Bundle();
-                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(info.position));
-                songDetailsDialog.setArguments(args);
+                SongDetailsDialog songDetailsDialog = SongDetailsDialog.newInstance((MPDTrack) mAdapter.getItem(info.position));
+
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 return true;
             }
@@ -287,10 +293,8 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
         switch (mClickAction) {
             case ACTION_SHOW_DETAILS: {
                 // Open song details dialog
-                SongDetailsDialog songDetailsDialog = new SongDetailsDialog();
-                Bundle args = new Bundle();
-                args.putParcelable(SongDetailsDialog.EXTRA_FILE, (MPDTrack) mAdapter.getItem(position));
-                songDetailsDialog.setArguments(args);
+                SongDetailsDialog songDetailsDialog = SongDetailsDialog.newInstance((MPDTrack) mAdapter.getItem(position));
+
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 break;
             }

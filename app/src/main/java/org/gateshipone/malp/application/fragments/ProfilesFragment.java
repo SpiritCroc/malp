@@ -69,6 +69,9 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
 
     private FABFragmentCallback mFABCallback = null;
 
+    public static ProfilesFragment newInstance() {
+        return new ProfilesFragment();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
