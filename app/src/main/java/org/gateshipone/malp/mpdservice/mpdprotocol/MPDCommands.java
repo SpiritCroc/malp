@@ -123,7 +123,7 @@ public class MPDCommands {
         }
     }
 
-    public static final String MPD_COMMAND_REQUEST_ALL_FILES = "listallinfo";
+    public static final String MPD_COMMAND_REQUEST_ALL_FILES = "listall";
 
     /* Control commands */
     public static String MPD_COMMAND_PAUSE(boolean pause) {
