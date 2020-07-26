@@ -155,7 +155,7 @@ public class FormatHelper {
      * @return Path without file
      */
     public static String getDirectoryFromPath(String url) {
-        return url.substring(0,url.lastIndexOf('/') + 1);
+        return url.substring(0,url.lastIndexOf('/'));
     }
 
     /**

@@ -307,11 +307,14 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
                     // Get a list of unique album folders
                     for (MPDFileEntry track : trackList) {
-                        String dirPath = FormatHelper.getDirectoryFromPath(track.getPath());
-                        if (track instanceof MPDTrack && !albumPaths.containsKey(dirPath)) {
-                            albumPaths.put(FormatHelper.getDirectoryFromPath(track.getPath()), (MPDTrack) track);
+                        if (track instanceof MPDTrack) {
+                            String dirPath = FormatHelper.getDirectoryFromPath(track.getPath());
+                            if (!albumPaths.containsKey(dirPath)) {
+                                albumPaths.put(FormatHelper.getDirectoryFromPath(track.getPath()), (MPDTrack) track);
+                            }
                         }
                     }
+
 
                     if (BuildConfig.DEBUG) {
                         Log.v(TAG, "Unique path count: " + albumPaths.size());
