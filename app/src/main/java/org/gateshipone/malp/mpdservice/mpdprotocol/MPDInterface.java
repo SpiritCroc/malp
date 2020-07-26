@@ -1055,7 +1055,7 @@ public class MPDInterface {
         mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_UPDATE_DATABASE(path));
     }
 
-    public byte[] getAlbumArt(String path) throws MPDException {
+    public byte[] getAlbumArt(String path, boolean readPicture) throws MPDException {
         mArtworkLock.lock();
         if (mArtworkTimeout != null) {
             mArtworkTimeout.cancel();
@@ -1070,7 +1070,7 @@ public class MPDInterface {
             mArtworkConnection.connectToServer();
         }
 
-        if (!mArtworkConnection.getServerCapabilities().hasAlbumArt()) {
+        if ((!readPicture && !mArtworkConnection.getServerCapabilities().hasAlbumArt()) || (readPicture && !mArtworkConnection.getServerCapabilities().hasReadPicture())) {
             mArtworkLock.unlock();
             return null;
         }
@@ -1088,9 +1088,17 @@ public class MPDInterface {
         while (dataToRead != 0) {
             // Request the image
             if (firstRun) {
-                mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, 0));
+                if (!readPicture) {
+                    mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, 0));
+                } else {
+                    mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, 0));
+                }
             } else {
-                mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, (imageSize - dataToRead)));
+                if (!readPicture) {
+                    mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, (imageSize - dataToRead)));
+                } else {
+                    mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, (imageSize - dataToRead)));
+                }
             }
             try {
                 line = mArtworkConnection.readLine();

@@ -118,7 +118,11 @@ public class MPDArtworkHandler extends MPDGenericHandler {
                 String url = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PATH);
                 byte[] imageData = new byte[0];
                 try {
-                    imageData = MPDInterface.mInstance.getAlbumArt(url);
+                    // Try embedded images first. Then external cover image
+                    imageData = MPDInterface.mInstance.getAlbumArt(url, true);
+                    if (imageData == null) {
+                        imageData = MPDInterface.mInstance.getAlbumArt(url, false);
+                    }
                 } catch (MPDException e) {
                     handleMPDError(e);
                 }

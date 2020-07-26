@@ -68,6 +68,7 @@ public class MPDCapabilities {
     private boolean mHasSeekCurrent;
 
     private boolean mHasAlbumArt;
+    private boolean mHasReadPicture;
 
     public MPDCapabilities(String version, List<String> commands, List<String> tags) {
         String[] versions = version.split("\\.");
@@ -120,10 +121,9 @@ public class MPDCapabilities {
 
         if (null != commands) {
             mHasIdle = commands.contains(MPDCommands.MPD_COMMAND_START_IDLE);
-
             mHasSearchAdd = commands.contains(MPDCommands.MPD_COMMAND_ADD_SEARCH_FILES_CMD_NAME);
-
             mHasPlaylistFind = commands.contains(MPDCommands.MPD_COMMAND_PLAYLIST_FIND);
+            mHasReadPicture = commands.contains(MPDCommands.MPD_COMMAND_READ_PICTURE);
         }
 
 
@@ -214,6 +214,10 @@ public class MPDCapabilities {
         return mHasAlbumArt;
     }
 
+    public boolean hasReadPicture() {
+        return mHasReadPicture;
+    }
+
     public boolean hasListGroupingFixed() {
         return mMultipleListGroupFixed;
     }
@@ -230,7 +234,7 @@ public class MPDCapabilities {
                 + "List grouping: " + mHasListGroup + '\n'
                 + "List filtering: " + mHasListFiltering + '\n'
                 + "Fast ranged currentplaylist delete: " + mHasCurrentPlaylistRemoveRange + '\n'
-                + "MPD based album artwork: " + mHasAlbumArt + '\n'
+                + "MPD based album artwork: " + mHasAlbumArt + '|' + mHasReadPicture + '\n'
                 + (mMopidyDetected ? "Mopidy detected, consider using the real MPD server (www.musicpd.org)!\n" : "" )
                 + (mMPDBug408Active ? "Temporarily limited protocol usage active because of MPD bug #408 and arbitrary protocol changes\n" : "");
     }

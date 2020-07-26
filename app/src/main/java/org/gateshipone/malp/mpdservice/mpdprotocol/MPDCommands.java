@@ -311,6 +311,8 @@ public class MPDCommands {
 
     public static final String MPD_COMMAND_PLAYLIST_FIND = "playlistfind";
 
+    public static final String MPD_COMMAND_READ_PICTURE = "readpicture";
+
     /**
      * Searches the song of an given URL in the current playlist. MPD will respond by
      * returning a track object if found or nothing else.
@@ -331,5 +333,9 @@ public class MPDCommands {
 
     public static String MPD_COMMAND_GET_ALBUMART(String url, int offset) {
         return "albumart \"" + escapeString(url) + "\" " + offset;
+    }
+
+    public static String MPD_COMMAND_GET_READPICTURE(String url, int offset) {
+        return "readpicture \"" + escapeString(url) + "\" " + offset;
     }
 }
