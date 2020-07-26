@@ -380,7 +380,7 @@ public class MainActivity extends GenericActivity
                         return true;
                     case R.id.action_show_details:
                         // Open song details dialog
-                        SongDetailsDialog songDetailsDialog = SongDetailsDialog.newInstance(track);
+                        SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog(track, true);
                         songDetailsDialog.show(getSupportFragmentManager(), "SongDetails");
                         return true;
                 }

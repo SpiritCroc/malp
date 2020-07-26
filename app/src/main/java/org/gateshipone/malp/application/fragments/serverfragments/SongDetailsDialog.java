@@ -47,19 +47,11 @@ import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 public class SongDetailsDialog extends DialogFragment {
-
-    private static final String EXTRA_FILE = "file";
+    public static final String EXTRA_FILE = "file";
+    public static final String EXTRA_HIDE_ADD = "hide_add";
 
     private MPDTrack mFile;
-
-    public static SongDetailsDialog newInstance(final MPDTrack file) {
-        final Bundle args = new Bundle();
-        args.putParcelable(EXTRA_FILE, file);
-
-        final SongDetailsDialog fragment = new SongDetailsDialog();
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private boolean mHideAdd;
 
     @NonNull
     @Override
@@ -68,6 +60,7 @@ public class SongDetailsDialog extends DialogFragment {
         Bundle args = getArguments();
         if (null != args) {
             mFile = args.getParcelable(EXTRA_FILE);
+            mHideAdd = args.getBoolean(EXTRA_HIDE_ADD);
         }
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -161,15 +154,28 @@ public class SongDetailsDialog extends DialogFragment {
         }
 
         builder.setView(rootView);
-
-        builder.setPositiveButton(R.string.action_add, (dialog, which) -> {
-            if (null != mFile) {
-                MPDQueryHandler.addPath(mFile.getPath());
-            }
-            dismiss();
-        });
-        builder.setNegativeButton(R.string.dialog_action_cancel, (dialog, which) -> dismiss());
+        if (!mHideAdd) {
+            builder.setPositiveButton(R.string.action_add, (dialog, which) -> {
+                if (null != mFile) {
+                    MPDQueryHandler.addPath(mFile.getPath());
+                }
+                dismiss();
+            });
+            builder.setNegativeButton(R.string.dialog_action_cancel, (dialog, which) -> dismiss());
+        } else {
+            builder.setPositiveButton(R.string.dialog_action_ok, (dialogInterface, i) -> dismiss());
+        }
 
         return builder.create();
+    }
+
+    public static SongDetailsDialog createDialog(@NonNull MPDTrack track, boolean hideAdd) {
+        SongDetailsDialog dialog = new SongDetailsDialog();
+        Bundle args = new Bundle();
+        args.putParcelable(SongDetailsDialog.EXTRA_FILE, track);
+        args.putBoolean(EXTRA_HIDE_ADD, hideAdd);
+
+        dialog.setArguments(args);
+        return dialog;
     }
 }

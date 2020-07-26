@@ -259,8 +259,7 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
             }
             case R.id.action_show_details: {
                 // Open song details dialog
-                SongDetailsDialog songDetailsDialog = SongDetailsDialog.newInstance((MPDTrack) mAdapter.getItem(position));
-
+                SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 return true;
             }
@@ -341,8 +340,7 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
         switch (mClickAction) {
             case ACTION_SHOW_DETAILS: {
                 // Open song details dialog
-                SongDetailsDialog songDetailsDialog = SongDetailsDialog.newInstance((MPDTrack) mAdapter.getItem(position));
-
+                SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
             }
             break;
