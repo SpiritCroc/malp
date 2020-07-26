@@ -463,7 +463,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         stopForeground(true);
         MPDInterface.mInstance.removeMPDConnectionStateChangeListener(mConnectionHandler);
         stopSelf();
-        if (mWakelock.isHeld()) {
+        if (mWakelock != null && mWakelock.isHeld()) {
             mWakelock.release();
         }
     }
