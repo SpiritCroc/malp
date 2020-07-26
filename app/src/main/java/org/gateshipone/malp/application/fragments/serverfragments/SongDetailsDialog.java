@@ -27,8 +27,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,6 +42,7 @@ import androidx.fragment.app.DialogFragment;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.fragments.ErrorDialog;
 import org.gateshipone.malp.application.utils.FormatHelper;
+import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -61,7 +64,7 @@ public class SongDetailsDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        /* Check if an artistname/albumame was given in the extras */
+        /* Check if a file was passed in the extras */
         Bundle args = getArguments();
         if (null != args) {
             mFile = args.getParcelable(EXTRA_FILE);
@@ -72,34 +75,14 @@ public class SongDetailsDialog extends DialogFragment {
         final LayoutInflater inflater = getActivity().getLayoutInflater();
         final View rootView = inflater.inflate(R.layout.fragment_song_details, null);
 
-        TextView mTrackTitle = rootView.findViewById(R.id.now_playing_text_track_title);
-        TextView mTrackAlbum = rootView.findViewById(R.id.now_playing_text_track_album);
-        TextView mTrackArtist = rootView.findViewById(R.id.now_playing_text_track_artist);
-        TextView mTrackAlbumArtist = rootView.findViewById(R.id.now_playing_text_album_artist);
+        TextView mTrackNo = rootView.findViewById(R.id.song_detail_text_track_no);
+        TextView mTrackDisc = rootView.findViewById(R.id.song_detail_text_disc_no);
+        TextView mTrackDuration = rootView.findViewById(R.id.song_detail_text_song_duration);
 
-        TextView mTrackNo = rootView.findViewById(R.id.now_playing_text_track_no);
-        TextView mTrackDisc = rootView.findViewById(R.id.now_playing_text_disc_no);
-        TextView mTrackDate = rootView.findViewById(R.id.now_playing_text_date);
-        TextView mTrackDuration = rootView.findViewById(R.id.now_playing_text_song_duration);
+        TextView mTrackURI = rootView.findViewById(R.id.song_detail_text_track_uri);
 
-        TextView mTrackTitleMBID = rootView.findViewById(R.id.now_playing_text_track_mbid);
-        TextView mTrackAlbumMBID = rootView.findViewById(R.id.now_playing_text_album_mbid);
-        TextView mTrackArtistMBID = rootView.findViewById(R.id.now_playing_text_artist_mbid);
-        TextView mTrackAlbumArtistMBID = rootView.findViewById(R.id.now_playing_text_album_artist_mbid);
-
-        TextView mTrackURI = rootView.findViewById(R.id.now_playing_text_track_uri);
-
-        TextView artistSort = rootView.findViewById(R.id.now_playing_text_track_artist_sort);
-        TextView albumArtistSort = rootView.findViewById(R.id.now_playing_text_album_artist_sort);
 
         if (null != mFile) {
-            mTrackTitle.setText(mFile.getStringTag(MPDTrack.StringTagTypes.TITLE));
-            mTrackAlbum.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ALBUM));
-            mTrackArtist.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ARTIST));
-            artistSort.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ARTISTSORT));
-            mTrackAlbumArtist.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST));
-            albumArtistSort.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT));
-
             if (mFile.getAlbumTrackCount() != 0) {
                 mTrackNo.setText(String.valueOf(mFile.getTrackNumber()) + '/' + mFile.getAlbumTrackCount());
             } else {
@@ -111,63 +94,70 @@ public class SongDetailsDialog extends DialogFragment {
             } else {
                 mTrackDisc.setText(String.valueOf(mFile.getDiscNumber()));
             }
-            mTrackDate.setText(mFile.getStringTag(MPDTrack.StringTagTypes.DATE));
             mTrackDuration.setText(FormatHelper.formatTracktimeFromS(mFile.getLength()));
-
-            mTrackTitleMBID.setText(mFile.getStringTag(MPDTrack.StringTagTypes.TRACK_MBID));
-            mTrackAlbumMBID.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
-            mTrackArtistMBID.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID));
-            mTrackAlbumArtistMBID.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST_MBID));
 
             mTrackURI.setText(mFile.getPath());
 
-            mTrackTitleMBID.setOnClickListener(v -> {
-                Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/recording/" + mFile.getStringTag(MPDTrack.StringTagTypes.TRACK_MBID)));
+            LinearLayout textViewLL = rootView.findViewById(R.id.tag_linear_layout);
 
-                try {
-                    startActivity(urlIntent);
-                } catch (ActivityNotFoundException e) {
-                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
-                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+            final float scale = getResources().getDisplayMetrics().density;
+            final int topPadding = (int) (getContext().getResources().getDimension(R.dimen.material_content_spacing) *
+                    scale + 0.5f);
+            for (MPDTrack.StringTagTypes tag : MPDTrack.StringTagTypes.values()) {
+                // Check all tags for values
+                String tagValue = mFile.getStringTag(tag);
+                if (!tagValue.isEmpty()) {
+                    TextView tagHeader = new TextView(this.getContext());
+                    tagHeader.setText(tag.name() + ":");
+                    tagHeader.setPadding(0, topPadding, 0, 0);
+                    tagHeader.setTextColor(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_background_secondary));
+                    tagHeader.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.material_font_style_size_body_1));
+                    textViewLL.addView(tagHeader);
+
+                    TextView tagValueView = new TextView(this.getContext());
+                    tagValueView.setText(tagValue);
+                    tagValueView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.material_font_style_size_body_2));
+
+                    // MusicBrainz linking
+                    if (tag.name().contains("MBID")) {
+                        String url = "";
+                        switch (tag) {
+                            case TRACK_MBID:
+                                url = "https://www.musicbrainz.org/recording/" + mFile.getStringTag(MPDTrack.StringTagTypes.TRACK_MBID);
+                                break;
+                            case ALBUM_MBID:
+                                url = "https://www.musicbrainz.org/release/" + mFile.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID);
+                                break;
+                            case WORK_MBID:
+                                url = "https://www.musicbrainz.org/work/" + mFile.getStringTag(MPDTrack.StringTagTypes.WORK_MBID);
+                                break;
+                            case ARTIST_MBID:
+                                url = "https://www.musicbrainz.org/artist/" + mFile.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID);
+                                break;
+                            case ALBUMARTIST_MBID:
+                                url = "https://www.musicbrainz.org/artist/" + mFile.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST_MBID);
+                                break;
+                            default:
+                                break;
+                        }
+                        final String mbidURL = url;
+                        tagValueView.setOnClickListener(v -> {
+                            Intent urlIntent = new Intent(Intent.ACTION_VIEW);
+                            urlIntent.setData(Uri.parse(mbidURL));
+
+                            try {
+                                startActivity(urlIntent);
+                            } catch (ActivityNotFoundException e) {
+                                final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                                noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+                            }
+                        });
+
+                    }
+
+                    textViewLL.addView(tagValueView);
                 }
-            });
-
-            mTrackAlbumMBID.setOnClickListener(v -> {
-                Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/release/" + mFile.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID)));
-
-                try {
-                    startActivity(urlIntent);
-                } catch (ActivityNotFoundException e) {
-                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
-                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
-                }
-            });
-
-            mTrackArtistMBID.setOnClickListener(v -> {
-                Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/artist/" + mFile.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID)));
-
-                try {
-                    startActivity(urlIntent);
-                } catch (ActivityNotFoundException e) {
-                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
-                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
-                }
-            });
-
-            mTrackAlbumArtistMBID.setOnClickListener(v -> {
-                Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/artist/" + mFile.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST_MBID)));
-
-                try {
-                    startActivity(urlIntent);
-                } catch (ActivityNotFoundException e) {
-                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
-                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
-                }
-            });
+            }
         }
 
         builder.setView(rootView);
