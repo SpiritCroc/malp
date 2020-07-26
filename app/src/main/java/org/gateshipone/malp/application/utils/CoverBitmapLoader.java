@@ -111,9 +111,7 @@ public class CoverBitmapLoader {
          */
         @Override
         public void run() {
-            MPDAlbum tempAlbum = new MPDAlbum(mTrack.getTrackAlbum());
-            tempAlbum.setMBID(mTrack.getTrackAlbumMBID());
-            tempAlbum.setArtistName(mTrack.getTrackAlbumArtist());
+            MPDAlbum tempAlbum = mTrack.getAlbum();
 
             // At first get image independent of resolution (can be replaced later with higher resolution)
             Bitmap image = BitmapCache.getInstance().requestAlbumBitmap(tempAlbum);
@@ -180,9 +178,9 @@ public class CoverBitmapLoader {
         private boolean mFetchImage;
 
         public TrackArtistImageRunner(MPDTrack track, boolean fetchImage, int width, int height) {
-            mArtist = new MPDArtist(track.getTrackArtist());
-            if (!track.getTrackArtistMBID().isEmpty()) {
-                mArtist.addMBID(track.getTrackArtistMBID());
+            mArtist = new MPDArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST));
+            if (!track.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID).isEmpty()) {
+                mArtist.addMBID(track.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID));
             }
             mFetchImage = fetchImage;
             mWidth = width;

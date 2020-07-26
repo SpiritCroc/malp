@@ -443,9 +443,9 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 Intent albumIntent = new Intent(Intent.ACTION_VIEW);
                 //albumIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/index.php?search=" + mLastTrack.getTrackAlbum() + "&title=Special:Search&go=Go"));
                 if (mUseEnglishWikipedia) {
-                    albumIntent.setData(Uri.parse("https://en.wikipedia.org/wiki/" + mLastTrack.getTrackAlbum()));
+                    albumIntent.setData(Uri.parse("https://en.wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM)));
                 } else {
-                    albumIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/" + mLastTrack.getTrackAlbum()));
+                    albumIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM)));
                 }
 
                 try {
@@ -460,9 +460,9 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 Intent artistIntent = new Intent(Intent.ACTION_VIEW);
                 //artistIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/index.php?search=" + mLastTrack.getTrackAlbumArtist() + "&title=Special:Search&go=Go"));
                 if (mUseEnglishWikipedia) {
-                    artistIntent.setData(Uri.parse("https://en.wikipedia.org/wiki/" + mLastTrack.getTrackArtist()));
+                    artistIntent.setData(Uri.parse("https://en.wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST)));
                 } else {
-                    artistIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/" + mLastTrack.getTrackArtist()));
+                    artistIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST)));
                 }
 
                 try {
@@ -502,7 +502,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
     @Override
     public void newAlbumImage(MPDAlbum album) {
-        if (mLastTrack.getTrackAlbum().equals(album.getName())) {
+        if (mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM).equals(album.getName())) {
             mCoverLoader.getImage(mLastTrack, true, mCoverImage.getWidth(), mCoverImage.getHeight());
         }
     }
@@ -562,7 +562,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
     @Override
     public void newArtistImage(MPDArtist artist) {
-        if (mShowArtistImage && mLastTrack.getTrackArtist().equals(artist.getArtistName())) {
+        if (mShowArtistImage && mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST).equals(artist.getArtistName())) {
             mCoverLoader.getArtistImage(artist, false, mCoverImage.getWidth(), mCoverImage.getHeight());
         }
     }
@@ -1285,17 +1285,9 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         mTrackName.setText(title);
 
 
-        if (!track.getTrackArtist().isEmpty() && !track.getTrackAlbum().isEmpty()) {
-            mTrackAdditionalInfo.setText(track.getTrackArtist() + getResources().getString(R.string.track_item_separator) + track.getTrackAlbum());
-        } else if (track.getTrackArtist().isEmpty() && !track.getTrackAlbum().isEmpty()) {
-            mTrackAdditionalInfo.setText(track.getTrackAlbum());
-        } else if (track.getTrackAlbum().isEmpty() && !track.getTrackArtist().isEmpty()) {
-            mTrackAdditionalInfo.setText(track.getTrackArtist());
-        } else {
-            mTrackAdditionalInfo.setText(track.getPath());
-        }
+        mTrackAdditionalInfo.setText(track.getSubLine(getContext()));
 
-        if (null == mLastTrack || !track.getTrackAlbum().equals(mLastTrack.getTrackAlbum()) || !track.getTrackAlbumMBID().equals(mLastTrack.getTrackAlbumMBID())) {
+        if (null == mLastTrack || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM, mLastTrack) || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM_MBID, mLastTrack)) {
             // get tint color
             int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_background_primary);
 
@@ -1319,9 +1311,8 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             mCoverLoader.getImage(track, true, mCoverImage.getWidth(), mCoverImage.getHeight());
         }
 
-        if (mShowArtistImage && (null == mLastTrack || !track.getTrackArtist().equals(mLastTrack.getTrackArtist()) || !track.getTrackArtistMBID().equals(mLastTrack.getTrackAlbumArtistMBID()))) {
+        if (mShowArtistImage && (null == mLastTrack || !track.equalsStringTag(MPDTrack.StringTagTypes.ARTIST, mLastTrack) || !track.equalsStringTag(MPDTrack.StringTagTypes.ARTIST_MBID, mLastTrack))) {
             mCoverImage.clearArtistImage();
-
             mCoverLoader.getArtistImage(track, true, mCoverImage.getWidth(), mCoverImage.getHeight());
         }
 
@@ -1415,7 +1406,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         if (null == mLastTrack) {
             return;
         }
-        String sharingText = getContext().getString(R.string.sharing_song_details, mLastTrack.getTrackTitle(), mLastTrack.getTrackArtist(), mLastTrack.getTrackAlbum());
+        String sharingText = getContext().getString(R.string.sharing_song_details, mLastTrack.getStringTag(MPDTrack.StringTagTypes.TITLE), mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST), mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM));
 
         // set up intent for sharing
         Intent shareIntent = new Intent();

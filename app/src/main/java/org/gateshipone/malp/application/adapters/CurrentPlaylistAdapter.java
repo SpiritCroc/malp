@@ -263,7 +263,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
             if (position > 0) {
                 previousTrack = getTrack(position - 1);
                 if (previousTrack != null) {
-                    newAlbum = !previousTrack.getTrackAlbum().equals(track.getTrackAlbum());
+                    newAlbum = !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM, previousTrack);
                 }
             } else {
                 return VIEW_TYPES.TYPE_SECTION_TRACK_ITEM.ordinal();
@@ -306,7 +306,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
 
         // Check if the track was available in local data set already (or is currently fetching)
         if (track != null) {
-            String trackAlbum = track.getTrackAlbum();
+            String trackAlbum = track.getStringTag(MPDTrack.StringTagTypes.ALBUM);
 
             VIEW_TYPES type = VIEW_TYPES.values()[getItemViewType(position)];
             // Normal track item type

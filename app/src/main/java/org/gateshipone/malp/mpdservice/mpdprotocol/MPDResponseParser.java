@@ -374,40 +374,64 @@ class MPDResponseParser {
             if (tempFileEntry instanceof MPDTrack) {
                 switch (key) {
                     case RESPONSE_TITLE:
-                        ((MPDTrack) tempFileEntry).setTrackTitle(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.TITLE, value);
                         break;
                     case RESPONSE_ARTIST:
-                        ((MPDTrack) tempFileEntry).setTrackArtist(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.ARTIST, value);
                         break;
                     case RESPONSE_ARTISTSORT:
-                        ((MPDTrack) tempFileEntry).setTrackArtistSort(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.ARTISTSORT, value);
                         break;
                     case RESPONSE_NAME:
-                        ((MPDTrack) tempFileEntry).setTrackName(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.NAME, value);
                         break;
                     case RESPONSE_ALBUMARTIST:
-                        ((MPDTrack) tempFileEntry).setTrackAlbumArtist(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.ALBUMARTIST, value);
                         break;
                     case RESPONSE_ALBUMARTISTSORT:
-                        ((MPDTrack) tempFileEntry).setTrackAlbumArtistSort(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT, value);
                         break;
                     case RESPONSE_ALBUM:
-                        ((MPDTrack) tempFileEntry).setTrackAlbum(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.ALBUM, value);
                         break;
                     case RESPONSE_DATE:
-                        ((MPDTrack) tempFileEntry).setDate(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.DATE, value);
                         break;
                     case RESPONSE_ALBUM_MBID:
-                        ((MPDTrack) tempFileEntry).setTrackAlbumMBID(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.ALBUM_MBID, value);
                         break;
                     case RESPONSE_ARTIST_MBID:
-                        ((MPDTrack) tempFileEntry).setTrackArtistMBID(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.ARTIST_MBID, value);
                         break;
                     case RESPONSE_ALBUMARTIST_MBID:
-                        ((MPDTrack) tempFileEntry).setTrackAlbumArtistMBID(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.ALBUMARTIST_MBID, value);
                         break;
                     case RESPONSE_TRACK_MBID:
-                        ((MPDTrack) tempFileEntry).setTrackMBID(value);
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.TRACK_MBID, value);
+                        break;
+                    case RESPONSE_PERFORMER:
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.PERFORMER, value);
+                        break;
+                    case RESPONSE_CONDUCTOR:
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.CONDUCTOR, value);
+                        break;
+                    case RESPONSE_COMPOSER:
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.COMPOSER, value);
+                        break;
+                    case RESPONSE_WORK:
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.WORK, value);
+                        break;
+                    case RESPONSE_WORK_MBID:
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.WORK_MBID, value);
+                        break;
+                    case RESPONSE_GENRE:
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.GENRE, value);
+                        break;
+                    case RESPONSE_LABEL:
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.LABEL, value);
+                        break;
+                    case RESPONSE_COMMENT:
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.COMMENT, value);
                         break;
                     case RESPONSE_TIME:
                         try {

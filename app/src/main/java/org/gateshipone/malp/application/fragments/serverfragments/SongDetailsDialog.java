@@ -93,12 +93,12 @@ public class SongDetailsDialog extends DialogFragment {
         TextView albumArtistSort = rootView.findViewById(R.id.now_playing_text_album_artist_sort);
 
         if (null != mFile) {
-            mTrackTitle.setText(mFile.getTrackTitle());
-            mTrackAlbum.setText(mFile.getTrackAlbum());
-            mTrackArtist.setText(mFile.getTrackArtist());
-            artistSort.setText(mFile.getTrackArtistSort());
-            mTrackAlbumArtist.setText(mFile.getTrackAlbumArtist());
-            albumArtistSort.setText(mFile.getTrackAlbumArtistSort());
+            mTrackTitle.setText(mFile.getStringTag(MPDTrack.StringTagTypes.TITLE));
+            mTrackAlbum.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ALBUM));
+            mTrackArtist.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ARTIST));
+            artistSort.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ARTISTSORT));
+            mTrackAlbumArtist.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST));
+            albumArtistSort.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT));
 
             if (mFile.getAlbumTrackCount() != 0) {
                 mTrackNo.setText(String.valueOf(mFile.getTrackNumber()) + '/' + mFile.getAlbumTrackCount());
@@ -111,19 +111,19 @@ public class SongDetailsDialog extends DialogFragment {
             } else {
                 mTrackDisc.setText(String.valueOf(mFile.getDiscNumber()));
             }
-            mTrackDate.setText(mFile.getDate());
+            mTrackDate.setText(mFile.getStringTag(MPDTrack.StringTagTypes.DATE));
             mTrackDuration.setText(FormatHelper.formatTracktimeFromS(mFile.getLength()));
 
-            mTrackTitleMBID.setText(mFile.getTrackMBID());
-            mTrackAlbumMBID.setText(mFile.getTrackAlbumMBID());
-            mTrackArtistMBID.setText(mFile.getTrackArtistMBID());
-            mTrackAlbumArtistMBID.setText(mFile.getTrackAlbumArtistMBID());
+            mTrackTitleMBID.setText(mFile.getStringTag(MPDTrack.StringTagTypes.TRACK_MBID));
+            mTrackAlbumMBID.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
+            mTrackArtistMBID.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID));
+            mTrackAlbumArtistMBID.setText(mFile.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST_MBID));
 
             mTrackURI.setText(mFile.getPath());
 
             mTrackTitleMBID.setOnClickListener(v -> {
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/recording/" + mFile.getTrackMBID()));
+                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/recording/" + mFile.getStringTag(MPDTrack.StringTagTypes.TRACK_MBID)));
 
                 try {
                     startActivity(urlIntent);
@@ -135,7 +135,7 @@ public class SongDetailsDialog extends DialogFragment {
 
             mTrackAlbumMBID.setOnClickListener(v -> {
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/release/" + mFile.getTrackAlbumMBID()));
+                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/release/" + mFile.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID)));
 
                 try {
                     startActivity(urlIntent);
@@ -147,7 +147,7 @@ public class SongDetailsDialog extends DialogFragment {
 
             mTrackArtistMBID.setOnClickListener(v -> {
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/artist/" + mFile.getTrackArtistMBID()));
+                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/artist/" + mFile.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID)));
 
                 try {
                     startActivity(urlIntent);
@@ -159,7 +159,7 @@ public class SongDetailsDialog extends DialogFragment {
 
             mTrackAlbumArtistMBID.setOnClickListener(v -> {
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/artist/" + mFile.getTrackAlbumArtistMBID()));
+                urlIntent.setData(Uri.parse("https://www.musicbrainz.org/artist/" + mFile.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST_MBID)));
 
                 try {
                     startActivity(urlIntent);

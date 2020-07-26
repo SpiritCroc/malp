@@ -163,9 +163,10 @@ public class BitmapCache {
      * @return Hash string for cache key
      */
     private String getAlbumHash(final MPDTrack track) {
-        final String mbid = track.getTrackAlbumMBID();
-        final String albumName = track.getTrackAlbum();
-        final String artistName = track.getTrackAlbumArtist().isEmpty() ? track.getTrackArtist() : track.getTrackAlbumArtist();
+        final String mbid = track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID);
+        final String albumName = track.getStringTag(MPDTrack.StringTagTypes.ALBUM);
+        final String albumArtistName = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
+        final String artistName = albumArtistName.isEmpty() ? track.getStringTag(MPDTrack.StringTagTypes.ARTIST) : albumArtistName;
 
         if (!mbid.isEmpty()) {
             return getAlbumHashMBID(mbid);

@@ -30,37 +30,31 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MPDFileListFilter {
-
-    public static void filterAlbumArtistTracks(List<MPDFileEntry> list, String albumArtist) {
-        filterMPDTrack(list, track -> albumArtist.equalsIgnoreCase(track.getTrackAlbumArtist())
-                || albumArtist.equalsIgnoreCase(track.getTrackArtist()));
-    }
-
     public static void filterAlbumMBID(List<MPDFileEntry> list, String albumMBID) {
-        filterMPDTrack(list, track -> albumMBID.equalsIgnoreCase(track.getTrackAlbumMBID()));
+        filterMPDTrack(list, track -> albumMBID.equalsIgnoreCase(track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID)));
     }
 
     public static void filterAlbumMBIDandAlbumArtist(List<MPDFileEntry> list, String albumMBID, String albumArtist) {
         filterMPDTrack(list, track ->
                 // Check if MBID matches (or is empty in both cases (tag missing))
-                (albumMBID.equalsIgnoreCase(track.getTrackAlbumMBID()))
+                (albumMBID.equalsIgnoreCase(track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID)))
                         // Check if artist tag matches
-                        && ((!albumArtist.isEmpty() && !track.getTrackArtist().isEmpty() && track.getTrackArtist().equalsIgnoreCase(albumArtist))
+                        && ((!albumArtist.isEmpty() && !track.getStringTag(MPDTrack.StringTagTypes.ARTIST).isEmpty() && track.getStringTag(MPDTrack.StringTagTypes.ARTIST).equalsIgnoreCase(albumArtist))
                         ||
                         // OR if albumartist tag matches
-                        (!albumArtist.isEmpty() && !track.getTrackAlbumArtist().isEmpty() && track.getTrackAlbumArtist().equalsIgnoreCase(albumArtist)))
+                        (!albumArtist.isEmpty() && !track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST).isEmpty() && track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST).equalsIgnoreCase(albumArtist)))
         );
     }
 
     public static void filterAlbumMBIDandAlbumArtistSort(List<MPDFileEntry> list, String albumMBID, String albumArtist) {
         filterMPDTrack(list, track ->
                 // Check if MBID matches (or is empty in both cases (tag missing))
-                (albumMBID.equalsIgnoreCase(track.getTrackAlbumMBID()))
+                (albumMBID.equalsIgnoreCase(track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID)))
                         // Check if artist tag matches
-                        && ((!albumArtist.isEmpty() && !track.getTrackArtistSort().isEmpty() && track.getTrackArtistSort().equalsIgnoreCase(albumArtist))
+                        && ((!albumArtist.isEmpty() && !track.getStringTag(MPDTrack.StringTagTypes.ARTISTSORT).isEmpty() && track.getStringTag(MPDTrack.StringTagTypes.ARTISTSORT).equalsIgnoreCase(albumArtist))
                         ||
                         // OR if albumartist tag matches
-                        (!albumArtist.isEmpty() && !track.getTrackAlbumArtistSort().isEmpty() && track.getTrackAlbumArtistSort().equalsIgnoreCase(albumArtist)))
+                        (!albumArtist.isEmpty() && !track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT).isEmpty() && track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT).equalsIgnoreCase(albumArtist)))
         );
     }
 

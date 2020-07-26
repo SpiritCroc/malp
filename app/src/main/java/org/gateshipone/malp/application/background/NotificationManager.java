@@ -273,17 +273,9 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
 
             mNotificationBuilder.setContentTitle(title);
 
-            String secondRow;
+            String secondRow = track.getSubLine(mService);
+            String trackAlbum = track.getStringTag(MPDTrack.StringTagTypes.ALBUM);
 
-            if (!track.getTrackArtist().isEmpty() && !track.getTrackAlbum().isEmpty()) {
-                secondRow = track.getTrackArtist() + mService.getString(R.string.track_item_separator) + track.getTrackAlbum();
-            } else if (track.getTrackArtist().isEmpty() && !track.getTrackAlbum().isEmpty()) {
-                secondRow = track.getTrackAlbum();
-            } else if (track.getTrackAlbum().isEmpty() && !track.getTrackArtist().isEmpty()) {
-                secondRow = track.getTrackArtist();
-            } else {
-                secondRow = track.getPath();
-            }
 
             // Set the media session metadata
             updateMetadata(track, state);
@@ -294,7 +286,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             mNotificationBuilder.setShowWhen(false);
 
             // Cover but only if changed
-            if (mNotification == null || !track.getTrackAlbum().equals(mLastTrack.getTrackAlbum()) || !track.getTrackAlbumMBID().equals(mLastTrack.getTrackAlbumMBID())) {
+            if (mNotification == null || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM, mLastTrack) || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM_MBID, mLastTrack)) {
                 mLastTrack = track;
                 mLastBitmap = null;
                 mCoverLoader.getImage(mLastTrack, true, -1, -1);
@@ -372,11 +364,11 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             } else {
                 metaDataBuilder = new MediaMetadataCompat.Builder(mMediaSession.getController().getMetadata());
             }
-            metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.getTrackTitle());
-            metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, track.getTrackAlbum());
-            metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.getTrackArtist());
-            metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, track.getTrackArtist());
-            metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, track.getTrackTitle());
+            metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.getStringTag(MPDTrack.StringTagTypes.TITLE));
+            metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, track.getStringTag(MPDTrack.StringTagTypes.ALBUM));
+            metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.getStringTag(MPDTrack.StringTagTypes.ARTIST));
+            metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST));
+            metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, track.getVisibleTitle());
             metaDataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, track.getTrackNumber());
             metaDataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, track.getLength());
 
@@ -429,15 +421,15 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
     }
 
     public boolean notificationNeedsUpdate(MPDTrack track) {
-        if (!track.getTrackAlbum().equals(mLastTrack.getTrackAlbum())) {
+        if (!track.getStringTag(MPDTrack.StringTagTypes.ALBUM).equals(mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM))) {
             return true;
         }
 
-        if (!track.getTrackArtist().equals(mLastTrack.getTrackArtist())) {
+        if (!track.getStringTag(MPDTrack.StringTagTypes.ARTIST).equals(mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST))) {
             return true;
         }
 
-        if (!track.getTrackTitle().equals(mLastTrack.getTrackTitle())) {
+        if (!track.getStringTag(MPDTrack.StringTagTypes.TITLE).equals(mLastTrack.getStringTag(MPDTrack.StringTagTypes.TITLE))) {
             return true;
         }
 
@@ -471,7 +463,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
 
     @Override
     public void newAlbumImage(MPDAlbum album) {
-        if (mLastTrack.getTrackAlbum().equals(album.getName())) {
+        if (mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM).equals(album.getName())) {
             mCoverLoader.getImage(mLastTrack, true, -1, -1);
         }
     }

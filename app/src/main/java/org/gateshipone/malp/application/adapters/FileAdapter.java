@@ -117,7 +117,7 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
                 if (previousFile != null) {
                     if (previousFile instanceof MPDTrack) {
                         MPDTrack previousTrack = (MPDTrack) previousFile;
-                        newAlbum = !previousTrack.getTrackAlbum().equals(track.getTrackAlbum());
+                        newAlbum = !previousTrack.equalsStringTag(MPDTrack.StringTagTypes.ALBUM, track);
                     }
                 }
             } else {
@@ -174,11 +174,11 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
                 // Section items
                 if (convertView == null) {
                     // If not create a new Listitem
-                    convertView = new FileListItem(mContext, track.getTrackAlbum(), mShowIcons, this);
+                    convertView = new FileListItem(mContext, track.getStringTag(MPDTrack.StringTagTypes.ALBUM), mShowIcons, this);
                 }
 
                 FileListItem tracksListViewItem = (FileListItem) convertView;
-                tracksListViewItem.setSectionHeader(track.getTrackAlbum());
+                tracksListViewItem.setSectionHeader(track.getStringTag(MPDTrack.StringTagTypes.ALBUM));
                 tracksListViewItem.setTrack(track, mUseTags);
                 if (!mShowTrackNumbers) {
                     tracksListViewItem.setTrackNumber(String.valueOf(position + 1));
@@ -186,8 +186,7 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
 
                 // This will prepare the view for fetching the image from the internet if not already saved in local database.
                 // Dummy MPDAlbum
-                MPDAlbum tmpAlbum = new MPDAlbum(track.getTrackAlbum());
-                tmpAlbum.setMBID(track.getTrackAlbumMBID());
+                MPDAlbum tmpAlbum = track.getAlbum();
                 ((FileListItem) convertView).prepareArtworkFetching(ArtworkManager.getInstance(mContext.getApplicationContext()), tmpAlbum);
 
                 // Start async image loading if not scrolling at the moment. Otherwise the ScrollSpeedListener

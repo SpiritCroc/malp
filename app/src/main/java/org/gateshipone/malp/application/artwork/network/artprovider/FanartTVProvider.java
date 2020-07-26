@@ -275,9 +275,9 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
      */
     @Override
     public void getTrackArtistMBID(final MPDTrack track, final Response.Listener<String> listener, final FanartFetchError errorListener) {
-        String artistName = track.getTrackAlbumArtist();
+        String artistName = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
         if (artistName.isEmpty()) {
-            artistName = track.getTrackArtist();
+            artistName = track.getStringTag(MPDTrack.StringTagTypes.ARTIST);
         }
 
         final String artistURLName = Uri.encode(FormatHelper.escapeSpecialCharsLucene(artistName));

@@ -23,10 +23,15 @@
 package org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects;
 
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+
+import org.gateshipone.malp.R;
+
+import java.util.HashMap;
 
 /**
  * This class represents an MPDTrack. This is the same type for tracks and files.
@@ -34,77 +39,32 @@ import androidx.annotation.NonNull;
  * retrieving an directory listing from the mpd server.
  */
 public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable {
+    public enum StringTagTypes {
+        ARTIST,
+        ARTISTSORT,
+        ALBUM,
+        ALBUMSORT,
+        ALBUMARTIST,
+        ALBUMARTISTSORT,
+        DATE,
+        TITLE,
+        NAME,
+        GENRE,
+        COMPOSER,
+        PERFORMER,
+        CONDUCTOR,
+        WORK,
+        COMMENT,
+        LABEL,
+        ARTIST_MBID,
+        ALBUM_MBID,
+        ALBUMARTIST_MBID,
+        TRACK_MBID,
+        RELEASETRACK_MBID,
+        WORK_MBID
+    }
 
-
-    /**
-     * Title of the song
-     */
-    @NonNull
-    private String pTrackTitle;
-
-    /**
-     * Artist of the song
-     */
-    @NonNull
-    private String pTrackArtist;
-
-    /**
-     * Associated album of the song
-     */
-    @NonNull
-    private String pTrackAlbum;
-
-    /**
-     * The artist of the album of this song. E.g. Various Artists for compilations
-     */
-    @NonNull
-    private String pTrackAlbumArtist;
-
-    /**
-     * ArtistSort field, can be optionally be used as sort order
-     */
-    private String pTrackArtistSort;
-
-    /**
-     * AlbumArtistSort field, can be optionally be used as sort order
-     */
-    private String pTrackAlbumArtistSort;
-
-    /**
-     * Track "Name" unspecified tag, could be shown if trackTitle is not set
-     */
-    @NonNull
-    private String pTrackName;
-
-    /**
-     * The date of the song
-     */
-    @NonNull
-    private String pDate;
-
-    /**
-     * MusicBrainz ID for the artist
-     */
-    @NonNull
-    private String pTrackArtistMBID;
-
-    /**
-     * MusicBrainz ID for the song itself
-     */
-    @NonNull
-    private String pTrackMBID;
-
-    /**
-     * MusicBrainz ID for the album of the song
-     */
-    @NonNull
-    private String pTrackAlbumMBID;
-
-    /**
-     * MusicBrainz ID for the album artist
-     */
-    @NonNull
-    private String pTrackAlbumArtistMBID;
+    private HashMap<StringTagTypes, String> pStringTags;
 
     /**
      * Length in seconds
@@ -141,71 +101,7 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
      */
     private int pSongID;
 
-    private int pChannelCount;
-
-    private int pSampleRate;
-
-    private int pBitDepth;
-
-    private String pPerformer;
-
-    private String pConductor;
-
-    private String pWork;
-
-    private String pLabel;
-
-    private String pGenre;
-
-    /**
-     * Used for {@link org.gateshipone.malp.application.adapters.CurrentPlaylistAdapter} to save if an
-     * image is already being fetchted from the internet for this item
-     */
-    private boolean pImageFetching;
-
-    /**
-     * Create empty MPDTrack (track). Fill it with setter methods during
-     * parsing of mpds output.
-     *
-     * @param path The path of the file. This should never change.
-     */
-    public MPDTrack(@NonNull String path) {
-        super(path);
-        pTrackTitle = "";
-
-        pTrackArtist = "";
-        pTrackArtistSort = "";
-        pTrackAlbum = "";
-        pTrackAlbumArtist = "";
-        pTrackAlbumArtistSort = "";
-        pTrackName = "";
-
-        pDate = "";
-
-        pTrackArtistMBID = "";
-        pTrackMBID = "";
-        pTrackAlbumMBID = "";
-        pTrackAlbumArtistMBID = "";
-
-        pLength = 0;
-
-        pImageFetching = false;
-    }
-
-
     protected MPDTrack(Parcel in) {
-        pTrackTitle = in.readString();
-        pTrackArtist = in.readString();
-        pTrackAlbum = in.readString();
-        pTrackAlbumArtist = in.readString();
-        pTrackArtistSort = in.readString();
-        pTrackAlbumArtistSort = in.readString();
-        pTrackName = in.readString();
-        pDate = in.readString();
-        pTrackArtistMBID = in.readString();
-        pTrackMBID = in.readString();
-        pTrackAlbumMBID = in.readString();
-        pTrackAlbumArtistMBID = in.readString();
         pLength = in.readInt();
         pTrackNumber = in.readInt();
         pAlbumTrackCount = in.readInt();
@@ -213,24 +109,15 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
         pAlbumDiscCount = in.readInt();
         pSongPosition = in.readInt();
         pSongID = in.readInt();
+        pChannelCount = in.readInt();
+        pSampleRate = in.readInt();
+        pBitDepth = in.readInt();
         pImageFetching = in.readByte() != 0;
+        pStringTags = (HashMap<StringTagTypes, String>) in.readSerializable();
     }
-
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(pTrackTitle);
-        dest.writeString(pTrackArtist);
-        dest.writeString(pTrackAlbum);
-        dest.writeString(pTrackAlbumArtist);
-        dest.writeString(pTrackArtistSort);
-        dest.writeString(pTrackAlbumArtistSort);
-        dest.writeString(pTrackName);
-        dest.writeString(pDate);
-        dest.writeString(pTrackArtistMBID);
-        dest.writeString(pTrackMBID);
-        dest.writeString(pTrackAlbumMBID);
-        dest.writeString(pTrackAlbumArtistMBID);
         dest.writeInt(pLength);
         dest.writeInt(pTrackNumber);
         dest.writeInt(pAlbumTrackCount);
@@ -238,7 +125,11 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
         dest.writeInt(pAlbumDiscCount);
         dest.writeInt(pSongPosition);
         dest.writeInt(pSongID);
+        dest.writeInt(pChannelCount);
+        dest.writeInt(pSampleRate);
+        dest.writeInt(pBitDepth);
         dest.writeByte((byte) (pImageFetching ? 1 : 0));
+        dest.writeSerializable(pStringTags);
     }
 
     @Override
@@ -258,113 +149,57 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
         }
     };
 
-    @NonNull
-
-    public String getTrackTitle() {
-        return pTrackTitle;
+    public int getChannelCount() {
+        return pChannelCount;
     }
 
-    public void setTrackTitle(@NonNull String pTrackTitle) {
-        this.pTrackTitle = pTrackTitle;
+    public void setChannelCount(int pChannelCount) {
+        this.pChannelCount = pChannelCount;
     }
 
-    @NonNull
-    public String getTrackArtist() {
-        return pTrackArtist;
+    public int getSampleRate() {
+        return pSampleRate;
     }
 
-    public void setTrackArtist(@NonNull String pTrackArtist) {
-        this.pTrackArtist = pTrackArtist;
+    public void setSampleRate(int pSampleRate) {
+        this.pSampleRate = pSampleRate;
     }
 
-    public void setTrackArtistSort(@NonNull String artistSort) {
-        pTrackArtistSort = artistSort;
+    public int getBitDepth() {
+        return pBitDepth;
     }
 
-    @NonNull
-    public String getTrackArtistSort() {
-        return pTrackArtistSort;
+    public void setBitDepth(int pBitDepth) {
+        this.pBitDepth = pBitDepth;
     }
 
-    public void setTrackAlbumArtistSort(String albumArtistSort) {
-        pTrackAlbumArtistSort = albumArtistSort;
+    private int pChannelCount;
+
+    private int pSampleRate;
+
+    private int pBitDepth;
+
+    /**
+     * Used for {@link org.gateshipone.malp.application.adapters.CurrentPlaylistAdapter} to save if an
+     * image is already being fetchted from the internet for this item
+     */
+    private boolean pImageFetching;
+
+    /**
+     * Create empty MPDTrack (track). Fill it with setter methods during
+     * parsing of mpds output.
+     *
+     * @param path The path of the file. This should never change.
+     */
+    public MPDTrack(@NonNull String path) {
+        super(path);
+        pLength = 0;
+
+        pStringTags = new HashMap<>();
+
+        pImageFetching = false;
     }
 
-    public String getTrackAlbumArtistSort() {
-        return pTrackAlbumArtistSort;
-    }
-
-    @NonNull
-    public String getTrackAlbum() {
-        return pTrackAlbum;
-    }
-
-    public void setTrackAlbum(@NonNull String pTrackAlbum) {
-        this.pTrackAlbum = pTrackAlbum;
-    }
-
-    @NonNull
-    public String getTrackAlbumArtist() {
-        return pTrackAlbumArtist;
-    }
-
-    public void setTrackAlbumArtist(@NonNull String pTrackAlbumArtist) {
-        this.pTrackAlbumArtist = pTrackAlbumArtist;
-    }
-
-    @NonNull
-    public String getTrackName() {
-        return pTrackName;
-    }
-
-    public void setTrackName(@NonNull String name) {
-        pTrackName = name;
-    }
-
-    @NonNull
-    public String getDate() {
-        return pDate;
-    }
-
-    public void setDate(@NonNull String pDate) {
-        this.pDate = pDate;
-    }
-
-    @NonNull
-    public String getTrackArtistMBID() {
-        return pTrackArtistMBID;
-    }
-
-    public void setTrackArtistMBID(@NonNull String pTrackArtistMBID) {
-        this.pTrackArtistMBID = pTrackArtistMBID;
-    }
-
-    @NonNull
-    public String getTrackAlbumArtistMBID() {
-        return pTrackAlbumArtistMBID;
-    }
-
-    public void setTrackAlbumArtistMBID(@NonNull String pTrackArtistMBID) {
-        this.pTrackAlbumArtistMBID = pTrackArtistMBID;
-    }
-
-    @NonNull
-    public String getTrackMBID() {
-        return pTrackMBID;
-    }
-
-    public void setTrackMBID(@NonNull String pTrackMBID) {
-        this.pTrackMBID = pTrackMBID;
-    }
-
-    @NonNull
-    public String getTrackAlbumMBID() {
-        return pTrackAlbumMBID;
-    }
-
-    public void setTrackAlbumMBID(@NonNull String pTrackAlbumMBID) {
-        this.pTrackAlbumMBID = pTrackAlbumMBID;
-    }
 
     public int getLength() {
         return pLength;
@@ -441,7 +276,20 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
 
     @Override
     public int hashCode() {
-        return (pTrackTitle + pTrackAlbum + pTrackMBID).hashCode();
+        String title = getStringTag(StringTagTypes.TITLE);
+        String album = getStringTag(StringTagTypes.ALBUM);
+        String trackMBID = getStringTag(StringTagTypes.TRACK_MBID);
+        return (title + album + trackMBID).hashCode();
+    }
+
+    @NonNull
+    public String getStringTag(StringTagTypes tag) {
+        String tagValue = pStringTags.get(tag);
+        return tagValue == null ? "" : tagValue;
+    }
+
+    public void setStringTag(StringTagTypes tag, @NonNull String value) {
+        pStringTags.put(tag, value);
     }
 
     /**
@@ -449,10 +297,12 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
      */
     @NonNull
     public String getVisibleTitle() {
-        if (!pTrackTitle.isEmpty()) {
-            return pTrackTitle;
-        } else if (!pTrackName.isEmpty()) {
-            return pTrackName;
+        String title = getStringTag(StringTagTypes.TITLE);
+        String trackName = getStringTag(StringTagTypes.NAME);
+        if (!title.isEmpty()) {
+            return title;
+        } else if (!trackName.isEmpty()) {
+            return trackName;
         } else {
             return getFilename();
         }
@@ -464,13 +314,18 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
     @Override
     @NonNull
     public String getSectionTitle() {
-        return pTrackTitle.equals("") ? mPath : pTrackTitle;
+        String title = getStringTag(StringTagTypes.TITLE);
+        return title.isEmpty() ? mPath : title;
     }
 
     public int indexCompare(MPDTrack compFile) {
-        if (!pTrackAlbumMBID.equals(compFile.pTrackAlbumMBID)) {
-            return pTrackAlbumMBID.compareTo(compFile.pTrackAlbumMBID);
+        String albumMBID = getStringTag(StringTagTypes.ALBUM_MBID);
+        String compAlbumMBID = compFile.getStringTag(StringTagTypes.ALBUM_MBID);
+
+        if (!albumMBID.equals(compAlbumMBID)) {
+            return albumMBID.compareTo(compAlbumMBID);
         }
+
         // Compare disc numbers first
         if (pDiscNumber > compFile.pDiscNumber) {
             return 1;
@@ -500,5 +355,51 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
         String anotherTitle = another.getFilename();
 
         return title.toLowerCase().compareTo(anotherTitle.toLowerCase());
+    }
+
+    public MPDAlbum getAlbum() {
+        MPDAlbum tmpAlbum = new MPDAlbum(getStringTag(MPDTrack.StringTagTypes.ALBUM));
+
+        String albumArtist = getStringTag(StringTagTypes.ALBUMARTIST);
+        String artist = getStringTag(StringTagTypes.ARTIST);
+
+        // Set album artist
+        if (!albumArtist.isEmpty()) {
+            tmpAlbum.setArtistName(albumArtist);
+        } else {
+            tmpAlbum.setArtistName(artist);
+        }
+
+        String albumArtistSort = getStringTag(StringTagTypes.ALBUMARTISTSORT);
+        String artistSort = getStringTag(StringTagTypes.ARTISTSORT);
+        // Set albumartistsort
+        if (!albumArtistSort.isEmpty()) {
+            tmpAlbum.setArtistSortName(albumArtistSort);
+        } else {
+            tmpAlbum.setArtistSortName(artistSort);
+        }
+
+        tmpAlbum.setMBID(getStringTag(StringTagTypes.ALBUM_MBID));
+        return tmpAlbum;
+    }
+
+    public String getSubLine(Context context) {
+        String subLine;
+        String trackArtist = getStringTag(MPDTrack.StringTagTypes.ARTIST);
+        String trackAlbum = getStringTag(MPDTrack.StringTagTypes.ALBUM);
+        if (!trackArtist.isEmpty() && !trackAlbum.isEmpty()) {
+            subLine = trackArtist + context.getString(R.string.track_item_separator) + trackAlbum;
+        } else if (trackArtist.isEmpty() && !trackAlbum.isEmpty()) {
+            subLine = trackAlbum;
+        } else if (!trackArtist.isEmpty()) {
+            subLine = trackArtist;
+        } else {
+            subLine = getPath();
+        }
+        return subLine;
+    }
+
+    public boolean equalsStringTag(StringTagTypes tag, MPDTrack compTrack) {
+        return getStringTag(tag).equals(compTrack.getStringTag(tag));
     }
 }

@@ -247,7 +247,7 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
     }
 
     public Bitmap getImage(final MPDTrack track, int width, int height, boolean skipCache) throws ImageNotFoundException {
-        if (null == track || track.getTrackAlbum().isEmpty()) {
+        if (null == track || track.getStringTag(MPDTrack.StringTagTypes.ALBUM).isEmpty()) {
             return null;
         }
 
@@ -387,9 +387,9 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
                     errorCallback);
         } else {
             // Use a dummy album to fetch the image
-            final MPDAlbum album = new MPDAlbum(track.getTrackAlbum());
-            album.setMBID(track.getTrackAlbumMBID());
-            album.setArtistName(track.getTrackAlbumArtist());
+            final MPDAlbum album = new MPDAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM));
+            album.setMBID(track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
+            album.setArtistName(track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST));
 
             fetchImage(album, imageSavedCallback, errorCallback);
         }
@@ -468,9 +468,9 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
                 break;
             case TRACK:
                 final MPDTrack track = (MPDTrack) artworkRequestModel.getGenericModel();
-                final MPDAlbum album = new MPDAlbum(track.getTrackAlbum());
-                album.setMBID(track.getTrackAlbumMBID());
-                album.setArtistName(track.getTrackAlbumArtist());
+                final MPDAlbum album = new MPDAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM));
+                album.setMBID(track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
+                album.setArtistName(track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST));
                 synchronized (mAlbumListeners) {
                     for (onNewAlbumImageListener albumListener : mAlbumListeners) {
                         albumListener.newAlbumImage(album);
@@ -544,8 +544,8 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
                 break;
             case TRACK:
                 final MPDTrack track = (MPDTrack) model.getGenericModel();
-                newImageIntent.putExtra(INTENT_EXTRA_KEY_ALBUM_MBID, track.getTrackAlbumMBID());
-                newImageIntent.putExtra(INTENT_EXTRA_KEY_ALBUM_NAME, track.getTrackAlbum());
+                newImageIntent.putExtra(INTENT_EXTRA_KEY_ALBUM_MBID, track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
+                newImageIntent.putExtra(INTENT_EXTRA_KEY_ALBUM_NAME, track.getStringTag(MPDTrack.StringTagTypes.ALBUM));
                 break;
         }
 

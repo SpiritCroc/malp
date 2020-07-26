@@ -369,28 +369,13 @@ public class MainActivity extends GenericActivity
                         return true;
                     case R.id.action_show_artist:
                         if (mUseArtistSort) {
-                            onArtistSelected(new MPDArtist(track.getTrackArtistSort()), null);
+                            onArtistSelected(new MPDArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTISTSORT)), null);
                         } else {
-                            onArtistSelected(new MPDArtist(track.getTrackArtist()), null);
+                            onArtistSelected(new MPDArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST)), null);
                         }
                         return true;
                     case R.id.action_show_album:
-                        MPDAlbum tmpAlbum = new MPDAlbum(track.getTrackAlbum());
-                        // Set album artist
-                        if (!track.getTrackAlbumArtist().isEmpty()) {
-                            tmpAlbum.setArtistName(track.getTrackAlbumArtist());
-                        } else {
-                            tmpAlbum.setArtistName(track.getTrackArtist());
-                        }
-
-                        // Set albumartistsort
-                        if (!track.getTrackAlbumArtistSort().isEmpty()) {
-                            tmpAlbum.setArtistSortName(track.getTrackAlbumArtistSort());
-                        } else {
-                            tmpAlbum.setArtistSortName(track.getTrackArtistSort());
-                        }
-
-                        tmpAlbum.setMBID(track.getTrackAlbumMBID());
+                        MPDAlbum tmpAlbum = track.getAlbum();
                         onAlbumSelected(tmpAlbum, null);
                         return true;
                     case R.id.action_show_details:

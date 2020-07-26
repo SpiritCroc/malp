@@ -265,26 +265,26 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
                 return true;
             }
             case R.id.action_add_album: {
-                String artist = track.getTrackAlbumArtist();
+                String artist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
                 if (artist.isEmpty()) {
-                    artist = track.getTrackArtist();
+                    artist = track.getStringTag(MPDTrack.StringTagTypes.ARTIST);
                 }
-                MPDQueryHandler.addArtistAlbum(track.getTrackAlbum(), artist, track.getTrackAlbumMBID());
+                MPDQueryHandler.addArtistAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM), artist, track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
                 return true;
             }
             case R.id.action_play_album: {
-                String artist = track.getTrackAlbumArtist();
+                String artist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
                 if (artist.isEmpty()) {
-                    artist = track.getTrackArtist();
+                    artist = track.getStringTag(MPDTrack.StringTagTypes.ARTIST);
                 }
-                MPDQueryHandler.playArtistAlbum(track.getTrackAlbum(), artist, track.getTrackAlbumMBID());
+                MPDQueryHandler.playArtistAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM), artist, track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
                 return true;
             }
             case R.id.action_add_artist:
-                MPDQueryHandler.addArtist(track.getTrackArtist(), mAlbumSortOrder);
+                MPDQueryHandler.addArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder);
                 return true;
             case R.id.action_play_artist:
-                MPDQueryHandler.playArtist(track.getTrackArtist(), mAlbumSortOrder);
+                MPDQueryHandler.playArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder);
                 return true;
             case R.id.menu_group_album:
             case R.id.menu_group_artist:

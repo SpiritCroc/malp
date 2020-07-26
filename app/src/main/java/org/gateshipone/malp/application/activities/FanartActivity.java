@@ -325,7 +325,8 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
      */
     private void updateMPDCurrentTrack(final MPDTrack track) {
         final String title = track.getVisibleTitle();
-        final String artistName = track.getTrackAlbumArtist().isEmpty() ? track.getTrackArtist() : track.getTrackAlbumArtist();
+        final String albumArtist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT);
+        final String artistName = albumArtist.isEmpty() ? track.getStringTag(MPDTrack.StringTagTypes.ARTIST) : albumArtist;
 
         mTrackTitle.setText(title);
         mTrackAlbum.setText(artistName);
@@ -333,7 +334,8 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
 
         String lastTrackArtistName = null;
         if (mLastTrack != null) {
-            lastTrackArtistName = mLastTrack.getTrackAlbumArtist().isEmpty() ? mLastTrack.getTrackArtist() : mLastTrack.getTrackAlbumArtist();
+            String lastAlbumArtist = mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
+            lastTrackArtistName = lastAlbumArtist.isEmpty() ? mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST) : lastAlbumArtist;
         }
 
         if (!artistName.equals(lastTrackArtistName)) {
@@ -418,11 +420,11 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
      */
     private void restoreFanartView() {
         // Check if a track is available, cancel otherwise
-        if (mLastTrack == null || mLastTrack.getTrackArtistMBID().isEmpty()) {
+        if (mLastTrack == null || mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID).isEmpty()) {
             return;
         }
 
-        final String mbid = mLastTrack.getTrackArtistMBID();
+        final String mbid = mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID);
 
         final Bitmap image = mFanartManager.getFanartImage(mbid, mCurrentFanart);
         if (image != null) {
@@ -439,11 +441,11 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
      */
     private void updateFanartViews() {
         // Check if a track is available, cancel otherwise
-        if (mLastTrack == null || mLastTrack.getTrackArtistMBID().isEmpty()) {
+        if (mLastTrack == null || mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID).isEmpty()) {
             return;
         }
 
-        final String mbid = mLastTrack.getTrackArtistMBID();
+        final String mbid = mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID);
         final int fanartCount = mFanartManager.getFanartCount(mbid);
 
         if (mSwitcher.getDisplayedChild() == 0) {

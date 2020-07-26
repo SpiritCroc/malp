@@ -203,20 +203,7 @@ public class FileListItem extends AbsImageListViewItem {
                 mTitleView.setText(trackTitle);
 
                 // additional information (artist + album)
-                String trackInformation;
-
-                String trackAlbum = track.getTrackAlbum();
-
-                // Check which information is available and set the separator accordingly.
-                if (!track.getTrackArtist().isEmpty() && !track.getTrackAlbum().isEmpty()) {
-                    trackInformation = track.getTrackArtist() + context.getResources().getString(R.string.track_item_separator) + trackAlbum;
-                } else if (track.getTrackArtist().isEmpty() && !track.getTrackAlbum().isEmpty()) {
-                    trackInformation = trackAlbum;
-                } else if (track.getTrackAlbum().isEmpty() && !track.getTrackArtist().isEmpty()) {
-                    trackInformation = track.getTrackArtist();
-                } else {
-                    trackInformation = track.getPath();
-                }
+                String trackInformation = track.getSubLine(context);
 
                 mAdditionalInfoView.setText(trackInformation);
                 mSeparator.setVisibility(VISIBLE);

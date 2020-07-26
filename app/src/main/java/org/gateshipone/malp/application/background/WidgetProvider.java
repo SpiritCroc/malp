@@ -108,15 +108,7 @@ public class WidgetProvider extends AppWidgetProvider {
             String title = mLastTrack.getVisibleTitle();
             views.setTextViewText(R.id.widget_big_trackName, title);
 
-            if (!mLastTrack.getTrackAlbum().isEmpty() && !mLastTrack.getTrackArtist().isEmpty()) {
-                views.setTextViewText(R.id.widget_big_ArtistAlbum, mLastTrack.getTrackArtist() + " - " + mLastTrack.getTrackAlbum());
-            } else if (mLastTrack.getTrackAlbum().isEmpty() && !mLastTrack.getTrackArtist().isEmpty()) {
-                views.setTextViewText(R.id.widget_big_ArtistAlbum, mLastTrack.getTrackArtist());
-            } else if (mLastTrack.getTrackArtist().isEmpty() && !mLastTrack.getTrackAlbum().isEmpty()) {
-                views.setTextViewText(R.id.widget_big_ArtistAlbum, mLastTrack.getTrackAlbum());
-            } else {
-                views.setTextViewText(R.id.widget_big_ArtistAlbum, mLastTrack.getPath());
-            }
+            views.setTextViewText(R.id.widget_big_ArtistAlbum, mLastTrack.getSubLine(context));
 
             if (mLastCover != null) {
                 // Use the saved image
@@ -237,7 +229,7 @@ public class WidgetProvider extends AppWidgetProvider {
             if (null != track) {
                 boolean newImage = false;
                 // Check if new album is played and remove image if it is.
-                if (mLastTrack == null || !track.getTrackAlbum().equals(mLastTrack.getTrackAlbum()) || !track.getTrackAlbumMBID().equals(mLastTrack.getTrackAlbumMBID())) {
+                if (mLastTrack == null || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM, mLastTrack)|| !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM_MBID, mLastTrack)) {
                     mLastCover = null;
                     newImage = true;
 
@@ -256,7 +248,7 @@ public class WidgetProvider extends AppWidgetProvider {
             mLastTrack = null;
         } else if (intent.getAction().equals(ArtworkManager.ACTION_NEW_ARTWORK_READY)) {
             // Check if the new artwork matches the currently playing track. If so reload artwork
-            if (mLastTrack != null && mLastTrack.getTrackAlbum().equals(intent.getStringExtra(ArtworkManager.INTENT_EXTRA_KEY_ALBUM_NAME))) {
+            if (mLastTrack != null && mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM).equals(intent.getStringExtra(ArtworkManager.INTENT_EXTRA_KEY_ALBUM_NAME))) {
                 // Got new artwork
                 mLastCover = null;
                 CoverBitmapLoader coverLoader = new CoverBitmapLoader(context, new CoverReceiver(context, this));

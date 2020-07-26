@@ -131,10 +131,10 @@ public class FanartManager implements FanartProvider.FanartFetchError {
             return;
         }
 
-        if (track.getTrackArtistMBID().isEmpty()) {
+        if (track.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID).isEmpty()) {
             // resolve mbid
             FanartTVProvider.getInstance(mApplicationContext).getTrackArtistMBID(track, trackMBID -> {
-                track.setTrackArtistMBID(trackMBID);
+                track.setStringTag(MPDTrack.StringTagTypes.ARTIST_MBID, trackMBID);
 
                 loadFanartImages(track, fanartCacheChangeListener);
             }, this);
@@ -172,13 +172,14 @@ public class FanartManager implements FanartProvider.FanartFetchError {
      * @param fanartCacheChangeListener Callback if a new fanart was added to the cache.
      */
     private void loadFanartImages(final MPDTrack track, final OnFanartCacheChangeListener fanartCacheChangeListener) {
-        fanartCacheChangeListener.fanartInitialCacheCount(mFanartCache.getFanartCount(track.getTrackArtistMBID()));
+        fanartCacheChangeListener.fanartInitialCacheCount(mFanartCache.getFanartCount(track.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID)));
 
-        FanartTVProvider.getInstance(mApplicationContext).getArtistFanartURLs(track.getTrackArtistMBID(),
+
+        FanartTVProvider.getInstance(mApplicationContext).getArtistFanartURLs(track.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID),
                 artistURLs -> {
                     for (final String url : artistURLs) {
                         // Check if the given image is in the cache already.
-                        if (mFanartCache.inCache(track.getTrackArtistMBID(), String.valueOf(url.hashCode()))) {
+                        if (mFanartCache.inCache(track.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID), String.valueOf(url.hashCode()))) {
                             continue;
                         }
 
@@ -199,9 +200,9 @@ public class FanartManager implements FanartProvider.FanartFetchError {
     private void loadSingleFanartImage(final MPDTrack track, final String imageURL, final OnFanartCacheChangeListener fanartCacheChangeListener) {
         FanartTVProvider.getInstance(mApplicationContext).getFanartImage(track, imageURL,
                 response -> {
-                    mFanartCache.addFanart(track.getTrackArtistMBID(), String.valueOf(response.hashCode()), response.image);
+                    mFanartCache.addFanart(track.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID), String.valueOf(response.hashCode()), response.image);
 
-                    fanartCacheChangeListener.fanartCacheCountChanged(mFanartCache.getFanartCount(track.getTrackArtistMBID()));
+                    fanartCacheChangeListener.fanartCacheCountChanged(mFanartCache.getFanartCount(track.getStringTag(MPDTrack.StringTagTypes.ARTIST_MBID)));
                 },
                 error -> {
                     // for now error handling is not necessary

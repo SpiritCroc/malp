@@ -206,7 +206,7 @@ public class ArtworkRequestModel {
                 loggingString = ((MPDArtist) mModel).getArtistName();
                 break;
             case TRACK:
-                loggingString = ((MPDTrack) mModel).getTrackAlbum();
+                loggingString = ((MPDTrack) mModel).getStringTag(MPDTrack.StringTagTypes.ALBUM);
                 break;
         }
 
