@@ -27,7 +27,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumArt;
+import org.gateshipone.malp.application.utils.FormatHelper;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumList;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseArtistList;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseFileList;
@@ -46,6 +46,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -250,13 +251,38 @@ public class MPDQueryHandler extends MPDGenericHandler {
 
                 List<MPDFileEntry> trackList = MPDInterface.mInstance.getAlbumTracks(albumName, albumMBID);
                 ((MPDResponseFileList) responseHandler).sendFileList(trackList);
-            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_TRACKS) {
+            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ARTWORK_TRACKS) {
                 responseHandler = mpdAction.getResponseHandler();
                 if (!(responseHandler instanceof MPDResponseFileList)) {
                     return;
                 }
 
                 List<MPDFileEntry> trackList = MPDInterface.mInstance.getAllTracks();
+
+                // Get the set of directories
+                final HashMap<String, MPDTrack> albumPaths = new HashMap<>();
+
+                // Get a list of unique album folders
+                for (MPDFileEntry track : trackList) {
+                    if (track instanceof MPDTrack) {
+                        String dirPath = FormatHelper.getDirectoryFromPath(track.getPath());
+                        if (!albumPaths.containsKey(dirPath)) {
+                            albumPaths.put(FormatHelper.getDirectoryFromPath(track.getPath()), (MPDTrack) track);
+                        }
+                    }
+                }
+                trackList.clear();
+
+                // Get tags for all tracks
+                for (MPDTrack track : albumPaths.values()) {
+                    List<MPDFileEntry> tempFiles = MPDInterface.mInstance.getFiles(track.getPath());
+                    if (tempFiles.size() == 1) {
+                        MPDFileEntry file = tempFiles.get(0);
+                        if (file instanceof MPDTrack) {
+                            trackList.add(file);
+                        }
+                    }
+                }
 
                 ((MPDResponseFileList) responseHandler).sendFileList(trackList);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ARTIST_ALBUM_TRACKS) {
@@ -793,7 +819,7 @@ public class MPDQueryHandler extends MPDGenericHandler {
      * @param responseHandler The handler used to send the requested data
      */
     public static void getAllTracks(MPDResponseFileList responseHandler) {
-        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_TRACKS);
+        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ARTWORK_TRACKS);
 
         action.setResponseHandler(responseHandler);
 

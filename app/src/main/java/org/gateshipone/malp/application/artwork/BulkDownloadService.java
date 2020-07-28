@@ -585,24 +585,9 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
             Log.v(TAG, "Received track count: " + trackList.size());
         }
 
-        final HashMap<String, MPDTrack> albumPaths = new HashMap<>();
 
-        // Get a list of unique album folders
         for (MPDFileEntry track : trackList) {
-            if (track instanceof MPDTrack) {
-                String dirPath = FormatHelper.getDirectoryFromPath(track.getPath());
-                if (!albumPaths.containsKey(dirPath)) {
-                    albumPaths.put(FormatHelper.getDirectoryFromPath(track.getPath()), (MPDTrack) track);
-                }
-            }
-        }
-
-        if (BuildConfig.DEBUG) {
-            Log.v(TAG, "Unique path count: " + albumPaths.size());
-        }
-
-        for (MPDTrack track : albumPaths.values()) {
-            mArtworkRequestQueue.add(new ArtworkRequestModel(track));
+            mArtworkRequestQueue.add(new ArtworkRequestModel((MPDTrack)track));
         }
 
         fetchAllArtists();
