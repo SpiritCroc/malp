@@ -48,7 +48,7 @@ public class MPDSocketInterface {
      */
     private final PrintWriter mWriter;
 
-    private static final int READ_BUFFER_SIZE = 512 * 1024; // 512kB
+    private static final int READ_BUFFER_SIZE = 4 * 1024; // 4 kB
 
     private final byte[] mReadBuffer;
 
@@ -220,7 +220,6 @@ public class MPDSocketInterface {
 
         int skipChars = 0;
 
-        //Log.v(TAG,"Read from:" + mReadBufferReadPos +  "writeBuffer" + mReadBufferWritePos);
         int localReadPos = mReadBufferReadPos;
         // Read until newline
         while (true) {
@@ -231,8 +230,7 @@ public class MPDSocketInterface {
                 localReadPos = 0;
                 skipChars = 0;
                 continue;
-            }
-            else if (!whiteSpacesHandled && (mReadBuffer[localReadPos] == ' ') || (mReadBuffer[localReadPos] == ':')) {
+            } else if (!whiteSpacesHandled && ((mReadBuffer[localReadPos] == ' ') || (mReadBuffer[localReadPos] == ':'))) {
                 skipChars++;
             } else if (!whiteSpacesHandled && mReadBuffer[localReadPos] != ' ') {
                 mReadBufferReadPos += skipChars;
