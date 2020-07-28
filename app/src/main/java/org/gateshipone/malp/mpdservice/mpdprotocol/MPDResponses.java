@@ -168,14 +168,14 @@ public class MPDResponses {
         map.put("db_update", MPD_RESPONSE_KEY.RESPONSE_DB_UPDATE);
         map.put("command", MPD_RESPONSE_KEY.RESPONSE_COMMAND);
         map.put("tagtype", MPD_RESPONSE_KEY.RESPONSE_TAGTYPE);
-        map.put("composer", MPD_RESPONSE_KEY.RESPONSE_COMPOSER);
-        map.put("conductor", MPD_RESPONSE_KEY.RESPONSE_CONDUCTOR);
-        map.put("performer", MPD_RESPONSE_KEY.RESPONSE_PERFORMER);
-        map.put("work",  MPD_RESPONSE_KEY.RESPONSE_WORK);
+        map.put("Composer", MPD_RESPONSE_KEY.RESPONSE_COMPOSER);
+        map.put("Conductor", MPD_RESPONSE_KEY.RESPONSE_CONDUCTOR);
+        map.put("Performer", MPD_RESPONSE_KEY.RESPONSE_PERFORMER);
+        map.put("Work",  MPD_RESPONSE_KEY.RESPONSE_WORK);
         map.put("MUSICBRAINZ_WORKID", MPD_RESPONSE_KEY.RESPONSE_WORK_MBID);
-        map.put("genre", MPD_RESPONSE_KEY.RESPONSE_GENRE);
-        map.put("comment", MPD_RESPONSE_KEY.RESPONSE_COMMENT);
-        map.put("label", MPD_RESPONSE_KEY.RESPONSE_LABEL);
+        map.put("Genre", MPD_RESPONSE_KEY.RESPONSE_GENRE);
+        map.put("Comment", MPD_RESPONSE_KEY.RESPONSE_COMMENT);
+        map.put("Label", MPD_RESPONSE_KEY.RESPONSE_LABEL);
 
         return map;
     }
