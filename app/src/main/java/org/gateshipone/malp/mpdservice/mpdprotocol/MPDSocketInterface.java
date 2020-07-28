@@ -225,7 +225,14 @@ public class MPDSocketInterface {
         // Read until newline
         while (true) {
             // Skip initial spaces as separators
-            if (!whiteSpacesHandled && (mReadBuffer[localReadPos] == ' ') || (mReadBuffer[localReadPos] == ':')) {
+            if (!whiteSpacesHandled && localReadPos == mReadBufferWritePos) {
+                // Skip data and refresh buffer
+                fillReadBuffer();
+                localReadPos = 0;
+                skipChars = 0;
+                continue;
+            }
+            else if (!whiteSpacesHandled && (mReadBuffer[localReadPos] == ' ') || (mReadBuffer[localReadPos] == ':')) {
                 skipChars++;
             } else if (!whiteSpacesHandled && mReadBuffer[localReadPos] != ' ') {
                 mReadBufferReadPos += skipChars;
