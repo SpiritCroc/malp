@@ -22,6 +22,7 @@
 
 package org.gateshipone.malp.application.activities;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 
 import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.R;
+import org.gateshipone.malp.application.fragments.ErrorDialog;
 import org.gateshipone.malp.application.fragments.LicensesDialog;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDException;
@@ -62,19 +64,37 @@ public class AboutActivity extends GenericActivity {
         findViewById(R.id.logo_musicbrainz).setOnClickListener(view -> {
             Intent urlIntent = new Intent(Intent.ACTION_VIEW);
             urlIntent.setData(Uri.parse(getResources().getString(R.string.url_musicbrainz)));
-            startActivity(urlIntent);
+
+            try {
+                startActivity(urlIntent);
+            } catch (ActivityNotFoundException e) {
+                final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                noBrowserFoundDlg.show(getSupportFragmentManager(), "BrowserNotFoundDlg");
+            }
         });
 
         findViewById(R.id.logo_lastfm).setOnClickListener(view -> {
             Intent urlIntent = new Intent(Intent.ACTION_VIEW);
             urlIntent.setData(Uri.parse(getResources().getString(R.string.url_lastfm)));
-            startActivity(urlIntent);
+
+            try {
+                startActivity(urlIntent);
+            } catch (ActivityNotFoundException e) {
+                final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                noBrowserFoundDlg.show(getSupportFragmentManager(), "BrowserNotFoundDlg");
+            }
         });
 
         findViewById(R.id.logo_fanarttv).setOnClickListener(view -> {
             Intent urlIntent = new Intent(Intent.ACTION_VIEW);
             urlIntent.setData(Uri.parse(getResources().getString(R.string.url_fanarttv)));
-            startActivity(urlIntent);
+
+            try {
+                startActivity(urlIntent);
+            } catch (ActivityNotFoundException e) {
+                final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                noBrowserFoundDlg.show(getSupportFragmentManager(), "BrowserNotFoundDlg");
+            }
         });
 
         findViewById(R.id.thirdparty_licenses).setOnClickListener(view -> LicensesDialog.newInstance().show(getSupportFragmentManager(), LicensesDialog.class.getSimpleName()));

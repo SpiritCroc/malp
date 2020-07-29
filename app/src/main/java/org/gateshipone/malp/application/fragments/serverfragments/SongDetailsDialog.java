@@ -23,6 +23,7 @@
 package org.gateshipone.malp.application.fragments.serverfragments;
 
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,9 +34,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import org.gateshipone.malp.R;
+import org.gateshipone.malp.application.fragments.ErrorDialog;
 import org.gateshipone.malp.application.utils.FormatHelper;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
@@ -121,25 +124,49 @@ public class SongDetailsDialog extends DialogFragment {
             mTrackTitleMBID.setOnClickListener(v -> {
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW);
                 urlIntent.setData(Uri.parse("https://www.musicbrainz.org/recording/" + mFile.getTrackMBID()));
-                startActivity(urlIntent);
+
+                try {
+                    startActivity(urlIntent);
+                } catch (ActivityNotFoundException e) {
+                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+                }
             });
 
             mTrackAlbumMBID.setOnClickListener(v -> {
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW);
                 urlIntent.setData(Uri.parse("https://www.musicbrainz.org/release/" + mFile.getTrackAlbumMBID()));
-                startActivity(urlIntent);
+
+                try {
+                    startActivity(urlIntent);
+                } catch (ActivityNotFoundException e) {
+                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+                }
             });
 
             mTrackArtistMBID.setOnClickListener(v -> {
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW);
                 urlIntent.setData(Uri.parse("https://www.musicbrainz.org/artist/" + mFile.getTrackArtistMBID()));
-                startActivity(urlIntent);
+
+                try {
+                    startActivity(urlIntent);
+                } catch (ActivityNotFoundException e) {
+                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+                }
             });
 
             mTrackAlbumArtistMBID.setOnClickListener(v -> {
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW);
                 urlIntent.setData(Uri.parse("https://www.musicbrainz.org/artist/" + mFile.getTrackAlbumArtistMBID()));
-                startActivity(urlIntent);
+
+                try {
+                    startActivity(urlIntent);
+                } catch (ActivityNotFoundException e) {
+                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+                }
             });
         }
 

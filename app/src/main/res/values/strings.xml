@@ -228,6 +228,9 @@
 
     <string name="dialog_share_song_details">Share song details</string>
 
+    <string name="dialog_no_browser_found_title">No Browser available</string>
+    <string name="dialog_no_browser_found_message">Your device is missing a browser</string>
+
     <!-- dialog default names  -->
     <string name="default_playlist_title">New Playlist</string>
     <string name="create_new_playlist">Create new playlist</string>

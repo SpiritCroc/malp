@@ -23,6 +23,7 @@
 package org.gateshipone.malp.application.views;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -64,6 +65,7 @@ import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.background.BackgroundService;
 import org.gateshipone.malp.application.background.BackgroundServiceConnection;
 import org.gateshipone.malp.application.callbacks.OnSaveDialogListener;
+import org.gateshipone.malp.application.fragments.ErrorDialog;
 import org.gateshipone.malp.application.fragments.TextDialog;
 import org.gateshipone.malp.application.fragments.serverfragments.ChoosePlaylistDialog;
 import org.gateshipone.malp.application.utils.CoverBitmapLoader;
@@ -445,7 +447,14 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 } else {
                     albumIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/" + mLastTrack.getTrackAlbum()));
                 }
-                getContext().startActivity(albumIntent);
+
+                try {
+                    getContext().startActivity(albumIntent);
+                } catch (ActivityNotFoundException e) {
+                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+                }
+
                 return true;
             case R.id.action_wikipedia_artist:
                 Intent artistIntent = new Intent(Intent.ACTION_VIEW);
@@ -455,7 +464,14 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 } else {
                     artistIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/" + mLastTrack.getTrackArtist()));
                 }
-                getContext().startActivity(artistIntent);
+
+                try {
+                    getContext().startActivity(artistIntent);
+                } catch (ActivityNotFoundException e) {
+                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+                }
+
                 return true;
             case R.id.action_start_streaming: {
                 if (mStreamingStatus == BackgroundService.STREAMING_STATUS.PLAYING || mStreamingStatus == BackgroundService.STREAMING_STATUS.BUFFERING) {
