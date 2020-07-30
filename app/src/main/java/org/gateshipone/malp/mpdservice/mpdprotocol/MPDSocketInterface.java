@@ -188,8 +188,6 @@ public class MPDSocketInterface {
 
         MPDResponses.MPD_RESPONSE_KEY keyEnum = MPDResponses.RESPONSE_KEYMAP.get(key);
         if (keyEnum == null) {
-            if (BuildConfig.DEBUG)
-                Log.w(TAG, "Unknown key=" + key);
             keyEnum = MPDResponses.MPD_RESPONSE_KEY.RESPONSE_UNKNOWN;
         }
 
