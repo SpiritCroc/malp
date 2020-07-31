@@ -233,6 +233,11 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
     }
 
     @Override
+    public void fetchLocalFailed(ArtworkRequestModel model) {
+        createRequest(model, true);
+    }
+
+    @Override
     public void fetchVolleyError(final ArtworkRequestModel model, final VolleyError error) {
         if (BuildConfig.DEBUG) {
             Log.e(TAG, "VolleyError for request: " + model.getLoggingString());
@@ -345,7 +350,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
             if (requestModel != null) {
                 if (checkRequest(requestModel)) {
-                    createRequest(requestModel);
+                    createRequest(requestModel, false);
                     return;
                 }
             } else {
@@ -384,10 +389,10 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         return false;
     }
 
-    private void createRequest(@NonNull final ArtworkRequestModel requestModel) {
+    private void createRequest(@NonNull final ArtworkRequestModel requestModel, boolean skipLocal) {
         switch (requestModel.getType()) {
             case ALBUM:
-                mArtworkManager.fetchImage((MPDAlbum) requestModel.getGenericModel(), this, this);
+                mArtworkManager.fetchImage((MPDAlbum) requestModel.getGenericModel(), this, this, false);
                 break;
             case ARTIST:
                 mArtworkManager.fetchImage((MPDArtist) requestModel.getGenericModel(), this, this);

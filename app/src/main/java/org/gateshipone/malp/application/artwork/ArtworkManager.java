@@ -179,6 +179,22 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
         mWifiOnly = wifiOnly;
     }
 
+    @Override
+    public void fetchLocalFailed(final ArtworkRequestModel model) {
+        switch (model.getType()) {
+
+            case ALBUM: {
+                MPDAlbum album = ((MPDAlbum)model.getGenericModel());
+                fetchImage(album, this, this, true);
+                break;
+            }
+            case ARTIST:
+                break;
+            case TRACK:
+                break;
+        }
+    }
+
 
     /**
      * Removes the image for the album and tries to reload it from the internet
@@ -338,14 +354,20 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
      */
     void fetchImage(final MPDAlbum album,
                     final InsertImageTask.ImageSavedCallback imageSavedCallback,
-                    final ArtProvider.ArtFetchError errorCallback) {
+                    final ArtProvider.ArtFetchError errorCallback,
+                    final boolean skipLocal) {
         if (!NetworkUtils.isDownloadAllowed(mApplicationContext, mWifiOnly)) {
             return;
         }
 
         ArtworkRequestModel requestModel = new ArtworkRequestModel(album);
 
-        if (mAlbumProvider.equals(mApplicationContext.getString(R.string.pref_artwork_provider_musicbrainz_key))) {
+        if (MPDAlbumImageProvider.getInstance().getActive() && !skipLocal) {
+            // Check if MPD cover transfer is activated
+            MPDAlbumImageProvider.getInstance().fetchImage(requestModel,
+                    response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
+                    errorCallback);
+        } else if (mAlbumProvider.equals(mApplicationContext.getString(R.string.pref_artwork_provider_musicbrainz_key))) {
             MusicBrainzProvider.getInstance(mApplicationContext).fetchImage(requestModel,
                     response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
                     errorCallback);
@@ -363,7 +385,7 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
      * @param album Album to fetch an image for.
      */
     public void fetchImage(final MPDAlbum album) {
-        fetchImage(album, this, this);
+        fetchImage(album, this, this, false);
     }
 
     public void fetchImage(final MPDTrack track) {
@@ -380,7 +402,10 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
             MPDAlbumImageProvider.getInstance().fetchImage(requestModel,
                     response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
                     errorCallback);
-        } else if (HTTPAlbumImageProvider.getInstance(mApplicationContext).getActive()) {
+            return;
+        }
+
+        if (HTTPAlbumImageProvider.getInstance(mApplicationContext).getActive()) {
             // Check if user-specified HTTP cover download is activated
             HTTPAlbumImageProvider.getInstance(mApplicationContext).fetchImage(requestModel,
                     response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
@@ -391,7 +416,7 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
             album.setMBID(track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
             album.setArtistName(track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST));
 
-            fetchImage(album, imageSavedCallback, errorCallback);
+            fetchImage(album, imageSavedCallback, errorCallback, true);
         }
     }
 

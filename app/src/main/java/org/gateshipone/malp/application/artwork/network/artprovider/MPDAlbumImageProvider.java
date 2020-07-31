@@ -32,6 +32,7 @@ import org.gateshipone.malp.application.artwork.network.ArtworkRequestModel;
 import org.gateshipone.malp.application.artwork.network.responses.ImageResponse;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumArt;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDArtworkHandler;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 
 public class MPDAlbumImageProvider extends ArtProvider {
 
@@ -58,12 +59,15 @@ public class MPDAlbumImageProvider extends ArtProvider {
             return;
         }
         switch (model.getType()) {
-            case ALBUM:
+            case ALBUM: {
+                MPDArtworkHandler.getAlbumArtworkForAlbum(model.getAlbumName(), model.getMBID(), new AlbumArtResponseListener(mResponseLooper, model, listener, errorListener));
+                break;
+            }
             case ARTIST:
                 // not used for this provider
                 break;
             case TRACK:
-                MPDArtworkHandler.getAlbumArtwork(model.getPath(), new AlbumArtResponseListener(mResponseLooper, model, listener, errorListener));
+                MPDArtworkHandler.getAlbumArtworkForTrack(model.getPath(), new AlbumArtResponseListener(mResponseLooper, model, listener, errorListener));
                 break;
         }
     }
@@ -105,7 +109,7 @@ public class MPDAlbumImageProvider extends ArtProvider {
                 response.url = url;
                 mListener.onResponse(response);
             } else {
-                mErrorListener.fetchVolleyError(mModel, new VolleyError(new NetworkResponse(404, null, true, 0, null)));
+                mErrorListener.fetchLocalFailed(mModel);
             }
         }
     }

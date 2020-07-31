@@ -34,7 +34,7 @@ public abstract class ArtProvider {
 
     public interface ArtFetchError {
         void fetchJSONException(final ArtworkRequestModel model, final JSONException exception);
-
+        void fetchLocalFailed(final ArtworkRequestModel model);
         void fetchVolleyError(final ArtworkRequestModel model, final VolleyError error);
     }
 

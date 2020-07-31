@@ -25,6 +25,7 @@ package org.gateshipone.malp.mpdservice.handlers.serverhandler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumArt;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseHandler;
@@ -114,21 +115,38 @@ public class MPDArtworkHandler extends MPDGenericHandler {
          *  * Send the message to the ResponseHandler
          */
         MPDHandlerAction.NET_HANDLER_ACTION action = mpdAction.getAction();
-            if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ALBUM_ART) {
+            if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ALBUM_ART_FOR_TRACK) {
                 responseHandler = mpdAction.getResponseHandler();
                 if (!(responseHandler instanceof MPDResponseAlbumArt)) {
                     return;
                 }
                 String url = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PATH);
-                byte[] imageData = new byte[0];
+
+                byte[] imageData = getTrackArtwork(url);
+
+                ((MPDResponseAlbumArt) responseHandler).sendAlbumArtwork(imageData, url);
+            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ALBUM_ART_FOR_ALBUM) {
+                responseHandler = mpdAction.getResponseHandler();
+                if (!(responseHandler instanceof MPDResponseAlbumArt)) {
+                    return;
+                }
+                String albumName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ALBUM_NAME);
+                String albumMBID = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ALBUM_MBID);
+
+                // Get album tracks first
+                List<MPDFileEntry> tracks = null;
                 try {
-                    // Try embedded images first. Then external cover image
-                    imageData = MPDInterface.mInstance.getAlbumArt(url, true);
-                    if (imageData == null) {
-                        imageData = MPDInterface.mInstance.getAlbumArt(url, false);
-                    }
+                    tracks = MPDInterface.getArtworkInstance().getAlbumTracks(albumName, albumMBID);
                 } catch (MPDException e) {
-                    handleMPDError(e);
+                    Log.e(TAG, "Error fetching tracks for album: " + e.getError());
+                }
+
+                byte[] imageData = null;
+                String url = "";
+                if (tracks != null && tracks.size() > 0) {
+                    MPDFileEntry track = tracks.get(0);
+                    url = track.getPath();
+                    imageData = getTrackArtwork(url);
                 }
 
                 ((MPDResponseAlbumArt) responseHandler).sendAlbumArtwork(imageData, url);
@@ -152,11 +170,37 @@ public class MPDArtworkHandler extends MPDGenericHandler {
         MPDArtworkHandler.getHandler().sendMessage(msg);
     }
 
-    public static void getAlbumArtwork(String url, MPDResponseAlbumArt responseHandler) {
-        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ALBUM_ART);
+    private byte[] getTrackArtwork(String url) {
+        if (url == null || url.isEmpty()) {
+            return null;
+        }
+        byte[] imageData = null;
+        try {
+            // Try embedded images first. Then external cover image
+            imageData = MPDInterface.getArtworkInstance().getAlbumArt(url, true);
+            if (imageData == null || imageData.length == 0) {
+                imageData = MPDInterface.getArtworkInstance().getAlbumArt(url, false);
+            }
+        } catch (MPDException e) {
+            handleMPDError(e);
+        }
+        return imageData;
+    }
+
+    public static void getAlbumArtworkForTrack(String url, MPDResponseAlbumArt responseHandler) {
+        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ALBUM_ART_FOR_TRACK);
 
         action.setResponseHandler(responseHandler);
         action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PATH, url);
+
+        sendMsg(action);
+    }
+
+    public static void getAlbumArtworkForAlbum(String albumName, String albumMBID, MPDResponseAlbumArt responseHandler) {
+        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ALBUM_ART_FOR_ALBUM);
+        action.setResponseHandler(responseHandler);
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ALBUM_NAME, albumName);
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ALBUM_MBID, albumMBID);
 
         sendMsg(action);
     }
