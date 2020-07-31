@@ -107,7 +107,7 @@ public class MPDCapabilities {
             mMPDBug408Active = true;
             mHasListGroup = false;
             mHasListFiltering = false;
-        } else if ((mMinorVersion >= 21 && mMajorVersion == 0 && mPatchVersion >= 11) || mMajorVersion > 0) {
+        } else if ((mMinorVersion >= 21 && mMajorVersion == 0 && mPatchVersion >= 11) || mMajorVersion > 0 || (mMajorVersion == 0 && mMinorVersion > 21)) {
             // Fixed versions >= MPD 0.21.11
             mMultipleListGroupFixed = true;
             mHasListGroup = true;
