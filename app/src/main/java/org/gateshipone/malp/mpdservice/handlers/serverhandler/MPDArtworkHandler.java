@@ -30,9 +30,13 @@ import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbum
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDException;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
+
+import java.util.List;
 
 public class MPDArtworkHandler extends MPDGenericHandler {
-    private static final String TAG = "MPDQueryHandler";
+    private static final String TAG = MPDArtworkHandler.class.getSimpleName();
     /**
      * Name of the thread created for the Looper.
      */
