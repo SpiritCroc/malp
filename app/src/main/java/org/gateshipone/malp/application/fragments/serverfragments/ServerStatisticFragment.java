@@ -144,7 +144,7 @@ public class ServerStatisticFragment extends GenericMPDFragment<MPDStatistics> {
                 mLastUpdate.setText(FormatHelper.formatTimeStampToString(statistics.getLastDBUpdate() * 1000));
             }
 
-            final MPDCapabilities capabilities = MPDInterface.mInstance.getServerCapabilities();
+            final MPDCapabilities capabilities = MPDInterface.getGenericInstance().getServerCapabilities();
             if (capabilities != null) {
                 mServerFeatures.setText(capabilities.getServerFeatures());
             }

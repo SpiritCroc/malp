@@ -117,46 +117,46 @@ public class MPDCommandHandler extends MPDGenericHandler {
             // Handle all the simple MPD actions here like play, pause, ....
             // None of the actions should result in a returned result like a track list.
             if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_COMMAND_NEXT_SONG) {
-                MPDInterface.mInstance.nextSong();
+                MPDInterface.getGenericInstance().nextSong();
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_COMMAND_PREVIOUS_SONG) {
-                MPDInterface.mInstance.previousSong();
+                MPDInterface.getGenericInstance().previousSong();
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_COMMAND_STOP) {
-                MPDInterface.mInstance.stopPlayback();
+                MPDInterface.getGenericInstance().stopPlayback();
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_COMMAND_PAUSE) {
-                MPDInterface.mInstance.pause(true);
+                MPDInterface.getGenericInstance().pause(true);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_COMMAND_PLAY) {
-                MPDCurrentStatus status = MPDInterface.mInstance.getCurrentServerStatus();
+                MPDCurrentStatus status = MPDInterface.getGenericInstance().getCurrentServerStatus();
                 MPDCurrentStatus.MPD_PLAYBACK_STATE state = status.getPlaybackState();
                 if (state == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PAUSING) {
-                    MPDInterface.mInstance.pause(false);
+                    MPDInterface.getGenericInstance().pause(false);
                 } else {
-                    MPDInterface.mInstance.playSongIndex(status.getCurrentSongIndex());
+                    MPDInterface.getGenericInstance().playSongIndex(status.getCurrentSongIndex());
                 }
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_COMMAND_TOGGLE_PAUSE) {
-                MPDCurrentStatus status = MPDInterface.mInstance.getCurrentServerStatus();
+                MPDCurrentStatus status = MPDInterface.getGenericInstance().getCurrentServerStatus();
                 MPDCurrentStatus.MPD_PLAYBACK_STATE state = status.getPlaybackState();
                 if (state == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
-                    MPDInterface.mInstance.pause(true);
+                    MPDInterface.getGenericInstance().pause(true);
                 } else if (state == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PAUSING) {
-                    MPDInterface.mInstance.pause(false);
+                    MPDInterface.getGenericInstance().pause(false);
                 } else {
-                    MPDInterface.mInstance.playSongIndex(status.getCurrentSongIndex());
+                    MPDInterface.getGenericInstance().playSongIndex(status.getCurrentSongIndex());
                 }
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_SET_RANDOM) {
                 boolean random = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_RANDOM) == 1;
-                MPDInterface.mInstance.setRandom(random);
+                MPDInterface.getGenericInstance().setRandom(random);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_SET_REPEAT) {
                 boolean repeat = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_REPEAT) == 1;
-                MPDInterface.mInstance.setRepeat(repeat);
+                MPDInterface.getGenericInstance().setRepeat(repeat);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_SET_SINGLE) {
                 boolean single = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SINGLE) == 1;
-                MPDInterface.mInstance.setSingle(single);
+                MPDInterface.getGenericInstance().setSingle(single);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_SET_CONSUME) {
                 boolean consume = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_CONSUME) == 1;
-                MPDInterface.mInstance.setConsume(consume);
+                MPDInterface.getGenericInstance().setConsume(consume);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_COMMAND_JUMP_INDEX) {
                 int index = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SONG_INDEX);
-                MPDInterface.mInstance.playSongIndex(index);
+                MPDInterface.getGenericInstance().playSongIndex(index);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_COMMAND_SEEK_SECONDS) {
                 int seekTo = -1;
 
@@ -166,7 +166,7 @@ public class MPDCommandHandler extends MPDGenericHandler {
                 // seek operations.
                 while (seekTo != mRequestedSeekVal) {
                     seekTo = mRequestedSeekVal;
-                    MPDInterface.mInstance.seekSeconds(seekTo);
+                    MPDInterface.getGenericInstance().seekSeconds(seekTo);
                 }
 
                 mSeekActive = false;
@@ -175,21 +175,21 @@ public class MPDCommandHandler extends MPDGenericHandler {
 
                 while (volume != mRequestVolume) {
                     volume = mRequestVolume;
-                    MPDInterface.mInstance.setVolume(volume);
+                    MPDInterface.getGenericInstance().setVolume(volume);
                 }
 
                 mSetVolumeActive = false;
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_TOGGLE_OUTPUT) {
                 int outputID = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_OUTPUT_ID);
-                MPDInterface.mInstance.toggleOutput(outputID);
+                MPDInterface.getGenericInstance().toggleOutput(outputID);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_ENABLE_OUTPUT) {
                 int outputID = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_OUTPUT_ID);
-                MPDInterface.mInstance.enableOutput(outputID);
+                MPDInterface.getGenericInstance().enableOutput(outputID);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_DISABLE_OUTPUT) {
                 int outputID = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_OUTPUT_ID);
-                MPDInterface.mInstance.disableOutput(outputID);
+                MPDInterface.getGenericInstance().disableOutput(outputID);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_UP_VOLUME) {
-                MPDCurrentStatus status = MPDInterface.mInstance.getCurrentServerStatus();
+                MPDCurrentStatus status = MPDInterface.getGenericInstance().getCurrentServerStatus();
 
                 // Get step size from message
                 int stepSize = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_VOLUME);
@@ -199,9 +199,9 @@ public class MPDCommandHandler extends MPDGenericHandler {
                 if (targetVolume > 100) {
                     targetVolume = 100;
                 }
-                MPDInterface.mInstance.setVolume(targetVolume);
+                MPDInterface.getGenericInstance().setVolume(targetVolume);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_DOWN_VOLUME) {
-                MPDCurrentStatus status = MPDInterface.mInstance.getCurrentServerStatus();
+                MPDCurrentStatus status = MPDInterface.getGenericInstance().getCurrentServerStatus();
 
                 // Get step size from message
                 int stepSize = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_VOLUME);
@@ -211,7 +211,7 @@ public class MPDCommandHandler extends MPDGenericHandler {
                 if (targetVolume < 0) {
                     targetVolume = 0;
                 }
-                MPDInterface.mInstance.setVolume(targetVolume);
+                MPDInterface.getGenericInstance().setVolume(targetVolume);
             }
         } catch (MPDException e) {
             handleMPDError(e);

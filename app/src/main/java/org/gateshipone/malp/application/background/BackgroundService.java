@@ -232,7 +232,7 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         mServerConnectionStateListener = new BackgroundMPDStateChangeListener(this, getMainLooper());
 
         /* Register callback handlers to MPD service handlers */
-        MPDInterface.mInstance.addMPDConnectionStateChangeListener(mServerConnectionStateListener);
+        MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(mServerConnectionStateListener);
         MPDStateMonitoringHandler.getHandler().setRefreshInterval(60 * 1000);
         MPDStateMonitoringHandler.getHandler().registerStatusListener(mServerStatusListener);
 
@@ -250,7 +250,7 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         unregisterReceiver(mBroadcastReceiver);
 
         /* Unregister MPD service handlers */
-        MPDInterface.mInstance.removeMPDConnectionStateChangeListener(mServerConnectionStateListener);
+        MPDInterface.getGenericInstance().removeMPDConnectionStateChangeListener(mServerConnectionStateListener);
         MPDStateMonitoringHandler.getHandler().unregisterStatusListener(mServerStatusListener);
         notifyDisconnected();
 
@@ -483,7 +483,7 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
      * Ensures an MPD server is connected before performing an action.
      */
     private void checkMPDConnection() {
-        if (!MPDInterface.mInstance.isConnected() && !mConnecting) {
+        if (!MPDInterface.getGenericInstance().isConnected() && !mConnecting) {
             mNotificationManager.showNotification();
             mLastTrack = new MPDTrack("");
             mLastStatus = new MPDCurrentStatus();

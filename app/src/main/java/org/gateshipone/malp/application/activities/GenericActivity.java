@@ -130,7 +130,7 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
         MPDQueryHandler.getHandler().addErrorListener(mErrorListener);
 
         mConnectionCallback = new MPDConnectionStateCallbackHandler(this, getMainLooper());
-        MPDInterface.mInstance.addMPDConnectionStateChangeListener(mConnectionCallback);
+        MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(mConnectionCallback);
 
         ConnectionManager.getInstance(getApplicationContext()).registerMPDUse(getApplicationContext());
 
@@ -170,7 +170,7 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
 
         sharedPref.unregisterOnSharedPreferenceChangeListener(this);
 
-        MPDInterface.mInstance.removeMPDConnectionStateChangeListener(mConnectionCallback);
+        MPDInterface.getGenericInstance().removeMPDConnectionStateChangeListener(mConnectionCallback);
         mConnectionCallback = null;
 
         getApplicationContext().unregisterReceiver(mStreamingStatusReceiver);

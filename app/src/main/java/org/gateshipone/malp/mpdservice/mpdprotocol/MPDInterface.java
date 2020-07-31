@@ -25,7 +25,6 @@ package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 import android.util.Log;
 
-import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
 import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
@@ -43,41 +42,61 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class MPDInterface {
     private final static String TAG = MPDInterface.class.getSimpleName();
-    private final static int ARTWORK_TIMEOUT = 60000;
 
     private final MPDConnection mConnection;
 
-    private String mHostname;
-    private int mPort;
-    private String mPassword;
-
-    // Singleton instance
-    public static MPDInterface mInstance = new MPDInterface();
-
-    private MPDConnection mArtworkConnection = null;
-    private Timer mArtworkTimeout = null;
-    private ReentrantLock mArtworkLock = new ReentrantLock();
+    private static String mHostname;
+    private static int mPort;
+    private static String mPassword;
 
     private MPDCache mCache;
 
-    private MPDInterface() {
-        mConnection = new MPDConnection();
+    private MPDInterface(boolean autoDisconnect) {
+        mConnection = new MPDConnection(autoDisconnect);
+    }
+
+    public static synchronized MPDInterface getGenericInstance() {
+        if (mGenericInterface == null) {
+            mGenericInterface = new MPDInterface(false);
+            mGenericInterface.setInstanceServerParameters(mHostname, mPassword, mPort);
+        }
+
+        return mGenericInterface;
+    }
+
+    public static synchronized MPDInterface getArtworkInstance() {
+        if (mArtworkInterface == null) {
+            mArtworkInterface = new MPDInterface(true);
+            mArtworkInterface.setInstanceServerParameters(mHostname, mPassword, mPort);
+        }
+
+        return mArtworkInterface;
     }
 
     // Connection methods
 
-    public void setServerParameters(String hostname, String password, int port) {
-        mConnection.setServerParameters(hostname, password, port);
+    private static MPDInterface mArtworkInterface;
+    private static MPDInterface mGenericInterface;
+
+    public static void setServerParameters(String hostname, String password, int port) {
         mHostname = hostname;
         mPassword = password;
         mPort = port;
+
+        if (mGenericInterface != null) {
+            mGenericInterface.setInstanceServerParameters(hostname, password, port);
+        }
+        if (mArtworkInterface != null) {
+            mArtworkInterface.setInstanceServerParameters(hostname, password, port);
+        }
+    }
+
+    private void setInstanceServerParameters(String hostname, String password, int port) {
         mCache = new MPDCache(0);
+        mConnection.setServerParameters(hostname, password, port);
     }
 
     public synchronized void connect() throws MPDException {
@@ -107,13 +126,11 @@ public class MPDInterface {
     }
 
 
-
     /*
      * **********************
      * * Request functions  *
      * **********************
      */
-
     public MPDCapabilities getServerCapabilities() {
         return mConnection.getServerCapabilities();
     }
@@ -131,6 +148,7 @@ public class MPDInterface {
         if (albums != null) {
             return albums;
         }
+
         synchronized (this) {
             // Get a list of albums. Check if server is new enough for MB and AlbumArtist filtering
             mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMS(mConnection.getServerCapabilities()));
@@ -159,6 +177,7 @@ public class MPDInterface {
      */
     public List<MPDAlbum> getAlbumsInPath(String path) throws MPDException {
         List<MPDAlbum> albums;
+
         synchronized (this) {
             // Get a list of albums. Check if server is new enough for MB and AlbumArtist filtering
             mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMS_FOR_PATH(path, mConnection.getServerCapabilities()));
@@ -185,8 +204,10 @@ public class MPDInterface {
      * @return List of MPDAlbum objects
      */
     public List<MPDAlbum> getArtistAlbums(String artistName) throws MPDException {
-        MPDCapabilities capabilities = mConnection.getServerCapabilities();
-
+        MPDCapabilities capabilities;
+        synchronized (this) {
+            capabilities = mConnection.getServerCapabilities();
+        }
 
         if (capabilities.hasTagAlbumArtist() && capabilities.hasListGroup()) {
             Set<MPDAlbum> result;
@@ -223,7 +244,10 @@ public class MPDInterface {
      * @return List of MPDAlbum objects
      */
     public List<MPDAlbum> getArtistSortAlbums(String artistName) throws MPDException {
-        MPDCapabilities capabilities = mConnection.getServerCapabilities();
+        MPDCapabilities capabilities;
+        synchronized (this) {
+            capabilities = mConnection.getServerCapabilities();
+        }
 
         // Check if tag is supported
         if (!capabilities.hasTagArtistSort() || !capabilities.hasListFiltering()) {
@@ -270,6 +294,7 @@ public class MPDInterface {
         if (artists != null) {
             return artists;
         }
+
         // Get a list of artists. If server is new enough this will contain MBIDs for artists, that are tagged correctly.
         mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS(mConnection.getServerCapabilities().hasListGroup() && mConnection.getServerCapabilities().hasMusicBrainzTags()));
 
@@ -329,11 +354,13 @@ public class MPDInterface {
         }
         normalArtists = getArtists();
 
-        MPDCapabilities capabilities = mConnection.getServerCapabilities();
+        MPDCapabilities capabilities;
+        synchronized (this) {
+            capabilities = mConnection.getServerCapabilities();
+        }
 
         List<MPDArtist> artists;
         synchronized (this) {
-
             // Get a list of artists. If server is new enough this will contain MBIDs for artists, that are tagged correctly.
             mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMARTISTS(capabilities.hasListGroup() && capabilities.hasMusicBrainzTags()));
 
@@ -378,7 +405,10 @@ public class MPDInterface {
         if (normalArtists != null) {
             return normalArtists;
         }
-        MPDCapabilities capabilities = mConnection.getServerCapabilities();
+        MPDCapabilities capabilities;
+        synchronized (this) {
+            capabilities = mConnection.getServerCapabilities();
+        }
 
         // Check if tag is supported
         if (!capabilities.hasTagAlbumArtistSort()) {
@@ -391,7 +421,6 @@ public class MPDInterface {
 
         List<MPDArtist> artists;
         synchronized (this) {
-
             // Get a list of artists. If server is new enough this will contain MBIDs for artists, that are tagged correctly.
             mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMARTISTS_SORT(capabilities.hasListGroup() && capabilities.hasMusicBrainzTags()));
 
@@ -430,6 +459,7 @@ public class MPDInterface {
      */
     public List<MPDFileEntry> getPlaylists() throws MPDException {
         List<MPDFileEntry> playlists;
+
         synchronized (this) {
             mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_SAVED_PLAYLISTS);
             playlists = MPDResponseParser.parseMPDTracks(mConnection);
@@ -1056,22 +1086,8 @@ public class MPDInterface {
     }
 
     public byte[] getAlbumArt(String path, boolean readPicture) throws MPDException {
-        mArtworkLock.lock();
-        if (mArtworkTimeout != null) {
-            mArtworkTimeout.cancel();
-            mArtworkTimeout = null;
-        }
-        if (mArtworkConnection == null) {
-            if (BuildConfig.DEBUG) {
-                Log.v(TAG, "Creating artwork connection");
-            }
-            mArtworkConnection = new MPDConnection();
-            mArtworkConnection.setServerParameters(mHostname, mPassword, mPort);
-            mArtworkConnection.connectToServer();
-        }
 
-        if ((!readPicture && !mArtworkConnection.getServerCapabilities().hasAlbumArt()) || (readPicture && !mArtworkConnection.getServerCapabilities().hasReadPicture())) {
-            mArtworkLock.unlock();
+        if ((!readPicture && !mConnection.getServerCapabilities().hasAlbumArt()) || (readPicture && !mConnection.getServerCapabilities().hasReadPicture())) {
             return null;
         }
 
@@ -1089,25 +1105,28 @@ public class MPDInterface {
             // Request the image
             if (firstRun) {
                 if (!readPicture) {
-                    mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, 0));
+                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, 0));
                 } else {
-                    mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, 0));
+                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, 0));
                 }
             } else {
                 if (!readPicture) {
-                    mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, (imageSize - dataToRead)));
+                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, (imageSize - dataToRead)));
                 } else {
-                    mArtworkConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, (imageSize - dataToRead)));
+                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, (imageSize - dataToRead)));
                 }
             }
             try {
-                line = mArtworkConnection.readLine();
+                line = mConnection.readLine();
             } catch (MPDException e) {
-                mArtworkLock.unlock();
+                return null;
+            }
+            if (firstRun && (line == null || line.startsWith("OK"))) {
+                // No image found
                 return null;
             }
 
-            while (!line.startsWith("OK")) {
+            while (line != null && !line.startsWith("OK")) {
                 if (line.startsWith("size")) {
                     if (firstRun) {
                         imageSize = Integer.valueOf(line.substring(MPDResponses.MPD_RESPONSE_SIZE.length()));
@@ -1121,9 +1140,8 @@ public class MPDInterface {
 
                     byte[] readData = new byte[0];
                     try {
-                        readData = mArtworkConnection.readBinary(chunkSize);
+                        readData = mConnection.readBinary(chunkSize);
                     } catch (MPDException e) {
-                        mArtworkLock.unlock();
                         return null;
                     }
 
@@ -1133,32 +1151,12 @@ public class MPDInterface {
                 }
 
                 try {
-                    line = mArtworkConnection.readLine();
+                    line = mConnection.readLine();
                 } catch (MPDException e) {
-                    mArtworkLock.unlock();
                     return null;
                 }
             }
         }
-
-        mArtworkTimeout = new Timer();
-        mArtworkTimeout.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                mArtworkLock.lock();
-                if (BuildConfig.DEBUG) {
-                    Log.v(TAG, "Disconnecting artwork connection");
-                }
-                mArtworkTimeout = null;
-                if (mArtworkConnection.isConnected()) {
-                    mArtworkConnection.disconnectFromServer();
-                }
-                mArtworkConnection = null;
-                mArtworkLock.unlock();
-
-            }
-        }, ARTWORK_TIMEOUT);
-        mArtworkLock.unlock();
         return imageData;
     }
 

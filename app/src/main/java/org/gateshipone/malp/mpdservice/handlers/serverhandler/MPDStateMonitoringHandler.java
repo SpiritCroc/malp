@@ -105,8 +105,8 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
 
         mStatusListeners = new ArrayList<>();
 
-        MPDInterface.mInstance.addMPDIdleChangeHandler(new IdleStateListener(this, looper));
-        MPDInterface.mInstance.addMPDConnectionStateChangeListener(new ConnectionStateListener(this, looper));
+        MPDInterface.getGenericInstance().addMPDIdleChangeHandler(new IdleStateListener(this, looper));
+        MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(new ConnectionStateListener(this, looper));
 
         mLastStatus = new MPDCurrentStatus();
     }
@@ -180,7 +180,7 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
 
         MPDCurrentStatus status = null;
         try {
-            status = MPDInterface.mInstance.getCurrentServerStatus();
+            status = MPDInterface.getGenericInstance().getCurrentServerStatus();
         } catch (MPDException e) {
             handleMPDError(e);
             return;
@@ -189,7 +189,7 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
         if (status.getCurrentSongIndex() != mLastStatus.getCurrentSongIndex() || status.getPlaylistVersion() != mLastStatus.getPlaylistVersion()) {
             // New track started playing. Get it and inform the listener.
             try {
-                mLastFile = MPDInterface.mInstance.getCurrentSong();
+                mLastFile = MPDInterface.getGenericInstance().getCurrentSong();
             } catch (MPDException e) {
                 handleMPDError(e);
             }
@@ -215,7 +215,7 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
     }
 
     private synchronized void startInterpolation() {
-        if (MPDInterface.mInstance.isConnected()) {
+        if (MPDInterface.getGenericInstance().isConnected()) {
             if (mLastStatus.getPlaybackState() == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
                 stopInterpolation();
 
@@ -271,8 +271,8 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
 
     private void onConnected() {
         try {
-            mLastStatus = MPDInterface.mInstance.getCurrentServerStatus();
-            mLastFile = MPDInterface.mInstance.getCurrentSong();
+            mLastStatus = MPDInterface.getGenericInstance().getCurrentServerStatus();
+            mLastFile = MPDInterface.getGenericInstance().getCurrentSong();
         } catch (MPDException e) {
             mLastStatus = new MPDCurrentStatus();
             mLastFile = new MPDTrack("");

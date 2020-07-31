@@ -544,7 +544,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
         @Override
         public void onConnected() {
             // Check if connected server version is recent enough
-            MPDCapabilities capabilities = MPDInterface.mInstance.getServerCapabilities();
+            MPDCapabilities capabilities = MPDInterface.getGenericInstance().getServerCapabilities();
             mAdapter.get().mWindowEnabled = capabilities != null && capabilities.hasRangedCurrentPlaylist();
 
             mAdapter.get().updatePlaylist();
@@ -569,7 +569,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
     public void onResume() {
         // Register to the MPDStateNotifyHandler singleton
         MPDStateMonitoringHandler.getHandler().registerStatusListener(mStateListener);
-        MPDInterface.mInstance.addMPDConnectionStateChangeListener(mConnectionListener);
+        MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(mConnectionListener);
 
 
         // Reset old states because it is not ensured that it has any meaning.
@@ -588,7 +588,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
     public void onPause() {
         // Unregister to the MPDStateNotifyHandler singleton
         MPDStateMonitoringHandler.getHandler().unregisterStatusListener(mStateListener);
-        MPDInterface.mInstance.removeMPDConnectionStateChangeListener(mConnectionListener);
+        MPDInterface.getGenericInstance().removeMPDConnectionStateChangeListener(mConnectionListener);
 
         mPlaylist = null;
         ArtworkManager.getInstance(mContext.getApplicationContext()).unregisterOnNewAlbumImageListener(this);

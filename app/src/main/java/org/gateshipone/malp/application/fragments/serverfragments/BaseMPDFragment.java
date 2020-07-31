@@ -82,7 +82,7 @@ public abstract class BaseMPDFragment<T extends MPDGenericItem> extends DialogFr
         Activity activity = getActivity();
         if (activity != null) {
             mConnectionStateListener = new ConnectionStateListener(this, activity.getMainLooper());
-            MPDInterface.mInstance.addMPDConnectionStateChangeListener(mConnectionStateListener);
+            MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(mConnectionStateListener);
         }
     }
 
@@ -90,7 +90,7 @@ public abstract class BaseMPDFragment<T extends MPDGenericItem> extends DialogFr
     public void onPause() {
         super.onPause();
         synchronized (this) {
-            MPDInterface.mInstance.removeMPDConnectionStateChangeListener(mConnectionStateListener);
+            MPDInterface.getGenericInstance().removeMPDConnectionStateChangeListener(mConnectionStateListener);
             mConnectionStateListener = null;
         }
     }

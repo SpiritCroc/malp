@@ -333,7 +333,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
         DrawableCompat.setTint(drawable, tintColor);
         menu.findItem(R.id.action_search).setIcon(drawable);
 
-        MPDCapabilities serverCaps = MPDInterface.mInstance.getServerCapabilities();
+        MPDCapabilities serverCaps = MPDInterface.getGenericInstance().getServerCapabilities();
         if (null != serverCaps) {
             if (serverCaps.hasListFiltering()) {
                 menu.findItem(R.id.action_show_albums_from_here).setVisible(true);

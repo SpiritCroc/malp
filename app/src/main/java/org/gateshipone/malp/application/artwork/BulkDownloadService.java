@@ -138,7 +138,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
                 Log.v(TAG, "Registering connection state listener");
             }
 
-            MPDInterface.mInstance.addMPDConnectionStateChangeListener(mConnectionHandler);
+            MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(mConnectionHandler);
         }
 
         mConnectionStateChangeReceiver = new ConnectionStateReceiver();
@@ -405,7 +405,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
         mNotificationManager.cancel(NOTIFICATION_ID);
         stopForeground(true);
-        MPDInterface.mInstance.removeMPDConnectionStateChangeListener(mConnectionHandler);
+        MPDInterface.getGenericInstance().removeMPDConnectionStateChangeListener(mConnectionHandler);
         stopSelf();
         if (mWakelock != null && mWakelock.isHeld()) {
             mWakelock.release();
@@ -458,7 +458,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
             }
 
             // Disable MPD albumart provider if no support is available on at the server side
-            if (MPDAlbumImageProvider.getInstance().getActive() && !MPDInterface.mInstance.getServerCapabilities().hasAlbumArt()) {
+            if (MPDAlbumImageProvider.getInstance().getActive() && !MPDInterface.getGenericInstance().getServerCapabilities().hasAlbumArt()) {
                 MPDAlbumImageProvider.getInstance().setActive(false);
             }
 

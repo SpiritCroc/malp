@@ -118,18 +118,18 @@ public abstract class MPDGenericHandler extends Handler {
             if ((null == hostname) || (null == port)) {
                 return;
             }
-            MPDInterface.mInstance.setServerParameters(hostname, password, port);
+            MPDInterface.getGenericInstance().setServerParameters(hostname, password, port);
         } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_CONNECT_MPD_SERVER) {
             // Connect to the mpd server. Server parameters have to be set before.
             try {
-                MPDInterface.mInstance.connect();
+                MPDInterface.getGenericInstance().connect();
             } catch (MPDException e) {
                 handleMPDError(e);
             }
 
         } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_DISCONNECT_MPD_SERVER) {
             // Disconnect from the mpd server.
-            MPDInterface.mInstance.disconnect();
+            MPDInterface.getGenericInstance().disconnect();
         }
     }
 

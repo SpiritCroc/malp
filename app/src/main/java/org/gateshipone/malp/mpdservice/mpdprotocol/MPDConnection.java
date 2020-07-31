@@ -138,6 +138,8 @@ class MPDConnection {
 
     private static final int IDLE_WAIT_TIME = 500;
 
+    private static final int AUTO_DISCONNECT_TIME = 5 * 1000;
+
     /* Internal server parameters used for initiating the connection */
     private String mHostname;
     private String mPassword;
@@ -151,7 +153,7 @@ class MPDConnection {
     private MPDCapabilities mServerCapabilities;
 
     private final Timer mIDLETimer;
-    private StartIDLETask mIDLETask;
+    private TimerTask mIDLETask;
 
     /**
      * Timer to schedule a timeout cancellation of the noidle logic (no response from server, e.g.
@@ -184,24 +186,29 @@ class MPDConnection {
 
     private final Semaphore mConnectionLock;
 
+    private final boolean mAutoDisconnect;
+
     /**
      * Creates disconnected MPDConnection with following parameters
      */
-    MPDConnection() {
+    MPDConnection(boolean autoDisconnect) {
         mSocket = null;
         mSocketInterface = null;
         mServerCapabilities = new MPDCapabilities("", null, null);
         mIdleListeners = new ArrayList<>();
         mStateListeners = new ArrayList<>();
 
-        mConnectionLock = new ConnectionSemaphore(1);
+        mConnectionLock = new Semaphore(1);
 
         mIDLETimer = new Timer();
 
         mReadTimeoutTimer = new Timer();
 
+        mAutoDisconnect = autoDisconnect;
+
         changeState(CONNECTION_STATES.DISCONNECTED);
     }
+
 
     /**
      * Private function to handle read error. Try to disconnect and remove old sockets.
@@ -486,6 +493,13 @@ class MPDConnection {
      * or a dummy object.
      */
     synchronized MPDCapabilities getServerCapabilities() {
+        if (mAutoDisconnect && !isConnected()) {
+            try {
+                connectToServer();
+            } catch (MPDException e) {
+                Log.e(TAG, "Error to reconnect");
+            }
+        }
         if (isConnected()) {
             return mServerCapabilities;
         } else {
@@ -675,6 +689,16 @@ class MPDConnection {
     private synchronized void stopIDLE() {
         if (BuildConfig.DEBUG) {
             Log.v(TAG, "Stop Idling");
+        }
+
+        if (mAutoDisconnect && !isConnected()) {
+            Log.v(TAG, "Auto reconnect after disconnected");
+            try {
+                connectToServer();
+            } catch (MPDException e) {
+                Log.e(TAG, "Error to reconnect to server");
+            }
+            return;
         }
 
         cancelIDLEWait();
@@ -1215,8 +1239,15 @@ class MPDConnection {
             if (mIDLETask != null) {
                 mIDLETask.cancel();
             }
-            mIDLETask = new StartIDLETask();
-            mIDLETimer.schedule(mIDLETask, IDLE_WAIT_TIME);
+            int timeout;
+            if (!mAutoDisconnect) {
+                mIDLETask = new StartIDLETask();
+                timeout = IDLE_WAIT_TIME;
+            } else {
+                mIDLETask = new StartDisconnectTask();
+                timeout = AUTO_DISCONNECT_TIME;
+            }
+            mIDLETimer.schedule(mIDLETask, timeout);
         }
     }
 
@@ -1336,6 +1367,21 @@ class MPDConnection {
         }
     }
 
+    private class StartDisconnectTask extends TimerTask {
+        @Override
+        public void run() {
+            synchronized (mIDLETimer) {
+                if (mIDLETask == null) {
+                    // Wait was cancelled.
+                    return;
+                }
+            }
+             Log.v(TAG, "Auto disconnect after time out");
+                disconnectFromServer();
+
+        }
+    }
+
     /**
      * Helper class for a task that terminates the noidle command if no response is received from
      * the MPD server. This is necessary as the socket is set to an indefinite timeout before
@@ -1363,51 +1409,4 @@ class MPDConnection {
             handleSocketError();
         }
     }
-
-    // FIXME remove when stable. Only a helper class to ensure correct locking order
-    private static class ConnectionSemaphore extends Semaphore {
-
-        private ConnectionSemaphore(int permits) {
-            super(permits);
-        }
-
-        @Override
-        public void release() {
-            super.release();
-            if (BuildConfig.DEBUG) {
-                synchronized (this) {
-                    Log.v(TAG, "Semaphore released: " + availablePermits());
-                    if (availablePermits() > 1) {
-                        Log.e(TAG, "More than 1 permit");
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void acquire() throws InterruptedException {
-            super.acquire();
-            if (BuildConfig.DEBUG) {
-                synchronized (this) {
-                    Log.v(TAG, "Semaphore acquired: " + availablePermits());
-                }
-            }
-        }
-
-        @Override
-        public boolean tryAcquire() {
-            boolean retVal = super.tryAcquire();
-            if (retVal) {
-                if (BuildConfig.DEBUG) {
-                    Log.v(TAG, "Semaphore acquired: " + availablePermits());
-                }
-            } else {
-                if (BuildConfig.DEBUG) {
-                    Log.v(TAG, "Semaphore NOT acquired: " + availablePermits());
-                }
-            }
-            return retVal;
-        }
-    }
-
 }

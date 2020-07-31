@@ -1101,7 +1101,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
     public void onPause() {
         // Unregister listener
         MPDStateMonitoringHandler.getHandler().unregisterStatusListener(mStateListener);
-        MPDInterface.mInstance.removeMPDConnectionStateChangeListener(mConnectionStateListener);
+        MPDInterface.getGenericInstance().removeMPDConnectionStateChangeListener(mConnectionStateListener);
         mPlaylistView.onPause();
 
         if (null != mBackgroundServiceConnection) {
@@ -1149,7 +1149,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
         // Register with MPDStateMonitoring system
         MPDStateMonitoringHandler.getHandler().registerStatusListener(mStateListener);
-        MPDInterface.mInstance.addMPDConnectionStateChangeListener(mConnectionStateListener);
+        MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(mConnectionStateListener);
 
         mPlaylistView.onResume();
         ArtworkManager.getInstance(getContext().getApplicationContext()).registerOnNewAlbumImageListener(this);

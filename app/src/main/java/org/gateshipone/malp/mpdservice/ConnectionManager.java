@@ -91,7 +91,7 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
 
     private ConnectionManager(Context context) {
         super(context.getMainLooper());
-        MPDInterface.mInstance.addMPDConnectionStateChangeListener(this);
+        MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(this);
         mHostname = null;
         mPassword = null;
         mUseCounter = 0;
@@ -228,7 +228,7 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
         }
 
         // Check if current server can deliver artwork over MPD protocol
-        final boolean mpdCoverEnabled = mServerProfile.getMPDCoverEnabled() && MPDInterface.mInstance.getServerCapabilities().hasAlbumArt();
+        final boolean mpdCoverEnabled = mServerProfile.getMPDCoverEnabled() && MPDInterface.getGenericInstance().getServerCapabilities().hasAlbumArt();
         MPDAlbumImageProvider.getInstance().setActive(mpdCoverEnabled);
     }
 
