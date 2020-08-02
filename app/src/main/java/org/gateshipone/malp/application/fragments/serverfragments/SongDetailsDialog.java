@@ -63,9 +63,9 @@ public class SongDetailsDialog extends DialogFragment {
             mHideAdd = args.getBoolean(EXTRA_HIDE_ADD);
         }
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
 
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        final LayoutInflater inflater = getLayoutInflater();
         final View rootView = inflater.inflate(R.layout.fragment_song_details, null);
 
         TextView mTrackNo = rootView.findViewById(R.id.song_detail_text_track_no);
@@ -77,13 +77,13 @@ public class SongDetailsDialog extends DialogFragment {
 
         if (null != mFile) {
             if (mFile.getAlbumTrackCount() != 0) {
-                mTrackNo.setText(String.valueOf(mFile.getTrackNumber()) + '/' + mFile.getAlbumTrackCount());
+                mTrackNo.setText(getResources().getString(R.string.track_number_template, mFile.getTrackNumber(), mFile.getAlbumTrackCount()));
             } else {
                 mTrackNo.setText(String.valueOf(mFile.getTrackNumber()));
             }
 
             if (mFile.getAlbumDiscCount() != 0) {
-                mTrackDisc.setText(String.valueOf(mFile.getDiscNumber()) + '/' + mFile.getAlbumDiscCount());
+                mTrackDisc.setText(getResources().getString(R.string.track_number_template, mFile.getDiscNumber(), mFile.getAlbumDiscCount()));
             } else {
                 mTrackDisc.setText(String.valueOf(mFile.getDiscNumber()));
             }
@@ -94,26 +94,26 @@ public class SongDetailsDialog extends DialogFragment {
             LinearLayout textViewLL = rootView.findViewById(R.id.tag_linear_layout);
 
             final float scale = getResources().getDisplayMetrics().density;
-            final int topPadding = (int) (getContext().getResources().getDimension(R.dimen.material_content_spacing) *
+            final int topPadding = (int) (getResources().getDimension(R.dimen.material_content_spacing) *
                     scale + 0.5f);
             for (MPDTrack.StringTagTypes tag : MPDTrack.StringTagTypes.values()) {
                 // Check all tags for values
                 String tagValue = mFile.getStringTag(tag);
                 if (!tagValue.isEmpty()) {
-                    TextView tagHeader = new TextView(this.getContext());
-                    tagHeader.setText(tag.name() + ":");
+                    TextView tagHeader = new TextView(getContext());
+                    tagHeader.setText(getResources().getString(R.string.tag_header_template, tag.name()));
                     tagHeader.setPadding(0, topPadding, 0, 0);
-                    tagHeader.setTextColor(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_background_secondary));
+                    tagHeader.setTextColor(ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_background_secondary));
                     tagHeader.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.material_font_style_size_body_1));
                     textViewLL.addView(tagHeader);
 
-                    TextView tagValueView = new TextView(this.getContext());
+                    TextView tagValueView = new TextView(getContext());
                     tagValueView.setText(tagValue);
                     tagValueView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.material_font_style_size_body_2));
 
                     // MusicBrainz linking
                     if (tag.name().contains("MBID")) {
-                        String url = "";
+                        String url = null;
                         switch (tag) {
                             case TRACK_MBID:
                                 url = "https://www.musicbrainz.org/recording/" + mFile.getStringTag(MPDTrack.StringTagTypes.TRACK_MBID);
@@ -133,19 +133,21 @@ public class SongDetailsDialog extends DialogFragment {
                             default:
                                 break;
                         }
-                        final String mbidURL = url;
-                        tagValueView.setOnClickListener(v -> {
-                            Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-                            urlIntent.setData(Uri.parse(mbidURL));
 
-                            try {
-                                startActivity(urlIntent);
-                            } catch (ActivityNotFoundException e) {
-                                final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
-                                noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
-                            }
-                        });
+                        if (url != null) {
+                            final String mbidURL = url;
+                            tagValueView.setOnClickListener(v -> {
+                                Intent urlIntent = new Intent(Intent.ACTION_VIEW);
+                                urlIntent.setData(Uri.parse(mbidURL));
 
+                                try {
+                                    startActivity(urlIntent);
+                                } catch (ActivityNotFoundException e) {
+                                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                                    noBrowserFoundDlg.show(((AppCompatActivity) requireActivity()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+                                }
+                            });
+                        }
                     }
 
                     textViewLL.addView(tagValueView);

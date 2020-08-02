@@ -388,7 +388,7 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
         String trackArtist = getStringTag(MPDTrack.StringTagTypes.ARTIST);
         String trackAlbum = getStringTag(MPDTrack.StringTagTypes.ALBUM);
         if (!trackArtist.isEmpty() && !trackAlbum.isEmpty()) {
-            subLine = trackArtist + context.getString(R.string.track_item_separator) + trackAlbum;
+            subLine = context.getResources().getString(R.string.track_item_line_template, trackArtist, trackAlbum);
         } else if (trackArtist.isEmpty() && !trackAlbum.isEmpty()) {
             subLine = trackAlbum;
         } else if (!trackArtist.isEmpty()) {

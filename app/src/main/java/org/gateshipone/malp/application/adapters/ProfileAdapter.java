@@ -39,13 +39,12 @@ public class ProfileAdapter extends GenericSectionAdapter<MPDServerProfile> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        MPDServerProfile profile = (MPDServerProfile)getItem(position);
+        MPDServerProfile profile = (MPDServerProfile) getItem(position);
 
         // Profile name
         String profileName = profile.getProfileName();
 
         int port = profile.getPort();
-        String portString = String.valueOf(port);
 
         String hostname = profile.getHostname();
 
@@ -55,21 +54,20 @@ public class ProfileAdapter extends GenericSectionAdapter<MPDServerProfile> {
             ProfileListItem profileListItem = (ProfileListItem) convertView;
 
             profileListItem.setProfileName(profileName);
-            profileListItem.setHostname(hostname);
-            profileListItem.setPort(portString);
+            profileListItem.setHostnameAndPort(hostname, port);
             profileListItem.setChecked(checked);
         } else {
-            convertView = new ProfileListItem(mContext, profileName, hostname, portString, checked);
+            convertView = new ProfileListItem(mContext, profileName, hostname, port, checked);
         }
 
         return convertView;
     }
 
     public void setActive(int position, boolean active) {
-        for(MPDServerProfile profile: mModelData) {
+        for (MPDServerProfile profile : mModelData) {
             profile.setAutoconnect(false);
         }
-        ((MPDServerProfile)getItem(position)).setAutoconnect(active);
+        ((MPDServerProfile) getItem(position)).setAutoconnect(active);
         notifyDataSetChanged();
     }
 }

@@ -166,10 +166,6 @@
     <string name="song_artist_mbid">MusicBrainz Előadó ID:</string>
     <string name="song_album_artist_mbid">MusicBrainz Album előadó ID:</string>
 
-    <string name="bitrate_unit_kilo_bits">kbps</string>
-    <string name="bitcount_unit">bits</string>
-    <string name="channel_count_unit">csatornák</string>
-
     <!-- Server statistics text view values -->
     <string name="server_statistic_artists_count">Előadók száma:</string>
     <string name="server_statistic_albums_count">Albumok száma:</string>
@@ -244,7 +240,8 @@
     <string name="preference_dark_theme_message">Sötét téma használata</string>
 
     <string name="preference_show_artist_image_title">Előadó képének mutatása</string>
-    <string name="preference_show_artist_image_text">Váltás az album és az előadó képe között, az aktuális szám nézetében</string>#
+    <string name="preference_show_artist_image_text">Váltás az album és az előadó képe között, az aktuális szám nézetében</string>
+    #
 
     <string name="preference_npv_show_playlist_title">Indítás a lejátszási lista nézettel</string>
     <string name="preference_npv_show_playlist_text">Lejátszási lista mutatása lejátszás közben, ha M.A.L.P. widgettel vagy értesítéssel nyílt meg.</string>
@@ -379,4 +376,9 @@
 
     <!-- Thirdparty Licenses dialog -->
     <string name="thirdparty_licenses_dialog_title">Harmadik féltől származó licenszek</string>
+
+    <!-- templates -->
+    <string name="bitrate_unit_kilo_bits_template">%1$d kbps</string>
+    <string name="sampleformat_unit_bits_template">%1$s bits</string>
+    <string name="channels_template">%1$d csatornák</string>
 </resources>

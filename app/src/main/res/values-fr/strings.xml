@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-    <!--
+<?xml version="1.0"?><!--
   ~  Copyright (C) 2020 Team Gateship-One
   ~  (Hendrik Borghorst & Frederik Luetkes)
   ~
@@ -132,9 +131,7 @@
     <string name="song_album_mbid">ID MusicBrainz Album :</string>
     <string name="song_artist_mbid">ID MusicBrainz Artiste :</string>
     <string name="song_album_artist_mbid">ID MusicBrainz \"AlbumArtist\" :</string>
-    <string name="bitrate_unit_kilo_bits">kbps</string>
-    <string name="bitcount_unit">bits</string>
-    <string name="channel_count_unit">Canaux</string>
+
     <!-- Server statistics text view values -->
     <string name="server_statistic_artists_count">Nombre d\'artistes :</string>
     <string name="server_statistic_albums_count">Nombre d\'albums :</string>
@@ -192,9 +189,10 @@
     <string name="preference_dark_theme_title">Thème sombre</string>
     <string name="preference_dark_theme_message">Utiliser un thème sombre</string>
     <string name="preference_show_artist_image_title">Afficher l\'image de l\'artiste</string>
-    <string name="preference_show_artist_image_text">Alterner entre la pochette de l\'album et une image de l\'artiste dans la vue de la piste en cours de lecture</string>#
+    <string name="preference_show_artist_image_text">Alterner entre la pochette de l\'album et une image de l\'artiste dans la vue de la piste en cours de lecture</string>
+    #
 
-    
+
     <string name="preference_npv_show_playlist_title">Démarrer avec la vue playlist</string>
     <string name="preference_npv_show_playlist_text">Affiche la playlist si M.A.L.P. est ouvert via un widget ou une notification pendant que la lecture est active</string>
     <string name="preference_default_view_title">Vue par défaut</string>
@@ -292,4 +290,9 @@
     <string name="contributor_translator_korean">Traduction Coréenne</string>
     <!-- Thirdparty Licenses dialog -->
     <string name="thirdparty_licenses_dialog_title">Licences tierces</string>
+
+    <!-- templates -->
+    <string name="bitrate_unit_kilo_bits_template">%1$d kbps</string>
+    <string name="sampleformat_unit_bits_template">%1$s bits</string>
+    <string name="channels_template">%1$d Canaux</string>
 </resources>

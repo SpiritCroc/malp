@@ -477,13 +477,13 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 if (mStreamingStatus == BackgroundService.STREAMING_STATUS.PLAYING || mStreamingStatus == BackgroundService.STREAMING_STATUS.BUFFERING) {
                     try {
                         mBackgroundServiceConnection.getService().stopStreamingPlayback();
-                    } catch (RemoteException e) {
+                    } catch (RemoteException ignored) {
 
                     }
                 } else {
                     try {
                         mBackgroundServiceConnection.getService().startStreamingPlayback();
-                    } catch (RemoteException e) {
+                    } catch (RemoteException ignored) {
 
                     }
                 }
@@ -1230,10 +1230,10 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         if (volume >= 70) {
             mVolumeIcon.setImageResource(R.drawable.ic_volume_high_black_48dp);
             mVolumeIconButtons.setImageResource(R.drawable.ic_volume_high_black_48dp);
-        } else if (volume >= 30 && volume < 70) {
+        } else if (volume >= 30) {
             mVolumeIcon.setImageResource(R.drawable.ic_volume_medium_black_48dp);
             mVolumeIconButtons.setImageResource(R.drawable.ic_volume_medium_black_48dp);
-        } else if (volume > 0 && volume < 30) {
+        } else if (volume > 0) {
             mVolumeIcon.setImageResource(R.drawable.ic_volume_low_black_48dp);
             mVolumeIconButtons.setImageResource(R.drawable.ic_volume_low_black_48dp);
         } else {
@@ -1243,17 +1243,19 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         mVolumeIcon.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
         mVolumeIconButtons.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
 
-        mVolumeText.setText(String.valueOf(volume) + '%');
+        mVolumeText.setText(getResources().getString(R.string.volume_level_template, volume));
 
-        mPlaylistNo.setText((status.getCurrentSongIndex() + 1) + getResources().getString(R.string.track_number_album_count_separator) +
-                status.getPlaylistLength());
+        mPlaylistNo.setText(getResources().getString(R.string.track_number_template, status.getCurrentSongIndex() + 1, status.getPlaylistLength()));
 
         mLastStatus = status;
 
-        mBitrate.setText(status.getBitrate() + getResources().getString(R.string.bitrate_unit_kilo_bits));
+        mBitrate.setText(getResources().getString(R.string.bitrate_unit_kilo_bits_template, status.getBitrate()));
 
         // Set audio properties string
-        String properties = status.getSamplerate() + getResources().getString(R.string.samplerate_unit_hertz) + ' ';
+        final StringBuilder propertiesBuilder = new StringBuilder();
+
+        propertiesBuilder.append(getResources().getString(R.string.samplerate_unit_hertz_template, status.getSamplerate()));
+        propertiesBuilder.append(' ');
 
         // Check for fancy new formats here (dsd, float = f)
         String sampleFormat = status.getBitDepth();
@@ -1264,19 +1266,20 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             case "24":
             case "8":
             case "32":
-                properties += sampleFormat + getResources().getString(R.string.bitcount_unit) + ' ';
+                propertiesBuilder.append(getResources().getString(R.string.sampleformat_unit_bits_template, sampleFormat));
                 break;
             case "f":
-                properties += "float ";
+                propertiesBuilder.append("float");
                 break;
             default:
-                properties += sampleFormat + ' ';
+                propertiesBuilder.append(sampleFormat);
                 break;
         }
+        propertiesBuilder.append(' ');
 
+        propertiesBuilder.append(getResources().getString(R.string.channels_template, status.getChannelCount()));
 
-        properties += status.getChannelCount() + getResources().getString(R.string.channel_count_unit);
-        mAudioProperties.setText(properties);
+        mAudioProperties.setText(propertiesBuilder.toString());
     }
 
     private void updateMPDCurrentTrack(MPDTrack track) {
@@ -1323,8 +1326,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
         mTrackURI.setText(track.getPath());
         if (track.getAlbumTrackCount() != 0) {
-            mTrackNo.setText(track.getTrackNumber() + getResources().getString(R.string.track_number_album_count_separator) +
-                    track.getAlbumTrackCount());
+            mTrackNo.setText(getResources().getString(R.string.track_number_template, track.getTrackNumber(), track.getAlbumTrackCount()));
         } else {
             mTrackNo.setText(String.valueOf(track.getTrackNumber()));
         }
@@ -1548,9 +1550,9 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
                 if (progress >= 70) {
                     mVolumeIcon.setImageResource(R.drawable.ic_volume_high_black_48dp);
-                } else if (progress >= 30 && progress < 70) {
+                } else if (progress >= 30) {
                     mVolumeIcon.setImageResource(R.drawable.ic_volume_medium_black_48dp);
-                } else if (progress > 0 && progress < 30) {
+                } else if (progress > 0) {
                     mVolumeIcon.setImageResource(R.drawable.ic_volume_low_black_48dp);
                 } else {
                     mVolumeIcon.setImageResource(R.drawable.ic_volume_mute_black_48dp);
@@ -1618,7 +1620,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BackgroundService.ACTION_STREAMING_STATUS_CHANGED)) {
+            if (BackgroundService.ACTION_STREAMING_STATUS_CHANGED.equals(intent.getAction())) {
                 mStreamingStatus = BackgroundService.STREAMING_STATUS.values()[intent.getIntExtra(BackgroundService.INTENT_EXTRA_STREAMING_STATUS, 0)];
             }
         }
@@ -1634,7 +1636,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         public void onConnected() {
             try {
                 mStreamingStatus = BackgroundService.STREAMING_STATUS.values()[mBackgroundServiceConnection.getService().getStreamingStatus()];
-            } catch (RemoteException e) {
+            } catch (RemoteException ignored) {
 
             }
         }

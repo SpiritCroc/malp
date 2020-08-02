@@ -166,10 +166,6 @@
     <string name="song_artist_mbid">MusicBrainz 연주자 ID:</string>
     <string name="song_album_artist_mbid">MusicBrainz 음반 연주자 ID:</string>
 
-    <string name="bitrate_unit_kilo_bits">kbps</string>
-    <string name="bitcount_unit">비트</string>
-    <string name="channel_count_unit">채널</string>
-
     <!-- Server statistics text view values -->
     <string name="server_statistic_artists_count">연주자 수:</string>
     <string name="server_statistic_albums_count">음반 수:</string>
@@ -244,7 +240,8 @@
     <string name="preference_dark_theme_message">어두운 테마를 씁니다</string>
 
     <string name="preference_show_artist_image_title">연주자 이미지 보기</string>
-    <string name="preference_show_artist_image_text">지금 연주되는 곡을 보여줄 때 음반 이미지와 연주자 이미지 중에 고릅니다</string>#
+    <string name="preference_show_artist_image_text">지금 연주되는 곡을 보여줄 때 음반 이미지와 연주자 이미지 중에 고릅니다</string>
+    #
 
     <string name="preference_npv_show_playlist_title">시작할 때 연주목록 보기</string>
     <string name="preference_npv_show_playlist_text">재생할 때 위젯이나 알림으로 열면 연주목록 보기</string>
@@ -312,7 +309,7 @@
     <string name="preference_artwork_album_provider_summary">음반 이미지 제공자를 고릅니다.</string>
     <string name="preference_artwork_album_provider_message">음반 이미지를 보여 줄 제공자를 고릅니다.</string>
 
-   <string name="provider_off">끄기</string>
+    <string name="provider_off">끄기</string>
 
     <string name="preference_artwork_artist_provider_title">연주자 이미지 제공</string>
     <string name="preference_artwork_artist_provider_summary">연주자 이미지 제공자를 고릅니다.</string>
@@ -378,4 +375,9 @@
 
     <!-- Thirdparty Licenses dialog -->
     <string name="thirdparty_licenses_dialog_title">제삼자 사용권</string>
+
+    <!-- templates -->
+    <string name="bitrate_unit_kilo_bits_template">%1$d kbps</string>
+    <string name="sampleformat_unit_bits_template">%1$s 비트</string>
+    <string name="channels_template">%1$d 채널</string>
 </resources>

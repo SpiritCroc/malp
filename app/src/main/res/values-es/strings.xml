@@ -141,10 +141,6 @@
     <string name="song_artist_mbid">MusicBrainz Artista ID:</string>
     <string name="song_album_artist_mbid">MusicBrainz DiscoArtista ID:</string>
 
-    <string name="bitrate_unit_kilo_bits">kbps</string>
-    <string name="bitcount_unit">bits</string>
-    <string name="channel_count_unit">canales</string>
-
     <!-- Server statistics text view values -->
     <string name="server_statistic_artists_count">Número de artistas:</string>
     <string name="server_statistic_albums_count">Número de discos:</string>
@@ -202,7 +198,8 @@
     <string name="preference_dark_theme_message">Usar un tema oscuro</string>
 
     <string name="preference_show_artist_image_title">Mostrar imagen del artista</string>
-    <string name="preference_show_artist_image_text">Alternar entre la cubierta del disco y una imagen del artista en la vista de la canción sonando</string>#
+    <string name="preference_show_artist_image_text">Alternar entre la cubierta del disco y una imagen del artista en la vista de la canción sonando</string>
+    #
 
     <string name="preference_default_view_title">Vista por default</string>
     <string name="preference_default_view_message">Seleccionar la vista por default</string>
@@ -304,4 +301,9 @@
     <string name="contributor_translator_spanish">Traducción al Español</string>
     <!-- Thirdparty Licenses dialog -->
     <string name="thirdparty_licenses_dialog_title">Licencias de terceras partes</string>
+
+    <!-- templates -->
+    <string name="bitrate_unit_kilo_bits_template">%1$d kbps</string>
+    <string name="sampleformat_unit_bits_template">%1$s bits</string>
+    <string name="channels_template">%1$d canales</string>
 </resources>

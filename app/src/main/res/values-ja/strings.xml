@@ -135,10 +135,6 @@
     <string name="song_artist_mbid">MusicBrainz アーティスト ID:</string>
     <string name="song_album_artist_mbid">MusicBrainz アルバムアーティスト ID:</string>
 
-    <string name="bitrate_unit_kilo_bits">kbps</string>
-    <string name="bitcount_unit">bits</string>
-    <string name="channel_count_unit">チャンネル</string>
-
     <!-- Server statistics text view values -->
     <string name="server_statistic_artists_count">アーティストの数:</string>
     <string name="server_statistic_albums_count">アルバムの数:</string>
@@ -270,4 +266,9 @@
 
     <!-- Thirdparty Licenses dialog -->
     <string name="thirdparty_licenses_dialog_title">サードパーティーライセンス</string>
+
+    <!-- templates -->
+    <string name="bitrate_unit_kilo_bits_template">%1$d kbps</string>
+    <string name="sampleformat_unit_bits_template">%1$s bits</string>
+    <string name="channels_template">%1$d チャンネル</string>
 </resources>

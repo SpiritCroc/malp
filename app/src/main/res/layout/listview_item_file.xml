@@ -29,21 +29,22 @@
         android:id="@+id/item_icon"
         android:layout_width="@dimen/material_list_item_height"
         android:layout_height="@dimen/material_list_item_height"
-        android:visibility="visible"
         android:layout_alignParentStart="true"
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
-        android:scaleType="center"/>
+        android:scaleType="center"
+        android:visibility="visible" />
+
     <LinearLayout
         android:id="@+id/item_track_text_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/material_screen_edge_spacing"
-        android:paddingEnd="@dimen/material_screen_edge_spacing"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/item_icon">
+        android:layout_toEndOf="@+id/item_icon"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/material_screen_edge_spacing"
+        android:paddingEnd="@dimen/material_screen_edge_spacing">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,8 +55,8 @@
                 android:id="@+id/track_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
                 android:fontFamily="sans-serif-regular"
+                android:maxLines="1"
                 android:textColor="?attr/malp_color_text_background_primary"
                 android:textSize="@dimen/material_font_style_size_subheading" />
 
@@ -63,9 +64,9 @@
                 android:id="@+id/track_separator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-regular"
                 android:maxLines="1"
                 android:text="@string/track_item_separator"
-                android:fontFamily="sans-serif-regular"
                 android:textColor="?attr/malp_color_text_background_primary"
                 android:textSize="@dimen/material_font_style_size_subheading" />
 
@@ -73,10 +74,10 @@
                 android:id="@+id/track_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
                 android:fontFamily="sans-serif-regular"
+                android:maxLines="1"
                 android:textColor="?attr/malp_color_text_background_primary"
-                android:textSize="@dimen/material_font_style_size_subheading"/>
+                android:textSize="@dimen/material_font_style_size_subheading" />
         </LinearLayout>
 
         <RelativeLayout
@@ -90,18 +91,18 @@
                 android:layout_alignParentStart="true"
                 android:layout_toStartOf="@+id/track_duration"
                 android:ellipsize="end"
+                android:fontFamily="sans-serif-regular"
                 android:singleLine="true"
                 android:textColor="?attr/malp_color_text_background_secondary"
-                android:fontFamily="sans-serif-regular"
-                android:textSize="@dimen/material_font_style_size_body_1"/>
+                android:textSize="@dimen/material_font_style_size_body_1" />
 
             <TextView
                 android:id="@+id/track_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:textColor="?attr/malp_color_text_background_secondary"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textColor="?attr/malp_color_text_background_secondary" />
         </RelativeLayout>
     </LinearLayout>
 

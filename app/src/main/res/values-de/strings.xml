@@ -52,9 +52,6 @@
     <string name="action_show_all_tracks">Alle Lieder anzeigen</string>
     <string name="action_show_artist">Interpreten anzeigen</string>
     <string name="activity_about_version">Version:</string>
-    <string name="bitcount_unit">Bits</string>
-    <string name="bitrate_unit_kilo_bits">kbps</string>
-    <string name="channel_count_unit">Kanäle</string>
     <string name="create_new_playlist">Neue Liste erstellen</string>
     <string name="default_playlist_title">Neue Wiedergabeliste</string>
     <string name="dialog_action_cancel">Abbrechen</string>
@@ -284,4 +281,7 @@
     <string name="action_npv_more_options">Weitere Optionen</string>
     <string name="dialog_no_browser_found_title">Kein Browser verfügbar</string>
     <string name="dialog_no_browser_found_message">Auf dem Gerät wurde kein Browser gefunden</string>
+    <string name="bitrate_unit_kilo_bits_template">%1$d kbps</string>
+    <string name="sampleformat_unit_bits_template">%1$s Bits</string>
+    <string name="channels_template">%1$d Kanäle</string>
 </resources>

@@ -125,8 +125,6 @@
 
     <!-- seperator -->
     <string name="track_item_separator" translatable="false">" - "</string>
-    <string name="profiles_item_port_separator" translatable="false">":"</string>
-    <string name="track_number_album_count_separator" translatable="false">" / "</string>
 
     <string name="track_item_loading">Track loading</string>
 
@@ -182,11 +180,6 @@
     <string name="song_album_mbid">MusicBrainz Album ID:</string>
     <string name="song_artist_mbid">MusicBrainz Artist ID:</string>
     <string name="song_album_artist_mbid">MusicBrainz AlbumArtist ID:</string>
-
-    <string name="bitrate_unit_kilo_bits">kbps</string>
-    <string name="samplerate_unit_hertz" translatable="false">Hz</string>
-    <string name="bitcount_unit">bits</string>
-    <string name="channel_count_unit">channels</string>
 
     <!-- Server statistics text view values -->
     <string name="server_statistic_artists_count">Number of artists:</string>
@@ -461,4 +454,16 @@
 
     <!-- Thirdparty Licenses dialog -->
     <string name="thirdparty_licenses_dialog_title">Third Party Licenses</string>
+
+    <!-- templates -->
+    <string name="profile_host_port_template" translatable="false">%1$s:%2$d</string>
+    <string name="track_item_line_template" translatable="false">%1$s - %2$s</string>
+    <string name="track_number_template" translatable="false">%1$d / %2$d</string>
+    <string name="volume_level_template" translatable="false">%1$d%%</string>
+    <string name="tag_header_template" translatable="false">%1$s:</string>
+
+    <string name="bitrate_unit_kilo_bits_template">%1$d kbps</string>
+    <string name="samplerate_unit_hertz_template">%1$d Hz</string>
+    <string name="sampleformat_unit_bits_template">%1$s bits</string>
+    <string name="channels_template">%1$d channels</string>
 </resources>

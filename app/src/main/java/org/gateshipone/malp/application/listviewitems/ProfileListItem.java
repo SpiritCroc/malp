@@ -32,13 +32,14 @@ import android.widget.TextView;
 import org.gateshipone.malp.R;
 
 public class ProfileListItem extends LinearLayout {
+
     TextView mProfileNameView;
-    TextView mHostnameView;
-    TextView mPortView;
+
+    TextView mHostnameAndPortView;
 
     RadioButton mRadioButton;
 
-    public ProfileListItem(Context context, String profilename, String hostname, String port, boolean checked) {
+    public ProfileListItem(final Context context, final String profilename, final String hostname, final int port, final boolean checked) {
         super(context);
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -47,29 +48,22 @@ public class ProfileListItem extends LinearLayout {
         mProfileNameView = findViewById(R.id.item_profile_name);
         mProfileNameView.setText(profilename);
 
-        mHostnameView = findViewById(R.id.item_profile_hostname);
-        mHostnameView.setText(hostname);
-
-        mPortView = findViewById(R.id.item_profile_port);
-        mPortView.setText(port);
+        mHostnameAndPortView = findViewById(R.id.item_profile_hostname_port);
+        mHostnameAndPortView.setText(getResources().getString(R.string.profile_host_port_template, hostname, port));
 
         mRadioButton = findViewById(R.id.item_profile_radiobtn);
         mRadioButton.setChecked(checked);
     }
 
-    public void setProfileName(String profilename) {
+    public void setProfileName(final String profilename) {
         mProfileNameView.setText(profilename);
     }
 
-    public void setHostname(String hostname) {
-        mHostnameView.setText(hostname);
+    public void setHostnameAndPort(final String hostname, final int port) {
+        mHostnameAndPortView.setText(getResources().getString(R.string.profile_host_port_template, hostname, port));
     }
 
-    public void setPort(String port) {
-        mPortView.setText(port);
-    }
-
-    public void setChecked(boolean checked) {
+    public void setChecked(final boolean checked) {
         mRadioButton.setChecked(checked);
     }
 }

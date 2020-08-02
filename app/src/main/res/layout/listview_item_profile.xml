@@ -22,21 +22,23 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     android:minHeight="@dimen/material_list_item_height"
     android:orientation="horizontal"
-    android:descendantFocusability="blocksDescendants"
     android:padding="@dimen/material_standard_horizontal_spacing">
-<RadioButton
-    android:id="@+id/item_profile_radiobtn"
-    android:layout_width="wrap_content"
-    android:clickable="false"
-    android:layout_gravity="center_vertical"
-    android:layout_height="wrap_content"
-    android:paddingEnd="@dimen/material_standard_horizontal_spacing"/>
+
+    <RadioButton
+        android:id="@+id/item_profile_radiobtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:clickable="false" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/material_standard_horizontal_spacing"
         android:orientation="vertical">
 
         <TextView
@@ -48,40 +50,14 @@
             android:textColor="?attr/malp_color_text_background_primary"
             android:textSize="@dimen/material_font_style_size_subheading" />
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/item_profile_hostname_port"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/item_profile_hostname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:fontFamily="sans-serif-regular"
-                android:maxLines="1"
-                android:textColor="?attr/malp_color_text_background_secondary"
-                android:textSize="@dimen/material_font_style_size_body_1" />
-
-            <TextView
-                android:id="@+id/item_profile_host_separator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/item_profile_hostname"
-                android:fontFamily="sans-serif-regular"
-                android:text="@string/profiles_item_port_separator"
-                android:textColor="?attr/malp_color_text_background_secondary"
-                android:textSize="@dimen/material_font_style_size_body_1" />
-
-            <TextView
-                android:id="@+id/item_profile_port"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/item_profile_host_separator"
-                android:fontFamily="sans-serif-regular"
-                android:maxLines="1"
-                android:textColor="?attr/malp_color_text_background_secondary"
-                android:textSize="@dimen/material_font_style_size_body_1" />
-        </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-regular"
+            android:maxLines="1"
+            android:textColor="?attr/malp_color_text_background_secondary"
+            android:textSize="@dimen/material_font_style_size_body_1" />
     </LinearLayout>
 
 </LinearLayout>

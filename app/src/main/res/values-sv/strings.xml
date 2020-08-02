@@ -167,10 +167,6 @@
     <string name="song_artist_mbid">MusicBrainz artist-ID:</string>
     <string name="song_album_artist_mbid">MusicBrainz albumartist-ID:</string>
 
-    <string name="bitrate_unit_kilo_bits">kbps</string>
-    <string name="bitcount_unit">bitar</string>
-    <string name="channel_count_unit">kanaler</string>
-
     <!-- Server statistics text view values -->
     <string name="server_statistic_artists_count">Antal artister:</string>
     <string name="server_statistic_albums_count">Antal album:</string>
@@ -423,4 +419,10 @@
 
     <!-- Thirdparty Licenses dialog -->
     <string name="thirdparty_licenses_dialog_title">Tredjepartslicenser</string>
+
+    <!-- templates -->
+
+    <string name="bitrate_unit_kilo_bits_template">%1$d kbps</string>
+    <string name="sampleformat_unit_bits_template">%1$s bitar</string>
+    <string name="channels_template">%1$d kanaler</string>
 </resources>
