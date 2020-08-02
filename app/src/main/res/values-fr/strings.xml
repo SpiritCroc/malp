@@ -190,8 +190,6 @@
     <string name="preference_dark_theme_message">Utiliser un thème sombre</string>
     <string name="preference_show_artist_image_title">Afficher l\'image de l\'artiste</string>
     <string name="preference_show_artist_image_text">Alterner entre la pochette de l\'album et une image de l\'artiste dans la vue de la piste en cours de lecture</string>
-    #
-
 
     <string name="preference_npv_show_playlist_title">Démarrer avec la vue playlist</string>
     <string name="preference_npv_show_playlist_text">Affiche la playlist si M.A.L.P. est ouvert via un widget ou une notification pendant que la lecture est active</string>

@@ -199,7 +199,6 @@
 
     <string name="preference_show_artist_image_title">Mostrar imagen del artista</string>
     <string name="preference_show_artist_image_text">Alternar entre la cubierta del disco y una imagen del artista en la vista de la canción sonando</string>
-    #
 
     <string name="preference_default_view_title">Vista por default</string>
     <string name="preference_default_view_message">Seleccionar la vista por default</string>

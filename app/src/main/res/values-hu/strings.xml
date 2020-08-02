@@ -241,7 +241,6 @@
 
     <string name="preference_show_artist_image_title">Előadó képének mutatása</string>
     <string name="preference_show_artist_image_text">Váltás az album és az előadó képe között, az aktuális szám nézetében</string>
-    #
 
     <string name="preference_npv_show_playlist_title">Indítás a lejátszási lista nézettel</string>
     <string name="preference_npv_show_playlist_text">Lejátszási lista mutatása lejátszás közben, ha M.A.L.P. widgettel vagy értesítéssel nyílt meg.</string>
