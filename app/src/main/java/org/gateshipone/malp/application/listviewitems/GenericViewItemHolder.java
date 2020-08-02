@@ -54,8 +54,7 @@ public class GenericViewItemHolder extends RecyclerView.ViewHolder {
         ((AbsImageListViewItem) itemView).setImageDimension(width, height);
     }
 
-    public void setTrack(final MPDTrack track, final int position) {
+    public void setTrack(final MPDTrack track) {
         ((FileListItem) itemView).setTrack(track, true);
-        ((FileListItem) itemView).setTrackNumber(String.valueOf(position + 1));
     }
 }

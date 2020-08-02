@@ -53,7 +53,7 @@ public class TracksRecyclerViewAdapter extends GenericRecyclerViewAdapter<MPDFil
     public void onBindViewHolder(@NonNull GenericViewItemHolder holder, int position) {
         final MPDTrack track = (MPDTrack) getItem(position);
 
-        holder.setTrack(track, position);
+        holder.setTrack(track);
 
         // We have to set this to make the context menu working with recycler views.
         holder.itemView.setLongClickable(true);
