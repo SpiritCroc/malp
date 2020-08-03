@@ -57,7 +57,6 @@ import org.gateshipone.malp.application.artwork.network.artprovider.MPDAlbumImag
 import org.gateshipone.malp.application.artwork.network.responses.ImageResponse;
 import org.gateshipone.malp.application.artwork.storage.ArtworkDatabaseManager;
 import org.gateshipone.malp.application.artwork.storage.ImageNotFoundException;
-import org.gateshipone.malp.application.utils.FormatHelper;
 import org.gateshipone.malp.application.utils.NetworkUtils;
 import org.gateshipone.malp.mpdservice.ConnectionManager;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
@@ -73,7 +72,6 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -300,7 +298,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
             if (BuildConfig.DEBUG) {
                 Log.v(TAG, "Try to get all tracks from MPD");
             }
-            
+
             MPDQueryHandler.getAllTracks(new TracksResponseHandler(this));
         } else {
             fetchAllAlbums();
@@ -392,7 +390,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
     private void createRequest(@NonNull final ArtworkRequestModel requestModel, boolean skipLocal) {
         switch (requestModel.getType()) {
             case ALBUM:
-                mArtworkManager.fetchImage((MPDAlbum) requestModel.getGenericModel(), this, this, false);
+                mArtworkManager.fetchImage((MPDAlbum) requestModel.getGenericModel(), this, this, skipLocal);
                 break;
             case ARTIST:
                 mArtworkManager.fetchImage((MPDArtist) requestModel.getGenericModel(), this, this);
@@ -592,7 +590,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
 
         for (MPDFileEntry track : trackList) {
-            mArtworkRequestQueue.add(new ArtworkRequestModel((MPDTrack)track));
+            mArtworkRequestQueue.add(new ArtworkRequestModel((MPDTrack) track));
         }
 
         fetchAllArtists();
