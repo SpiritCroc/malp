@@ -176,10 +176,10 @@ public class MPDArtworkHandler extends MPDGenericHandler {
         }
         byte[] imageData = null;
         try {
-            // Try embedded images first. Then external cover image
-            imageData = MPDInterface.getArtworkInstance().getAlbumArt(url, true);
+            // Try cover file first, then embedded image.
+            imageData = MPDInterface.getArtworkInstance().getAlbumArt(url, false);
             if (imageData == null || imageData.length == 0) {
-                imageData = MPDInterface.getArtworkInstance().getAlbumArt(url, false);
+                imageData = MPDInterface.getArtworkInstance().getAlbumArt(url, true);
             }
         } catch (MPDException e) {
             handleMPDError(e);
