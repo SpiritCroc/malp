@@ -1,3 +1,10 @@
+### 1.2.6 Tag: release-33 (2020-mm-dd)
+* Memory usage improvements (mitigates UI freezes due to heavy garbage collection)
+* Use a secondary connection to MPD to fetch artwork data (fixes unresponsive MPD connection during fetching)
+* Use MPD artwork not only to fetch artwork based on track but also for album overview
+* Add support for "readpicture" command of MPD 0.22 (experimental, 0.22 not released yet)
+* Fix artist and album grouping on MPD >0.21
+
 ### 1.2.5 Tag: release-32 (2020-03-02)
 * further improvements for the artwork retrival
 * add prepend to playlist action
