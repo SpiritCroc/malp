@@ -177,7 +177,9 @@ public class ServerStatisticFragment extends GenericMPDFragment<MPDStatistics> {
 
         @Override
         protected void onNewStatusReady(MPDCurrentStatus status) {
-            if (mFragment.get().mLastStatus != null && mFragment.get().mLastStatus.getUpdateDBJob() != status.getUpdateDBJob()) {
+            if (mFragment.get().mLastStatus == null) {
+                mFragment.get().showDatabaseUpdating(status.getUpdateDBJob() >= 0);
+            } else if (mFragment.get().mLastStatus != null && mFragment.get().mLastStatus.getUpdateDBJob() != status.getUpdateDBJob()) {
                 mFragment.get().showDatabaseUpdating(status.getUpdateDBJob() >= 0);
             }
             mFragment.get().mLastStatus = status;
