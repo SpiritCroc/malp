@@ -325,7 +325,7 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
      */
     private void updateMPDCurrentTrack(final MPDTrack track) {
         final String title = track.getVisibleTitle();
-        final String albumArtist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT);
+        final String albumArtist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
         final String artistName = albumArtist.isEmpty() ? track.getStringTag(MPDTrack.StringTagTypes.ARTIST) : albumArtist;
 
         mTrackTitle.setText(title);
