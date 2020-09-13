@@ -1,4 +1,4 @@
-### 1.2.6 Tag: release-33 (2020-mm-dd)
+### 1.2.6 Tag: release-33 (2020-09-13)
 * Memory usage improvements (mitigates UI freezes due to heavy garbage collection)
 * Use a secondary connection to MPD to fetch artwork data (fixes unresponsive MPD connection during fetching)
 * Use MPD artwork not only to fetch artwork based on track but also for album overview
