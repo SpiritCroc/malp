@@ -26,7 +26,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import org.gateshipone.malp.BuildConfig;
@@ -47,13 +46,8 @@ public class AboutActivity extends GenericActivity {
         String versionName = BuildConfig.VERSION_NAME;
         ((TextView) findViewById(R.id.activity_about_version)).setText(versionName);
 
-        if (BuildConfig.DEBUG) {
-            findViewById(R.id.activity_about_git_hash_container).setVisibility(View.VISIBLE);
-
-            String gitHash = BuildConfig.GIT_COMMIT_HASH;
-            ((TextView) findViewById(R.id.activity_about_git_hash)).setText(gitHash);
-        }
-        ((TextView) findViewById(R.id.activity_about_version)).setText(versionName);
+        String gitHash = BuildConfig.GIT_COMMIT_HASH;
+        ((TextView) findViewById(R.id.activity_about_git_hash)).setText(gitHash);
 
         findViewById(R.id.button_contributors).setOnClickListener(view -> {
             Intent myIntent = new Intent(AboutActivity.this, ContributorsActivity.class);
