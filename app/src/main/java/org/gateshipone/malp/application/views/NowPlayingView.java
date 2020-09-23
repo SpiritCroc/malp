@@ -33,6 +33,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -127,6 +128,11 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
      * (Layout height - draggable part)
      */
     private int mDragRange;
+
+    /**
+     * Flag whether the nowplaying hint should be shown. This should only be true if the app was used the first time.
+     */
+    private boolean mShowNPVHint = false;
 
     /**
      * Flag whether the views switches between album cover and artist image
@@ -1157,6 +1163,10 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        mShowNPVHint = sharedPref.getBoolean(getContext().getResources().getString(R.string.pref_show_npv_hint), true);
+        mShowNPVHint = true;
+
         sharedPref.registerOnSharedPreferenceChangeListener(this);
 
         setVolumeControlSetting();
@@ -1176,6 +1186,10 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 mTopPlayPauseButton.setImageResource(R.drawable.ic_pause_48dp);
                 mBottomPlayPauseButton.setImageResource(R.drawable.ic_pause_circle_fill_48dp);
 
+                // show the hint if necessary
+                if (mShowNPVHint) {
+                    showHint();
+                }
 
                 break;
             case MPD_PAUSING:
@@ -1398,6 +1412,30 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         mTopPlaylistButton.setImageTintList(ColorStateList.valueOf(color));
     }
 
+    /**
+     * This method will drag up the NPV a little for 1 second.
+     * <p>
+     * This should be called only the first time music is played with Odyssey.
+     */
+    private void showHint() {
+        mShowNPVHint = false;
+
+        SharedPreferences.Editor sharedPrefEditor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+        sharedPrefEditor.putBoolean(getContext().getString(R.string.pref_show_npv_hint), false);
+        sharedPrefEditor.apply();
+
+        if (mDragOffset == 1.0f) {
+            // show hint only if the npv ist not already dragged up
+            smoothSlideTo(0.75f);
+
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                if (mDragOffset > 0.0f) {
+                    smoothSlideTo(1.0f);
+                }
+            }, 3000);
+        }
+    }
 
     /**
      * Simple sharing for the current track.

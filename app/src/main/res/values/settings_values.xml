@@ -58,6 +58,7 @@
     <string name="pref_npv_show_playlist_key" translatable="false">pref_npv_show_playlist</string>
     <bool name="pref_npv_show_playlist_default" translatable="false">false</bool>
 
+    <string name="pref_show_npv_hint" translatable="false">pref_show_npv_hint</string>
 
     <string name="pref_volume_steps_key" translatable="false">pref_volume_steps</string>
     <integer name="pref_volume_steps_default" translatable="false">1</integer>
