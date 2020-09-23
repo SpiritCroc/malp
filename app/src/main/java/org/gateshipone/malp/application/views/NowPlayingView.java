@@ -1165,7 +1165,6 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         mShowNPVHint = sharedPref.getBoolean(getContext().getResources().getString(R.string.pref_show_npv_hint), true);
-        mShowNPVHint = true;
 
         sharedPref.registerOnSharedPreferenceChangeListener(this);
 
