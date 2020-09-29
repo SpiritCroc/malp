@@ -36,6 +36,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import androidx.annotation.NonNull;
+
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.artwork.FanartManager;
 import org.gateshipone.malp.application.artwork.network.MALPRequestQueue;
@@ -240,7 +242,7 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
+    public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         // Always call the superclass so it can restore the view hierarchy
         super.onRestoreInstanceState(savedInstanceState);
 
@@ -325,11 +327,12 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
      */
     private void updateMPDCurrentTrack(final MPDTrack track) {
         final String title = track.getVisibleTitle();
+        final String albumName = track.getStringTag(MPDTrack.StringTagTypes.ALBUM);
         final String albumArtist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
         final String artistName = albumArtist.isEmpty() ? track.getStringTag(MPDTrack.StringTagTypes.ARTIST) : albumArtist;
 
         mTrackTitle.setText(title);
-        mTrackAlbum.setText(artistName);
+        mTrackAlbum.setText(albumName);
         mTrackArtist.setText(artistName);
 
         String lastTrackArtistName = null;
