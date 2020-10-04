@@ -136,7 +136,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
      */
     public synchronized void showNotification() {
         openMediaSession();
-        updateNotification(mLastTrack, mLastStatus.getPlaybackState());
+        updateNotification(mLastTrack, mLastStatus);
         Intent intent = new Intent(mService, BackgroundService.class);
 
         if (null != mNotification) {
@@ -151,7 +151,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
 
             // Check if stream playback is enabled or not
             if (mDismissible) {
-                mMediaSession.setCallback(new MALPMediaSessionCallback());
+                mMediaSession.setCallback(new MALPMediaSessionCallback(mMediaSession));
                 mVolumeControlProvider = new MALPVolumeControlProvider();
                 mVolumeControlProvider.setCurrentVolume(mLastStatus.getVolume());
                 mMediaSession.setPlaybackToRemote(mVolumeControlProvider);
@@ -207,7 +207,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
      * for the normal layout and one for the big one. Sets the different
      * attributes of the remoteViews and starts a thread for Cover generation.
      */
-    public synchronized void updateNotification(MPDTrack track, MPDCurrentStatus.MPD_PLAYBACK_STATE state) {
+    public synchronized void updateNotification(MPDTrack track, MPDCurrentStatus state) {
         if (track != null) {
             openChannel();
             mNotificationBuilder = new NotificationCompat.Builder(mService, NOTIFICATION_CHANNEL_ID);
@@ -230,7 +230,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             // Pause/Play action
             PendingIntent playPauseIntent;
             int playPauseIcon;
-            if (state == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
+            if (state.getPlaybackState() == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
                 Intent pauseIntent = new Intent(BackgroundService.ACTION_PAUSE);
                 playPauseIntent = PendingIntent.getBroadcast(mService, INTENT_PLAYPAUSE, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                 playPauseIcon = R.drawable.ic_pause_48dp;
@@ -338,11 +338,11 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
      * for a lockscreen image for example.
      *
      * @param track         Current track.
-     * @param playbackState State of the PlaybackService.
+     * @param status State of the PlaybackService.
      */
-    private synchronized void updateMetadata(MPDTrack track, MPDCurrentStatus.MPD_PLAYBACK_STATE playbackState) {
+    private synchronized void updateMetadata(MPDTrack track, MPDCurrentStatus status) {
         if (track != null && mMediaSession != null) {
-            if (playbackState == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
+            if (status.getPlaybackState() == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
                 mMediaSession.setPlaybackState(new PlaybackStateCompat.Builder().setState(PlaybackStateCompat.STATE_PLAYING, 0, 1.0f)
                         .setActions(PlaybackStateCompat.ACTION_SKIP_TO_NEXT + PlaybackStateCompat.ACTION_PAUSE +
                                 PlaybackStateCompat.ACTION_PLAY + PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS +
@@ -370,9 +370,25 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST));
             metaDataBuilder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, track.getVisibleTitle());
             metaDataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, track.getTrackNumber());
-            metaDataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, track.getLength());
+            metaDataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, track.getLength() * 1000);
 
+            PlaybackStateCompat.Builder playbackStateBuilder = new PlaybackStateCompat.Builder();
+            int psState = 0;
+            switch (status.getPlaybackState()) {
+                case MPD_PLAYING:
+                    psState = PlaybackStateCompat.STATE_PLAYING;
+                    break;
+                case MPD_PAUSING:
+                    psState = PlaybackStateCompat.STATE_PAUSED;
+                    break;
+                case MPD_STOPPED:
+                    psState = PlaybackStateCompat.STATE_STOPPED;
+                    break;
+            }
+            playbackStateBuilder.setState(psState, (long)(status.getElapsedTime() * 1000), 1.0f);
+            playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_SEEK_TO);
             mMediaSession.setMetadata(metaDataBuilder.build());
+            mMediaSession.setPlaybackState(playbackStateBuilder.build());
         }
     }
 
@@ -392,7 +408,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
 
             // Only update the notification if playback state really changed
             if (mLastStatus.getPlaybackState() != status.getPlaybackState()) {
-                updateNotification(mLastTrack, status.getPlaybackState());
+                updateNotification(mLastTrack, status);
             }
             if (mVolumeControlProvider != null) {
                 // Notify the mediasession about the new volume
@@ -414,7 +430,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
      */
     public void setMPDFile(MPDTrack track) {
         if (mSessionActive && notificationNeedsUpdate(track)) {
-            updateNotification(track, mLastStatus.getPlaybackState());
+            updateNotification(track, mLastStatus);
         }
         // Save for later usage
         mLastTrack = track;
@@ -446,14 +462,14 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
         // Check if notification exists and set picture
         mLastBitmap = bm;
         if (type == CoverBitmapLoader.IMAGE_TYPE.ALBUM_IMAGE && mNotification != null && bm != null) {
-            updateNotification(mLastTrack, mLastStatus.getPlaybackState());
+            updateNotification(mLastTrack, mLastStatus);
 
             /* Set lockscreen picture and stuff */
             if (mMediaSession != null) {
                 MediaMetadataCompat metaData = mMediaSession.getController().getMetadata();
                 if (metaData != null) {
                     MediaMetadataCompat.Builder metaDataBuilder;
-                    metaDataBuilder = new MediaMetadataCompat.Builder(mMediaSession.getController().getMetadata());
+                    metaDataBuilder = new MediaMetadataCompat.Builder(metaData);
                     metaDataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bm);
                     mMediaSession.setMetadata(metaDataBuilder.build());
                 }
@@ -477,7 +493,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             mMediaSession = null;
         }
         openMediaSession();
-        updateNotification(mLastTrack, mLastStatus.getPlaybackState());
+        updateNotification(mLastTrack, mLastStatus);
     }
 
     /**
@@ -485,6 +501,11 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
      * Volume keys on some android versions.
      */
     private static class MALPMediaSessionCallback extends MediaSessionCompat.Callback {
+        MediaSessionCompat mMediaSession;
+
+        public MALPMediaSessionCallback(MediaSessionCompat session) {
+            mMediaSession = session;
+        }
 
         @Override
         public void onPlay() {
@@ -519,7 +540,11 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
         @Override
         public void onSeekTo(long pos) {
             super.onSeekTo(pos);
-            MPDCommandHandler.seekSeconds((int) pos);
+            MPDCommandHandler.seekSeconds((int) pos / 1000);
+            PlaybackStateCompat ps = mMediaSession.getController().getPlaybackState();
+            PlaybackStateCompat.Builder psBuilder = new PlaybackStateCompat.Builder(ps);
+            psBuilder.setState(ps.getState(), pos, 1.0f);
+            mMediaSession.setPlaybackState(psBuilder.build());
         }
     }
 
