@@ -98,11 +98,7 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
      * @throws ImageNotFoundException If the image is not in the database and it was not searched for before.
      */
     public synchronized String getTrackImage(final MPDTrack track) throws ImageNotFoundException {
-        final String mbid = track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID);
-        final String albumName = track.getStringTag(MPDTrack.StringTagTypes.ALBUM);
-        final String artistName = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST).isEmpty() ? track.getStringTag(MPDTrack.StringTagTypes.ALBUM) : track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
-
-        return getAlbumImage(mbid, albumName, artistName);
+        return getAlbumImage(track.getAlbum());
     }
 
     /**
