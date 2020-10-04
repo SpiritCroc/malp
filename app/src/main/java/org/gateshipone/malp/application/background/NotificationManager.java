@@ -342,20 +342,6 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
      */
     private synchronized void updateMetadata(MPDTrack track, MPDCurrentStatus status) {
         if (track != null && mMediaSession != null) {
-            if (status.getPlaybackState() == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
-                mMediaSession.setPlaybackState(new PlaybackStateCompat.Builder().setState(PlaybackStateCompat.STATE_PLAYING, 0, 1.0f)
-                        .setActions(PlaybackStateCompat.ACTION_SKIP_TO_NEXT + PlaybackStateCompat.ACTION_PAUSE +
-                                PlaybackStateCompat.ACTION_PLAY + PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS +
-                                PlaybackStateCompat.ACTION_STOP + PlaybackStateCompat.ACTION_SEEK_TO).build());
-
-            } else {
-                mMediaSession.setPlaybackState(new PlaybackStateCompat.Builder().
-                        setState(PlaybackStateCompat.STATE_PAUSED, 0, 1.0f).setActions(PlaybackStateCompat.ACTION_SKIP_TO_NEXT +
-                        PlaybackStateCompat.ACTION_PAUSE + PlaybackStateCompat.ACTION_PLAY +
-                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS + PlaybackStateCompat.ACTION_STOP +
-                        PlaybackStateCompat.ACTION_SEEK_TO).build());
-
-            }
             // Try to get old metadata to save image retrieval.
             MediaMetadataCompat oldData = mMediaSession.getController().getMetadata();
             MediaMetadataCompat.Builder metaDataBuilder;
@@ -385,8 +371,11 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
                     psState = PlaybackStateCompat.STATE_STOPPED;
                     break;
             }
-            playbackStateBuilder.setState(psState, (long)(status.getElapsedTime() * 1000), 1.0f);
-            playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_SEEK_TO);
+
+            playbackStateBuilder.setState(psState, (long)status.getElapsedTime() * 1000, 1.0f);
+            playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_PAUSE |
+                    PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS +
+                    PlaybackStateCompat.ACTION_STOP | PlaybackStateCompat.ACTION_SEEK_TO);
             mMediaSession.setMetadata(metaDataBuilder.build());
             mMediaSession.setPlaybackState(playbackStateBuilder.build());
         }
@@ -407,7 +396,8 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             }
 
             // Only update the notification if playback state really changed
-            if (mLastStatus.getPlaybackState() != status.getPlaybackState()) {
+            if ((mLastStatus.getPlaybackState() != status.getPlaybackState()) ||
+                    (mLastStatus.getCurrentSongIndex() != status.getCurrentSongIndex())) {
                 updateNotification(mLastTrack, status);
             }
             if (mVolumeControlProvider != null) {
