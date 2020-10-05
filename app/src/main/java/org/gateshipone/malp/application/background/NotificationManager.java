@@ -40,6 +40,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.media.VolumeProviderCompat;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
@@ -296,12 +297,12 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             if (mLastBitmap != null) {
                 mNotificationBuilder.setLargeIcon(mLastBitmap);
             } else {
-                /**
+                /*
                  * Create a dummy placeholder image for versions greater android 7 because it
                  * does not automatically show the application icon anymore in mediastyle notifications.
                  */
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Drawable icon = mService.getDrawable(R.drawable.notification_placeholder_256dp);
+                    Drawable icon = ContextCompat.getDrawable(mService, R.drawable.notification_placeholder_256dp);
 
                     Bitmap iconBitmap = Bitmap.createBitmap(icon.getIntrinsicWidth(), icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
                     Canvas canvas = new Canvas(iconBitmap);
@@ -315,7 +316,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
                     icon.draw(canvas);
                     mNotificationBuilder.setLargeIcon(iconBitmap);
                 } else {
-                    /**
+                    /*
                      * For older android versions set the null icon which will result in a dummy icon
                      * generated from the application icon.
                      */
@@ -337,7 +338,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
      * Updates the Metadata from Androids MediaSession. This sets track/album and stuff
      * for a lockscreen image for example.
      *
-     * @param track         Current track.
+     * @param track  Current track.
      * @param status State of the PlaybackService.
      */
     private synchronized void updateMetadata(MPDTrack track, MPDCurrentStatus status) {
@@ -372,7 +373,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
                     break;
             }
 
-            playbackStateBuilder.setState(psState, (long)status.getElapsedTime() * 1000, 1.0f);
+            playbackStateBuilder.setState(psState, (long) status.getElapsedTime() * 1000, 1.0f);
             playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_PAUSE |
                     PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS +
                     PlaybackStateCompat.ACTION_STOP | PlaybackStateCompat.ACTION_SEEK_TO);

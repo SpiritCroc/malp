@@ -25,13 +25,15 @@ package org.gateshipone.malp.application.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.NonNull;
-import androidx.core.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ViewSwitcher;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.utils.ThemeUtils;
@@ -139,8 +141,8 @@ public class AlbumArtistView extends ViewSwitcher {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        mAlbumImage.measure(widthMeasureSpec,heightMeasureSpec);
-        mArtistImage.measure(widthMeasureSpec,heightMeasureSpec);
+        mAlbumImage.measure(widthMeasureSpec, heightMeasureSpec);
+        mArtistImage.measure(widthMeasureSpec, heightMeasureSpec);
     }
 
     /**
@@ -176,9 +178,12 @@ public class AlbumArtistView extends ViewSwitcher {
         // get tint color
         int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_background_primary);
 
-        Drawable drawable = getResources().getDrawable(R.drawable.cover_placeholder, null);
-        drawable = DrawableCompat.wrap(drawable);
-        DrawableCompat.setTint(drawable, tintColor);
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.cover_placeholder, null);
+
+        if (drawable != null) {
+            drawable = DrawableCompat.wrap(drawable);
+            DrawableCompat.setTint(drawable, tintColor);
+        }
 
         mAlbumImage.setImageDrawable(drawable);
         mAlbumImageAvailable = false;

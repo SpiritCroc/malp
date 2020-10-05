@@ -36,6 +36,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -95,13 +96,13 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         // Icons
         final ColorStateList tabColors = tabLayout.getTabTextColors();
         final Resources res = getResources();
-        Drawable drawable = res.getDrawable(R.drawable.ic_recent_actors_24dp, null);
+        Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_recent_actors_24dp, null);
         if (drawable != null) {
             Drawable icon = DrawableCompat.wrap(drawable);
             DrawableCompat.setTintList(icon, tabColors);
             tabLayout.addTab(tabLayout.newTab().setIcon(icon));
         }
-        drawable = res.getDrawable(R.drawable.ic_album_24dp, null);
+        drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_album_24dp, null);
         if (drawable != null) {
             Drawable icon = DrawableCompat.wrap(drawable);
             DrawableCompat.setTintList(icon, tabColors);

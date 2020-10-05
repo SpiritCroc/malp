@@ -56,6 +56,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.TooltipCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
@@ -1304,24 +1305,19 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         mTrackAdditionalInfo.setText(track.getSubLine(getContext()));
 
         if (null == mLastTrack || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM, mLastTrack) || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM_MBID, mLastTrack)) {
-            // get tint color
-            int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_background_primary);
-
-            Drawable drawable = getResources().getDrawable(R.drawable.cover_placeholder, null);
-            drawable = DrawableCompat.wrap(drawable);
-            DrawableCompat.setTint(drawable, tintColor);
-
             // Show the placeholder image until the cover fetch process finishes
             mCoverImage.clearAlbumImage();
 
-            tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
-
-            drawable = getResources().getDrawable(R.drawable.cover_placeholder_128dp, null);
-            drawable = DrawableCompat.wrap(drawable);
-            DrawableCompat.setTint(drawable, tintColor);
-
-
             // The same for the small header image
+            int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+
+            Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.cover_placeholder_128dp, null);
+
+            if (drawable != null) {
+                drawable = DrawableCompat.wrap(drawable);
+                DrawableCompat.setTint(drawable, tintColor);
+            }
+
             mTopCoverImage.setImageDrawable(drawable);
             // Start the cover loader
             mCoverLoader.getImage(track, true, mCoverImage.getWidth(), mCoverImage.getHeight());

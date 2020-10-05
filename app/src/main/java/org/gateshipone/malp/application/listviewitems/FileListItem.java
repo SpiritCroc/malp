@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.gateshipone.malp.R;
@@ -227,7 +228,7 @@ public class FileListItem extends AbsImageListViewItem {
         }
 
         if (mShowIcon) {
-            Drawable icon = context.getDrawable(R.drawable.ic_file_48dp);
+            Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_file_48dp);
 
             if (icon != null) {
                 // get tint color
@@ -257,7 +258,7 @@ public class FileListItem extends AbsImageListViewItem {
         mDurationView.setVisibility(GONE);
 
         if (mShowIcon) {
-            Drawable icon = context.getDrawable(R.drawable.ic_folder_48dp);
+            Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_folder_48dp);
 
             if (icon != null) {
                 // get tint color
@@ -285,7 +286,7 @@ public class FileListItem extends AbsImageListViewItem {
         mDurationView.setVisibility(GONE);
 
         if (mShowIcon) {
-            Drawable icon = context.getDrawable(R.drawable.ic_queue_music_black_48dp);
+            Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_queue_music_black_48dp);
 
             if (icon != null) {
                 // get tint color
