@@ -89,6 +89,26 @@ public class MPDSocketInterface {
         mReadBufferReadPos = 0;
     }
 
+    private void skipBytes(int size) throws IOException {
+        int dataRead = 0;
+        int readyData = 0;
+        int dataToRead = 0;
+        while (dataRead < size) {
+            readyData = dataReady();
+
+            // Check how much data is necessary to read (do not read more data than requested!)
+            dataToRead = Math.min(readyData, (size - dataRead));
+
+            dataRead += dataToRead;
+            mReadBufferReadPos += dataToRead;
+
+            // Check if the data buffer is depleted
+            if (dataReady() == 0 && dataRead != size) {
+                fillReadBuffer();
+            }
+        }
+    }
+
     private int dataReady() {
         return mReadBufferWritePos - mReadBufferReadPos;
     }
@@ -303,7 +323,7 @@ public class MPDSocketInterface {
         }
 
         // Skip one byte to catch last newline
-        mReadBufferReadPos++;
+        skipBytes(1);
 
         // Read last newline from MPD (s. https://www.musicpd.org/doc/protocol/database.html - command
         // albumart)

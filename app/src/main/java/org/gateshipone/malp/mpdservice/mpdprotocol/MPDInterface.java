@@ -1144,7 +1144,7 @@ public class MPDInterface {
                     boolean abort = false;
                     if (firstRun) {
                         if(imageSize > MAX_IMAGE_SIZE) {
-                            Log.e(TAG, "Size=" + imageSize + " unsupported for path=" + path + " - Aborting download");
+                            Log.e(TAG, "Size=" + imageSize + " unsupported for path=" + path + " - Aborting download with " + (readPicture ? "readPicture" : "albumArt"));
                             imageSize = 0;
                             dataToRead = 0;
                             abort = true;
