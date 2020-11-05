@@ -236,62 +236,61 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
 
         mListView.requestFocus();
 
-        switch (item.getItemId()) {
-            case R.id.action_song_play:
-                MPDQueryHandler.playSong(track.getPath());
-                return true;
-            case R.id.action_song_enqueue:
-                MPDQueryHandler.addPath(track.getPath());
-                return true;
-            case R.id.action_song_enqueue_at_start:
-                MPDQueryHandler.addPathAtStart(track.getPath());
-                return true;
-            case R.id.action_song_play_next:
-                MPDQueryHandler.playSongNext(track.getPath());
-                return true;
-            case R.id.action_add_to_saved_playlist: {
-                // open dialog in order to save the current playlist as a playlist in the mediastore
-                ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+        final int itemId = item.getItemId();
 
-                choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(position), getContext()));
-                choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
-                return true;
+        if (itemId == R.id.action_song_play) {
+            MPDQueryHandler.playSong(track.getPath());
+            return true;
+        } else if (itemId == R.id.action_song_enqueue) {
+            MPDQueryHandler.addPath(track.getPath());
+            return true;
+        } else if (itemId == R.id.action_song_enqueue_at_start) {
+            MPDQueryHandler.addPathAtStart(track.getPath());
+            return true;
+        } else if (itemId == R.id.action_song_play_next) {
+            MPDQueryHandler.playSongNext(track.getPath());
+            return true;
+        } else if (itemId == R.id.action_add_to_saved_playlist) {
+            // open dialog in order to save the current playlist as a playlist in the mediastore
+            ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+
+            choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(position), getContext()));
+            choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
+            return true;
+        } else if (itemId == R.id.action_show_details) {
+            // Open song details dialog
+            SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
+            songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+            return true;
+        } else if (itemId == R.id.action_add_album) {
+            String artist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
+            if (artist.isEmpty()) {
+                artist = track.getStringTag(MPDTrack.StringTagTypes.ARTIST);
             }
-            case R.id.action_show_details: {
-                // Open song details dialog
-                SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
-                songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
-                return true;
+            MPDQueryHandler.addArtistAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM), artist, track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
+            return true;
+        } else if (itemId == R.id.action_play_album) {
+            String artist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
+            if (artist.isEmpty()) {
+                artist = track.getStringTag(MPDTrack.StringTagTypes.ARTIST);
             }
-            case R.id.action_add_album: {
-                String artist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
-                if (artist.isEmpty()) {
-                    artist = track.getStringTag(MPDTrack.StringTagTypes.ARTIST);
-                }
-                MPDQueryHandler.addArtistAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM), artist, track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
-                return true;
-            }
-            case R.id.action_play_album: {
-                String artist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
-                if (artist.isEmpty()) {
-                    artist = track.getStringTag(MPDTrack.StringTagTypes.ARTIST);
-                }
-                MPDQueryHandler.playArtistAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM), artist, track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
-                return true;
-            }
-            case R.id.action_add_artist:
-                MPDQueryHandler.addArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder);
-                return true;
-            case R.id.action_play_artist:
-                MPDQueryHandler.playArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder);
-                return true;
-            case R.id.menu_group_album:
-            case R.id.menu_group_artist:
-                // Save position for later use
-                mContextMenuPosition = info.position;
-            default:
-                return super.onContextItemSelected(item);
+            MPDQueryHandler.playArtistAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM), artist, track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
+            return true;
+        } else if (itemId == R.id.action_add_artist) {
+            MPDQueryHandler.addArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder);
+            return true;
+        } else if (itemId == R.id.action_play_artist) {
+            MPDQueryHandler.playArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder);
+            return true;
+        } else if (itemId == R.id.menu_group_album) {
+            // Save position for later use
+            mContextMenuPosition = info.position;
+        } else if (itemId == R.id.menu_group_artist) {
+            // Save position for later use
+            mContextMenuPosition = info.position;
         }
+
+        return super.onContextItemSelected(item);
     }
 
     /**

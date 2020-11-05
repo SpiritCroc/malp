@@ -377,17 +377,18 @@ public class EditProfileFragment extends Fragment {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                checkChanged();
-                mOptionsMenuHandled = true;
-                getActivity().onBackPressed();
-                return true;
-            case R.id.action_delete:
-                ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile(mOldProfile, getContext());
-                mOptionsMenuHandled = true;
-                getActivity().onBackPressed();
-                return true;
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.action_save) {
+            checkChanged();
+            mOptionsMenuHandled = true;
+            getActivity().onBackPressed();
+            return true;
+        } else if (itemId == R.id.action_delete) {
+            ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile(mOldProfile, getContext());
+            mOptionsMenuHandled = true;
+            getActivity().onBackPressed();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

@@ -220,16 +220,17 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
             return super.onContextItemSelected(item);
         }
 
-        switch (item.getItemId()) {
-            case R.id.fragment_albums_action_enqueue:
-                enqueueAlbum(info.position);
-                return true;
-            case R.id.fragment_albums_action_play:
-                playAlbum(info.position);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.fragment_albums_action_enqueue) {
+            enqueueAlbum(info.position);
+            return true;
+        } else if (itemId == R.id.fragment_albums_action_play) {
+            playAlbum(info.position);
+            return true;
         }
+
+        return super.onContextItemSelected(item);
     }
 
     @Override

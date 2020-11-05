@@ -224,32 +224,27 @@ public class MainActivity extends GenericActivity
             Fragment fragment;
             String fragmentTag;
 
-            switch (navId) {
-                case R.id.nav_saved_playlists:
-                    fragment = SavedPlaylistsFragment.newInstance();
-                    fragmentTag = SavedPlaylistsFragment.TAG;
-                    break;
-                case R.id.nav_files:
-                    fragment = FilesFragment.newInstance("");
-                    fragmentTag = FilesFragment.TAG;
-                    break;
-                case R.id.nav_profiles:
-                    fragment = ProfilesFragment.newInstance();
-                    fragmentTag = ProfilesFragment.TAG;
-                    break;
-                case R.id.nav_app_settings:
-                    fragment = SettingsFragment.newInstance();
-                    fragmentTag = SettingsFragment.TAG;
-                    break;
-                case R.id.nav_search:
-                    fragment = SearchFragment.newInstance();
-                    fragmentTag = SearchFragment.TAG;
-                    break;
-                case R.id.nav_library:
-                default:
-                    fragment = MyMusicTabsFragment.newInstance(getDefaultTab());
-                    fragmentTag = MyMusicTabsFragment.TAG;
-                    break;
+            if (navId == R.id.nav_saved_playlists) {
+                fragment = SavedPlaylistsFragment.newInstance();
+                fragmentTag = SavedPlaylistsFragment.TAG;
+            } else if (navId == R.id.nav_files) {
+                fragment = FilesFragment.newInstance("");
+                fragmentTag = FilesFragment.TAG;
+            } else if (navId == R.id.nav_profiles) {
+                fragment = ProfilesFragment.newInstance();
+                fragmentTag = ProfilesFragment.TAG;
+            } else if (navId == R.id.nav_app_settings) {
+                fragment = SettingsFragment.newInstance();
+                fragmentTag = SettingsFragment.TAG;
+            } else if (navId == R.id.nav_search) {
+                fragment = SearchFragment.newInstance();
+                fragmentTag = SearchFragment.TAG;
+            } else if (navId == R.id.nav_library) {
+                fragment = MyMusicTabsFragment.newInstance(getDefaultTab());
+                fragmentTag = MyMusicTabsFragment.TAG;
+            } else {
+                fragment = MyMusicTabsFragment.newInstance(getDefaultTab());
+                fragmentTag = MyMusicTabsFragment.TAG;
             }
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -348,41 +343,41 @@ public class MainActivity extends GenericActivity
 
             if (currentPlaylistView != null && mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
 
-                MPDTrack track = (MPDTrack) currentPlaylistView.getItem(info.position);
+                final MPDTrack track = (MPDTrack) currentPlaylistView.getItem(info.position);
 
-                switch (item.getItemId()) {
+                final int itemId = item.getItemId();
 
-                    case R.id.action_song_play_next:
-                        MPDQueryHandler.playIndexAsNext(info.position);
-                        return true;
-                    case R.id.action_add_to_saved_playlist:
-                        // open dialog in order to save the current playlist as a playlist in the mediastore
-                        ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
-                        choosePlaylistDialog.setCallback(new AddPathToPlaylist(track, this));
-                        choosePlaylistDialog.show(getSupportFragmentManager(), "ChoosePlaylistDialog");
-                        return true;
-                    case R.id.action_remove_song:
-                        MPDQueryHandler.removeSongFromCurrentPlaylist(info.position);
-                        return true;
-                    case R.id.action_remove_album:
-                        currentPlaylistView.removeAlbumFrom(info.position);
-                        return true;
-                    case R.id.action_show_artist:
-                        if (mUseArtistSort) {
-                            onArtistSelected(new MPDArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTISTSORT)), null);
-                        } else {
-                            onArtistSelected(new MPDArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST)), null);
-                        }
-                        return true;
-                    case R.id.action_show_album:
-                        MPDAlbum tmpAlbum = track.getAlbum();
-                        onAlbumSelected(tmpAlbum, null);
-                        return true;
-                    case R.id.action_show_details:
-                        // Open song details dialog
-                        SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog(track, true);
-                        songDetailsDialog.show(getSupportFragmentManager(), "SongDetails");
-                        return true;
+                if (itemId == R.id.action_song_play_next) {
+                    MPDQueryHandler.playIndexAsNext(info.position);
+                    return true;
+                } else if (itemId == R.id.action_add_to_saved_playlist) {
+                    // open dialog in order to save the current playlist as a playlist in the mediastore
+                    ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+                    choosePlaylistDialog.setCallback(new AddPathToPlaylist(track, this));
+                    choosePlaylistDialog.show(getSupportFragmentManager(), "ChoosePlaylistDialog");
+                    return true;
+                } else if (itemId == R.id.action_remove_song) {
+                    MPDQueryHandler.removeSongFromCurrentPlaylist(info.position);
+                    return true;
+                } else if (itemId == R.id.action_remove_album) {
+                    currentPlaylistView.removeAlbumFrom(info.position);
+                    return true;
+                } else if (itemId == R.id.action_show_artist) {
+                    if (mUseArtistSort) {
+                        onArtistSelected(new MPDArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTISTSORT)), null);
+                    } else {
+                        onArtistSelected(new MPDArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST)), null);
+                    }
+                    return true;
+                } else if (itemId == R.id.action_show_album) {
+                    MPDAlbum tmpAlbum = track.getAlbum();
+                    onAlbumSelected(tmpAlbum, null);
+                    return true;
+                } else if (itemId == R.id.action_show_details) {
+                    // Open song details dialog
+                    SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog(track, true);
+                    songDetailsDialog.show(getSupportFragmentManager(), "SongDetails");
+                    return true;
                 }
             }
         }

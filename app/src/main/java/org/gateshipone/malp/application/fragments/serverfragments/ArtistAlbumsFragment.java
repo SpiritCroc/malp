@@ -236,16 +236,17 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
             return super.onContextItemSelected(item);
         }
 
-        switch (item.getItemId()) {
-            case R.id.fragment_albums_action_enqueue:
-                enqueueAlbum(info.position);
-                return true;
-            case R.id.fragment_albums_action_play:
-                playAlbum(info.position);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.fragment_albums_action_enqueue) {
+            enqueueAlbum(info.position);
+            return true;
+        } else if (itemId == R.id.fragment_albums_action_play) {
+            playAlbum(info.position);
+            return true;
         }
+
+        return super.onContextItemSelected(item);
     }
 
     /**
@@ -282,14 +283,15 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_reset_artwork:
-                setupToolbarAndStuff();
-                ArtworkManager.getInstance(getContext()).resetArtistImage(mArtist);
-                return true;
-            case R.id.action_add_artist:
-                enqueueArtist();
-                return true;
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.action_reset_artwork) {
+            setupToolbarAndStuff();
+            ArtworkManager.getInstance(getContext()).resetArtistImage(mArtist);
+            return true;
+        } else if (itemId == R.id.action_add_artist) {
+            enqueueArtist();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

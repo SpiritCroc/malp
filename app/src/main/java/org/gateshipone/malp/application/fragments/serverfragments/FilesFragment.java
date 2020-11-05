@@ -265,46 +265,47 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
             return super.onContextItemSelected(item);
         }
 
-        switch (item.getItemId()) {
-            case R.id.action_song_enqueue:
-            case R.id.action_add_directory:
-                MPDQueryHandler.addPath(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
-                return true;
-            case R.id.action_song_enqueue_at_start:
-                MPDQueryHandler.addPathAtStart(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
-                return true;
-            case R.id.action_song_play:
-                MPDQueryHandler.playSong(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
-                return true;
-            case R.id.action_song_play_next:
-                MPDQueryHandler.playSongNext(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
-                return true;
-            case R.id.action_add_to_saved_playlist: {
-                // open dialog in order to save the current playlist as a playlist in the mediastore
-                ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+        final int itemId = item.getItemId();
 
-                choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
-                choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
-                return true;
-            }
-            case R.id.action_play_playlist:
-                MPDQueryHandler.playPlaylist(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
-                return true;
-            case R.id.action_add_playlist:
-                MPDQueryHandler.loadPlaylist(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
-                return true;
-            case R.id.action_play_directory:
-                MPDQueryHandler.playDirectory(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
-                return true;
-            case R.id.action_show_details: {
-                // Open song details dialog
-                SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(info.position), false);
-                songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
-                return true;
-            }
-            default:
-                return super.onContextItemSelected(item);
+        if (itemId == R.id.action_song_enqueue) {
+            MPDQueryHandler.addPath(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+            return true;
+        } else if (itemId == R.id.action_add_directory) {
+            MPDQueryHandler.addPath(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+            return true;
+        } else if (itemId == R.id.action_song_enqueue_at_start) {
+            MPDQueryHandler.addPathAtStart(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+            return true;
+        } else if (itemId == R.id.action_song_play) {
+            MPDQueryHandler.playSong(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+            return true;
+        } else if (itemId == R.id.action_song_play_next) {
+            MPDQueryHandler.playSongNext(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+            return true;
+        } else if (itemId == R.id.action_add_to_saved_playlist) {
+            // open dialog in order to save the current playlist as a playlist in the mediastore
+            ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+
+            choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
+            choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
+            return true;
+        } else if (itemId == R.id.action_play_playlist) {
+            MPDQueryHandler.playPlaylist(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+            return true;
+        } else if (itemId == R.id.action_add_playlist) {
+            MPDQueryHandler.loadPlaylist(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+            return true;
+        } else if (itemId == R.id.action_play_directory) {
+            MPDQueryHandler.playDirectory(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+            return true;
+        } else if (itemId == R.id.action_show_details) {
+            // Open song details dialog
+            SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(info.position), false);
+            songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+            return true;
         }
+
+        return super.onContextItemSelected(item);
     }
 
 
@@ -367,16 +368,17 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add_directory:
-                MPDQueryHandler.addPath(mPath);
-                return true;
-            case R.id.action_show_albums_from_here:
-                mCallback.showAlbumsForPath(mPath);
-                return true;
-            case R.id.action_update_database_here:
-                MPDQueryHandler.updateDatabase(mPath);
-                return true;
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.action_add_directory) {
+            MPDQueryHandler.addPath(mPath);
+            return true;
+        } else if (itemId == R.id.action_show_albums_from_here) {
+            mCallback.showAlbumsForPath(mPath);
+            return true;
+        } else if (itemId == R.id.action_update_database_here) {
+            MPDQueryHandler.updateDatabase(mPath);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

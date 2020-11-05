@@ -248,36 +248,35 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
             return super.onContextItemSelected(item);
         }
 
-        switch (item.getItemId()) {
-            case R.id.action_song_enqueue:
-                enqueueTrack(info.position);
-                return true;
-            case R.id.action_song_play:
-                play(info.position);
-                return true;
-            case R.id.action_song_play_next:
-                playNext(info.position);
-                return true;
-            case R.id.action_song_enqueue_at_start:
-                prependTrack(info.position);
-                return true;
-            case R.id.action_add_to_saved_playlist: {
-                // open dialog in order to save the current playlist as a playlist in the mediastore
-                ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+        final int itemId = item.getItemId();
 
-                choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
-                choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
-                return true;
-            }
-            case R.id.action_show_details: {
-                // Open song details dialog
-                SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(info.position), false);
-                songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
-                return true;
-            }
-            default:
-                return super.onContextItemSelected(item);
+        if (itemId == R.id.action_song_enqueue) {
+            enqueueTrack(info.position);
+            return true;
+        } else if (itemId == R.id.action_song_play) {
+            play(info.position);
+            return true;
+        } else if (itemId == R.id.action_song_play_next) {
+            playNext(info.position);
+            return true;
+        } else if (itemId == R.id.action_song_enqueue_at_start) {
+            prependTrack(info.position);
+            return true;
+        } else if (itemId == R.id.action_add_to_saved_playlist) {
+            // open dialog in order to save the current playlist as a playlist in the mediastore
+            ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+
+            choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
+            choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
+            return true;
+        } else if (itemId == R.id.action_show_details) {
+            // Open song details dialog
+            SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(info.position), false);
+            songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+            return true;
         }
+
+        return super.onContextItemSelected(item);
     }
 
     /**
@@ -317,20 +316,21 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_reset_artwork:
-                if (null != mFABCallback) {
-                    mFABCallback.setupToolbar(mAlbum.getName(), false, false, false);
-                }
-                ArtworkManager.getInstance(getContext()).resetAlbumImage(mAlbum);
-                return true;
-            case R.id.action_add_album:
-                enqueueAlbum();
-                return true;
-            case R.id.action_show_all_tracks:
-                mAlbum.setMBID("");
-                mAlbum.setArtistName("");
-                return true;
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.action_reset_artwork) {
+            if (null != mFABCallback) {
+                mFABCallback.setupToolbar(mAlbum.getName(), false, false, false);
+            }
+            ArtworkManager.getInstance(getContext()).resetAlbumImage(mAlbum);
+            return true;
+        } else if (itemId == R.id.action_add_album) {
+            enqueueAlbum();
+            return true;
+        } else if (itemId == R.id.action_show_all_tracks) {
+            mAlbum.setMBID("");
+            mAlbum.setArtistName("");
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

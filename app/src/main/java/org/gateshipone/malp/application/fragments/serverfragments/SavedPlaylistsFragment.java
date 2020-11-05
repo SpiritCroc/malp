@@ -159,31 +159,33 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
         }
 
         final MPDPlaylist playlist = (MPDPlaylist) mAdapter.getItem(info.position);
-        switch (item.getItemId()) {
-            case R.id.action_add_playlist:
-                MPDQueryHandler.loadPlaylist(playlist.getPath());
-                return true;
-            case R.id.action_remove_playlist:
-                final AlertDialog.Builder removeListBuilder = new AlertDialog.Builder(getContext());
-                removeListBuilder.setTitle(getContext().getString(R.string.action_delete_playlist));
-                removeListBuilder.setMessage(getContext().getString(R.string.dialog_message_delete_playlist) + ' ' + playlist.getSectionTitle() + '?');
-                removeListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> {
-                    MPDQueryHandler.removePlaylist(playlist.getPath());
-                    mAdapter.swapModel(null);
-                    refreshContent();
-                });
-                removeListBuilder.setNegativeButton(R.string.dialog_action_no, (dialog, which) -> {
 
-                });
-                removeListBuilder.create().show();
+        final int itemId = item.getItemId();
 
-                return true;
-            case R.id.action_play_playlist:
-                MPDQueryHandler.playPlaylist(playlist.getPath());
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+        if (itemId == R.id.action_add_playlist) {
+            MPDQueryHandler.loadPlaylist(playlist.getPath());
+            return true;
+        } else if (itemId == R.id.action_remove_playlist) {
+            final AlertDialog.Builder removeListBuilder = new AlertDialog.Builder(getContext());
+            removeListBuilder.setTitle(getContext().getString(R.string.action_delete_playlist));
+            removeListBuilder.setMessage(getContext().getString(R.string.dialog_message_delete_playlist) + ' ' + playlist.getSectionTitle() + '?');
+            removeListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> {
+                MPDQueryHandler.removePlaylist(playlist.getPath());
+                mAdapter.swapModel(null);
+                refreshContent();
+            });
+            removeListBuilder.setNegativeButton(R.string.dialog_action_no, (dialog, which) -> {
+
+            });
+            removeListBuilder.create().show();
+
+            return true;
+        } else if (itemId == R.id.action_play_playlist) {
+            MPDQueryHandler.playPlaylist(playlist.getPath());
+            return true;
         }
+
+        return super.onContextItemSelected(item);
     }
 
     @Override

@@ -215,16 +215,17 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
             return super.onContextItemSelected(item);
         }
 
-        switch (item.getItemId()) {
-            case R.id.fragment_artist_action_enqueue:
-                enqueueArtist(info.position);
-                return true;
-            case R.id.fragment_artist_action_play:
-                playArtist(info.position);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.fragment_artist_action_enqueue) {
+            enqueueArtist(info.position);
+            return true;
+        } else if (itemId == R.id.fragment_artist_action_play) {
+            playArtist(info.position);
+            return true;
         }
+
+        return super.onContextItemSelected(item);
     }
 
     @Override

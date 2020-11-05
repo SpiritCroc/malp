@@ -351,158 +351,145 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
      */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_clear_playlist:
-                final AlertDialog.Builder removeListBuilder = new AlertDialog.Builder(getContext());
-                removeListBuilder.setTitle(getContext().getString(R.string.action_delete_playlist));
-                removeListBuilder.setMessage(getContext().getString(R.string.dialog_message_delete_current_playlist));
-                removeListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> MPDQueryHandler.clearPlaylist());
-                removeListBuilder.setNegativeButton(R.string.dialog_action_no, (dialog, which) -> {
+        final int itemId = item.getItemId();
 
-                });
-                removeListBuilder.create().show();
-                break;
-            case R.id.action_shuffle_playlist: {
-                final AlertDialog.Builder shuffleListBuilder = new AlertDialog.Builder(getContext());
-                shuffleListBuilder.setTitle(getContext().getString(R.string.action_shuffle_playlist));
-                shuffleListBuilder.setMessage(getContext().getString(R.string.dialog_message_shuffle_current_playlist));
-                shuffleListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> MPDQueryHandler.shufflePlaylist());
-                shuffleListBuilder.setNegativeButton(R.string.dialog_action_no, (dialog, which) -> {
-                });
-                shuffleListBuilder.create().show();
-            }
-            break;
-            case R.id.action_save_playlist:
-                OnSaveDialogListener plDialogCallback = new OnSaveDialogListener() {
-                    @Override
-                    public void onSaveObject(final String title) {
-                        AlertDialog.Builder overWriteBuilder = new AlertDialog.Builder(getContext());
-                        overWriteBuilder.setTitle(getContext().getString(R.string.action_overwrite_playlist));
-                        overWriteBuilder.setMessage(getContext().getString(R.string.dialog_message_overwrite_playlist) + ' ' + title + '?');
-                        overWriteBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> {
-                            MPDQueryHandler.removePlaylist(title);
-                            MPDQueryHandler.savePlaylist(title);
-                        });
-                        overWriteBuilder.setNegativeButton(R.string.dialog_action_no, (dialog, which) -> {
+        if (itemId == R.id.action_clear_playlist) {
+            final AlertDialog.Builder removeListBuilder = new AlertDialog.Builder(getContext());
+            removeListBuilder.setTitle(getContext().getString(R.string.action_delete_playlist));
+            removeListBuilder.setMessage(getContext().getString(R.string.dialog_message_delete_current_playlist));
+            removeListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> MPDQueryHandler.clearPlaylist());
+            removeListBuilder.setNegativeButton(R.string.dialog_action_no, (dialog, which) -> {
 
-                        });
-                        overWriteBuilder.create().show();
+            });
+            removeListBuilder.create().show();
+        } else if (itemId == R.id.action_shuffle_playlist) {
+            final AlertDialog.Builder shuffleListBuilder = new AlertDialog.Builder(getContext());
+            shuffleListBuilder.setTitle(getContext().getString(R.string.action_shuffle_playlist));
+            shuffleListBuilder.setMessage(getContext().getString(R.string.dialog_message_shuffle_current_playlist));
+            shuffleListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> MPDQueryHandler.shufflePlaylist());
+            shuffleListBuilder.setNegativeButton(R.string.dialog_action_no, (dialog, which) -> {
+            });
+            shuffleListBuilder.create().show();
+        } else if (itemId == R.id.action_save_playlist) {
+            OnSaveDialogListener plDialogCallback = new OnSaveDialogListener() {
+                @Override
+                public void onSaveObject(final String title) {
+                    AlertDialog.Builder overWriteBuilder = new AlertDialog.Builder(getContext());
+                    overWriteBuilder.setTitle(getContext().getString(R.string.action_overwrite_playlist));
+                    overWriteBuilder.setMessage(getContext().getString(R.string.dialog_message_overwrite_playlist) + ' ' + title + '?');
+                    overWriteBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> {
+                        MPDQueryHandler.removePlaylist(title);
+                        MPDQueryHandler.savePlaylist(title);
+                    });
+                    overWriteBuilder.setNegativeButton(R.string.dialog_action_no, (dialog, which) -> {
 
-                    }
+                    });
+                    overWriteBuilder.create().show();
 
-                    @Override
-                    public void onCreateNewObject() {
-                        // open dialog in order to save the current playlist as a playlist in the mediastore
-                        TextDialog textDialog = TextDialog.newInstance(getResources().getString(R.string.dialog_save_playlist),
-                                getResources().getString(R.string.default_playlist_title));
-
-                        textDialog.setCallback(MPDQueryHandler::savePlaylist);
-                        textDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SavePLTextDialog");
-                    }
-                };
-
-                // open dialog in order to save the current playlist as a playlist in the mediastore
-                ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
-
-                choosePlaylistDialog.setCallback(plDialogCallback);
-                choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
-                break;
-            case R.id.action_add_url: {
-                TextDialog addURLDialog = TextDialog.newInstance(getResources().getString(R.string.action_add_url), "http://...");
-
-                addURLDialog.setCallback(MPDQueryHandler::addPath);
-                addURLDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "AddURLDialog");
-            }
-            break;
-            case R.id.action_add_url_playlist: {
-                TextDialog addURLDialog = TextDialog.newInstance(getResources().getString(R.string.action_add_url), "http://...");
-
-                addURLDialog.setCallback(MPDQueryHandler::loadPlaylist);
-                addURLDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "AddURLDialog");
-            }
-            break;
-            case R.id.action_jump_to_current:
-                mPlaylistView.jumpToCurrentSong();
-                break;
-            case R.id.action_toggle_single_mode:
-                if (null != mLastStatus) {
-                    if (mLastStatus.getSinglePlayback() == 0) {
-                        MPDCommandHandler.setSingle(true);
-                    } else {
-                        MPDCommandHandler.setSingle(false);
-                    }
                 }
-                break;
-            case R.id.action_toggle_consume_mode:
-                if (null != mLastStatus) {
-                    if (mLastStatus.getConsume() == 0) {
-                        MPDCommandHandler.setConsume(true);
-                    } else {
-                        MPDCommandHandler.setConsume(false);
-                    }
+
+                @Override
+                public void onCreateNewObject() {
+                    // open dialog in order to save the current playlist as a playlist in the mediastore
+                    TextDialog textDialog = TextDialog.newInstance(getResources().getString(R.string.dialog_save_playlist),
+                            getResources().getString(R.string.default_playlist_title));
+
+                    textDialog.setCallback(MPDQueryHandler::savePlaylist);
+                    textDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SavePLTextDialog");
                 }
-                break;
-            case R.id.action_open_fanart:
-                Intent intent = new Intent(getContext(), FanartActivity.class);
-                getContext().startActivity(intent);
-                return true;
-            case R.id.action_wikipedia_album:
-                Intent albumIntent = new Intent(Intent.ACTION_VIEW);
-                //albumIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/index.php?search=" + mLastTrack.getTrackAlbum() + "&title=Special:Search&go=Go"));
-                if (mUseEnglishWikipedia) {
-                    albumIntent.setData(Uri.parse("https://en.wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM)));
+            };
+
+            // open dialog in order to save the current playlist as a playlist in the mediastore
+            ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
+
+            choosePlaylistDialog.setCallback(plDialogCallback);
+            choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
+        } else if (itemId == R.id.action_add_url) {
+            TextDialog addURLDialog = TextDialog.newInstance(getResources().getString(R.string.action_add_url), "http://...");
+
+            addURLDialog.setCallback(MPDQueryHandler::addPath);
+            addURLDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "AddURLDialog");
+        } else if (itemId == R.id.action_add_url_playlist) {
+            TextDialog addURLDialog = TextDialog.newInstance(getResources().getString(R.string.action_add_url), "http://...");
+
+            addURLDialog.setCallback(MPDQueryHandler::loadPlaylist);
+            addURLDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "AddURLDialog");
+        } else if (itemId == R.id.action_jump_to_current) {
+            mPlaylistView.jumpToCurrentSong();
+        } else if (itemId == R.id.action_toggle_single_mode) {
+            if (null != mLastStatus) {
+                if (mLastStatus.getSinglePlayback() == 0) {
+                    MPDCommandHandler.setSingle(true);
                 } else {
-                    albumIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM)));
+                    MPDCommandHandler.setSingle(false);
                 }
+            }
+        } else if (itemId == R.id.action_toggle_consume_mode) {
+            if (null != mLastStatus) {
+                if (mLastStatus.getConsume() == 0) {
+                    MPDCommandHandler.setConsume(true);
+                } else {
+                    MPDCommandHandler.setConsume(false);
+                }
+            }
+        } else if (itemId == R.id.action_open_fanart) {
+            Intent intent = new Intent(getContext(), FanartActivity.class);
+            getContext().startActivity(intent);
+            return true;
+        } else if (itemId == R.id.action_wikipedia_album) {
+            Intent albumIntent = new Intent(Intent.ACTION_VIEW);
+            //albumIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/index.php?search=" + mLastTrack.getTrackAlbum() + "&title=Special:Search&go=Go"));
+            if (mUseEnglishWikipedia) {
+                albumIntent.setData(Uri.parse("https://en.wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM)));
+            } else {
+                albumIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM)));
+            }
 
+            try {
+                getContext().startActivity(albumIntent);
+            } catch (ActivityNotFoundException e) {
+                final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+            }
+
+            return true;
+        } else if (itemId == R.id.action_wikipedia_artist) {
+            Intent artistIntent = new Intent(Intent.ACTION_VIEW);
+            //artistIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/index.php?search=" + mLastTrack.getTrackAlbumArtist() + "&title=Special:Search&go=Go"));
+            if (mUseEnglishWikipedia) {
+                artistIntent.setData(Uri.parse("https://en.wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST)));
+            } else {
+                artistIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST)));
+            }
+
+            try {
+                getContext().startActivity(artistIntent);
+            } catch (ActivityNotFoundException e) {
+                final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
+                noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+            }
+
+            return true;
+        } else if (itemId == R.id.action_start_streaming) {
+            if (mStreamingStatus == BackgroundService.STREAMING_STATUS.PLAYING || mStreamingStatus == BackgroundService.STREAMING_STATUS.BUFFERING) {
                 try {
-                    getContext().startActivity(albumIntent);
-                } catch (ActivityNotFoundException e) {
-                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
-                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
-                }
+                    mBackgroundServiceConnection.getService().stopStreamingPlayback();
+                } catch (RemoteException ignored) {
 
-                return true;
-            case R.id.action_wikipedia_artist:
-                Intent artistIntent = new Intent(Intent.ACTION_VIEW);
-                //artistIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/index.php?search=" + mLastTrack.getTrackAlbumArtist() + "&title=Special:Search&go=Go"));
-                if (mUseEnglishWikipedia) {
-                    artistIntent.setData(Uri.parse("https://en.wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST)));
-                } else {
-                    artistIntent.setData(Uri.parse("https://" + Locale.getDefault().getLanguage() + ".wikipedia.org/wiki/" + mLastTrack.getStringTag(MPDTrack.StringTagTypes.ARTIST)));
                 }
-
+            } else {
                 try {
-                    getContext().startActivity(artistIntent);
-                } catch (ActivityNotFoundException e) {
-                    final ErrorDialog noBrowserFoundDlg = ErrorDialog.newInstance(R.string.dialog_no_browser_found_title, R.string.dialog_no_browser_found_message);
-                    noBrowserFoundDlg.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "BrowserNotFoundDlg");
+                    mBackgroundServiceConnection.getService().startStreamingPlayback();
+                } catch (RemoteException ignored) {
+
                 }
-
-                return true;
-            case R.id.action_start_streaming: {
-                if (mStreamingStatus == BackgroundService.STREAMING_STATUS.PLAYING || mStreamingStatus == BackgroundService.STREAMING_STATUS.BUFFERING) {
-                    try {
-                        mBackgroundServiceConnection.getService().stopStreamingPlayback();
-                    } catch (RemoteException ignored) {
-
-                    }
-                } else {
-                    try {
-                        mBackgroundServiceConnection.getService().startStreamingPlayback();
-                    } catch (RemoteException ignored) {
-
-                    }
-                }
-                return true;
             }
-            case R.id.action_share_current_song: {
-                shareCurrentTrack();
-                return true;
-            }
-            default:
-                return false;
+            return true;
+        } else if (itemId == R.id.action_share_current_song) {
+            shareCurrentTrack();
+            return true;
         }
+
         return false;
     }
 

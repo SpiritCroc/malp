@@ -121,19 +121,20 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
             return super.onContextItemSelected(item);
         }
 
-        switch (item.getItemId()) {
-            case R.id.action_profile_connect:
-                connectProfile(info.position);
-                return true;
-            case R.id.action_profile_edit:
-                editProfile(info.position);
-                return true;
-            case R.id.action_profile_remove:
-                removeProfile(info.position);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.action_profile_connect) {
+            connectProfile(info.position);
+            return true;
+        } else if (itemId == R.id.action_profile_edit) {
+            editProfile(info.position);
+            return true;
+        } else if (itemId == R.id.action_profile_remove) {
+            removeProfile(info.position);
+            return true;
         }
+
+        return super.onContextItemSelected(item);
     }
 
     /**
