@@ -39,7 +39,7 @@ import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
-public class MALPRequestQueue extends RequestQueue implements RequestQueue.RequestFinishedListener {
+public class MALPRequestQueue extends RequestQueue implements RequestQueue.RequestFinishedListener<Request<?>> {
     private static final String TAG = MALPRequestQueue.class.getSimpleName();
     private Cache mCache;
     private Network mNetwork;
@@ -108,7 +108,7 @@ public class MALPRequestQueue extends RequestQueue implements RequestQueue.Reque
         @Override
         public void run() {
             synchronized (mLimitingRequestQueue) {
-                Request request = mLimitingRequestQueue.poll();
+                Request<?> request = mLimitingRequestQueue.poll();
                 if (null != request) {
                     // Forward the request to the volley request queue
                     realAddRequest(request);

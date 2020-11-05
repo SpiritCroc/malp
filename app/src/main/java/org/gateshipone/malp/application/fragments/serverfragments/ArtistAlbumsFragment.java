@@ -359,8 +359,8 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
                 if (mBitmap == null) {
                     final View rootView = getView();
                     rootView.post(() -> {
-                        int width = rootView.getWidth();
-                        mBitmapLoader.getArtistImage(mArtist, true, width, width);
+                        final int size = rootView.getWidth();
+                        mBitmapLoader.getArtistImage(mArtist, true, size, size);
                     });
                     mFABCallback.setupToolbar(mArtist.getArtistName(), false, false, false);
                 } else {
@@ -369,11 +369,11 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
                     mFABCallback.setupToolbarImage(mBitmap);
                     final View rootView = getView();
                     rootView.post(() -> {
-                        int width = rootView.getWidth();
+                        final int size = rootView.getWidth();
 
                         // Image too small
-                        if (mBitmap.getWidth() < width) {
-                            mBitmapLoader.getArtistImage(mArtist, true, width, width);
+                        if (mBitmap.getWidth() < size) {
+                            mBitmapLoader.getArtistImage(mArtist, true, size, size);
                         }
                     });
                 }

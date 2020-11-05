@@ -32,7 +32,6 @@ import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseHandl
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDException;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 import java.util.List;
 

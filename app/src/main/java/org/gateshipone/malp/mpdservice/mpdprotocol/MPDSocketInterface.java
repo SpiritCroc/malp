@@ -24,8 +24,6 @@ package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 import android.util.Log;
 
-import org.gateshipone.malp.BuildConfig;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

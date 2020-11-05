@@ -66,7 +66,7 @@ public class MPDException extends Exception {
             if (subStringStart != -1 && subStringStop != -1) {
                 substring = error.substring(error.indexOf('[') + 1, error.lastIndexOf('@'));
                 try {
-                    mErrorCode = Integer.valueOf(substring);
+                    mErrorCode = Integer.parseInt(substring);
                 } catch (NumberFormatException e) {
                     mErrorCode = -4711;
                 }
@@ -78,7 +78,7 @@ public class MPDException extends Exception {
             if (subStringStart != -1 && subStringStop != -1) {
                 substring = error.substring(error.indexOf('@') + 1, error.lastIndexOf(']'));
                 try {
-                    mCommandOffset = Integer.valueOf(substring);
+                    mCommandOffset = Integer.parseInt(substring);
                 } catch (NumberFormatException e) {
                     mCommandOffset = -1;
                 }

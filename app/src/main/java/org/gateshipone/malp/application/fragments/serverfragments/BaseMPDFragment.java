@@ -150,9 +150,9 @@ public abstract class BaseMPDFragment<T extends MPDGenericItem> extends DialogFr
     }
 
     private static class ConnectionStateListener extends MPDConnectionStateChangeHandler {
-        private WeakReference<BaseMPDFragment> pFragment;
+        private final WeakReference<BaseMPDFragment<?>> pFragment;
 
-        ConnectionStateListener(BaseMPDFragment fragment, Looper looper) {
+        ConnectionStateListener(BaseMPDFragment<?> fragment, Looper looper) {
             super(looper);
             pFragment = new WeakReference<>(fragment);
         }
@@ -164,7 +164,7 @@ public abstract class BaseMPDFragment<T extends MPDGenericItem> extends DialogFr
 
         @Override
         public void onDisconnected() {
-            BaseMPDFragment fragment = pFragment.get();
+            BaseMPDFragment<?> fragment = pFragment.get();
             if (fragment == null) {
                 return;
             }

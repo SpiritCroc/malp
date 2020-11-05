@@ -73,9 +73,9 @@ public class MPDCapabilities {
     public MPDCapabilities(String version, List<String> commands, List<String> tags) {
         String[] versions = version.split("\\.");
         if (versions.length == 3) {
-            mMajorVersion = Integer.valueOf(versions[0]);
-            mMinorVersion = Integer.valueOf(versions[1]);
-            mPatchVersion = Integer.valueOf(versions[2]);
+            mMajorVersion = Integer.parseInt(versions[0]);
+            mMinorVersion = Integer.parseInt(versions[1]);
+            mPatchVersion = Integer.parseInt(versions[2]);
         }
 
         // Only MPD servers greater version 0.14 have ranged playlist fetching, this allows fallback
@@ -102,7 +102,7 @@ public class MPDCapabilities {
             // MPD 0.19 - 0.20 (only buggy for last MPD 0.20.x release, can be detected by mopidy workaround)
             mHasListGroup = true;
             mHasListFiltering = true;
-        } else if (mMinorVersion == 21 && mMajorVersion == 0 && mPatchVersion < 11 ) {
+        } else if (mMinorVersion == 21 && mMajorVersion == 0 && mPatchVersion < 11) {
             // Buggy for all MPD version from 0.21.0 to 0.21.10
             mMPDBug408Active = true;
             mHasListGroup = false;
@@ -235,7 +235,7 @@ public class MPDCapabilities {
                 + "List filtering: " + mHasListFiltering + '\n'
                 + "Fast ranged currentplaylist delete: " + mHasCurrentPlaylistRemoveRange + '\n'
                 + "MPD based album artwork: " + mHasAlbumArt + '|' + mHasReadPicture + '\n'
-                + (mMopidyDetected ? "Mopidy detected, consider using the real MPD server (www.musicpd.org)!\n" : "" )
+                + (mMopidyDetected ? "Mopidy detected, consider using the real MPD server (www.musicpd.org)!\n" : "")
                 + (mMPDBug408Active ? "Temporarily limited protocol usage active because of MPD bug #408 and arbitrary protocol changes\n" : "");
     }
 

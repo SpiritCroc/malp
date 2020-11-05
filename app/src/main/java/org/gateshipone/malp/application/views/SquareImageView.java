@@ -24,6 +24,7 @@ package org.gateshipone.malp.application.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+
 /**
  * Square ImageView that matches the parents width.
  * This view is used for the albumcover in the toolbar in portrait mode.
@@ -49,7 +50,7 @@ public class SquareImageView extends androidx.appcompat.widget.AppCompatImageVie
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        int width = getMeasuredWidth();
-        setMeasuredDimension(width, width);
+        final int size = getMeasuredWidth();
+        setMeasuredDimension(size, size);
     }
 }

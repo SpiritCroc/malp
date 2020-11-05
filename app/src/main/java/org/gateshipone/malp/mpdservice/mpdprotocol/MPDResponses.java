@@ -109,7 +109,7 @@ public class MPDResponses {
     }
 
     private static Map<String, MPD_RESPONSE_KEY> createResponseMap() {
-        Map<String, MPD_RESPONSE_KEY> map = new HashMap<String, MPD_RESPONSE_KEY>(MPD_RESPONSE_KEY.values().length);
+        Map<String, MPD_RESPONSE_KEY> map = new HashMap<>(MPD_RESPONSE_KEY.values().length);
 
         // Create dumb mapping
         map.put("OK", MPD_RESPONSE_KEY.RESPONSE_OK);
@@ -171,7 +171,7 @@ public class MPDResponses {
         map.put("Composer", MPD_RESPONSE_KEY.RESPONSE_COMPOSER);
         map.put("Conductor", MPD_RESPONSE_KEY.RESPONSE_CONDUCTOR);
         map.put("Performer", MPD_RESPONSE_KEY.RESPONSE_PERFORMER);
-        map.put("Work",  MPD_RESPONSE_KEY.RESPONSE_WORK);
+        map.put("Work", MPD_RESPONSE_KEY.RESPONSE_WORK);
         map.put("MUSICBRAINZ_WORKID", MPD_RESPONSE_KEY.RESPONSE_WORK_MBID);
         map.put("Genre", MPD_RESPONSE_KEY.RESPONSE_GENRE);
         map.put("Comment", MPD_RESPONSE_KEY.RESPONSE_COMMENT);

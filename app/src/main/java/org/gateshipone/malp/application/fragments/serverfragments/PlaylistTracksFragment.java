@@ -291,7 +291,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
         switch (mClickAction) {
             case ACTION_SHOW_DETAILS: {
                 // Open song details dialog
-                SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position),false);
+                SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
                 songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
                 break;
             }

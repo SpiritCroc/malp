@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  Copyright (C) 2020 Team Gateship-One
   ~  (Hendrik Borghorst & Frederik Luetkes)
   ~
@@ -22,26 +21,28 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent">
 
     <ViewSwitcher
         android:id="@+id/item_grid_viewswitcher"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:outAnimation="@anim/fade_out"
+        android:animateFirstView="true"
         android:inAnimation="@anim/fade_in"
-        android:animateFirstView="true">
+        android:outAnimation="@anim/fade_out">
+
         <ImageView
             android:id="@+id/item_artists_cover_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="?attr/malp_cover_background"
             android:padding="16dp"
             android:scaleType="centerCrop"
             android:src="@drawable/cover_placeholder_128dp"
-            android:tint="?attr/malp_color_text_background_primary"
-            android:background="?attr/malp_cover_background"/>
+            app:tint="?attr/malp_color_text_background_primary" />
 
         <ImageView
             android:id="@+id/item_artists_cover_image"
@@ -60,7 +61,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_alignParentBottom="true" >
+        android:layout_alignParentBottom="true">
 
         <View
             android:layout_width="fill_parent"
@@ -76,9 +77,9 @@
             android:ellipsize="marquee"
             android:fadingEdgeLength="16sp"
             android:fontFamily="sans-serif-light"
-            android:textColor="#ffffff"
             android:gravity="center_vertical|center_horizontal"
-            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="#ffffff"
             android:textSize="14sp" />
     </RelativeLayout>
 

@@ -81,7 +81,7 @@ public class MPDInterface {
     private static MPDInterface mArtworkInterface;
     private static MPDInterface mGenericInterface;
 
-    public static void setServerParameters(String hostname, String password, int port) {
+    public void setServerParameters(String hostname, String password, int port) {
         mHostname = hostname;
         mPassword = password;
         mPort = port;
@@ -1129,14 +1129,14 @@ public class MPDInterface {
             while (line != null && !line.startsWith("OK")) {
                 if (line.startsWith("size")) {
                     if (firstRun) {
-                        imageSize = Integer.valueOf(line.substring(MPDResponses.MPD_RESPONSE_SIZE.length()));
+                        imageSize = Integer.parseInt(line.substring(MPDResponses.MPD_RESPONSE_SIZE.length()));
                         imageData = new byte[imageSize];
                         dataToRead = imageSize;
                         firstRun = false;
                     }
                 } else if (line.startsWith("binary")) {
                     // This means that after this line a binary chunk is incoming
-                    chunkSize = Integer.valueOf(line.substring(MPDResponses.MPD_RESPONSE_BINARY_SIZE.length()));
+                    chunkSize = Integer.parseInt(line.substring(MPDResponses.MPD_RESPONSE_BINARY_SIZE.length()));
 
                     byte[] readData = new byte[0];
                     try {

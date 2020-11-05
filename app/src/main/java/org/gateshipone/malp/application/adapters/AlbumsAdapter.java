@@ -38,11 +38,11 @@ public class AlbumsAdapter extends GenericSectionAdapter<MPDAlbum> implements Ar
 
     private final Context mContext;
 
-    private boolean mUseList;
+    private final boolean mUseList;
 
-    private int mListItemHeight;
+    private int mListItemSize;
 
-    private ArtworkManager mArtworkManager;
+    private final ArtworkManager mArtworkManager;
 
     public AlbumsAdapter(Context context, boolean useList) {
         super();
@@ -51,7 +51,7 @@ public class AlbumsAdapter extends GenericSectionAdapter<MPDAlbum> implements Ar
 
         mUseList = useList;
         if (mUseList) {
-            mListItemHeight = (int) context.getResources().getDimension(R.dimen.material_list_item_height);
+            mListItemSize = (int) context.getResources().getDimension(R.dimen.material_list_item_height);
         }
 
         mArtworkManager = ArtworkManager.getInstance(context.getApplicationContext());
@@ -86,25 +86,25 @@ public class AlbumsAdapter extends GenericSectionAdapter<MPDAlbum> implements Ar
 
             // Check if the scroll speed currently is already 0, then start the image task right away.
             if (mScrollSpeed == 0) {
-                listItem.setImageDimension(mListItemHeight, mListItemHeight);
+                listItem.setImageDimension(mListItemSize, mListItemSize);
                 listItem.startCoverImageTask();
             }
             return listItem;
         } else {
             GenericGridItem gridItem;
             ViewGroup.LayoutParams layoutParams;
-            int width = ((GridView) parent).getColumnWidth();
+            final int size = ((GridView) parent).getColumnWidth();
             // Check if a view can be recycled
             if (convertView == null) {
                 // Create new view if no reusable is available
                 gridItem = new GenericGridItem(mContext, label, this);
-                layoutParams = new android.widget.AbsListView.LayoutParams(width, width);
+                layoutParams = new android.widget.AbsListView.LayoutParams(size, size);
             } else {
                 gridItem = (GenericGridItem) convertView;
                 gridItem.setTitle(label);
                 layoutParams = gridItem.getLayoutParams();
-                layoutParams.height = width;
-                layoutParams.width = width;
+                layoutParams.height = size;
+                layoutParams.width = size;
             }
 
             // Make sure to reset the layoutParams in case of change (rotation for example)
@@ -115,7 +115,7 @@ public class AlbumsAdapter extends GenericSectionAdapter<MPDAlbum> implements Ar
 
             // Check if the scroll speed currently is already 0, then start the image task right away.
             if (mScrollSpeed == 0) {
-                gridItem.setImageDimension(width, width);
+                gridItem.setImageDimension(size, size);
                 gridItem.startCoverImageTask();
             }
             return gridItem;

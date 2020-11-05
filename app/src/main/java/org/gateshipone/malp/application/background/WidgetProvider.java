@@ -209,51 +209,58 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
+        final String action = intent.getAction();
+
         // Type checks
-        if (intent.getAction().equals(BackgroundService.ACTION_STATUS_CHANGED)) {
+        switch (action) {
+            case BackgroundService.ACTION_STATUS_CHANGED:
 
-            // Extract the payload from the intent
-            MPDCurrentStatus status = intent.getParcelableExtra(BackgroundService.INTENT_EXTRA_STATUS);
+                // Extract the payload from the intent
+                MPDCurrentStatus status = intent.getParcelableExtra(BackgroundService.INTENT_EXTRA_STATUS);
 
-            // Check if a payload was sent
-            if (null != status) {
-                // Save the information for later usage (when the asynchronous bitmap loader finishes)
-                mLastStatus = status;
-            }
-        } else if (intent.getAction().equals(BackgroundService.ACTION_TRACK_CHANGED)) {
+                // Check if a payload was sent
+                if (null != status) {
+                    // Save the information for later usage (when the asynchronous bitmap loader finishes)
+                    mLastStatus = status;
+                }
+                break;
+            case BackgroundService.ACTION_TRACK_CHANGED:
 
-            // Extract the payload from the intent
-            MPDTrack track = intent.getParcelableExtra(BackgroundService.INTENT_EXTRA_TRACK);
+                // Extract the payload from the intent
+                MPDTrack track = intent.getParcelableExtra(BackgroundService.INTENT_EXTRA_TRACK);
 
-            // Check if a payload was sent
-            if (null != track) {
-                boolean newImage = false;
-                // Check if new album is played and remove image if it is.
-                if (mLastTrack == null || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM, mLastTrack)|| !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM_MBID, mLastTrack)) {
+                // Check if a payload was sent
+                if (null != track) {
+                    boolean newImage = false;
+                    // Check if new album is played and remove image if it is.
+                    if (mLastTrack == null || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM, mLastTrack) || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM_MBID, mLastTrack)) {
+                        mLastCover = null;
+                        newImage = true;
+
+                    }
+
+                    // Save the information for later usage (when the asynchronous bitmap loader finishes)
+                    mLastTrack = track;
+
+                    if (newImage) {
+                        CoverBitmapLoader coverLoader = new CoverBitmapLoader(context, new CoverReceiver(context, this));
+                        coverLoader.getImage(track, false, -1, -1);
+                    }
+                }
+                break;
+            case BackgroundService.ACTION_SERVER_DISCONNECTED:
+                mLastStatus = null;
+                mLastTrack = null;
+                break;
+            case ArtworkManager.ACTION_NEW_ARTWORK_READY:
+                // Check if the new artwork matches the currently playing track. If so reload artwork
+                if (mLastTrack != null && mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM).equals(intent.getStringExtra(ArtworkManager.INTENT_EXTRA_KEY_ALBUM_NAME))) {
+                    // Got new artwork
                     mLastCover = null;
-                    newImage = true;
-
-                }
-
-                // Save the information for later usage (when the asynchronous bitmap loader finishes)
-                mLastTrack = track;
-
-                if (newImage) {
                     CoverBitmapLoader coverLoader = new CoverBitmapLoader(context, new CoverReceiver(context, this));
-                    coverLoader.getImage(track, false, -1, -1);
+                    coverLoader.getImage(mLastTrack, false, -1, -1);
                 }
-            }
-        } else if (intent.getAction().equals(BackgroundService.ACTION_SERVER_DISCONNECTED)) {
-            mLastStatus = null;
-            mLastTrack = null;
-        } else if (intent.getAction().equals(ArtworkManager.ACTION_NEW_ARTWORK_READY)) {
-            // Check if the new artwork matches the currently playing track. If so reload artwork
-            if (mLastTrack != null && mLastTrack.getStringTag(MPDTrack.StringTagTypes.ALBUM).equals(intent.getStringExtra(ArtworkManager.INTENT_EXTRA_KEY_ALBUM_NAME))) {
-                // Got new artwork
-                mLastCover = null;
-                CoverBitmapLoader coverLoader = new CoverBitmapLoader(context, new CoverReceiver(context, this));
-                coverLoader.getImage(mLastTrack, false, -1, -1);
-            }
+                break;
         }
         // Refresh the widget with the new information
         updateWidget(context);

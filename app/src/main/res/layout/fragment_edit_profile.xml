@@ -23,26 +23,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground"
-    >
+    android:background="?android:colorBackground">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:paddingStart="@dimen/material_screen_edge_spacing"
-            android:paddingEnd="@dimen/material_screen_edge_spacing"
-            android:orientation="vertical">
+            android:paddingEnd="@dimen/material_screen_edge_spacing">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/fragment_profile_profilename"
@@ -55,8 +53,8 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/fragment_profile_hostname"
@@ -69,8 +67,8 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/fragment_profile_port"
@@ -83,8 +81,8 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/fragment_profile_password"
@@ -93,40 +91,45 @@
                     android:hint="@string/fragment_profile_password"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
-            <Switch
-                android:id="@+id/fragment_profile_use_mpd_cover"
-                android:text="@string/fragment_profile_use_mpd_covers"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <Switch
-                android:id="@+id/fragment_profile_streaming_enabled"
-                android:text="@string/fragment_profile_streaming_enabled"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/fragment_profile_streaming_url"
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/fragment_profile_use_mpd_cover"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/fragment_profile_streaming_url"
-                android:inputType="textNoSuggestions" />
-            </com.google.android.material.textfield.TextInputLayout>
-            <Switch
-                android:id="@+id/fragment_profile_http_covers_enabled"
-                android:text="@string/fragment_profile_http_cover_enabled"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:text="@string/fragment_profile_use_mpd_covers" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/fragment_profile_streaming_enabled"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="@string/fragment_profile_streaming_enabled" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/fragment_profile_streaming_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/fragment_profile_streaming_url"
+                    android:inputType="textNoSuggestions" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/fragment_profile_http_covers_enabled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/fragment_profile_http_cover_enabled" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/fragment_profile_cover_regex"

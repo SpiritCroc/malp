@@ -342,8 +342,11 @@ class MPDConnection {
                     String[] versions = versionString.split("\\.");
                     if (versions.length == 3) {
                         // Check if server version changed and if, reread server capabilities later.
-                        if (Integer.valueOf(versions[0]) != mServerCapabilities.getMajorVersion() ||
-                                (Integer.valueOf(versions[0]) == mServerCapabilities.getMajorVersion() && Integer.valueOf(versions[1]) != mServerCapabilities.getMinorVersion())) {
+                        final int majorVersion = Integer.parseInt(versions[0]);
+                        final int minorVersion = Integer.parseInt(versions[1]);
+
+                        if (majorVersion != mServerCapabilities.getMajorVersion() ||
+                                (majorVersion == mServerCapabilities.getMajorVersion() && minorVersion != mServerCapabilities.getMinorVersion())) {
                             mCapabilitiesChanged = true;
                         }
                     }
@@ -1376,8 +1379,8 @@ class MPDConnection {
                     return;
                 }
             }
-             Log.v(TAG, "Auto disconnect after time out");
-                disconnectFromServer();
+            Log.v(TAG, "Auto disconnect after time out");
+            disconnectFromServer();
 
         }
     }

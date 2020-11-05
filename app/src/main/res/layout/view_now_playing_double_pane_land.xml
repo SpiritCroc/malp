@@ -23,6 +23,7 @@
 <FrameLayout
 
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -437,7 +438,7 @@
                                 android:layout_width="48dp"
                                 android:layout_height="48dp"
                                 android:src="@drawable/ic_volume_high_black_48dp"
-                                android:tint="?android:textColor" />
+                                app:tint="?android:textColor" />
 
                             <SeekBar
                                 android:id="@+id/volume_seekbar"
@@ -470,7 +471,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginEnd="4dp"
                                 android:src="@drawable/ic_volume_high_black_48dp"
-                                android:tint="?android:textColor" />
+                                app:tint="?android:textColor" />
 
                             <TextView
                                 android:id="@+id/volume_button_text"

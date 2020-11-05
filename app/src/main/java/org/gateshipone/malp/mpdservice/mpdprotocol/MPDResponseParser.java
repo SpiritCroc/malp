@@ -247,7 +247,6 @@ class MPDResponseParser {
             // New parser protocol path (0.21.11 and above) with correct list grouping
             /* Artist properties */
             ArrayList<String> mbids = new ArrayList<>();
-            String artistName;
 
             key = connection.readKey();
 
@@ -460,7 +459,7 @@ class MPDResponseParser {
                         String[] discNumberSep = discNumber.split("/");
                         if (discNumberSep.length > 0) {
                             try {
-                                ((MPDTrack) tempFileEntry).setDiscNumber(Integer.valueOf(discNumberSep[0]));
+                                ((MPDTrack) tempFileEntry).setDiscNumber(Integer.parseInt(discNumberSep[0]));
                             } catch (NumberFormatException ignored) {
                             }
 

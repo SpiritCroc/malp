@@ -69,7 +69,7 @@ public class MPDCommands {
         return "list album artistsort \"" + escapeString(artistName) + "\"" + createAlbumGroupString(caps);
     }
 
-    public static final String MPD_COMMAND_REQUEST_ALBUMS_FOR_PATH(String path, MPDCapabilities caps) {
+    public static String MPD_COMMAND_REQUEST_ALBUMS_FOR_PATH(String path, MPDCapabilities caps) {
         if (caps.hasListGroup()) {
             return "list album base \"" + escapeString(path) + "\"" + createAlbumGroupString(caps);
         } else {
@@ -141,7 +141,7 @@ public class MPDCommands {
 
     public static final String MPD_COMMAND_GET_CURRENT_PLAYLIST = "playlistinfo";
 
-    public static final String MPD_COMMAND_GET_CURRENT_PLAYLIST_WINDOW(int start, int end) {
+    public static String MPD_COMMAND_GET_CURRENT_PLAYLIST_WINDOW(int start, int end) {
         return "playlistinfo " + start + ':' + end;
     }
 
@@ -289,7 +289,7 @@ public class MPDCommands {
 
     public static final String MPD_COMMAND_ADD_SEARCH_FILES_CMD_NAME = "searchadd";
 
-    public static final String MPD_COMMAND_ADD_SEARCH_FILES(String searchTerm, MPD_SEARCH_TYPE type) {
+    public static String MPD_COMMAND_ADD_SEARCH_FILES(String searchTerm, MPD_SEARCH_TYPE type) {
         switch (type) {
             case MPD_SEARCH_TRACK:
                 return MPD_COMMAND_ADD_SEARCH_FILES_CMD_NAME + " title \"" + escapeString(searchTerm) + '\"';

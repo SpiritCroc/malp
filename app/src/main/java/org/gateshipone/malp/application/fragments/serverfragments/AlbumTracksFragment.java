@@ -163,8 +163,8 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
             final View rootView = getView();
             if (rootView != null) {
                 getView().post(() -> {
-                    int width = rootView.getWidth();
-                    mBitmapLoader.getAlbumImage(mAlbum, false, width, width);
+                    final int size = rootView.getWidth();
+                    mBitmapLoader.getAlbumImage(mAlbum, false, size, size);
                 });
             }
         } else if (mAlbum != null) {
@@ -174,10 +174,10 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
             final View rootView = getView();
             if (rootView != null) {
                 getView().post(() -> {
-                    int width = rootView.getWidth();
+                    final int size = rootView.getWidth();
                     // Image too small
-                    if (mBitmap.getWidth() < width) {
-                        mBitmapLoader.getAlbumImage(mAlbum, false, width, width);
+                    if (mBitmap.getWidth() < size) {
+                        mBitmapLoader.getAlbumImage(mAlbum, false, size, size);
                     }
                 });
             }

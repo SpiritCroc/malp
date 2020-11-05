@@ -24,7 +24,6 @@ package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
 
 import java.util.List;
 

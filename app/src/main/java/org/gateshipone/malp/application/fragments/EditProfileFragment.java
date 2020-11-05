@@ -35,10 +35,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 
@@ -74,13 +74,13 @@ public class EditProfileFragment extends Fragment {
     private TextInputEditText mPasswordView;
     private TextInputEditText mPortView;
 
-    private Switch mStreamingEnabledView;
+    private SwitchCompat mStreamingEnabledView;
     private TextInputEditText mStreamingURLView;
 
-    private Switch mHTTPCoverEnabledView;
+    private SwitchCompat mHTTPCoverEnabledView;
     private TextInputEditText mHTTPCoverRegexView;
 
-    private Switch mMPDCoverEnabledView;
+    private SwitchCompat mMPDCoverEnabledView;
 
     private MPDServerProfile mOldProfile;
 

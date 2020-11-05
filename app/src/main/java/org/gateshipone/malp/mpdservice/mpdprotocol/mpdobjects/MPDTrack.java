@@ -331,13 +331,7 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
             return 1;
         } else if (pDiscNumber == compFile.pDiscNumber) {
             // Compare track number field
-            if (pTrackNumber > compFile.pTrackNumber) {
-                return 1;
-            } else if (pTrackNumber == compFile.pTrackNumber) {
-                return 0;
-            } else {
-                return -1;
-            }
+            return Integer.compare(pTrackNumber, compFile.pTrackNumber);
         } else {
             return -1;
         }

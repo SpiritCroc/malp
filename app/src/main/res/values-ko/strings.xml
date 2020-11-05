@@ -366,7 +366,6 @@
 
     <!-- Contributors activity -->
     <string name="contributors_title">기여자</string>
-    <string name="contributor_team" translatable="false">Team Gateship One</string>
     <string name="contributor_translator_japanese">일본어 번역</string>
     <string name="contributor_translator_french">프랑스어 번역</string>
     <string name="contributor_translator_spanish">스페인어 번역</string>
