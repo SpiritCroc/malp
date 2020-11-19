@@ -54,6 +54,8 @@ public class MPDInterface {
 
     private MPDCache mCache;
 
+    private static long MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50 MB
+
     private MPDInterface(boolean autoDisconnect) {
         mConnection = new MPDConnection(autoDisconnect);
     }
@@ -1091,7 +1093,7 @@ public class MPDInterface {
             return null;
         }
 
-        int imageSize = 0;
+        long imageSize = 0;
         int dataToRead = -1;
 
         int chunkSize = 0;
@@ -1111,9 +1113,9 @@ public class MPDInterface {
                 }
             } else {
                 if (!readPicture) {
-                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, (imageSize - dataToRead)));
+                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, ((int)imageSize - dataToRead)));
                 } else {
-                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, (imageSize - dataToRead)));
+                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, ((int)imageSize - dataToRead)));
                 }
             }
             try {
@@ -1129,24 +1131,50 @@ public class MPDInterface {
             while (line != null && !line.startsWith("OK")) {
                 if (line.startsWith("size")) {
                     if (firstRun) {
-                        imageSize = Integer.parseInt(line.substring(MPDResponses.MPD_RESPONSE_SIZE.length()));
-                        imageData = new byte[imageSize];
-                        dataToRead = imageSize;
-                        firstRun = false;
+                        try {
+                            imageSize = Long.parseLong(line.substring(MPDResponses.MPD_RESPONSE_SIZE.length()));
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG, "Can't understand MPD anymore (imageSize): " + path + " - " + e.getMessage());
+                            imageSize = 0;
+                            dataToRead = 0;
+                            continue;
+                        }
                     }
                 } else if (line.startsWith("binary")) {
+                    boolean abort = false;
+                    if (firstRun) {
+                        if(imageSize > MAX_IMAGE_SIZE) {
+                            Log.e(TAG, "Size=" + imageSize + " unsupported for path=" + path + " - Aborting download with " + (readPicture ? "readPicture" : "albumArt"));
+                            imageSize = 0;
+                            dataToRead = 0;
+                            abort = true;
+                        } else {
+                            imageData = new byte[(int)imageSize];
+                            dataToRead = (int)imageSize;
+                        }
+                        firstRun = false;
+                    }
                     // This means that after this line a binary chunk is incoming
-                    chunkSize = Integer.parseInt(line.substring(MPDResponses.MPD_RESPONSE_BINARY_SIZE.length()));
+                    try {
+                        chunkSize = Integer.parseInt(line.substring(MPDResponses.MPD_RESPONSE_BINARY_SIZE.length()));
+                    } catch (NumberFormatException e) {
+                        Log.e(TAG, "Can't understand MPD anymore (chunkSize): " + path + " - " + e.getMessage());
+                        throw new MPDException("Cover error:" + e.getMessage());
+                    }
 
-                    byte[] readData = new byte[0];
+                    byte[] readData;
                     try {
                         readData = mConnection.readBinary(chunkSize);
                     } catch (MPDException e) {
                         return null;
                     }
 
-                    // Copy chunk to final output array
-                    System.arraycopy(readData, 0, imageData, (imageSize - dataToRead), chunkSize);
+                    if (!abort) {
+                        // Copy chunk to final output array
+                        System.arraycopy(readData, 0, imageData, ((int) imageSize - dataToRead), chunkSize);
+                    } else {
+                        return null;
+                    }
                     dataToRead -= chunkSize;
                 }
 
