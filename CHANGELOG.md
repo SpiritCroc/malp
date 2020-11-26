@@ -1,12 +1,13 @@
 # Changelog M.A.L.P
 
-## 1.2.7 Tag: release-xx (2020-xx-xx)
+## 1.2.7 Tag: release-34 (2020-11-26)
 
 * Add NowPlayingView hint ([#212](https://gitlab.com/gateship-one/malp/-/issues/212))
 * Fix duplicated artist name in FanartActivity
 * Add support for Seekbar in Notification (starts with Android 10)
 * Fix artwork retrival for HTTP and MPD ([#213](https://gitlab.com/gateship-one/malp/-/issues/213))
 * Exclude artworks from backups ([#214](https://gitlab.com/gateship-one/malp/-/issues/214))
+* Fix crashes related to MPD artwork retrival ([#218](https://gitlab.com/gateship-one/malp/-/issues/218), [#134](https://gitlab.com/gateship-one/malp/-/merge_requests/134))
 
 ## 1.2.6 Tag: release-33 (2020-09-13)
 
