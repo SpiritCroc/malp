@@ -36,6 +36,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.artwork.BulkDownloadService;
@@ -93,7 +95,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
         Preference bulkLoad = findPreference(getString(R.string.pref_bulk_load_key));
         bulkLoad.setOnPreferenceClickListener(preference -> {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
             builder.setTitle(getResources().getString(R.string.bulk_download_notice_title));
             builder.setMessage(getResources().getString(R.string.bulk_download_notice_text));
 

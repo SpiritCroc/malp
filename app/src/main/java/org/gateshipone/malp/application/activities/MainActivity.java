@@ -51,6 +51,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -205,7 +206,7 @@ public class MainActivity extends GenericActivity
         if (MPDProfileManager.getInstance(this).getProfiles().size() == 0) {
             navId = R.id.nav_profiles;
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
             builder.setTitle(getResources().getString(R.string.welcome_dialog_title));
             builder.setMessage(getResources().getString(R.string.welcome_dialog_text));
 

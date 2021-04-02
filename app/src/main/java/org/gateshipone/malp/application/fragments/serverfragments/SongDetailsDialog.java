@@ -30,8 +30,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.SongDetailsAdapter;
@@ -77,7 +78,7 @@ public class SongDetailsDialog extends DialogFragment {
 
         mAdapter = new SongDetailsAdapter(requireContext(), items);
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
 
         builder.setAdapter(mAdapter, (dialog, which) -> {
             final SongDetailsAdapter.SongDetailsItem item = mAdapter.getItem(which);

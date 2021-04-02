@@ -27,8 +27,9 @@ import android.os.Bundle;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.callbacks.TextDialogCallback;
@@ -70,7 +71,7 @@ public class TextDialog extends DialogFragment {
         }
 
         // Use the Builder class for convenient dialog construction
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
 
 
         // create edit text for title

@@ -36,8 +36,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.FileAdapter;
@@ -166,7 +167,7 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
             MPDQueryHandler.loadPlaylist(playlist.getPath());
             return true;
         } else if (itemId == R.id.action_remove_playlist) {
-            final AlertDialog.Builder removeListBuilder = new AlertDialog.Builder(getContext());
+            final MaterialAlertDialogBuilder removeListBuilder = new MaterialAlertDialogBuilder(getContext());
             removeListBuilder.setTitle(getContext().getString(R.string.action_delete_playlist));
             removeListBuilder.setMessage(getContext().getString(R.string.dialog_message_delete_playlist) + ' ' + playlist.getSectionTitle() + '?');
             removeListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> {

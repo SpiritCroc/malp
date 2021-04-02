@@ -53,13 +53,14 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.activities.FanartActivity;
@@ -354,7 +355,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         final int itemId = item.getItemId();
 
         if (itemId == R.id.action_clear_playlist) {
-            final AlertDialog.Builder removeListBuilder = new AlertDialog.Builder(getContext());
+            final MaterialAlertDialogBuilder removeListBuilder = new MaterialAlertDialogBuilder(getContext());
             removeListBuilder.setTitle(getContext().getString(R.string.action_delete_playlist));
             removeListBuilder.setMessage(getContext().getString(R.string.dialog_message_delete_current_playlist));
             removeListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> MPDQueryHandler.clearPlaylist());
@@ -363,7 +364,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             });
             removeListBuilder.create().show();
         } else if (itemId == R.id.action_shuffle_playlist) {
-            final AlertDialog.Builder shuffleListBuilder = new AlertDialog.Builder(getContext());
+            final MaterialAlertDialogBuilder shuffleListBuilder = new MaterialAlertDialogBuilder(getContext());
             shuffleListBuilder.setTitle(getContext().getString(R.string.action_shuffle_playlist));
             shuffleListBuilder.setMessage(getContext().getString(R.string.dialog_message_shuffle_current_playlist));
             shuffleListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> MPDQueryHandler.shufflePlaylist());
@@ -374,7 +375,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             OnSaveDialogListener plDialogCallback = new OnSaveDialogListener() {
                 @Override
                 public void onSaveObject(final String title) {
-                    AlertDialog.Builder overWriteBuilder = new AlertDialog.Builder(getContext());
+                    MaterialAlertDialogBuilder overWriteBuilder = new MaterialAlertDialogBuilder(getContext());
                     overWriteBuilder.setTitle(getContext().getString(R.string.action_overwrite_playlist));
                     overWriteBuilder.setMessage(getContext().getString(R.string.dialog_message_overwrite_playlist) + ' ' + title + '?');
                     overWriteBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> {
