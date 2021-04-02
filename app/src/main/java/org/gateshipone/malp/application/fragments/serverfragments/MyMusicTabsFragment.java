@@ -42,6 +42,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -49,6 +50,7 @@ import com.google.android.material.tabs.TabLayout;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.utils.ThemeUtils;
+import org.gateshipone.malp.application.viewmodels.SearchViewModel;
 
 public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSelectedListener {
     public final static String TAG = MyMusicTabsFragment.class.getSimpleName();
@@ -152,14 +154,6 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(tab.getPosition());
         if (fragment != null) {
-            // apply old search string to new selected fragment
-            if (mSearchString != null) {
-                fragment.applyFilter(mSearchString);
-            } else {
-                // just in case
-                fragment.removeFilter();
-            }
-
             fragment.getContent();
         }
     }
@@ -237,11 +231,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
             searchView.setIconified(false);
             menu.findItem(R.id.action_search).expandActionView();
             // Set the query string
-            searchView.setQuery(mSearchString, false);
-
-            final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
-            // Notify the adapter
-            fragment.applyFilter(mSearchString);
+            searchView.setQuery(mSearchString, true);
         }
 
         searchView.setOnQueryTextListener(new SearchTextObserver());
@@ -252,7 +242,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     private static class MyMusicPagerAdapter extends FragmentStatePagerAdapter {
         static final int NUMBER_OF_PAGES = 2;
 
-        private SparseArray<GenericMPDFragment<?>> mRegisteredFragments;
+        private final SparseArray<GenericMPDFragment<?>> mRegisteredFragments;
 
         public MyMusicPagerAdapter(FragmentManager fm) {
             super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
@@ -309,7 +299,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         public boolean onQueryTextSubmit(String query) {
             applyFilter(query);
 
-            return false;
+            return true;
         }
 
         @Override
@@ -319,14 +309,14 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         }
 
         private void applyFilter(String filter) {
-            final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
+            final SearchViewModel searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
 
             if (filter.isEmpty()) {
                 mSearchString = null;
-                fragment.removeFilter();
+                searchViewModel.clearSearchString();
             } else {
                 mSearchString = filter;
-                fragment.applyFilter(filter);
+                searchViewModel.setSearchString(filter);
             }
         }
     }

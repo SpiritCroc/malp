@@ -52,6 +52,7 @@ import org.gateshipone.malp.application.utils.ScrollSpeedListener;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.viewmodels.ArtistsViewModel;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
+import org.gateshipone.malp.application.viewmodels.SearchViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
@@ -140,6 +141,15 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
+
+        SearchViewModel searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+        searchViewModel.getSearchString().observe(getViewLifecycleOwner(), searchString -> {
+            if (searchString != null) {
+                applyFilter(searchString);
+            } else {
+                removeFilter();
+            }
+        });
     }
 
     @Override
