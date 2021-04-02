@@ -46,7 +46,6 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
-import org.gateshipone.malp.application.callbacks.ProfileManageCallbacks;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.mpdservice.ConnectionManager;
 import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
@@ -84,8 +83,6 @@ public class EditProfileFragment extends Fragment {
 
     private MPDServerProfile mOldProfile;
 
-    private ProfileManageCallbacks mCallback;
-
     private FABFragmentCallback mFABCallback = null;
 
     private boolean mOptionsMenuHandled = false;
@@ -101,21 +98,25 @@ public class EditProfileFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+        return inflater.inflate(R.layout.fragment_edit_profile, container, false);
+    }
 
-        mProfilenameView = rootView.findViewById(R.id.fragment_profile_profilename);
-        mHostnameView = rootView.findViewById(R.id.fragment_profile_hostname);
-        mPasswordView = rootView.findViewById(R.id.fragment_profile_password);
-        mPortView = rootView.findViewById(R.id.fragment_profile_port);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        mStreamingURLView = rootView.findViewById(R.id.fragment_profile_streaming_url);
-        mStreamingEnabledView = rootView.findViewById(R.id.fragment_profile_streaming_enabled);
+        mProfilenameView = view.findViewById(R.id.fragment_profile_profilename);
+        mHostnameView = view.findViewById(R.id.fragment_profile_hostname);
+        mPasswordView = view.findViewById(R.id.fragment_profile_password);
+        mPortView = view.findViewById(R.id.fragment_profile_port);
 
-        mHTTPCoverRegexView = rootView.findViewById(R.id.fragment_profile_cover_regex);
-        mHTTPCoverEnabledView = rootView.findViewById(R.id.fragment_profile_http_covers_enabled);
+        mStreamingURLView = view.findViewById(R.id.fragment_profile_streaming_url);
+        mStreamingEnabledView = view.findViewById(R.id.fragment_profile_streaming_enabled);
 
-        mMPDCoverEnabledView = rootView.findViewById(R.id.fragment_profile_use_mpd_cover);
+        mHTTPCoverRegexView = view.findViewById(R.id.fragment_profile_cover_regex);
+        mHTTPCoverEnabledView = view.findViewById(R.id.fragment_profile_http_covers_enabled);
+
+        mMPDCoverEnabledView = view.findViewById(R.id.fragment_profile_use_mpd_cover);
 
         // Set to maximum tcp port
         InputFilter portFilter = new PortNumberFilter();
@@ -205,9 +206,6 @@ public class EditProfileFragment extends Fragment {
         mProfilenameView.setSelectAllOnFocus(true);
 
         setHasOptionsMenu(true);
-
-        // Return the ready inflated and configured fragment view.
-        return rootView;
     }
 
     /**
@@ -217,13 +215,6 @@ public class EditProfileFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mCallback = (ProfileManageCallbacks) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
-        }
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {

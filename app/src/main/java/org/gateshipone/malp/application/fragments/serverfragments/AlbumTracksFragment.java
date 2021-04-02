@@ -93,11 +93,15 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.recycler_list_refresh, container, false);
+        return inflater.inflate(R.layout.recycler_list_refresh, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // Get the main ListView of this fragment
-        mRecyclerView = rootView.findViewById(R.id.recycler_view);
+        mRecyclerView = view.findViewById(R.id.recycler_view);
 
         /* Check if an artistname/albumame was given in the extras */
         Bundle args = getArguments();
@@ -119,7 +123,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         registerForContextMenu(mRecyclerView);
 
         // get swipe layout
-        mSwipeRefreshLayout = rootView.findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
         mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
                 ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
@@ -137,9 +141,6 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         mBitmapLoader = new CoverBitmapLoader(getContext(), this);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
-
-        // Return the ready inflated and configured fragment view.
-        return rootView;
     }
 
     @Override

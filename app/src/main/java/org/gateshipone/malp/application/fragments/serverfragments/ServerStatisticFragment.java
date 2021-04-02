@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
@@ -74,23 +75,27 @@ public class ServerStatisticFragment extends GenericMPDFragment<MPDStatistics> {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_server_statistic, container, false);
+        return inflater.inflate(R.layout.fragment_server_statistic, container, false);
+    }
 
-        mArtistCount = rootView.findViewById(R.id.server_statistic_artist_count);
-        mAlbumsCount = rootView.findViewById(R.id.server_statistic_albums_count);
-        mSongsCount = rootView.findViewById(R.id.server_statistic_songs_count);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        mUptime = rootView.findViewById(R.id.server_statistic_server_uptime);
-        mPlaytime = rootView.findViewById(R.id.server_statistic_server_playtime);
-        mLastUpdate = rootView.findViewById(R.id.server_statistic_db_update);
-        mDBLength = rootView.findViewById(R.id.server_statistic_db_playtime);
+        mArtistCount = view.findViewById(R.id.server_statistic_artist_count);
+        mAlbumsCount = view.findViewById(R.id.server_statistic_albums_count);
+        mSongsCount = view.findViewById(R.id.server_statistic_songs_count);
 
-        mDBUpdating = rootView.findViewById(R.id.server_statistic_updateing_db);
+        mUptime = view.findViewById(R.id.server_statistic_server_uptime);
+        mPlaytime = view.findViewById(R.id.server_statistic_server_playtime);
+        mLastUpdate = view.findViewById(R.id.server_statistic_db_update);
+        mDBLength = view.findViewById(R.id.server_statistic_db_playtime);
 
-        mServerFeatures = rootView.findViewById(R.id.server_statistic_malp_server_information);
+        mDBUpdating = view.findViewById(R.id.server_statistic_updateing_db);
 
-        rootView.findViewById(R.id.server_statistic_update_db_btn).setOnClickListener(v -> {
+        mServerFeatures = view.findViewById(R.id.server_statistic_malp_server_information);
+
+        view.findViewById(R.id.server_statistic_update_db_btn).setOnClickListener(v -> {
             // Update the whole database => no path
             MPDQueryHandler.updateDatabase("");
         });
@@ -98,9 +103,6 @@ public class ServerStatisticFragment extends GenericMPDFragment<MPDStatistics> {
         mServerStatusHandler = new ServerStatusHandler(this);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
-
-        // Return the ready inflated and configured fragment view.
-        return rootView;
     }
 
     /**

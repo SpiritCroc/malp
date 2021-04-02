@@ -80,8 +80,6 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
     private AlbumCallback mAlbumSelectCallback;
 
-    private boolean mUseList = false;
-
     public static AlbumsFragment newInstance(@Nullable final String albumPath) {
         final Bundle args = new Bundle();
         args.putString(BUNDLE_STRING_EXTRA_PATH, albumPath);
@@ -95,25 +93,37 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String libraryView = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final String viewAppearance = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
 
-        if (libraryView.equals(getString(R.string.pref_library_view_list_key))) {
-            mUseList = true;
-        }
+        final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
 
-        View rootView;
-        // get gridview
-        if (mUseList) {
-            rootView = inflater.inflate(R.layout.listview_layout_refreshable, container, false);
-            mAdapterView = (ListView) rootView.findViewById(R.id.main_listview);
+        if (useList) {
+            return inflater.inflate(R.layout.listview_layout_refreshable, container, false);
         } else {
-            // Inflate the layout for this fragment
-            rootView = inflater.inflate(R.layout.fragment_gridview, container, false);
-            mAdapterView = (GridView) rootView.findViewById(R.id.grid_refresh_gridview);
+
+            return inflater.inflate(R.layout.fragment_gridview, container, false);
+        }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final String viewAppearance = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
+
+        final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
+
+        if (useList) {
+            // get listview
+            mAdapterView = (ListView) view.findViewById(R.id.main_listview);
+        } else {
+            // get gridview
+            mAdapterView = (GridView) view.findViewById(R.id.grid_refresh_gridview);
         }
 
-        mAdapter = new AlbumsAdapter(getActivity(), mUseList);
+        mAdapter = new AlbumsAdapter(getActivity(), useList);
 
         /* Check if an artistname was given in the extras */
         Bundle args = getArguments();
@@ -129,7 +139,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
         registerForContextMenu(mAdapterView);
 
         // get swipe layout
-        mSwipeRefreshLayout = rootView.findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
         mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
                 ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
@@ -137,8 +147,6 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
-
-        return rootView;
     }
 
     @Override

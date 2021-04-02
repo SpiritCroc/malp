@@ -38,6 +38,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -61,11 +62,6 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
     private final static String EXTRA_PLAYLIST_NAME = "name";
 
     /**
-     * Main ListView of this fragment
-     */
-    private ListView mListView;
-
-    /**
      * Name of the playlist to load
      */
     private String mPath;
@@ -83,11 +79,15 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.listview_layout_refreshable, container, false);
+        return inflater.inflate(R.layout.listview_layout_refreshable, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // Get the main ListView of this fragment
-        mListView = rootView.findViewById(R.id.main_listview);
+        ListView listView = view.findViewById(R.id.main_listview);
 
         Bundle args = getArguments();
         if (null != args) {
@@ -103,12 +103,12 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
         mAdapter = new FileAdapter(getActivity(), false, false, showVisibleSections, true);
 
         // Combine the two to a happy couple
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(this);
-        registerForContextMenu(mListView);
+        listView.setAdapter(mAdapter);
+        listView.setOnItemClickListener(this);
+        registerForContextMenu(listView);
 
         // get swipe layout
-        mSwipeRefreshLayout = rootView.findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
         mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
                 ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
@@ -118,9 +118,6 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
         setHasOptionsMenu(true);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
-
-        // Return the ready inflated and configured fragment view.
-        return rootView;
     }
 
     @Override

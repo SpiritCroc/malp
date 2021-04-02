@@ -43,6 +43,7 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -95,11 +96,15 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_server_search, container, false);
+        return inflater.inflate(R.layout.fragment_server_search, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // Get the main ListView of this fragment
-        mListView = rootView.findViewById(R.id.main_listview);
+        mListView = view.findViewById(R.id.main_listview);
 
         // Create the needed adapter for the ListView
         mAdapter = new FileAdapter(getActivity(), false, true);
@@ -109,7 +114,7 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
         mListView.setOnItemClickListener(this);
         registerForContextMenu(mListView);
 
-        mSelectSpinner = rootView.findViewById(R.id.search_criteria);
+        mSelectSpinner = view.findViewById(R.id.search_criteria);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
@@ -120,12 +125,12 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
         mSelectSpinner.setAdapter(adapter);
         mSelectSpinner.setOnItemSelectedListener(new SpinnerSelectListener());
 
-        mSearchView = rootView.findViewById(R.id.search_text);
+        mSearchView = view.findViewById(R.id.search_text);
         mSearchView.setOnQueryTextListener(new SearchViewQueryListener());
         mSearchView.setOnFocusChangeListener(this);
 
         // get swipe layout
-        mSwipeRefreshLayout = rootView.findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
         mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
                 ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
@@ -141,8 +146,6 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
 
-        // Return the ready inflated and configured fragment view.
-        return rootView;
     }
 
     @Override

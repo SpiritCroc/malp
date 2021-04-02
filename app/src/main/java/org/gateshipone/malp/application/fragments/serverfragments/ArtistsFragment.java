@@ -40,6 +40,7 @@ import android.widget.GridView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
@@ -73,8 +74,6 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
 
     private ArtistSelectedCallback mSelectedCallback;
 
-    private boolean mUseList = false;
-
     private MPDAlbum.MPD_ALBUM_SORT_ORDER mAlbumSortOrder;
 
     private boolean mUseAlbumArtists;
@@ -88,29 +87,40 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String libraryView = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final String viewAppearance = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
 
-        if (libraryView.equals(getString(R.string.pref_library_view_list_key))) {
-            mUseList = true;
+        final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
+
+        if (useList) {
+            return inflater.inflate(R.layout.listview_layout_refreshable, container, false);
+        } else {
+            return inflater.inflate(R.layout.fragment_gridview, container, false);
         }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final String viewAppearance = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
+
+        final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
 
         mAlbumSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, getContext());
         mUseAlbumArtists = sharedPref.getBoolean(getString(R.string.pref_use_album_artists_key), getResources().getBoolean(R.bool.pref_use_album_artists_default));
         mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
 
-        View rootView;
-        // get gridview
-        if (mUseList) {
-            rootView = inflater.inflate(R.layout.listview_layout_refreshable, container, false);
-            mAdapterView = (ListView) rootView.findViewById(R.id.main_listview);
+        if (useList) {
+            // get listview
+            mAdapterView = (ListView) view.findViewById(R.id.main_listview);
         } else {
-            // Inflate the layout for this fragment
-            rootView = inflater.inflate(R.layout.fragment_gridview, container, false);
-            mAdapterView = (GridView) rootView.findViewById(R.id.grid_refresh_gridview);
+            // get gridview
+            mAdapterView = (GridView) view.findViewById(R.id.grid_refresh_gridview);
         }
 
-        mAdapter = new ArtistsAdapter(getActivity(), mUseList);
+        mAdapter = new ArtistsAdapter(getActivity(), useList);
 
         mAdapterView.setAdapter(mAdapter);
         mAdapterView.setOnItemClickListener(this);
@@ -122,7 +132,7 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
 
 
         // get swipe layout
-        mSwipeRefreshLayout = rootView.findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
         mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
                 ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
@@ -130,8 +140,6 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
-
-        return rootView;
     }
 
     @Override

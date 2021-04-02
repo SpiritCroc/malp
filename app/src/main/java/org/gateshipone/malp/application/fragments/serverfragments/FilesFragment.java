@@ -39,6 +39,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -108,17 +109,21 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.listview_layout_refreshable, container, false);
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.listview_layout_refreshable, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         boolean useTags = sharedPref.getBoolean(getString(R.string.pref_use_tags_in_filebrowser_key), getResources().getBoolean(R.bool.pref_use_tags_in_filebrowser_default));
         mClickAction = PreferenceHelper.getClickAction(sharedPref, getContext());
 
         // Get the main ListView of this fragment
-        mListView = rootView.findViewById(R.id.main_listview);
+        mListView = view.findViewById(R.id.main_listview);
 
         Bundle args = getArguments();
 
@@ -133,7 +138,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
         registerForContextMenu(mListView);
 
         // get swipe layout
-        mSwipeRefreshLayout = rootView.findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
         mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
                 ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
@@ -148,9 +153,6 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
         setHasOptionsMenu(true);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
-
-        // Return the ready inflated and configured fragment view.
-        return rootView;
     }
 
     @Override

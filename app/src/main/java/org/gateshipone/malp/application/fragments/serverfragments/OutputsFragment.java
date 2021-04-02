@@ -32,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
@@ -43,10 +44,6 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
 public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements AbsListView.OnItemClickListener {
     public final static String TAG = OutputsFragment.class.getSimpleName();
-    /**
-     * Main ListView of this fragment
-     */
-    private ListView mListView;
 
     public static OutputsFragment newInstance() {
         return new OutputsFragment();
@@ -54,26 +51,27 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.listview_layout, container, false);
+        return inflater.inflate(R.layout.listview_layout, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // Get the main ListView of this fragment
-        mListView = rootView.findViewById(R.id.main_listview);
+        ListView listView = view.findViewById(R.id.main_listview);
 
         // Create the needed adapter for the ListView
         mAdapter = new OutputAdapter(getActivity());
 
         // Combine the two to a happy couple
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(this);
-        registerForContextMenu(mListView);
+        listView.setAdapter(mAdapter);
+        listView.setOnItemClickListener(this);
+        registerForContextMenu(listView);
 
         setHasOptionsMenu(true);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
-
-        // Return the ready inflated and configured fragment view.
-        return rootView;
     }
 
     @Override

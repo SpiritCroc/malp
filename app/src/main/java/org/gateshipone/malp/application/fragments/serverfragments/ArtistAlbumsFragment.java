@@ -102,25 +102,26 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.recycler_list_refresh, container, false);
+        return inflater.inflate(R.layout.recycler_list_refresh, container, false);
+    }
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String libraryView = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        final boolean useList = libraryView.equals(getString(R.string.pref_library_view_list_key));
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final String viewAppearance = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
 
-        mRecyclerView = rootView.findViewById(R.id.recycler_view);
+        final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
+
+        mRecyclerView = view.findViewById(R.id.recycler_view);
 
         mAdapter = new AlbumsRecyclerViewAdapter(getContext().getApplicationContext(), useList);
+        mRecyclerView.setAdapter(mAdapter);
 
         if (useList) {
-            mRecyclerView.setAdapter(mAdapter);
-
             setLinearLayoutManagerAndDecoration();
         } else {
-            mRecyclerView.setAdapter(mAdapter);
-
             setGridLayoutManagerAndDecoration();
         }
 
@@ -140,7 +141,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
         setHasOptionsMenu(true);
 
         // get swipe layout
-        mSwipeRefreshLayout = rootView.findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
         mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
                 ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
@@ -150,8 +151,6 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
         mBitmapLoader = new CoverBitmapLoader(getContext(), this);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
-
-        return rootView;
     }
 
     @Override

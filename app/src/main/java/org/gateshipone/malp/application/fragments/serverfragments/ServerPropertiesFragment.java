@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
@@ -57,16 +58,18 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_tab_pager, container, false);
+    }
 
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_tab_pager, container, false);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // create tabs
-        TabLayout tabLayout = rootView.findViewById(R.id.my_music_tab_layout);
+        TabLayout tabLayout = view.findViewById(R.id.my_music_tab_layout);
 
-        mViewPager = rootView.findViewById(R.id.my_music_viewpager);
+        mViewPager = view.findViewById(R.id.my_music_viewpager);
         ServerPropertiesTabAdapter tabAdapter = new ServerPropertiesTabAdapter(getChildFragmentManager());
         mViewPager.setAdapter(tabAdapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -89,8 +92,6 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
         }
 
         mViewPager.setCurrentItem(0);
-
-        return rootView;
     }
 
     @Override

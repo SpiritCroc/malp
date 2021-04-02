@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -84,14 +85,16 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_tab_pager, container, false);
+    }
 
-        // Inflate the layout for this fragment
-        final View rootView = inflater.inflate(R.layout.fragment_tab_pager, container, false);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // create tabs
-        final TabLayout tabLayout = rootView.findViewById(R.id.my_music_tab_layout);
+        final TabLayout tabLayout = view.findViewById(R.id.my_music_tab_layout);
 
         // Icons
         final ColorStateList tabColors = tabLayout.getTabTextColors();
@@ -111,7 +114,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        mViewPager = rootView.findViewById(R.id.my_music_viewpager);
+        mViewPager = view.findViewById(R.id.my_music_viewpager);
         mMyMusicPagerAdapter = new MyMusicPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mMyMusicPagerAdapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -139,8 +142,6 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
                     break;
             }
         }
-
-        return rootView;
     }
 
     @Override
