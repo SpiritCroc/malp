@@ -72,10 +72,13 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
      */
     private String mSearchString;
 
+    private int mCurrentTab = -1;
+
     /**
      * Constant for state saving
      */
     public final static String MYMUSICFRAGMENT_SAVED_INSTANCE_SEARCH_STRING = "MyMusicFragment.SearchString";
+    public final static String MYMUSICFRAGMENT_SAVED_INSTANCE_CURRENT_TAB = "MyMusicFragment.CurrentTab";
 
     public static MyMusicTabsFragment newInstance(final DEFAULTTAB defaulttab) {
         final Bundle args = new Bundle();
@@ -125,6 +128,8 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         // try to resume the saved search string
         if (savedInstanceState != null) {
             mSearchString = savedInstanceState.getString(MYMUSICFRAGMENT_SAVED_INSTANCE_SEARCH_STRING);
+            mCurrentTab = savedInstanceState.getInt(MYMUSICFRAGMENT_SAVED_INSTANCE_CURRENT_TAB);
+            mViewPager.setCurrentItem(mCurrentTab, false);
         }
 
         // activate options menu in toolbar
@@ -133,7 +138,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         // set start page
         final Bundle args = getArguments();
 
-        if (args != null && savedInstanceState == null) {
+        if (args != null && savedInstanceState == null && mCurrentTab == -1) {
             final DEFAULTTAB tab = DEFAULTTAB.values()[args.getInt(MY_MUSIC_REQUESTED_TAB)];
             switch (tab) {
                 case ARTISTS:
@@ -149,10 +154,12 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
 
-        // set view pager to current page
-        mViewPager.setCurrentItem(tab.getPosition());
+        mCurrentTab = tab.getPosition();
 
-        final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(tab.getPosition());
+        // set view pager to current page
+        mViewPager.setCurrentItem(mCurrentTab);
+
+        final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(mCurrentTab);
         if (fragment != null) {
             fragment.getContent();
         }
@@ -201,6 +208,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         // save the already typed search string (or null if nothing is entered)
         outState.putString(MYMUSICFRAGMENT_SAVED_INSTANCE_SEARCH_STRING, mSearchString);
+        outState.putInt(MYMUSICFRAGMENT_SAVED_INSTANCE_CURRENT_TAB, mCurrentTab);
     }
 
     /**
