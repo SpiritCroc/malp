@@ -23,7 +23,10 @@
 package org.gateshipone.malp.application.artwork.network;
 
 
+import static com.android.volley.RequestQueue.RequestEvent.REQUEST_FINISHED;
+
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -33,16 +36,17 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 
+import org.gateshipone.malp.BuildConfig;
+
 import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
-public class MALPRequestQueue extends RequestQueue implements RequestQueue.RequestFinishedListener<Request<?>> {
+public class MALPRequestQueue extends RequestQueue implements RequestQueue.RequestEventListener {
+
     private static final String TAG = MALPRequestQueue.class.getSimpleName();
-    private Cache mCache;
-    private Network mNetwork;
 
     private Timer mLimiterTimer;
 
@@ -57,11 +61,9 @@ public class MALPRequestQueue extends RequestQueue implements RequestQueue.Reque
 
     private MALPRequestQueue(Cache cache, Network network) {
         super(cache, network, 1);
-        mCache = cache;
-        mNetwork = network;
         mLimitingRequestQueue = new LinkedBlockingQueue<>();
         mLimiterTimer = null;
-        super.addRequestFinishedListener(this);
+        addRequestEventListener(this);
     }
 
     public synchronized static MALPRequestQueue getInstance(Context context) {
@@ -100,8 +102,29 @@ public class MALPRequestQueue extends RequestQueue implements RequestQueue.Reque
     }
 
     @Override
-    public void onRequestFinished(Request request) {
-        // Nothing done here
+    public void onRequestEvent(Request<?> request, int event) {
+        if (BuildConfig.DEBUG) {
+            if (event == REQUEST_FINISHED) {
+                Log.v(TAG, "Request finished");
+            }
+        }
+    }
+
+    /**
+     * Cancels all requests in this queue for which the given filter applies.
+     *
+     * @param filter The filtering function to use
+     */
+    public void cancelAll(RequestFilter filter) {
+        super.cancelAll(filter);
+        synchronized (mLimitingRequestQueue) {
+            for (Request<?> request : mLimitingRequestQueue) {
+                if (filter.apply(request)) {
+                    request.cancel();
+                    mLimitingRequestQueue.remove(request);
+                }
+            }
+        }
     }
 
     private class LimiterTask extends TimerTask {
@@ -120,23 +143,6 @@ public class MALPRequestQueue extends RequestQueue implements RequestQueue.Reque
                 }
             }
 
-        }
-    }
-
-    /**
-     * Cancels all requests in this queue for which the given filter applies.
-     *
-     * @param filter The filtering function to use
-     */
-    public void cancelAll(RequestFilter filter) {
-        super.cancelAll(filter);
-        synchronized (mLimitingRequestQueue) {
-            for (Request<?> request : mLimitingRequestQueue) {
-                if (filter.apply(request)) {
-                    request.cancel();
-                    mLimitingRequestQueue.remove(request);
-                }
-            }
         }
     }
 
