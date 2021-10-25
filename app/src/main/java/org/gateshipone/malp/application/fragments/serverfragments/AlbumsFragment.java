@@ -149,7 +149,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
 
-        SearchViewModel searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+        final SearchViewModel searchViewModel = new ViewModelProvider(requireParentFragment()).get(SearchViewModel.class);
         searchViewModel.getSearchString().observe(getViewLifecycleOwner(), searchString -> {
             if (searchString != null) {
                 applyFilter(searchString);

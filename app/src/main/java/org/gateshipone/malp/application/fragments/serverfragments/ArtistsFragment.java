@@ -142,7 +142,7 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
 
-        SearchViewModel searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+        final SearchViewModel searchViewModel = new ViewModelProvider(requireParentFragment()).get(SearchViewModel.class);
         searchViewModel.getSearchString().observe(getViewLifecycleOwner(), searchString -> {
             if (searchString != null) {
                 applyFilter(searchString);

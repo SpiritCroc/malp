@@ -390,16 +390,16 @@ public class MainActivity extends GenericActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
+        final int id = item.getItemId();
+        final View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
         coordinatorLayout.setVisibility(View.VISIBLE);
 
-        NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
+        final NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
         if (nowPlayingView != null) {
             nowPlayingView.minimize();
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        final FragmentManager fragmentManager = getSupportFragmentManager();
 
         // clear backstack
         fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -433,11 +433,11 @@ public class MainActivity extends GenericActivity
             fragmentTag = InformationSettingsFragment.class.getSimpleName();
         }
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         // Do the actual fragment transaction
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_container, fragment, fragmentTag);
         transaction.commit();
 

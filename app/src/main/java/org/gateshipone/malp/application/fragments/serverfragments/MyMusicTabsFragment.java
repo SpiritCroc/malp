@@ -74,6 +74,8 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
     private int mCurrentTab = -1;
 
+    private SearchView mSearchView;
+
     /**
      * Constant for state saving
      */
@@ -200,6 +202,17 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         } catch (ClassCastException e) {
             mFABCallback = null;
         }
+
+        if (mSearchView != null) {
+            mSearchView.setOnQueryTextListener(new SearchTextObserver());
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        mSearchView.setOnQueryTextListener(null);
     }
 
     @Override
@@ -231,20 +244,24 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         DrawableCompat.setTint(drawable, tintColor);
         menu.findItem(R.id.action_search).setIcon(drawable);
 
-        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        mSearchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 
         // Check if a search string is saved from before
         if (mSearchString != null) {
             // Expand the view
-            searchView.setIconified(false);
+            mSearchView.setIconified(false);
             menu.findItem(R.id.action_search).expandActionView();
             // Set the query string
-            searchView.setQuery(mSearchString, true);
+            mSearchView.setQuery(mSearchString, true);
         }
 
-        searchView.setOnQueryTextListener(new SearchTextObserver());
+        mSearchView.setOnQueryTextListener(new SearchTextObserver());
 
         super.onCreateOptionsMenu(menu, menuInflater);
+    }
+
+    private SearchViewModel getViewModel() {
+        return new ViewModelProvider(this).get(SearchViewModel.class);
     }
 
     private static class MyMusicPagerAdapter extends FragmentStatePagerAdapter {
@@ -317,8 +334,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         }
 
         private void applyFilter(String filter) {
-            final SearchViewModel searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
-
+            final SearchViewModel searchViewModel = getViewModel();
             if (filter.isEmpty()) {
                 mSearchString = null;
                 searchViewModel.clearSearchString();
