@@ -83,7 +83,7 @@
                 android:layout_height="@dimen/list_divider_size"
                 android:layout_marginStart="@dimen/material_screen_edge_spacing"
                 android:layout_marginEnd="@dimen/material_screen_edge_spacing"
-                android:background="?attr/malp_color_background_selected" />
+                android:background="?attr/malp_color_divider" />
         </LinearLayout>
 
         <include layout="@layout/listview_item_file" />

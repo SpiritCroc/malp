@@ -31,7 +31,7 @@
         android:id="@+id/main_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="?attr/malp_color_background_selected"
+        android:divider="?attr/malp_color_divider"
         android:dividerHeight="@dimen/list_divider_size"
         android:fastScrollAlwaysVisible="false"
         android:fastScrollEnabled="true"
