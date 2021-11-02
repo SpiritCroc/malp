@@ -57,9 +57,9 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> implements AdapterView.OnItemClickListener {
-    public final static String TAG = PlaylistTracksFragment.class.getSimpleName();
+    public static final String TAG = PlaylistTracksFragment.class.getSimpleName();
 
-    private final static String EXTRA_PLAYLIST_NAME = "name";
+    private static final String EXTRA_PLAYLIST_NAME = "name";
 
     /**
      * Name of the playlist to load

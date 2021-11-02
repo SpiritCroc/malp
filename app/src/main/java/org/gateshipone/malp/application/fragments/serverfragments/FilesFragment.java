@@ -95,7 +95,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
     /**
      * Constant for state saving
      */
-    public final static String FILESFRAGMENT_SAVED_INSTANCE_SEARCH_STRING = "FilesFragment.SearchString";
+    public static final String FILESFRAGMENT_SAVED_INSTANCE_SEARCH_STRING = "FilesFragment.SearchString";
 
     private PreferenceHelper.LIBRARY_TRACK_CLICK_ACTION mClickAction;
 

@@ -52,7 +52,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
 
 public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> implements AbsListView.OnItemClickListener {
-    public final static String TAG = SavedPlaylistsFragment.class.getSimpleName();
+    public static final String TAG = SavedPlaylistsFragment.class.getSimpleName();
 
     /**
      * Main ListView of this fragment

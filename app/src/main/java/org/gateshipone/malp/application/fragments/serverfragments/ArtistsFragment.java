@@ -60,7 +60,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import java.util.List;
 
 public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements AdapterView.OnItemClickListener {
-    public final static String TAG = ArtistsFragment.class.getSimpleName();
+    public static final String TAG = ArtistsFragment.class.getSimpleName();
 
     /**
      * Save the root GridView for later usage.

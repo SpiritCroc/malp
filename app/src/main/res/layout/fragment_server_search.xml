@@ -26,12 +26,11 @@
     android:elevation="48dp"
     android:orientation="vertical">
 
-    <SearchView
+    <androidx.appcompat.widget.SearchView
         android:id="@+id/search_text"
         android:layout_width="match_parent"
         android:layout_height="@dimen/search_fragment_view_height"
         android:layout_gravity="center_horizontal"
-
         android:iconifiedByDefault="false" />
 
     <Spinner

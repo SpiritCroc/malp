@@ -43,7 +43,7 @@ import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
 public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements AbsListView.OnItemClickListener {
-    public final static String TAG = OutputsFragment.class.getSimpleName();
+    public static final String TAG = OutputsFragment.class.getSimpleName();
 
     public static OutputsFragment newInstance() {
         return new OutputsFragment();

@@ -60,7 +60,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry, GenericViewItemHolder> implements CoverBitmapLoader.CoverBitmapListener, ArtworkManager.onNewAlbumImageListener, MalpRecyclerView.OnItemClickListener {
-    public final static String TAG = AlbumTracksFragment.class.getSimpleName();
+    public static final String TAG = AlbumTracksFragment.class.getSimpleName();
     /**
      * Parameters for bundled extra arguments for this fragment. Necessary to define which album to
      * retrieve from the MPD server.

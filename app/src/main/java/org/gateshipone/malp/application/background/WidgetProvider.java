@@ -45,7 +45,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import java.lang.ref.WeakReference;
 
 public class WidgetProvider extends AppWidgetProvider {
-    private final static String TAG = WidgetProvider.class.getSimpleName();
+    private static final String TAG = WidgetProvider.class.getSimpleName();
     /**
      * Statically save the last track and status and image. This allows loading the cover image
      * only if it really changed.
@@ -58,11 +58,17 @@ public class WidgetProvider extends AppWidgetProvider {
     /**
      * Intent IDs used for controlling action.
      */
-    private final static int INTENT_OPENGUI = 0;
-    private final static int INTENT_PREVIOUS = 1;
-    private final static int INTENT_PLAYPAUSE = 2;
-    private final static int INTENT_STOP = 3;
-    private final static int INTENT_NEXT = 4;
+    private static final int INTENT_OPENGUI = 0;
+    private static final int INTENT_PREVIOUS = 1;
+    private static final int INTENT_PLAYPAUSE = 2;
+    private static final int INTENT_STOP = 3;
+    private static final int INTENT_NEXT = 4;
+
+    private static final int PENDING_INTENT_CANCEL_CURRENT_FLAG =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_CANCEL_CURRENT;
+
+    private static final int PENDING_INTENT_UPDATE_CURRENT_FLAG =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
 
     /**
      * Update the widgets
@@ -140,31 +146,31 @@ public class WidgetProvider extends AppWidgetProvider {
                 // add intent only if playing is active
                 mainIntent.putExtra(MainActivity.MAINACTIVITY_INTENT_EXTRA_REQUESTEDVIEW, MainActivity.REQUESTEDVIEW.NOWPLAYING.ordinal());
             }
-            PendingIntent mainPendingIntent = PendingIntent.getActivity(context, INTENT_OPENGUI, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent mainPendingIntent = PendingIntent.getActivity(context, INTENT_OPENGUI, mainIntent, PENDING_INTENT_UPDATE_CURRENT_FLAG);
             views.setOnClickPendingIntent(R.id.widget_big_cover, mainPendingIntent);
 
             // Play/Pause action
             Intent playPauseIntent = new Intent(context, BackgroundService.class);
             playPauseIntent.setAction(BackgroundService.ACTION_PLAY);
-            PendingIntent playPausePendingIntent = PendingIntent.getService(context, INTENT_PLAYPAUSE, playPauseIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent playPausePendingIntent = PendingIntent.getService(context, INTENT_PLAYPAUSE, playPauseIntent, PENDING_INTENT_CANCEL_CURRENT_FLAG);
             views.setOnClickPendingIntent(R.id.widget_big_play, playPausePendingIntent);
 
             // Stop action
             Intent stopIntent = new Intent(context, BackgroundService.class);
             stopIntent.setAction(BackgroundService.ACTION_STOP);
-            PendingIntent stopPendingIntent = PendingIntent.getService(context, INTENT_STOP, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent stopPendingIntent = PendingIntent.getService(context, INTENT_STOP, stopIntent, PENDING_INTENT_CANCEL_CURRENT_FLAG);
             views.setOnClickPendingIntent(R.id.widget_big_stop, stopPendingIntent);
 
             // Previous song action
             Intent prevIntent = new Intent(context, BackgroundService.class);
             prevIntent.setAction(BackgroundService.ACTION_PREVIOUS);
-            PendingIntent prevPendingIntent = PendingIntent.getService(context, INTENT_PREVIOUS, prevIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent prevPendingIntent = PendingIntent.getService(context, INTENT_PREVIOUS, prevIntent, PENDING_INTENT_CANCEL_CURRENT_FLAG);
             views.setOnClickPendingIntent(R.id.widget_big_previous, prevPendingIntent);
 
             // Next song action
             Intent nextIntent = new Intent(context, BackgroundService.class);
             nextIntent.setAction(BackgroundService.ACTION_NEXT);
-            PendingIntent nextPendingIntent = PendingIntent.getService(context, INTENT_NEXT, nextIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent nextPendingIntent = PendingIntent.getService(context, INTENT_NEXT, nextIntent, PENDING_INTENT_CANCEL_CURRENT_FLAG);
             views.setOnClickPendingIntent(R.id.widget_big_next, nextPendingIntent);
             views.setViewVisibility(R.id.widget_control_layout, View.VISIBLE);
             views.setViewVisibility(R.id.widget_disconnected_layout, View.GONE);
@@ -176,9 +182,9 @@ public class WidgetProvider extends AppWidgetProvider {
 
             // As of Android O it is not allowed to spawn background services
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                connectPendingIntent = PendingIntent.getForegroundService(context, INTENT_NEXT, connectIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                connectPendingIntent = PendingIntent.getForegroundService(context, INTENT_NEXT, connectIntent, PENDING_INTENT_CANCEL_CURRENT_FLAG);
             } else {
-                connectPendingIntent = PendingIntent.getService(context, INTENT_NEXT, connectIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                connectPendingIntent = PendingIntent.getService(context, INTENT_NEXT, connectIntent, PENDING_INTENT_CANCEL_CURRENT_FLAG);
             }
 
             views.setOnClickPendingIntent(R.id.widget_connect_button, connectPendingIntent);
@@ -186,7 +192,7 @@ public class WidgetProvider extends AppWidgetProvider {
             // Main action
             Intent mainIntent = new Intent(context, SplashActivity.class);
             mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            PendingIntent mainPendingIntent = PendingIntent.getActivity(context, INTENT_OPENGUI, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent mainPendingIntent = PendingIntent.getActivity(context, INTENT_OPENGUI, mainIntent, PENDING_INTENT_UPDATE_CURRENT_FLAG);
             views.setOnClickPendingIntent(R.id.widget_big_cover, mainPendingIntent);
 
             // Set application icon outline as a image again

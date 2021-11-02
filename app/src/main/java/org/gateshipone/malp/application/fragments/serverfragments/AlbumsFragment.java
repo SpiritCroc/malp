@@ -59,7 +59,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import java.util.List;
 
 public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements AdapterView.OnItemClickListener {
-    public final static String TAG = AlbumsFragment.class.getSimpleName();
+    public static final String TAG = AlbumsFragment.class.getSimpleName();
 
     /**
      * Definition of bundled extras

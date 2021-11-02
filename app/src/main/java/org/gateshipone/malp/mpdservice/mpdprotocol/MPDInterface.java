@@ -44,7 +44,7 @@ import java.util.ListIterator;
 import java.util.Set;
 
 public class MPDInterface {
-    private final static String TAG = MPDInterface.class.getSimpleName();
+    private static final String TAG = MPDInterface.class.getSimpleName();
 
     private final MPDConnection mConnection;
 

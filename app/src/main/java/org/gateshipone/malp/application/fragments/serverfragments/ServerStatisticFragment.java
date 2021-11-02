@@ -51,7 +51,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class ServerStatisticFragment extends GenericMPDFragment<MPDStatistics> {
-    public final static String TAG = ServerStatisticFragment.class.getSimpleName();
+    public static final String TAG = ServerStatisticFragment.class.getSimpleName();
 
     private TextView mArtistCount;
     private TextView mAlbumsCount;

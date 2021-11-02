@@ -58,7 +58,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class ProfilesFragment extends Fragment implements AbsListView.OnItemClickListener, Observer {
-    public final static String TAG = ProfilesFragment.class.getSimpleName();
+    public static final String TAG = ProfilesFragment.class.getSimpleName();
 
     private ProfileAdapter mAdapter;
 

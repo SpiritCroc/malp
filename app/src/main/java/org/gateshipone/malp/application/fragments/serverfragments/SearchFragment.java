@@ -39,12 +39,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.ViewModelProvider;
 

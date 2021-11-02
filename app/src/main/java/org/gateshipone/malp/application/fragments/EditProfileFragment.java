@@ -51,7 +51,7 @@ import org.gateshipone.malp.mpdservice.ConnectionManager;
 import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
 
 public class EditProfileFragment extends Fragment {
-    public final static String TAG = EditProfileFragment.class.getSimpleName();
+    public static final String TAG = EditProfileFragment.class.getSimpleName();
 
     private static final String EXTRA_PROFILE = "profile";
 

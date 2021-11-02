@@ -62,7 +62,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import java.util.List;
 
 public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, GenericViewItemHolder> implements CoverBitmapLoader.CoverBitmapListener, ArtworkManager.onNewArtistImageListener, MalpRecyclerView.OnItemClickListener {
-    public final static String TAG = ArtistAlbumsFragment.class.getSimpleName();
+    public static final String TAG = ArtistAlbumsFragment.class.getSimpleName();
 
     /**
      * Definition of bundled extras

@@ -36,8 +36,8 @@ import org.gateshipone.malp.application.callbacks.TextDialogCallback;
 
 
 public class TextDialog extends DialogFragment {
-    private final static String EXTRA_DIALOG_TITLE = "dialog_title";
-    private final static String EXTRA_DIALOG_TEXT = "dialog_text";
+    private static final String EXTRA_DIALOG_TITLE = "dialog_title";
+    private static final String EXTRA_DIALOG_TEXT = "dialog_text";
 
     TextDialogCallback mSaveCallback;
 

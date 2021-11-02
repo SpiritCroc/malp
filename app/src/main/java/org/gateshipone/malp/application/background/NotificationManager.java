@@ -60,18 +60,20 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
 
     private static final String NOTIFICATION_CHANNEL_ID = "Playback";
 
-    private BackgroundService mService;
+    private final BackgroundService mService;
 
     /**
      * Intent IDs used for controlling action.
      */
-    private final static int INTENT_OPENGUI = 0;
-    private final static int INTENT_PREVIOUS = 1;
-    private final static int INTENT_PLAYPAUSE = 2;
-    private final static int INTENT_STOP = 3;
-    private final static int INTENT_NEXT = 4;
-    private final static int INTENT_QUIT = 5;
+    private static final int INTENT_OPENGUI = 0;
+    private static final int INTENT_PREVIOUS = 1;
+    private static final int INTENT_PLAYPAUSE = 2;
+    private static final int INTENT_STOP = 3;
+    private static final int INTENT_NEXT = 4;
+    private static final int INTENT_QUIT = 5;
 
+    private static final int PENDING_INTENT_UPDATE_CURRENT_FLAG =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
 
     // Notification objects
     private final android.app.NotificationManager mNotificationManager;
@@ -86,12 +88,12 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
     /**
      * Last state of the MPD server
      */
-    private MPDCurrentStatus mLastStatus = null;
+    private MPDCurrentStatus mLastStatus;
 
     /**
      * Last played track of the MPD server. Used to check if track changed and a new cover is necessary.
      */
-    private MPDTrack mLastTrack = null;
+    private MPDTrack mLastTrack;
 
     /**
      * State of the notification and the media session.
@@ -101,7 +103,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
     /**
      * Loader to asynchronously load cover images.
      */
-    private CoverBitmapLoader mCoverLoader;
+    private final CoverBitmapLoader mCoverLoader;
 
     private boolean mDismissible;
 
@@ -123,7 +125,7 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
         mLastTrack = new MPDTrack("");
 
         mDismissible = true;
-        /**
+        /*
          * Create loader to asynchronously load cover images. This class is the callback (s. receiveBitmap)
          */
         mCoverLoader = new CoverBitmapLoader(mService, this);
@@ -138,7 +140,6 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
     public synchronized void showNotification() {
         openMediaSession();
         updateNotification(mLastTrack, mLastStatus);
-        Intent intent = new Intent(mService, BackgroundService.class);
 
         if (null != mNotification) {
             // Change to foreground service otherwise android will just kill it
@@ -219,13 +220,13 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             Intent mainIntent = new Intent(mService, SplashActivity.class);
             mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
             mainIntent.putExtra(MainActivity.MAINACTIVITY_INTENT_EXTRA_REQUESTEDVIEW, MainActivity.REQUESTEDVIEW.NOWPLAYING.ordinal());
-            PendingIntent contentPendingIntent = PendingIntent.getActivity(mService, INTENT_OPENGUI, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent contentPendingIntent = PendingIntent.getActivity(mService, INTENT_OPENGUI, mainIntent, PENDING_INTENT_UPDATE_CURRENT_FLAG);
             mNotificationBuilder.setContentIntent(contentPendingIntent);
 
             // Set pendingintents
             // Previous song action
             Intent prevIntent = new Intent(BackgroundService.ACTION_PREVIOUS);
-            PendingIntent prevPendingIntent = PendingIntent.getBroadcast(mService, INTENT_PREVIOUS, prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent prevPendingIntent = PendingIntent.getBroadcast(mService, INTENT_PREVIOUS, prevIntent, PENDING_INTENT_UPDATE_CURRENT_FLAG);
             NotificationCompat.Action prevAction = new NotificationCompat.Action.Builder(R.drawable.ic_skip_previous_48dp, "Previous", prevPendingIntent).build();
 
             // Pause/Play action
@@ -233,28 +234,28 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             int playPauseIcon;
             if (state.getPlaybackState() == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
                 Intent pauseIntent = new Intent(BackgroundService.ACTION_PAUSE);
-                playPauseIntent = PendingIntent.getBroadcast(mService, INTENT_PLAYPAUSE, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                playPauseIntent = PendingIntent.getBroadcast(mService, INTENT_PLAYPAUSE, pauseIntent, PENDING_INTENT_UPDATE_CURRENT_FLAG);
                 playPauseIcon = R.drawable.ic_pause_48dp;
             } else {
                 Intent playIntent = new Intent(BackgroundService.ACTION_PLAY);
-                playPauseIntent = PendingIntent.getBroadcast(mService, INTENT_PLAYPAUSE, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                playPauseIntent = PendingIntent.getBroadcast(mService, INTENT_PLAYPAUSE, playIntent, PENDING_INTENT_UPDATE_CURRENT_FLAG);
                 playPauseIcon = R.drawable.ic_play_arrow_48dp;
             }
             NotificationCompat.Action playPauseAction = new NotificationCompat.Action.Builder(playPauseIcon, "PlayPause", playPauseIntent).build();
 
             // Stop action
             Intent stopIntent = new Intent(BackgroundService.ACTION_STOP);
-            PendingIntent stopPendingIntent = PendingIntent.getBroadcast(mService, INTENT_STOP, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent stopPendingIntent = PendingIntent.getBroadcast(mService, INTENT_STOP, stopIntent, PENDING_INTENT_UPDATE_CURRENT_FLAG);
             NotificationCompat.Action stopActon = new NotificationCompat.Action.Builder(R.drawable.ic_stop_black_48dp, "Stop", stopPendingIntent).build();
 
             // Next song action
             Intent nextIntent = new Intent(BackgroundService.ACTION_NEXT);
-            PendingIntent nextPendingIntent = PendingIntent.getBroadcast(mService, INTENT_NEXT, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent nextPendingIntent = PendingIntent.getBroadcast(mService, INTENT_NEXT, nextIntent, PENDING_INTENT_UPDATE_CURRENT_FLAG);
             NotificationCompat.Action nextAction = new NotificationCompat.Action.Builder(R.drawable.ic_skip_next_48dp, "Next", nextPendingIntent).build();
 
             // Quit action
             Intent quitIntent = new Intent(BackgroundService.ACTION_QUIT_BACKGROUND_SERVICE);
-            PendingIntent quitPendingIntent = PendingIntent.getBroadcast(mService, INTENT_QUIT, quitIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent quitPendingIntent = PendingIntent.getBroadcast(mService, INTENT_QUIT, quitIntent, PENDING_INTENT_UPDATE_CURRENT_FLAG);
             mNotificationBuilder.setDeleteIntent(quitPendingIntent);
 
             mNotificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
@@ -275,8 +276,6 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             mNotificationBuilder.setContentTitle(title);
 
             String secondRow = track.getSubLine(mService);
-            String trackAlbum = track.getStringTag(MPDTrack.StringTagTypes.ALBUM);
-
 
             // Set the media session metadata
             updateMetadata(track, state);
