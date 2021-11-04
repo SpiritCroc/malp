@@ -71,25 +71,25 @@ public class MPDProfileManager extends Observable {
         if (cursor.moveToFirst()) {
             do {
                 /* Profile parameters */
-                String profileName = cursor.getString(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_NAME));
-                boolean autoConnect = cursor.getInt(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_AUTO_CONNECT)) == 1;
+                String profileName = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_NAME));
+                boolean autoConnect = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_AUTO_CONNECT)) == 1;
 
                 /* Server parameters */
-                String serverHostname = cursor.getString(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_SERVER_HOSTNAME));
-                String serverPassword = cursor.getString(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_SERVER_PASSWORD));
-                int serverPort = cursor.getInt(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_SERVER_PORT));
-                long creationDate = cursor.getLong(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_DATE_CREATED));
+                String serverHostname = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_SERVER_HOSTNAME));
+                String serverPassword = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_SERVER_PASSWORD));
+                int serverPort = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_SERVER_PORT));
+                long creationDate = cursor.getLong(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_DATE_CREATED));
 
                 /* Streaming parameters */
-                String streamingURL = cursor.getString(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_STREAMING_PORT));
-                boolean streamingEnabled = cursor.getInt(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_STREAMING_ENABLED)) == 1;
+                String streamingURL = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_STREAMING_PORT));
+                boolean streamingEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_STREAMING_ENABLED)) == 1;
 
                 /* HTTP cover parameters */
-                String httpCoverRegex = cursor.getString(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_HTTP_COVER_REGEX));
-                boolean httpCoverEnabled = cursor.getInt(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_HTTP_COVER_ENABLED)) == 1;
+                String httpCoverRegex = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_HTTP_COVER_REGEX));
+                boolean httpCoverEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_HTTP_COVER_ENABLED)) == 1;
 
                 // MPD Cover parameter
-                boolean mpdCoverEnabled = cursor.getInt(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_MPD_COVER_ENABLED)) == 1;
+                boolean mpdCoverEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_MPD_COVER_ENABLED)) == 1;
 
                 /* Create temporary object to append to list. */
                 MPDServerProfile profile = new MPDServerProfile(profileName, autoConnect, creationDate);
@@ -199,25 +199,25 @@ public class MPDProfileManager extends Observable {
         /* Iterate over the cursor and create MPDServerProfile objects */
         if (cursor.moveToFirst()) {
             /* Profile parameters */
-            String profileName = cursor.getString(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_NAME));
-            boolean autoConnect = cursor.getInt(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_AUTO_CONNECT)) == 1;
+            String profileName = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_NAME));
+            boolean autoConnect = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_AUTO_CONNECT)) == 1;
 
             /* Server parameters */
-            String serverHostname = cursor.getString(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_SERVER_HOSTNAME));
-            String serverPassword = cursor.getString(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_SERVER_PASSWORD));
-            int serverPort = cursor.getInt(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_SERVER_PORT));
-            long creationDate = cursor.getLong(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_DATE_CREATED));
+            String serverHostname = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_SERVER_HOSTNAME));
+            String serverPassword = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_SERVER_PASSWORD));
+            int serverPort = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_SERVER_PORT));
+            long creationDate = cursor.getLong(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_DATE_CREATED));
 
             /* Streaming parameters */
-            String streamingURL = cursor.getString(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_STREAMING_PORT));
-            boolean streamingEnabled = cursor.getInt(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_STREAMING_ENABLED)) == 1;
+            String streamingURL = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_STREAMING_PORT));
+            boolean streamingEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_STREAMING_ENABLED)) == 1;
 
             /* HTTP cover parameters */
-            String httpCoverRegex = cursor.getString(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_HTTP_COVER_REGEX));
-            boolean httpCoverEnabled = cursor.getInt(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_HTTP_COVER_ENABLED)) == 1;
+            String httpCoverRegex = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_HTTP_COVER_REGEX));
+            boolean httpCoverEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_HTTP_COVER_ENABLED)) == 1;
 
             // MPD Cover parameter
-            boolean mpdCoverEnabled = cursor.getInt(cursor.getColumnIndex(MPDServerProfileTable.COLUMN_PROFILE_MPD_COVER_ENABLED)) == 1;
+            boolean mpdCoverEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_MPD_COVER_ENABLED)) == 1;
 
             /* Create temporary object to append to list. */
             MPDServerProfile profile = new MPDServerProfile(profileName, autoConnect, creationDate);
