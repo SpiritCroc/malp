@@ -128,6 +128,7 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
         mSearchView = view.findViewById(R.id.search_text);
         mSearchView.setOnQueryTextListener(new SearchViewQueryListener());
         mSearchView.setOnFocusChangeListener(this);
+        mSearchView.setIconified(false);
 
         // get swipe layout
         mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
