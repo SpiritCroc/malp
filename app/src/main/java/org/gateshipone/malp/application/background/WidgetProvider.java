@@ -289,13 +289,18 @@ public class WidgetProvider extends AppWidgetProvider {
          */
         @Override
         public void receiveBitmap(Bitmap bm, final CoverBitmapLoader.IMAGE_TYPE type) {
-            // Check if a valid image was found.
-            if (type == CoverBitmapLoader.IMAGE_TYPE.ALBUM_IMAGE && bm != null) {
-                // Set the globally used variable
-                mLastCover = bm;
+            final Context context = mContext.get();
+            final WidgetProvider provider = mProvider.get();
 
-                // Call the update method to refresh the view
-                mProvider.get().updateWidget(mContext.get());
+            if (provider != null && context != null) {
+                // Check if a valid image was found.
+                if (type == CoverBitmapLoader.IMAGE_TYPE.ALBUM_IMAGE && bm != null) {
+                    // Set the globally used variable
+                    mLastCover = bm;
+
+                    // Call the update method to refresh the view
+                    provider.updateWidget(context);
+                }
             }
         }
     }
