@@ -1170,6 +1170,11 @@ public class MPDInterface {
                     }
 
                     if (!abort) {
+                        if (((imageSize - dataToRead) + chunkSize) > imageSize) {
+                            Log.e(TAG, "imageSize=" + imageSize + " dataToRead=" + dataToRead + " chunkSize=" + chunkSize);
+                            Log.e(TAG, "Aborting processing the image=" + path + " because MPD provides more data than announced");
+                            return null;
+                        }
                         // Copy chunk to final output array
                         System.arraycopy(readData, 0, imageData, ((int) imageSize - dataToRead), chunkSize);
                     } else {
