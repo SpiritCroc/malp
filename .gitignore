@@ -1,3 +1,4 @@
+!/gradle/wrapper/gradle-wrapper.properties
 !/.idea/copyright/
 *.iml
 .gradle
@@ -13,7 +14,6 @@
 /keystore.properties
 /app/*apk
 /app/release
-/gradle
 /gradlew*
 /doc
 .project
