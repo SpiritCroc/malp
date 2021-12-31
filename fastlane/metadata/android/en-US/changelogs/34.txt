@@ -1,0 +1,6 @@
+* Add NowPlayingView hint ([#212](https://gitlab.com/gateship-one/malp/-/issues/212))
+* Fix duplicated artist name in FanartActivity
+* Add support for Seekbar in Notification (starts with Android 10)
+* Fix artwork retrieval for HTTP and MPD ([#213](https://gitlab.com/gateship-one/malp/-/issues/213))
+* Exclude artworks from backups ([#214](https://gitlab.com/gateship-one/malp/-/issues/214))
+* Fix crashes related to MPD artwork retrieval ([#218](https://gitlab.com/gateship-one/malp/-/issues/218), [#134](https://gitlab.com/gateship-one/malp/-/merge_requests/134))

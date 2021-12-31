@@ -1,0 +1,3 @@
+* Migrate to android 12
+* Update material components (please raise an issue if themes are broken)
+* Hardening of MPD artwork retrieval ([#261](https://gitlab.com/gateship-one/malp/-/issues/261))

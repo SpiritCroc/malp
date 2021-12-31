@@ -1,13 +1,19 @@
 # Changelog M.A.L.P
 
+## 1.2.8 Tag: release-35 (2021-12-31)
+
+* Migrate to android 12
+* Update material components (please raise an issue if themes are broken)
+* Hardening of MPD artwork retrieval ([#261](https://gitlab.com/gateship-one/malp/-/issues/261))
+
 ## 1.2.7 Tag: release-34 (2020-11-26)
 
 * Add NowPlayingView hint ([#212](https://gitlab.com/gateship-one/malp/-/issues/212))
 * Fix duplicated artist name in FanartActivity
 * Add support for Seekbar in Notification (starts with Android 10)
-* Fix artwork retrival for HTTP and MPD ([#213](https://gitlab.com/gateship-one/malp/-/issues/213))
+* Fix artwork retrieval for HTTP and MPD ([#213](https://gitlab.com/gateship-one/malp/-/issues/213))
 * Exclude artworks from backups ([#214](https://gitlab.com/gateship-one/malp/-/issues/214))
-* Fix crashes related to MPD artwork retrival ([#218](https://gitlab.com/gateship-one/malp/-/issues/218), [#134](https://gitlab.com/gateship-one/malp/-/merge_requests/134))
+* Fix crashes related to MPD artwork retrieval ([#218](https://gitlab.com/gateship-one/malp/-/issues/218), [#134](https://gitlab.com/gateship-one/malp/-/merge_requests/134))
 
 ## 1.2.6 Tag: release-33 (2020-09-13)
 
@@ -19,7 +25,7 @@
 
 ## 1.2.5 Tag: release-32 (2020-03-02)
 
-* further improvements for the artwork retrival
+* further improvements for the artwork retrieval
 * add prepend to playlist action
 
 ## Version 1.2.4 Tag: release-31 (2019-07-14)
@@ -36,7 +42,7 @@
 
 * add hungarian translation (Thanks to Dániel Flórián)
 * migrate to AndroidX
-* improve artwork retrival
+* improve artwork retrieval
 * remove Last.fm as artist image provider
 * fix last updated timestamp in statistics view
 * fix several backnavigation issues
