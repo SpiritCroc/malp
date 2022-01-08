@@ -1078,7 +1078,7 @@ public class MPDInterface {
     }
 
     /**
-     * Instructs to update the database of the mpd server.
+     * Instructs to update the database of the MPD server.
      *
      * @param path Path to update
      */
@@ -1088,35 +1088,33 @@ public class MPDInterface {
     }
 
     public byte[] getAlbumArt(String path, boolean readPicture) throws MPDException {
-
+        // Check if server supports either of the two artwork commands
         if ((!readPicture && !mConnection.getServerCapabilities().hasAlbumArt()) || (readPicture && !mConnection.getServerCapabilities().hasReadPicture())) {
             return null;
         }
 
+        // Size of the complete image
         long imageSize = 0;
-        int dataToRead = -1;
-
+        // Remaining data to read
+        int dataToRead = 0;
+        // Size of the current chunk (usually 8KiB or less)
         int chunkSize = 0;
 
+        // Image return value. Accumulates all chunks to final image
         byte[] imageData = null;
 
-
+        // Used to check if the initial image allocation happened
         boolean firstRun = true;
+
+        // Signalizes if an error happened during reading and that image data must be discarded
+        boolean abort = false;
         String line;
-        while (dataToRead != 0) {
+        while (dataToRead != 0 || firstRun) {
             // Request the image
-            if (firstRun) {
-                if (!readPicture) {
-                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, 0));
-                } else {
-                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, 0));
-                }
+            if (!readPicture) {
+                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, ((int)imageSize - dataToRead)));
             } else {
-                if (!readPicture) {
-                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_ALBUMART(path, ((int)imageSize - dataToRead)));
-                } else {
-                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, ((int)imageSize - dataToRead)));
-                }
+                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_READPICTURE(path, ((int) imageSize - dataToRead)));
             }
             try {
                 line = mConnection.readLine();
@@ -1133,54 +1131,59 @@ public class MPDInterface {
                     if (firstRun) {
                         try {
                             imageSize = Long.parseLong(line.substring(MPDResponses.MPD_RESPONSE_SIZE.length()));
+                            if(imageSize > MAX_IMAGE_SIZE) {
+                                Log.e(TAG, "Size=" + imageSize + " unsupported for path=" + path + " - Aborting download with " + (readPicture ? "readPicture" : "albumArt"));
+                                // Ensure no more data after the initial chunk is read
+                                imageSize = 0;
+                                abort = true;
+                            } else {
+                                // Allocate complete image data
+                                imageData = new byte[(int)imageSize];
+                                dataToRead = (int)imageSize;
+                            }
                         } catch (NumberFormatException e) {
                             Log.e(TAG, "Can't understand MPD anymore (imageSize): " + path + " - " + e.getMessage());
+                            // Ensure no more data after the initial chunk is read
                             imageSize = 0;
-                            dataToRead = 0;
-                            continue;
-                        }
-                    }
-                } else if (line.startsWith("binary")) {
-                    boolean abort = false;
-                    if (firstRun) {
-                        if(imageSize > MAX_IMAGE_SIZE) {
-                            Log.e(TAG, "Size=" + imageSize + " unsupported for path=" + path + " - Aborting download with " + (readPicture ? "readPicture" : "albumArt"));
-                            imageSize = 0;
-                            dataToRead = 0;
                             abort = true;
-                        } else {
-                            imageData = new byte[(int)imageSize];
-                            dataToRead = (int)imageSize;
                         }
                         firstRun = false;
                     }
+                } else if (line.startsWith("binary")) {
                     // This means that after this line a binary chunk is incoming
                     try {
                         chunkSize = Integer.parseInt(line.substring(MPDResponses.MPD_RESPONSE_BINARY_SIZE.length()));
                     } catch (NumberFormatException e) {
+                        // We currently can not recover from this error case because the binary reader
+                        // does not know how much data is available in the socket until the "OK"  is reached.
+                        // TODO: In the future this could be fixed by reading until the socket is exhausted.
                         Log.e(TAG, "Can't understand MPD anymore (chunkSize): " + path + " - " + e.getMessage());
+                        Log.e(TAG, "Can't recover because binary read length is undefined");
                         throw new MPDException("Cover error:" + e.getMessage());
                     }
 
                     byte[] readData;
                     try {
+                        // Do the actual binary read from the socket. The precise length must be known a priori.
                         readData = mConnection.readBinary(chunkSize);
                     } catch (MPDException e) {
                         return null;
                     }
 
+                    // Only use the chunk if no error condition triggered
                     if (!abort) {
                         if (((imageSize - dataToRead) + chunkSize) > imageSize) {
                             Log.e(TAG, "imageSize=" + imageSize + " dataToRead=" + dataToRead + " chunkSize=" + chunkSize);
-                            Log.e(TAG, "Aborting processing the image=" + path + " because MPD provides more data than announced");
-                            return null;
+                            Log.e(TAG, "Abort processing the image=" + path + " because MPD provides more data than announced");
+                            // Ensure no more data is going to be read
+                            dataToRead = 0;
+                            abort = true;
+                        } else {
+                            // Copy chunk to final output array
+                            System.arraycopy(readData, 0, imageData, ((int) imageSize - dataToRead), chunkSize);
+                            dataToRead -= chunkSize;
                         }
-                        // Copy chunk to final output array
-                        System.arraycopy(readData, 0, imageData, ((int) imageSize - dataToRead), chunkSize);
-                    } else {
-                        return null;
                     }
-                    dataToRead -= chunkSize;
                 }
 
                 try {
@@ -1190,7 +1193,12 @@ public class MPDInterface {
                 }
             }
         }
-        return imageData;
+        if (!abort) {
+            return imageData;
+        } else {
+            // Discard potential broken image data
+            return null;
+        }
     }
 
     private void checkCacheState() throws MPDException {
