@@ -212,7 +212,9 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     public void onDetach() {
         super.onDetach();
 
-        mSearchView.setOnQueryTextListener(null);
+        if (mSearchView != null) {
+            mSearchView.setOnQueryTextListener(null);
+        }
     }
 
     @Override
