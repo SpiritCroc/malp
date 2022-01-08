@@ -121,10 +121,6 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     private ArtworkDatabaseManager mDatabaseManager;
 
-    private String mAlbumProvider;
-
-    private String mArtistProvider;
-
     /**
      * Called when the service is created because it is requested by an activity
      */
@@ -170,11 +166,12 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
                 Log.v(TAG, "Starting bulk download in service with thread id: " + Thread.currentThread().getId());
             }
 
+            String mArtistProvider = getString(R.string.pref_artwork_provider_artist_default);
+            String mAlbumProvider = getString(R.string.pref_artwork_provider_album_default);
+
             // reset counter
             mSumArtworkRequests = 0;
 
-            mArtistProvider = getString(R.string.pref_artwork_provider_artist_default);
-            mAlbumProvider = getString(R.string.pref_artwork_provider_album_default);
             mWifiOnly = true;
 
             // read setting from extras
@@ -235,7 +232,19 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     @Override
     public void fetchLocalFailed(ArtworkRequestModel model) {
-        createRequest(model, true);
+        if (BuildConfig.DEBUG) {
+            Log.e(TAG, "MPD cover fetching failed: " + model.getLoggingString());
+        }
+
+        if (mArtworkManager.hasImageProvider(model.getType())) {
+            createRequest(model, true);
+        } else {
+            ImageResponse imageResponse = new ImageResponse();
+            imageResponse.model = model;
+            imageResponse.image = null;
+            imageResponse.url = null;
+            new InsertImageTask(getApplicationContext(), this).execute(imageResponse);
+        }
     }
 
     @Override
@@ -309,7 +318,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
     }
 
     private void fetchAllAlbums() {
-        if (!mAlbumProvider.equals(getApplicationContext().getString((R.string.pref_artwork_provider_none_key)))) {
+        if (mArtworkManager.hasImageProvider(ArtworkRequestModel.ArtworkRequestType.ALBUM)) {
             MPDQueryHandler.getAlbums(new AlbumsResponseHandler(this));
         } else {
             fetchAllArtists();
@@ -317,7 +326,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
     }
 
     private void fetchAllArtists() {
-        if (!mArtistProvider.equals(getApplicationContext().getString((R.string.pref_artwork_provider_none_key)))) {
+        if (mArtworkManager.hasImageProvider(ArtworkRequestModel.ArtworkRequestType.ARTIST)) {
             MPDQueryHandler.getArtists(new ArtistsResponseHandler(this));
         } else {
             startBulkDownload();
@@ -326,7 +335,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     private void startBulkDownload() {
         if (BuildConfig.DEBUG) {
-            Log.v(TAG, "Bulkloading started with: " + mArtworkRequestQueue.size());
+            Log.v(TAG, "Bulk loading started with: " + mArtworkRequestQueue.size());
         }
 
         mSumArtworkRequests = mArtworkRequestQueue.size();

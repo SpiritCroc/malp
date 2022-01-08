@@ -113,7 +113,7 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
     /**
      * Manager for the SQLite database handling
      */
-    private ArtworkDatabaseManager mDBManager;
+    private final ArtworkDatabaseManager mDBManager;
 
     /**
      * List of observers that needs updating if a new ArtistImage is downloaded.
@@ -181,17 +181,29 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
 
     @Override
     public void fetchLocalFailed(final ArtworkRequestModel model) {
-        switch (model.getType()) {
+        if (BuildConfig.DEBUG) {
+            Log.e(TAG, "MPD cover fetching failed: " + model.getLoggingString());
+        }
 
-            case ALBUM: {
-                MPDAlbum album = ((MPDAlbum)model.getGenericModel());
-                fetchImage(album, this, this, true);
-                break;
+        if (hasImageProvider(model.getType())) {
+            switch (model.getType()) {
+
+                case ALBUM: {
+                    MPDAlbum album = ((MPDAlbum) model.getGenericModel());
+
+                    fetchImage(album, this, this, true);
+                    break;
+                }
+                case ARTIST:
+                case TRACK:
+                    break;
             }
-            case ARTIST:
-                break;
-            case TRACK:
-                break;
+        } else {
+            ImageResponse imageResponse = new ImageResponse();
+            imageResponse.model = model;
+            imageResponse.image = null;
+            imageResponse.url = null;
+            new InsertImageTask(mApplicationContext, this).execute(imageResponse);
         }
     }
 
@@ -317,7 +329,7 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
      *
      * @param artist             Artist to fetch an image for.
      * @param imageSavedCallback Callback if an image was saved.
-     * @param errorCallback      Callback if an error occured.
+     * @param errorCallback      Callback if an error occurred.
      */
     void fetchImage(final MPDArtist artist,
                     final InsertImageTask.ImageSavedCallback imageSavedCallback,
@@ -350,7 +362,7 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
      *
      * @param album              Album to fetch an image for.
      * @param imageSavedCallback Callback if an image was saved.
-     * @param errorCallback      Callback if an error occured.
+     * @param errorCallback      Callback if an error occurred.
      */
     void fetchImage(final MPDAlbum album,
                     final InsertImageTask.ImageSavedCallback imageSavedCallback,
@@ -474,7 +486,7 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
 
     @Override
     public void onImageSaved(final ArtworkRequestModel artworkRequestModel) {
-        broadcastNewArtwokInfo(artworkRequestModel);
+        broadcastNewArtworkInfo(artworkRequestModel);
 
         switch (artworkRequestModel.getType()) {
             case ALBUM:
@@ -548,12 +560,30 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
     }
 
     /**
+     * Helper method to check if an image provider is setting for the current requestType.
+     *
+     * @param requestType The {@link org.gateshipone.malp.application.artwork.network.ArtworkRequestModel.ArtworkRequestType} of the request.
+     * @return True if an image provider is set otherwise false.
+     */
+    public boolean hasImageProvider(final ArtworkRequestModel.ArtworkRequestType requestType) {
+        switch (requestType) {
+            case ALBUM:
+            case TRACK:
+                return !mAlbumProvider.equals(mApplicationContext.getString((R.string.pref_artwork_provider_none_key)));
+            case ARTIST:
+                return !mArtistProvider.equals(mApplicationContext.getString((R.string.pref_artwork_provider_none_key)));
+        }
+
+        return false;
+    }
+
+    /**
      * Used to broadcast information about new available artwork to {@link BroadcastReceiver} like
      * the {@link org.gateshipone.malp.application.background.WidgetProvider} to reload its artwork.
      *
      * @param model The model that an image was inserted for.
      */
-    private void broadcastNewArtwokInfo(ArtworkRequestModel model) {
+    private void broadcastNewArtworkInfo(ArtworkRequestModel model) {
         Intent newImageIntent = new Intent(ACTION_NEW_ARTWORK_READY);
 
         switch (model.getType()) {
