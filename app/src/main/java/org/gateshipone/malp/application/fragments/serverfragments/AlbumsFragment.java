@@ -149,14 +149,17 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
 
-        final SearchViewModel searchViewModel = new ViewModelProvider(requireParentFragment()).get(SearchViewModel.class);
-        searchViewModel.getSearchString().observe(getViewLifecycleOwner(), searchString -> {
-            if (searchString != null) {
-                applyFilter(searchString);
-            } else {
-                removeFilter();
-            }
-        });
+        // the searchViewModel will only be used if this fragment is a child of the MyMusicTabs fragment
+        if (mAlbumsPath == null && getParentFragment() != null) {
+            final SearchViewModel searchViewModel = new ViewModelProvider(requireParentFragment()).get(SearchViewModel.class);
+            searchViewModel.getSearchString().observe(getViewLifecycleOwner(), searchString -> {
+                if (searchString != null) {
+                    applyFilter(searchString);
+                } else {
+                    removeFilter();
+                }
+            });
+        }
     }
 
     @Override
