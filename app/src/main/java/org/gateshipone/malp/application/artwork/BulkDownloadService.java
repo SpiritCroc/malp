@@ -408,7 +408,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
                 mArtworkManager.fetchImage((MPDArtist) requestModel.getGenericModel(), this, this);
                 break;
             case TRACK:
-                mArtworkManager.fetchImage((MPDTrack) requestModel.getGenericModel(), this, this);
+                mArtworkManager.fetchImage((MPDTrack) requestModel.getGenericModel(), this, this, skipLocal);
                 break;
         }
     }

@@ -363,6 +363,7 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
      * @param album              Album to fetch an image for.
      * @param imageSavedCallback Callback if an image was saved.
      * @param errorCallback      Callback if an error occurred.
+     * @param skipLocal          Flag if MPD cover fetching should be skipped
      */
     void fetchImage(final MPDAlbum album,
                     final InsertImageTask.ImageSavedCallback imageSavedCallback,
@@ -374,16 +375,23 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
 
         ArtworkRequestModel requestModel = new ArtworkRequestModel(album);
 
-        if (MPDAlbumImageProvider.getInstance().getActive() && !skipLocal) {
-            // Check if MPD cover transfer is activated
-            MPDAlbumImageProvider.getInstance().fetchImage(requestModel,
-                    response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
-                    errorCallback);
-        } else if (mAlbumProvider.equals(mApplicationContext.getString(R.string.pref_artwork_provider_musicbrainz_key))) {
+        if (!skipLocal) {
+            if (MPDAlbumImageProvider.getInstance().getActive()) {
+                MPDAlbumImageProvider.getInstance().fetchImage(requestModel,
+                        response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
+                        errorCallback);
+                return;
+            }
+        }
+
+        if (mAlbumProvider.equals(mApplicationContext.getString(R.string.pref_artwork_provider_musicbrainz_key))) {
             MusicBrainzProvider.getInstance(mApplicationContext).fetchImage(requestModel,
                     response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
                     errorCallback);
-        } else if (mAlbumProvider.equals(mApplicationContext.getString(R.string.pref_artwork_provider_lastfm_key))) {
+            return;
+        }
+
+        if (mAlbumProvider.equals(mApplicationContext.getString(R.string.pref_artwork_provider_lastfm_key))) {
             LastFMProvider.getInstance(mApplicationContext).fetchImage(requestModel,
                     response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
                     errorCallback);
@@ -400,36 +408,54 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
         fetchImage(album, this, this, false);
     }
 
+    /**
+     * Starts an asynchronous fetch for the image of the given track.
+     * This method will use internal callbacks.
+     *
+     * @param track Track to fetch an image for.
+     */
     public void fetchImage(final MPDTrack track) {
-        fetchImage(track, this, this);
+        fetchImage(track, this, this, false);
     }
 
+    /**
+     * Starts an asynchronous fetch for the image of the given track.
+     *
+     * @param track              Track to fetch an image for.
+     * @param imageSavedCallback Callback if an image was saved.
+     * @param errorCallback      Callback if an error occurred.
+     * @param skipLocal          Flag if MPD cover fetching should be skipped
+     */
     public void fetchImage(final MPDTrack track,
                            final InsertImageTask.ImageSavedCallback imageSavedCallback,
-                           final ArtProvider.ArtFetchError errorCallback) {
+                           final ArtProvider.ArtFetchError errorCallback,
+                           final boolean skipLocal) {
         final ArtworkRequestModel requestModel = new ArtworkRequestModel(track);
 
-        if (MPDAlbumImageProvider.getInstance().getActive()) {
-            // Check if MPD cover transfer is activated
-            MPDAlbumImageProvider.getInstance().fetchImage(requestModel,
-                    response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
-                    errorCallback);
-            return;
+        if (!skipLocal) {
+            if (MPDAlbumImageProvider.getInstance().getActive()) {
+                // Check if MPD cover transfer is activated
+                MPDAlbumImageProvider.getInstance().fetchImage(requestModel,
+                        response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
+                        errorCallback);
+                return;
+            }
+
+            if (HTTPAlbumImageProvider.getInstance(mApplicationContext).getActive()) {
+                // Check if user-specified HTTP cover download is activated
+                HTTPAlbumImageProvider.getInstance(mApplicationContext).fetchImage(requestModel,
+                        response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
+                        errorCallback);
+                return;
+            }
         }
 
-        if (HTTPAlbumImageProvider.getInstance(mApplicationContext).getActive()) {
-            // Check if user-specified HTTP cover download is activated
-            HTTPAlbumImageProvider.getInstance(mApplicationContext).fetchImage(requestModel,
-                    response -> new InsertImageTask(mApplicationContext, imageSavedCallback).execute(response),
-                    errorCallback);
-        } else {
-            // Use a dummy album to fetch the image
-            final MPDAlbum album = new MPDAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM));
-            album.setMBID(track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
-            album.setArtistName(track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST));
+        // Use a dummy album to fetch the image
+        final MPDAlbum album = new MPDAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM));
+        album.setMBID(track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
+        album.setArtistName(track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST));
 
-            fetchImage(album, imageSavedCallback, errorCallback, true);
-        }
+        fetchImage(album, imageSavedCallback, errorCallback, true);
     }
 
     /**
