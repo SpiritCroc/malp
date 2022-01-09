@@ -1,5 +1,11 @@
 # Changelog M.A.L.P
 
+## 1.2.9 Tag: release-36 (2022-01-09)
+
+* Fix crash on device rotation ([#265](https://gitlab.com/gateship-one/malp/-/issues/265))
+* Fix show albums from Files View
+* Fix MPD artwork retrieval (bulk download for all music should work now)
+
 ## 1.2.8 Tag: release-35 (2021-12-31)
 
 * Migrate to android 12

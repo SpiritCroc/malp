@@ -1,0 +1,3 @@
+* Fix crash on device rotation ([#265](https://gitlab.com/gateship-one/malp/-/issues/265))
+* Fix show albums from Files View
+* Fix MPD artwork retrieval (bulk download for all music should work now)
