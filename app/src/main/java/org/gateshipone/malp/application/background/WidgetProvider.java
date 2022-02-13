@@ -36,7 +36,6 @@ import android.widget.RemoteViews;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.activities.MainActivity;
-import org.gateshipone.malp.application.activities.SplashActivity;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.utils.CoverBitmapLoader;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
@@ -140,7 +139,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
             // set button actions
             // Main action
-            Intent mainIntent = new Intent(context, SplashActivity.class);
+            Intent mainIntent = new Intent(context, MainActivity.class);
             mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
             if (nowPlaying) {
                 // add intent only if playing is active
@@ -190,7 +189,7 @@ public class WidgetProvider extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.widget_connect_button, connectPendingIntent);
 
             // Main action
-            Intent mainIntent = new Intent(context, SplashActivity.class);
+            Intent mainIntent = new Intent(context, MainActivity.class);
             mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
             PendingIntent mainPendingIntent = PendingIntent.getActivity(context, INTENT_OPENGUI, mainIntent, PENDING_INTENT_UPDATE_CURRENT_FLAG);
             views.setOnClickPendingIntent(R.id.widget_big_cover, mainPendingIntent);

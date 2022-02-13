@@ -42,18 +42,15 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         tools:targetApi="s">
         <activity
+            android:name=".application.activities.MainActivity"
+            android:theme="@style/Theme.App.Starting"
             android:exported="true"
-            android:name=".application.activities.SplashActivity"
-            android:theme="@style/SplashTheme">
+            android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".application.activities.MainActivity"
-            android:theme="@style/AppTheme.deepOrange"
-            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name="org.gateshipone.malp.application.activities.AboutActivity"
             android:label="About"

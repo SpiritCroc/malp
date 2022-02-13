@@ -71,8 +71,6 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         // Read theme preference
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String themePref = sharedPref.getString(getString(R.string.pref_theme_key), getString(R.string.pref_theme_default));
@@ -117,6 +115,9 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
         if (themePref.equals(getString(R.string.pref_oleddark_key))) {
             setTheme(R.style.AppTheme_oledDark);
         }
+
+        super.onCreate(savedInstanceState);
+
         mErrorListener = new MPDErrorListener(this);
     }
 
