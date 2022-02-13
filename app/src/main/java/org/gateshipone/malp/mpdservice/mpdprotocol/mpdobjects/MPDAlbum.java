@@ -40,7 +40,7 @@ public class MPDAlbum implements MPDGenericItem, Comparable<MPDAlbum>, Parcelabl
 
     /* Album properties */
     @NonNull
-    private String mName;
+    private final String mName;
 
     /* Musicbrainz ID */
     @NonNull

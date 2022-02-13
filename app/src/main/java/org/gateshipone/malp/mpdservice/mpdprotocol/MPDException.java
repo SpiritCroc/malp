@@ -23,7 +23,7 @@
 package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 public class MPDException extends Exception {
-    private String mError;
+    private final String mError;
 
     public MPDException(String error) {
         mError = error;

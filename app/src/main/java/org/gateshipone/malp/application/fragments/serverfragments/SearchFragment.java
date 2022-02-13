@@ -43,7 +43,6 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -133,17 +132,17 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
         // get swipe layout
         mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
-        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
-                ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(requireContext(), R.attr.colorAccent),
+                ThemeUtils.getThemeColor(requireContext(), R.attr.colorPrimary));
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
         setHasOptionsMenu(true);
 
         // Get album sort order
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mAlbumSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, getContext());
-        mClickAction = PreferenceHelper.getClickAction(sharedPref, getContext());
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        mAlbumSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, requireContext());
+        mClickAction = PreferenceHelper.getClickAction(sharedPref, requireContext());
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
 
@@ -151,7 +150,7 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
 
     @Override
     GenericViewModel<MPDFileEntry> getViewModel() {
-        return new ViewModelProvider(this, new SearchResultViewModel.SearchResultViewModelFactory(getActivity().getApplication())).get(SearchResultViewModel.class);
+        return new ViewModelProvider(this, new SearchResultViewModel.SearchResultViewModelFactory(requireActivity().getApplication())).get(SearchResultViewModel.class);
     }
 
     @Override
@@ -204,7 +203,7 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_search_track, menu);
     }
 
@@ -259,12 +258,12 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
             ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
 
             choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(position), getContext()));
-            choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
+            choosePlaylistDialog.show(requireActivity().getSupportFragmentManager(), "ChoosePlaylistDialog");
             return true;
         } else if (itemId == R.id.action_show_details) {
             // Open song details dialog
             SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
-            songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+            songDetailsDialog.show(requireActivity().getSupportFragmentManager(), "SongDetails");
             return true;
         } else if (itemId == R.id.action_add_album) {
             String artist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
@@ -310,7 +309,7 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
         menuInflater.inflate(R.menu.fragment_menu_search_tracks, menu);
 
         // get tint color
-        int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
 
         Drawable drawable = menu.findItem(R.id.action_add_search_result).getIcon();
         drawable = DrawableCompat.wrap(drawable);
@@ -344,7 +343,7 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
             case ACTION_SHOW_DETAILS: {
                 // Open song details dialog
                 SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
-                songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+                songDetailsDialog.show(requireActivity().getSupportFragmentManager(), "SongDetails");
             }
             break;
             case ACTION_ADD_SONG: {
@@ -388,12 +387,12 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
     }
 
     private void closeKeyboard() {
-        final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mSearchView.getWindowToken(), 0);
     }
 
     private void openKeyboard() {
-        final InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager inputMethodManager = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.toggleSoftInput(0, InputMethodManager.SHOW_IMPLICIT);
     }
 

@@ -60,8 +60,8 @@ abstract public class GenericMPDRecyclerFragment<T extends MPDGenericItem, VH ex
      * Make sure to call this method after the recyclerview was set.
      */
     protected void setLinearLayoutManagerAndDecoration() {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        final DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        final DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
         mRecyclerView.addItemDecoration(dividerItemDecoration);
     }
 

@@ -98,9 +98,9 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
     private final ViewDragHelper mDragHelper;
 
-    private ServerStatusListener mStateListener;
+    private final ServerStatusListener mStateListener;
 
-    private ServerConnectionListener mConnectionStateListener;
+    private final ServerConnectionListener mConnectionStateListener;
 
     /**
      * Upper view part which is dragged up & down
@@ -1497,7 +1497,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
     private static class ServerConnectionListener extends MPDConnectionStateChangeHandler {
 
-        private WeakReference<NowPlayingView> mNPV;
+        private final WeakReference<NowPlayingView> mNPV;
 
         ServerConnectionListener(NowPlayingView npv, Looper looper) {
             super(looper);

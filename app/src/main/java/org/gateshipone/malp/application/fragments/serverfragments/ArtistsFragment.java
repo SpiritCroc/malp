@@ -57,15 +57,8 @@ import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
-import java.util.List;
-
 public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements AdapterView.OnItemClickListener {
     public static final String TAG = ArtistsFragment.class.getSimpleName();
-
-    /**
-     * Save the root GridView for later usage.
-     */
-    private AbsListView mAdapterView;
 
     private ArtistSelectedCallback mSelectedCallback;
 
@@ -103,34 +96,35 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
 
         final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
 
-        mAlbumSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, getContext());
+        mAlbumSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, requireContext());
         mUseAlbumArtists = sharedPref.getBoolean(getString(R.string.pref_use_album_artists_key), getResources().getBoolean(R.bool.pref_use_album_artists_default));
         mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
 
+        AbsListView adapterView;
         if (useList) {
             // get listview
-            mAdapterView = (ListView) view.findViewById(R.id.main_listview);
+            adapterView = (ListView) view.findViewById(R.id.main_listview);
         } else {
             // get gridview
-            mAdapterView = (GridView) view.findViewById(R.id.grid_refresh_gridview);
+            adapterView = (GridView) view.findViewById(R.id.grid_refresh_gridview);
         }
 
         mAdapter = new ArtistsAdapter(getActivity(), useList);
 
-        mAdapterView.setAdapter(mAdapter);
-        mAdapterView.setOnItemClickListener(this);
+        adapterView.setAdapter(mAdapter);
+        adapterView.setOnItemClickListener(this);
 
-        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter));
+        adapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter));
 
         // register for context menu
-        registerForContextMenu(mAdapterView);
+        registerForContextMenu(adapterView);
 
 
         // get swipe layout
         mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
-        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
-                ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(requireContext(), R.attr.colorAccent),
+                ThemeUtils.getThemeColor(requireContext(), R.attr.colorPrimary));
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
@@ -148,7 +142,7 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
 
     @Override
     GenericViewModel<MPDArtist> getViewModel() {
-        return new ViewModelProvider(this, new ArtistsViewModel.ArtistViewModelFactory(getActivity().getApplication(), mUseAlbumArtists, mUseArtistSort)).get(ArtistsViewModel.class);
+        return new ViewModelProvider(this, new ArtistsViewModel.ArtistViewModelFactory(requireActivity().getApplication(), mUseAlbumArtists, mUseArtistSort)).get(ArtistsViewModel.class);
     }
 
     @Override
@@ -159,14 +153,14 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
             mFABCallback.setupFAB(false, null);
             mFABCallback.setupToolbar(getString(R.string.app_name), true, true, false);
         }
-        ArtworkManager.getInstance(getContext().getApplicationContext()).registerOnNewArtistImageListener((ArtistsAdapter) mAdapter);
+        ArtworkManager.getInstance(requireContext().getApplicationContext()).registerOnNewArtistImageListener((ArtistsAdapter) mAdapter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        ArtworkManager.getInstance(getContext().getApplicationContext()).unregisterOnNewArtistImageListener((ArtistsAdapter) mAdapter);
+        ArtworkManager.getInstance(requireContext().getApplicationContext()).unregisterOnNewArtistImageListener((ArtistsAdapter) mAdapter);
     }
 
     /**
@@ -181,7 +175,7 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
         try {
             mSelectedCallback = (ArtistSelectedCallback) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
+            throw new ClassCastException(context + " must implement OnArtistSelectedListener");
         }
     }
 
@@ -191,7 +185,7 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_artist, menu);
     }
 

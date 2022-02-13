@@ -44,8 +44,6 @@ import org.gateshipone.malp.R;
 public class VolumeStepPreferenceDialog extends DialogFragment implements SeekBar.OnSeekBarChangeListener {
     private static final int WARNING_THRESHOLD = 10;
 
-    private SeekBar mSeekBar;
-
     private TextView mVolumeLabel;
     private TextView mWarningLabel;
 
@@ -54,12 +52,12 @@ public class VolumeStepPreferenceDialog extends DialogFragment implements SeekBa
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
 
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        final LayoutInflater inflater = requireActivity().getLayoutInflater();
         final View seekView = inflater.inflate(R.layout.volume_step_preference_dialog, null);
 
-        mSeekBar = seekView.findViewById(R.id.volume_seekbar);
+        SeekBar seekBar = seekView.findViewById(R.id.volume_seekbar);
         mVolumeLabel = seekView.findViewById(R.id.volume_text);
         mWarningLabel = seekView.findViewById(R.id.volume_warning_text);
 
@@ -67,8 +65,8 @@ public class VolumeStepPreferenceDialog extends DialogFragment implements SeekBa
 
         mVolumeStepSize = sharedPreferences.getInt(getString(R.string.pref_volume_steps_key), getResources().getInteger(R.integer.pref_volume_steps_default));
 
-        mSeekBar.setProgress(mVolumeStepSize);
-        mSeekBar.setOnSeekBarChangeListener(this);
+        seekBar.setProgress(mVolumeStepSize);
+        seekBar.setOnSeekBarChangeListener(this);
 
         updateLabels();
 

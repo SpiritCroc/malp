@@ -31,7 +31,7 @@ import org.gateshipone.malp.application.listviewitems.OutputListItem;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
 public class OutputAdapter extends GenericSectionAdapter<MPDOutput> {
-    private Context mContext;
+    private final Context mContext;
 
     public OutputAdapter(Context context) {
         mContext = context;

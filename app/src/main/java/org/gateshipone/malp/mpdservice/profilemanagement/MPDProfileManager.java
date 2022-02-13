@@ -38,7 +38,7 @@ public class MPDProfileManager extends Observable {
     /**
      * Instance of the helper class to initialize the database.
      */
-    private MPDProfileDBHelper mDBHelper;
+    private final MPDProfileDBHelper mDBHelper;
 
     private static MPDProfileManager mInstance;
 

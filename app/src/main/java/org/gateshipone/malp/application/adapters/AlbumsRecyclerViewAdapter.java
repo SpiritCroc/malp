@@ -38,11 +38,11 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 
 public class AlbumsRecyclerViewAdapter extends GenericRecyclerViewAdapter<MPDAlbum, GenericViewItemHolder> implements ArtworkManager.onNewAlbumImageListener {
 
-    private boolean mUseList;
+    private final boolean mUseList;
 
     private int mItemSize;
 
-    private ArtworkManager mArtworkManager;
+    private final ArtworkManager mArtworkManager;
 
     public AlbumsRecyclerViewAdapter(final Context context, final boolean useList) {
         super();

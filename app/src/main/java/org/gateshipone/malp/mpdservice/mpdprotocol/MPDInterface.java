@@ -54,7 +54,7 @@ public class MPDInterface {
 
     private MPDCache mCache;
 
-    private static long MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50 MB
+    private static final long MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50 MB
 
     private MPDInterface(boolean autoDisconnect) {
         mConnection = new MPDConnection(autoDisconnect);

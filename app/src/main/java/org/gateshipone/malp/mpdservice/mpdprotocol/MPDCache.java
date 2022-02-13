@@ -36,7 +36,7 @@ public class MPDCache {
 
     private List<MPDAlbum> mAlbums;
 
-    private long mVersion;
+    private final long mVersion;
 
     public MPDCache(long version) {
         mVersion = version;

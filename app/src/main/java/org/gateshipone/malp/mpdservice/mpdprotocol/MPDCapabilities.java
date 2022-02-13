@@ -41,7 +41,7 @@ public class MPDCapabilities {
     private int mPatchVersion;
 
     private boolean mHasIdle;
-    private boolean mHasRangedCurrentPlaylist;
+    private final boolean mHasRangedCurrentPlaylist;
     private boolean mHasSearchAdd;
 
     private boolean mHasMusicBrainzTags;

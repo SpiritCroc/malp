@@ -233,7 +233,7 @@ public class EditProfileFragment extends Fragment {
         }
 
         // Hide keyboard
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         View view = getView();
         if (null != view) {
             imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
@@ -281,7 +281,7 @@ public class EditProfileFragment extends Fragment {
 
         if (profileChanged) {
             if (null != mOldProfile) {
-                ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile(mOldProfile, getActivity());
+                ConnectionManager.getInstance(requireContext().getApplicationContext()).removeProfile(mOldProfile, getActivity());
             } else {
                 mOldProfile = new MPDServerProfile(mProfilename, true);
             }
@@ -294,7 +294,7 @@ public class EditProfileFragment extends Fragment {
             mOldProfile.setHTTPCoverEnabled(mHTTPCoverEnabled);
             mOldProfile.setHTTPRegex(mHTTPCoverRegex);
             mOldProfile.setMPDCoverEnabled(mMPDCoverEnabled);
-            ConnectionManager.getInstance(getContext().getApplicationContext()).addProfile(mOldProfile, getContext());
+            ConnectionManager.getInstance(requireContext().getApplicationContext()).addProfile(mOldProfile, getContext());
         }
     }
 
@@ -345,7 +345,7 @@ public class EditProfileFragment extends Fragment {
         menuInflater.inflate(R.menu.fragment_menu_edit_profile, menu);
 
         // get tint color
-        int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
 
         Drawable drawable = menu.findItem(R.id.action_save).getIcon();
         drawable = DrawableCompat.wrap(drawable);
@@ -373,12 +373,12 @@ public class EditProfileFragment extends Fragment {
         if (itemId == R.id.action_save) {
             checkChanged();
             mOptionsMenuHandled = true;
-            getActivity().onBackPressed();
+            requireActivity().onBackPressed();
             return true;
         } else if (itemId == R.id.action_delete) {
-            ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile(mOldProfile, getContext());
+            ConnectionManager.getInstance(requireContext().getApplicationContext()).removeProfile(mOldProfile, getContext());
             mOptionsMenuHandled = true;
-            getActivity().onBackPressed();
+            requireActivity().onBackPressed();
             return true;
         }
 

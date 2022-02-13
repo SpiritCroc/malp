@@ -134,7 +134,7 @@ class MPDConnection {
      * Time to sleep the process waiting for a server response. This reduces the busy-waiting to
      * a bit more efficent sleep/check pattern.
      */
-    private static int RESPONSE_WAIT_SLEEP_TIME = 100;
+    private static final int RESPONSE_WAIT_SLEEP_TIME = 100;
 
     private static final int IDLE_WAIT_TIME = 500;
 
@@ -470,7 +470,7 @@ class MPDConnection {
             }
         } catch (IOException e) {
             if (BuildConfig.DEBUG) {
-                Log.v(TAG, "Error during disconnecting:" + e.toString());
+                Log.v(TAG, "Error during disconnecting:" + e);
             }
         }
 

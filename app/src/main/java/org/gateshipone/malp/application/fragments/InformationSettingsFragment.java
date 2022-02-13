@@ -56,7 +56,7 @@ public class InformationSettingsFragment extends PreferenceFragmentCompat {
         try {
             mToolbarAndFABCallback = (FABFragmentCallback) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement " + FABFragmentCallback.class.getSimpleName());
+            throw new ClassCastException(context + " must implement " + FABFragmentCallback.class.getSimpleName());
         }
     }
 

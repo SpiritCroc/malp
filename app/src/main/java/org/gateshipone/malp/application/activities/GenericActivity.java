@@ -229,7 +229,7 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
     protected abstract void onMPDConnectionError(MPDException.MPDConnectionException e);
 
     private static class MPDConnectionStateCallbackHandler extends MPDConnectionStateChangeHandler {
-        private WeakReference<GenericActivity> mActivity;
+        private final WeakReference<GenericActivity> mActivity;
 
         MPDConnectionStateCallbackHandler(GenericActivity activity, Looper looper) {
             super(looper);
@@ -284,7 +284,7 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
     }
 
     private static class MPDErrorListener extends MPDConnectionErrorHandler {
-        private WeakReference<GenericActivity> mActivity;
+        private final WeakReference<GenericActivity> mActivity;
 
         public MPDErrorListener(GenericActivity activity) {
             mActivity = new WeakReference<>(activity);

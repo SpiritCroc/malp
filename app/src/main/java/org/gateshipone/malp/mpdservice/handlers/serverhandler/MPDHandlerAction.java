@@ -165,7 +165,7 @@ public class MPDHandlerAction {
     /**
      * The action type for this message.
      */
-    private NET_HANDLER_ACTION pAction;
+    private final NET_HANDLER_ACTION pAction;
 
 
     /**

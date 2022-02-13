@@ -39,7 +39,6 @@ import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -96,8 +95,8 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
 
         // Check if sections should be shown
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean showVisibleSections = sharedPref.getBoolean(getContext().getString(R.string.pref_show_playlist_sections_key), getContext().getResources().getBoolean(R.bool.pref_show_playlist_sections_default));
-        mClickAction = PreferenceHelper.getClickAction(sharedPref, getContext());
+        boolean showVisibleSections = sharedPref.getBoolean(requireContext().getString(R.string.pref_show_playlist_sections_key), requireContext().getResources().getBoolean(R.bool.pref_show_playlist_sections_default));
+        mClickAction = PreferenceHelper.getClickAction(sharedPref, requireContext());
 
         // Create the needed adapter for the ListView
         mAdapter = new FileAdapter(getActivity(), false, false, showVisibleSections, true);
@@ -110,8 +109,8 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
         // get swipe layout
         mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
-        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
-                ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(requireContext(), R.attr.colorAccent),
+                ThemeUtils.getThemeColor(requireContext(), R.attr.colorPrimary));
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
@@ -122,7 +121,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
 
     @Override
     GenericViewModel<MPDFileEntry> getViewModel() {
-        return new ViewModelProvider(this, new PlaylistTracksViewModel.PlaylistTracksModelFactory(getActivity().getApplication(), mPath)).get(PlaylistTracksViewModel.class);
+        return new ViewModelProvider(this, new PlaylistTracksViewModel.PlaylistTracksModelFactory(requireActivity().getApplication(), mPath)).get(PlaylistTracksViewModel.class);
     }
 
     /**
@@ -145,7 +144,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_track, menu);
 
         // Enable the remove from list action
@@ -186,7 +185,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
             ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
 
             choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
-            choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
+            choosePlaylistDialog.show(requireActivity().getSupportFragmentManager(), "ChoosePlaylistDialog");
             return true;
         } else if (itemId == R.id.action_remove_from_list) {
             MPDQueryHandler.removeSongFromSavedPlaylist(mPath, info.position);
@@ -195,7 +194,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
         } else if (itemId == R.id.action_show_details) {
             // Open song details dialog
             SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(info.position), false);
-            songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+            songDetailsDialog.show(requireActivity().getSupportFragmentManager(), "SongDetails");
             return true;
         }
 
@@ -215,7 +214,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
         menuInflater.inflate(R.menu.fragment_playlist_tracks, menu);
 
         // get tint color
-        int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
 
         Drawable drawable = menu.findItem(R.id.action_add_playlist).getIcon();
         drawable = DrawableCompat.wrap(drawable);
@@ -289,7 +288,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
             case ACTION_SHOW_DETAILS: {
                 // Open song details dialog
                 SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
-                songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+                songDetailsDialog.show(requireActivity().getSupportFragmentManager(), "SongDetails");
                 break;
             }
             case ACTION_ADD_SONG: {

@@ -78,9 +78,9 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<MPDFileEntry> {
         }
 
         // Use the Builder class for convenient dialog construction
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
 
-        mAdapter = new FileAdapter(getActivity(), false, false);
+        mAdapter = new FileAdapter(requireActivity(), false, false);
 
         builder.setTitle(getString(R.string.dialog_choose_playlist)).setAdapter(mAdapter, (dialog, which) -> {
             if (null == mSaveCallback) {
@@ -97,14 +97,14 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<MPDFileEntry> {
             }
         }).setNegativeButton(R.string.dialog_action_cancel, (dialog, id) -> {
             // User cancelled the dialog don't save object
-            getDialog().cancel();
+            requireDialog().cancel();
         });
 
         getViewModel().getData().observe(this, this::onDataReady);
 
         // set divider
         AlertDialog dlg = builder.create();
-        dlg.getListView().setDivider(new ColorDrawable(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_divider)));
+        dlg.getListView().setDivider(new ColorDrawable(ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_divider)));
         dlg.getListView().setDividerHeight(getResources().getDimensionPixelSize(R.dimen.list_divider_size));
 
         return dlg;
@@ -112,6 +112,6 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<MPDFileEntry> {
 
     @Override
     GenericViewModel<MPDFileEntry> getViewModel() {
-        return new ViewModelProvider(this, new PlaylistsViewModel.PlaylistsViewModelFactory(getActivity().getApplication(), mShowNewEntry)).get(PlaylistsViewModel.class);
+        return new ViewModelProvider(this, new PlaylistsViewModel.PlaylistsViewModelFactory(requireActivity().getApplication(), mShowNewEntry)).get(PlaylistsViewModel.class);
     }
 }

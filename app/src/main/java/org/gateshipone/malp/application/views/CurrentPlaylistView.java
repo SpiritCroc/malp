@@ -43,7 +43,7 @@ public class CurrentPlaylistView extends LinearLayout implements AdapterView.OnI
     /**
      * Adapter used by the ListView
      */
-    private CurrentPlaylistAdapter mPlaylistAdapter;
+    private final CurrentPlaylistAdapter mPlaylistAdapter;
 
     public CurrentPlaylistView(Context context, AttributeSet attrs) {
         super(context, attrs);

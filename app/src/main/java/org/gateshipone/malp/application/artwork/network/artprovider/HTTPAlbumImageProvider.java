@@ -70,7 +70,7 @@ public class HTTPAlbumImageProvider extends ArtProvider {
      * {@link RequestQueue} used for downloading images. Separate queue for this provider
      * because no request limitations are necessary
      */
-    private RequestQueue mRequestQueue;
+    private final RequestQueue mRequestQueue;
 
     private HTTPAlbumImageProvider(final Context context) {
         // Don't use MALPRequestQueue because we do not need to limit the load on the local server

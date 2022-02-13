@@ -116,7 +116,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
 
         mRecyclerView = view.findViewById(R.id.recycler_view);
 
-        mAdapter = new AlbumsRecyclerViewAdapter(getContext().getApplicationContext(), useList);
+        mAdapter = new AlbumsRecyclerViewAdapter(requireContext().getApplicationContext(), useList);
         mRecyclerView.setAdapter(mAdapter);
 
         if (useList) {
@@ -129,12 +129,12 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
         mRecyclerView.addOnItemClicklistener(this);
 
         registerForContextMenu(mRecyclerView);
-        mSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, getContext());
+        mSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, requireContext());
 
         mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
 
         /* Check if an artistname was given in the extras */
-        Bundle args = getArguments();
+        Bundle args = requireArguments();
         mArtist = args.getParcelable(BUNDLE_STRING_EXTRA_ARTIST);
         mBitmap = args.getParcelable(BUNDLE_STRING_EXTRA_BITMAP);
 
@@ -143,19 +143,19 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
         // get swipe layout
         mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
-        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
-                ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(requireContext(), R.attr.colorAccent),
+                ThemeUtils.getThemeColor(requireContext(), R.attr.colorPrimary));
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
-        mBitmapLoader = new CoverBitmapLoader(getContext(), this);
+        mBitmapLoader = new CoverBitmapLoader(requireContext(), this);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
     }
 
     @Override
     GenericViewModel<MPDAlbum> getViewModel() {
-        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(getActivity().getApplication(), mArtist.getArtistName(), null)).get(AlbumsViewModel.class);
+        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(requireActivity().getApplication(), mArtist.getArtistName(), null)).get(AlbumsViewModel.class);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
         try {
             mAlbumSelectCallback = (AlbumCallback) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
+            throw new ClassCastException(context + " must implement OnArtistSelectedListener");
         }
     }
 
@@ -216,7 +216,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_album, menu);
     }
 
@@ -262,7 +262,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
             menuInflater.inflate(R.menu.fragment_menu_albums, menu);
 
             // get tint color
-            int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+            int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
 
             Drawable drawable = menu.findItem(R.id.action_add_artist).getIcon();
             drawable = DrawableCompat.wrap(drawable);
@@ -339,7 +339,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
                 activity.runOnUiThread(() -> {
                     mFABCallback.setupToolbar(mArtist.getArtistName(), false, false, true);
                     mFABCallback.setupToolbarImage(bm);
-                    getArguments().putParcelable(BUNDLE_STRING_EXTRA_BITMAP, bm);
+                    requireArguments().putParcelable(BUNDLE_STRING_EXTRA_BITMAP, bm);
                 });
             }
         }
@@ -356,7 +356,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
                     }
                 });
                 if (mBitmap == null) {
-                    final View rootView = getView();
+                    final View rootView = requireView();
                     rootView.post(() -> {
                         final int size = rootView.getWidth();
                         mBitmapLoader.getArtistImage(mArtist, true, size, size);
@@ -366,7 +366,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
                     // Reuse image
                     mFABCallback.setupToolbar(mArtist.getArtistName(), false, false, true);
                     mFABCallback.setupToolbarImage(mBitmap);
-                    final View rootView = getView();
+                    final View rootView = requireView();
                     rootView.post(() -> {
                         final int size = rootView.getWidth();
 

@@ -101,7 +101,7 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_profile, menu);
     }
 
@@ -148,7 +148,7 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
         menuInflater.inflate(R.menu.fragment_menu_profiles, menu);
 
         // get tint color
-        int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
 
         Drawable drawable = menu.findItem(R.id.action_add).getIcon();
         drawable = DrawableCompat.wrap(drawable);
@@ -186,7 +186,7 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
         try {
             mCallback = (ProfileManageCallbacks) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
+            throw new ClassCastException(context + " must implement OnArtistSelectedListener");
         }
 
         // This makes sure that the container activity has implemented
@@ -223,7 +223,7 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
     }
 
     private ProfilesViewModel getViewModel() {
-        return new ViewModelProvider(this, new ProfilesViewModel.ProfilesViewModelFactory(getActivity().getApplication())).get(ProfilesViewModel.class);
+        return new ViewModelProvider(this, new ProfilesViewModel.ProfilesViewModelFactory(requireActivity().getApplication())).get(ProfilesViewModel.class);
     }
 
     private void onDataReady(List<MPDServerProfile> model) {
@@ -232,7 +232,7 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
 
     private void connectProfile(int index) {
         if (null != mCallback) {
-            ConnectionManager.getInstance(getContext().getApplicationContext()).connectProfile((MPDServerProfile) mAdapter.getItem(index), getContext());
+            ConnectionManager.getInstance(requireContext().getApplicationContext()).connectProfile((MPDServerProfile) mAdapter.getItem(index), getContext());
         }
     }
 
@@ -244,7 +244,7 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
 
     private void removeProfile(int index) {
         if (null != mCallback) {
-            ConnectionManager.getInstance(getContext().getApplicationContext()).removeProfile((MPDServerProfile) mAdapter.getItem(index), getContext());
+            ConnectionManager.getInstance(requireContext().getApplicationContext()).removeProfile((MPDServerProfile) mAdapter.getItem(index), getContext());
             getViewModel().reloadData();
         }
     }
@@ -252,7 +252,7 @@ public class ProfilesFragment extends Fragment implements AbsListView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (null != mCallback) {
-            ConnectionManager.getInstance(getContext().getApplicationContext()).connectProfile((MPDServerProfile) mAdapter.getItem(position), getContext());
+            ConnectionManager.getInstance(requireContext().getApplicationContext()).connectProfile((MPDServerProfile) mAdapter.getItem(position), getContext());
             mAdapter.setActive(position, true);
         }
     }

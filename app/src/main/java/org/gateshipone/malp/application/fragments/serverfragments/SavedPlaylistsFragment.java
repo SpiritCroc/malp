@@ -55,11 +55,6 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
     public static final String TAG = SavedPlaylistsFragment.class.getSimpleName();
 
     /**
-     * Main ListView of this fragment
-     */
-    private ListView mListView;
-
-    /**
      * Callback for activity this fragment gets attached to
      */
     private PlaylistCallback mCallback;
@@ -78,23 +73,22 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
         super.onViewCreated(view, savedInstanceState);
 
         // Get the main ListView of this fragment
-        mListView = view.findViewById(R.id.main_listview);
-
+        ListView listView = view.findViewById(R.id.main_listview);
 
         // Create the needed adapter for the ListView
         mAdapter = new FileAdapter(getActivity(), true, false);
 
         // Combine the two to a happy couple
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(this);
-        registerForContextMenu(mListView);
+        listView.setAdapter(mAdapter);
+        listView.setOnItemClickListener(this);
+        registerForContextMenu(listView);
 
 
         // get swipe layout
         mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
-        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
-                ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(requireContext(), R.attr.colorAccent),
+                ThemeUtils.getThemeColor(requireContext(), R.attr.colorPrimary));
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
@@ -103,7 +97,7 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
 
     @Override
     GenericViewModel<MPDFileEntry> getViewModel() {
-        return new ViewModelProvider(this, new PlaylistsViewModel.PlaylistsViewModelFactory(getActivity().getApplication(), false)).get(PlaylistsViewModel.class);
+        return new ViewModelProvider(this, new PlaylistsViewModel.PlaylistsViewModelFactory(requireActivity().getApplication(), false)).get(PlaylistsViewModel.class);
     }
 
     /**
@@ -131,7 +125,7 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
         try {
             mCallback = (PlaylistCallback) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
+            throw new ClassCastException(context + " must implement OnArtistSelectedListener");
         }
     }
 
@@ -142,7 +136,7 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_playlist, menu);
     }
 
@@ -169,9 +163,9 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
             MPDQueryHandler.loadPlaylist(playlist.getPath());
             return true;
         } else if (itemId == R.id.action_remove_playlist) {
-            final MaterialAlertDialogBuilder removeListBuilder = new MaterialAlertDialogBuilder(getContext());
-            removeListBuilder.setTitle(getContext().getString(R.string.action_delete_playlist));
-            removeListBuilder.setMessage(getContext().getString(R.string.dialog_message_delete_playlist) + ' ' + playlist.getSectionTitle() + '?');
+            final MaterialAlertDialogBuilder removeListBuilder = new MaterialAlertDialogBuilder(requireContext());
+            removeListBuilder.setTitle(getString(R.string.action_delete_playlist));
+            removeListBuilder.setMessage(getString(R.string.dialog_message_delete_playlist) + ' ' + playlist.getSectionTitle() + '?');
             removeListBuilder.setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> {
                 MPDQueryHandler.removePlaylist(playlist.getPath());
                 mAdapter.swapModel(null);

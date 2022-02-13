@@ -94,10 +94,10 @@ public class CoverBitmapLoader {
     }
 
     private class ImageRunner implements Runnable {
-        private int mWidth;
-        private int mHeight;
-        private MPDTrack mTrack;
-        private boolean mFetchImage;
+        private final int mWidth;
+        private final int mHeight;
+        private final MPDTrack mTrack;
+        private final boolean mFetchImage;
 
         public ImageRunner(boolean fetchImage, MPDTrack track, int width, int height) {
             mFetchImage = fetchImage;
@@ -134,10 +134,10 @@ public class CoverBitmapLoader {
     }
 
     private class ArtistImageRunner implements Runnable {
-        private int mWidth;
-        private int mHeight;
-        private MPDArtist mArtist;
-        private boolean mFetchImage;
+        private final int mWidth;
+        private final int mHeight;
+        private final MPDArtist mArtist;
+        private final boolean mFetchImage;
 
         public ArtistImageRunner(MPDArtist artist, boolean fetchImage, int width, int height) {
             mArtist = artist;
@@ -172,10 +172,10 @@ public class CoverBitmapLoader {
     }
 
     private class TrackArtistImageRunner implements Runnable {
-        private int mWidth;
-        private int mHeight;
-        private MPDArtist mArtist;
-        private boolean mFetchImage;
+        private final int mWidth;
+        private final int mHeight;
+        private final MPDArtist mArtist;
+        private final boolean mFetchImage;
 
         public TrackArtistImageRunner(MPDTrack track, boolean fetchImage, int width, int height) {
             mArtist = new MPDArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST));
@@ -213,10 +213,10 @@ public class CoverBitmapLoader {
     }
 
     private class AlbumImageRunner implements Runnable {
-        private int mWidth;
-        private int mHeight;
-        private MPDAlbum mAlbum;
-        private boolean mFetchImage;
+        private final int mWidth;
+        private final int mHeight;
+        private final MPDAlbum mAlbum;
+        private final boolean mFetchImage;
 
         public AlbumImageRunner(MPDAlbum album, boolean fetchImage, int width, int height) {
             mAlbum = album;

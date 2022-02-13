@@ -117,7 +117,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
                     drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_recent_actors_24dp, null);
                     break;
                 case 1:
-                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_album_24dp, null);;
+                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_album_24dp, null);
                     break;
             }
 

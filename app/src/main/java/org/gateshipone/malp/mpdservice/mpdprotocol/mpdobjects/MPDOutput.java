@@ -28,9 +28,9 @@ import androidx.annotation.NonNull;
 public class MPDOutput implements MPDGenericItem {
 
     @NonNull
-    private String mOutputName;
+    private final String mOutputName;
     private boolean mActive;
-    private int mOutputId;
+    private final int mOutputId;
 
     public MPDOutput(@NonNull String name, boolean enabled, int id) {
         mOutputName = name;

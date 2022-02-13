@@ -77,7 +77,7 @@ public class AlbumTracksViewModel extends GenericViewModel<MPDFileEntry> {
     }
 
     private static class TrackResponseHandler extends MPDResponseFileList {
-        private WeakReference<AlbumTracksViewModel> mAlbumTracksViewModel;
+        private final WeakReference<AlbumTracksViewModel> mAlbumTracksViewModel;
 
         private TrackResponseHandler(final AlbumTracksViewModel albumTracksViewModel) {
             mAlbumTracksViewModel = new WeakReference<>(albumTracksViewModel);

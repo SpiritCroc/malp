@@ -40,7 +40,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
  */
 public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
     private static final String TAG = FileAdapter.class.getSimpleName();
-    private Context mContext;
+    private final Context mContext;
 
     /**
      * Defines if items show an icon for their corresponding type
@@ -52,7 +52,7 @@ public class FileAdapter extends GenericSectionAdapter<MPDFileEntry> {
      */
     private final boolean mShowTrackNumbers;
 
-    private boolean mShowSectionItems;
+    private final boolean mShowSectionItems;
 
     private final boolean mUseTags;
 

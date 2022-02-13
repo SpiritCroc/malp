@@ -41,9 +41,9 @@ public class BackgroundServiceConnection implements ServiceConnection {
     /**
      * Context used for binding to the service
      */
-    private Context mContext;
+    private final Context mContext;
 
-    private OnConnectionStatusChangedListener mListener;
+    private final OnConnectionStatusChangedListener mListener;
 
     public BackgroundServiceConnection(Context context, OnConnectionStatusChangedListener listener) {
         mContext = context;

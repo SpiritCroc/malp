@@ -40,9 +40,9 @@ import java.util.List;
 
 public class OutputResponseMenuHandler extends MPDResponseOutputList {
 
-    private WeakReference<Context> mContext;
+    private final WeakReference<Context> mContext;
 
-    private WeakReference<View> mView;
+    private final WeakReference<View> mView;
 
     public OutputResponseMenuHandler(Context context, View view) {
         mContext = new WeakReference<>(context);

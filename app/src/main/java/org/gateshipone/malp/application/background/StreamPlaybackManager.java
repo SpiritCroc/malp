@@ -37,11 +37,11 @@ public class StreamPlaybackManager {
     private static final String TAG = StreamPlaybackManager.class.getSimpleName();
     private MediaPlayer mPlayer;
 
-    private BackgroundService mService;
+    private final BackgroundService mService;
 
-    private PreparedListener mPreparedListener;
-    private CompletionListener mCompletionListener;
-    private ErrorListener mErrorListener;
+    private final PreparedListener mPreparedListener;
+    private final CompletionListener mCompletionListener;
+    private final ErrorListener mErrorListener;
 
     private String mSource;
 

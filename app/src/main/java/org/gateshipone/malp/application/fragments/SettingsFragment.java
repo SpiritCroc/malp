@@ -32,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -67,17 +66,18 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         Preference openVolumeStepDialog = findPreference(getString(R.string.pref_volume_steps_dialog_key));
         openVolumeStepDialog.setOnPreferenceClickListener(preference -> {
             VolumeStepPreferenceDialog dialog = new VolumeStepPreferenceDialog();
-            dialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "Volume steps");
+            dialog.show(requireActivity().getSupportFragmentManager(), "Volume steps");
             return true;
         });
     }
 
+    @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         // we have to set the background color at this point otherwise we loose the ripple effect
-        view.setBackgroundColor(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_background));
+        view.setBackgroundColor(ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_background));
 
         return view;
     }
@@ -102,7 +102,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         try {
             mArtworkCallback = (OnArtworkSettingsRequestedCallback) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArtworkSettingsRequestedCallback");
+            throw new ClassCastException(context + " must implement OnArtworkSettingsRequestedCallback");
         }
     }
 
@@ -135,9 +135,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.pref_theme_key)) || key.equals(getString(R.string.pref_dark_theme_key))) {
-            Intent intent = getActivity().getIntent();
+            Intent intent = requireActivity().getIntent();
             intent.putExtra(MainActivity.MAINACTIVITY_INTENT_EXTRA_REQUESTEDVIEW, MainActivity.REQUESTEDVIEW.SETTINGS.ordinal());
-            getActivity().finish();
+            requireActivity().finish();
             startActivity(intent);
         }
     }

@@ -57,9 +57,9 @@ public class FileListItem extends AbsImageListViewItem {
     protected TextView mDurationView;
     protected TextView mSectionHeader;
     protected LinearLayout mSectionHeaderLayout;
-    private LinearLayout mTextLayout;
+    private final LinearLayout mTextLayout;
 
-    private ImageView mItemIcon;
+    private final ImageView mItemIcon;
 
     private final boolean mShowIcon;
 

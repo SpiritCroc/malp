@@ -126,7 +126,7 @@ public class ServerStatisticFragment extends GenericMPDFragment<MPDStatistics> {
 
     @Override
     GenericViewModel<MPDStatistics> getViewModel() {
-        return new ViewModelProvider(this, new StatisticsViewModel.StatisticsViewModelFactory(getActivity().getApplication())).get(StatisticsViewModel.class);
+        return new ViewModelProvider(this, new StatisticsViewModel.StatisticsViewModelFactory(requireActivity().getApplication())).get(StatisticsViewModel.class);
     }
 
     @Override

@@ -37,7 +37,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -125,27 +124,27 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         // get swipe layout
         mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
-        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
-                ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(requireContext(), R.attr.colorAccent),
+                ThemeUtils.getThemeColor(requireContext(), R.attr.colorPrimary));
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
-        mClickAction = PreferenceHelper.getClickAction(sharedPref, getContext());
+        mClickAction = PreferenceHelper.getClickAction(sharedPref, requireContext());
 
         mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
 
         setHasOptionsMenu(true);
 
-        mBitmapLoader = new CoverBitmapLoader(getContext(), this);
+        mBitmapLoader = new CoverBitmapLoader(requireContext(), this);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
     }
 
     @Override
     GenericViewModel<MPDFileEntry> getViewModel() {
-        return new ViewModelProvider(this, new AlbumTracksViewModel.AlbumTracksModelFactory(getActivity().getApplication(), mAlbum, mUseArtistSort)).get(AlbumTracksViewModel.class);
+        return new ViewModelProvider(this, new AlbumTracksViewModel.AlbumTracksModelFactory(requireActivity().getApplication(), mAlbum, mUseArtistSort)).get(AlbumTracksViewModel.class);
     }
 
     /**
@@ -158,29 +157,29 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         if (null != mFABCallback) {
             mFABCallback.setupFAB(true, new FABOnClickListener());
             mFABCallback.setupToolbar(mAlbum.getName(), false, false, false);
-        }
 
-        if (mAlbum != null && mBitmap == null) {
-            final View rootView = getView();
-            if (rootView != null) {
-                getView().post(() -> {
-                    final int size = rootView.getWidth();
-                    mBitmapLoader.getAlbumImage(mAlbum, false, size, size);
-                });
-            }
-        } else if (mAlbum != null) {
-            // Reuse the image passed from the previous fragment
-            mFABCallback.setupToolbar(mAlbum.getName(), false, false, true);
-            mFABCallback.setupToolbarImage(mBitmap);
-            final View rootView = getView();
-            if (rootView != null) {
-                getView().post(() -> {
-                    final int size = rootView.getWidth();
-                    // Image too small
-                    if (mBitmap.getWidth() < size) {
+            if (mAlbum != null && mBitmap == null) {
+                final View rootView = getView();
+                if (rootView != null) {
+                    getView().post(() -> {
+                        final int size = rootView.getWidth();
                         mBitmapLoader.getAlbumImage(mAlbum, false, size, size);
-                    }
-                });
+                    });
+                }
+            } else if (mAlbum != null) {
+                // Reuse the image passed from the previous fragment
+                mFABCallback.setupToolbar(mAlbum.getName(), false, false, true);
+                mFABCallback.setupToolbarImage(mBitmap);
+                final View rootView = getView();
+                if (rootView != null) {
+                    getView().post(() -> {
+                        final int size = rootView.getWidth();
+                        // Image too small
+                        if (mBitmap.getWidth() < size) {
+                            mBitmapLoader.getAlbumImage(mAlbum, false, size, size);
+                        }
+                    });
+                }
             }
         }
 
@@ -202,7 +201,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
             case ACTION_SHOW_DETAILS: {
                 // Open song details dialog
                 SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
-                songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+                songDetailsDialog.show(requireActivity().getSupportFragmentManager(), "SongDetails");
                 break;
             }
             case ACTION_ADD_SONG: {
@@ -230,7 +229,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_track, menu);
     }
 
@@ -268,12 +267,12 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
             ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
 
             choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
-            choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
+            choosePlaylistDialog.show(requireActivity().getSupportFragmentManager(), "ChoosePlaylistDialog");
             return true;
         } else if (itemId == R.id.action_show_details) {
             // Open song details dialog
             SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(info.position), false);
-            songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+            songDetailsDialog.show(requireActivity().getSupportFragmentManager(), "SongDetails");
             return true;
         }
 
@@ -293,7 +292,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         menuInflater.inflate(R.menu.fragment_menu_album_tracks, menu);
 
         // get tint color
-        int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
 
         Drawable drawable = menu.findItem(R.id.action_add_album).getIcon();
         drawable = DrawableCompat.wrap(drawable);
@@ -389,7 +388,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
                 activity.runOnUiThread(() -> {
                     mFABCallback.setupToolbar(mAlbum.getName(), false, false, true);
                     mFABCallback.setupToolbarImage(bm);
-                    getArguments().putParcelable(BUNDLE_STRING_EXTRA_BITMAP, bm);
+                    requireArguments().putParcelable(BUNDLE_STRING_EXTRA_BITMAP, bm);
                 });
             }
         }
@@ -398,7 +397,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
     @Override
     public void newAlbumImage(MPDAlbum album) {
         if (album.equals(mAlbum)) {
-            int width = getView().getMeasuredWidth();
+            int width = requireView().getMeasuredWidth();
             mBitmapLoader.getAlbumImage(mAlbum, false, width, width);
         }
     }

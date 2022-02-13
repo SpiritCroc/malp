@@ -31,7 +31,7 @@ import org.gateshipone.malp.application.listviewitems.ProfileListItem;
 import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
 
 public class ProfileAdapter extends GenericSectionAdapter<MPDServerProfile> {
-    private Context mContext;
+    private final Context mContext;
 
     public ProfileAdapter(Context context) {
         mContext = context;

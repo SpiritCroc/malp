@@ -65,7 +65,7 @@ public class BackgroundServiceHandler extends Handler {
     }
 
     public static class HandlerAction {
-        private HANDLER_ACTION_TYPE mType;
+        private final HANDLER_ACTION_TYPE mType;
 
         public HandlerAction(HANDLER_ACTION_TYPE type) {
             mType = type;

@@ -40,7 +40,6 @@ import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -120,12 +119,12 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         boolean useTags = sharedPref.getBoolean(getString(R.string.pref_use_tags_in_filebrowser_key), getResources().getBoolean(R.bool.pref_use_tags_in_filebrowser_default));
-        mClickAction = PreferenceHelper.getClickAction(sharedPref, getContext());
+        mClickAction = PreferenceHelper.getClickAction(sharedPref, requireContext());
 
         // Get the main ListView of this fragment
         mListView = view.findViewById(R.id.main_listview);
 
-        Bundle args = getArguments();
+        Bundle args = requireArguments();
 
         mPath = args.getString(EXTRA_FILENAME);
 
@@ -140,8 +139,8 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
         // get swipe layout
         mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
-        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
-                ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(requireContext(), R.attr.colorAccent),
+                ThemeUtils.getThemeColor(requireContext(), R.attr.colorPrimary));
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
@@ -157,7 +156,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
 
     @Override
     GenericViewModel<MPDFileEntry> getViewModel() {
-        return new ViewModelProvider(this, new FilesViewModel.FilesViewModelFactory(getActivity().getApplication(), mPath)).get(FilesViewModel.class);
+        return new ViewModelProvider(this, new FilesViewModel.FilesViewModelFactory(requireActivity().getApplication(), mPath)).get(FilesViewModel.class);
     }
 
     /**
@@ -212,7 +211,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
         try {
             mCallback = (FilesCallback) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
+            throw new ClassCastException(context + " must implement OnArtistSelectedListener");
         }
 
         // This makes sure that the container activity has implemented
@@ -220,7 +219,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
         try {
             mPlaylistCallback = (PlaylistCallback) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
+            throw new ClassCastException(context + " must implement OnArtistSelectedListener");
         }
     }
 
@@ -239,7 +238,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         int position = ((AdapterView.AdapterContextMenuInfo) menuInfo).position;
 
         MPDFileEntry file = (MPDFileEntry) mAdapter.getItem(position);
@@ -289,7 +288,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
             ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
 
             choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
-            choosePlaylistDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "ChoosePlaylistDialog");
+            choosePlaylistDialog.show(requireActivity().getSupportFragmentManager(), "ChoosePlaylistDialog");
             return true;
         } else if (itemId == R.id.action_play_playlist) {
             MPDQueryHandler.playPlaylist(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
@@ -303,7 +302,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
         } else if (itemId == R.id.action_show_details) {
             // Open song details dialog
             SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(info.position), false);
-            songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+            songDetailsDialog.show(requireActivity().getSupportFragmentManager(), "SongDetails");
             return true;
         }
 
@@ -324,7 +323,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
         menuInflater.inflate(R.menu.fragment_menu_files, menu);
 
         // get tint color
-        int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
 
         Drawable drawable = menu.findItem(R.id.action_add_directory).getIcon();
         drawable = DrawableCompat.wrap(drawable);
@@ -401,7 +400,7 @@ public class FilesFragment extends GenericMPDFragment<MPDFileEntry> implements A
                 case ACTION_SHOW_DETAILS: {
                     // Open song details dialog
                     SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
-                    songDetailsDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "SongDetails");
+                    songDetailsDialog.show(requireActivity().getSupportFragmentManager(), "SongDetails");
                     break;
                 }
                 case ACTION_ADD_SONG: {

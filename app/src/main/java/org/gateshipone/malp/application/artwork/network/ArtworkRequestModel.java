@@ -38,9 +38,9 @@ public class ArtworkRequestModel {
         TRACK
     }
 
-    private MPDGenericItem mModel;
+    private final MPDGenericItem mModel;
 
-    private ArtworkRequestType mType;
+    private final ArtworkRequestType mType;
 
     public ArtworkRequestModel(MPDArtist artistModel) {
         this(artistModel, ArtworkRequestType.ARTIST);

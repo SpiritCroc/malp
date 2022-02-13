@@ -86,7 +86,7 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
                     drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_statistics_black_24dp, null);
                     break;
                 case 1:
-                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_hearing_black_24dp, null);;
+                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_hearing_black_24dp, null);
                     break;
             }
 

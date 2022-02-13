@@ -59,7 +59,7 @@ public class PlaylistTracksViewModel extends GenericViewModel<MPDFileEntry> {
     }
 
     private static class TrackResponseHandler extends MPDResponseFileList {
-        private WeakReference<PlaylistTracksViewModel> mPlaylistTracksViewModel;
+        private final WeakReference<PlaylistTracksViewModel> mPlaylistTracksViewModel;
 
         private TrackResponseHandler(final PlaylistTracksViewModel playlistTracksViewModel) {
             mPlaylistTracksViewModel = new WeakReference<>(playlistTracksViewModel);

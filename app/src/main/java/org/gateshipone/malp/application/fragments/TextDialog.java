@@ -71,7 +71,7 @@ public class TextDialog extends DialogFragment {
         }
 
         // Use the Builder class for convenient dialog construction
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
 
 
         // create edit text for title
@@ -93,7 +93,7 @@ public class TextDialog extends DialogFragment {
             mSaveCallback.onFinished(objectTitle);
         }).setNegativeButton(R.string.dialog_action_cancel, (dialog, id) -> {
             // User cancelled the dialog don't save object
-            getDialog().cancel();
+            requireDialog().cancel();
         });
         // Create the AlertDialog object and return it
         return builder.create();

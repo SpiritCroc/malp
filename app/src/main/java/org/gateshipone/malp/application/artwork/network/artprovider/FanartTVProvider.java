@@ -67,7 +67,7 @@ public class FanartTVProvider extends ArtProvider implements FanartProvider {
     /**
      * {@link RequestQueue} used to handle the requests of this class.
      */
-    private RequestQueue mRequestQueue;
+    private final RequestQueue mRequestQueue;
 
     /**
      * Singleton instance

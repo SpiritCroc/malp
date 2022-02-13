@@ -60,17 +60,17 @@ public class FanartManager implements FanartProvider.FanartFetchError {
     /**
      * Flag if the artist provider is not disabled in the settings.
      */
-    private boolean mUseFanartProvider;
+    private final boolean mUseFanartProvider;
 
     /**
      * Flag if the usage is restricted to wifi only.
      */
-    private boolean mWifiOnly;
+    private final boolean mWifiOnly;
 
     /**
      * The cache for the fanart images.
      */
-    private FanartCache mFanartCache;
+    private final FanartCache mFanartCache;
 
     private FanartManager(final Context context) {
         mApplicationContext = context.getApplicationContext();

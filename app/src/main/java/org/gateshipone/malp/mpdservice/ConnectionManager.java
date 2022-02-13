@@ -87,7 +87,7 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
 
     private MPDServerProfile mServerProfile = new MPDServerProfile();
 
-    private Context mApplicationContext;
+    private final Context mApplicationContext;
 
     private ConnectionManager(Context context) {
         super(context.getMainLooper());

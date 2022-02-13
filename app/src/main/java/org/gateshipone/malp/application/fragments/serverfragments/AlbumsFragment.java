@@ -56,8 +56,6 @@ import org.gateshipone.malp.application.viewmodels.SearchViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 
-import java.util.List;
-
 public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements AdapterView.OnItemClickListener {
     public static final String TAG = AlbumsFragment.class.getSimpleName();
 
@@ -65,11 +63,6 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
      * Definition of bundled extras
      */
     private static final String BUNDLE_STRING_EXTRA_PATH = "album_path";
-
-    /**
-     * Save the root GridView for later usage.
-     */
-    private AbsListView mAdapterView;
 
     private String mAlbumsPath;
 
@@ -110,12 +103,13 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
         final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
 
+        AbsListView adapterView;
         if (useList) {
             // get listview
-            mAdapterView = (ListView) view.findViewById(R.id.main_listview);
+            adapterView = (ListView) view.findViewById(R.id.main_listview);
         } else {
             // get gridview
-            mAdapterView = (GridView) view.findViewById(R.id.grid_refresh_gridview);
+            adapterView = (GridView) view.findViewById(R.id.grid_refresh_gridview);
         }
 
         mAdapter = new AlbumsAdapter(getActivity(), useList);
@@ -126,18 +120,18 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
             mAlbumsPath = args.getString(BUNDLE_STRING_EXTRA_PATH);
         }
 
-        mAdapterView.setAdapter(mAdapter);
-        mAdapterView.setOnItemClickListener(this);
-        mAdapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter));
+        adapterView.setAdapter(mAdapter);
+        adapterView.setOnItemClickListener(this);
+        adapterView.setOnScrollListener(new ScrollSpeedListener(mAdapter));
 
         // register for context menu
-        registerForContextMenu(mAdapterView);
+        registerForContextMenu(adapterView);
 
         // get swipe layout
         mSwipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         // set swipe colors
-        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent),
-                ThemeUtils.getThemeColor(getContext(), R.attr.colorPrimary));
+        mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getThemeColor(requireContext(), R.attr.colorAccent),
+                ThemeUtils.getThemeColor(requireContext(), R.attr.colorPrimary));
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
@@ -158,7 +152,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
     @Override
     GenericViewModel<MPDAlbum> getViewModel() {
-        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(getActivity().getApplication(), null, mAlbumsPath)).get(AlbumsViewModel.class);
+        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(requireActivity().getApplication(), null, mAlbumsPath)).get(AlbumsViewModel.class);
     }
 
     @Override
@@ -182,7 +176,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
         try {
             mAlbumSelectCallback = (AlbumCallback) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArtistSelectedListener");
+            throw new ClassCastException(context + " must implement OnArtistSelectedListener");
         }
     }
 
@@ -199,7 +193,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu_album, menu);
     }
 

@@ -115,7 +115,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
     /**
      * Context used for this adapter.
      */
-    private Context mContext;
+    private final Context mContext;
 
     /**
      * List of songs that is used if the traditional fetch all mode is active
@@ -142,7 +142,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
     /**
      * Semaphore to synchronize list access from cleanup task and the UI thread.
      */
-    private ReadWriteLock mListsLock;
+    private final ReadWriteLock mListsLock;
 
     /**
      * Timer that is used for triggering the clean up of unneeded list blocks.
@@ -159,17 +159,17 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
      * ResponseHandler that receives the song list from the MPDQueryHandler because we need an
      * asynchronous reply.
      */
-    private PlaylistFetchResponseHandler mTrackResponseHandler;
+    private final PlaylistFetchResponseHandler mTrackResponseHandler;
 
     /**
      * This handler receives status updates from the MPDStateMonitoringHandler asychronously.
      */
-    private PlaylistStateListener mStateListener;
+    private final PlaylistStateListener mStateListener;
 
     /**
      * This handler reacts on server connects/disconnects.
      */
-    private MPDConnectionStateChangeHandler mConnectionListener;
+    private final MPDConnectionStateChangeHandler mConnectionListener;
 
     /**
      * Listview that is used for showing the songs to the user. Used here to move the list to
@@ -185,7 +185,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
 
     private boolean mSectionsEnabled = true;
 
-    private ArtworkManager mArtworkManager;
+    private final ArtworkManager mArtworkManager;
 
 
     /**
@@ -528,7 +528,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
      * Handler used to react on connects/disconnects from the MPD server.
      */
     private static class ConnectionStateChangeListener extends MPDConnectionStateChangeHandler {
-        private WeakReference<CurrentPlaylistAdapter> mAdapter;
+        private final WeakReference<CurrentPlaylistAdapter> mAdapter;
 
         private ConnectionStateChangeListener(CurrentPlaylistAdapter adapter, Looper looper) {
             super(looper);

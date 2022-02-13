@@ -69,7 +69,7 @@ public abstract class GenericSectionAdapter<T extends MPDGenericItem> extends Ba
      */
     private FilterTask<T> mFilterTask;
 
-    private ReentrantReadWriteLock mLock;
+    private final ReentrantReadWriteLock mLock;
 
     private final SectionCreator<T> mSectionCreator;
 

@@ -76,7 +76,7 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
 
     @Override
     GenericViewModel<MPDOutput> getViewModel() {
-        return new ViewModelProvider(this, new OutputsViewModel.OutputsViewModelFactory(getActivity().getApplication())).get(OutputsViewModel.class);
+        return new ViewModelProvider(this, new OutputsViewModel.OutputsViewModelFactory(requireActivity().getApplication())).get(OutputsViewModel.class);
     }
 
     @Override

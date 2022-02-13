@@ -31,9 +31,9 @@ import org.gateshipone.malp.application.adapters.ScrollSpeedAdapter;
 
 public class ImageListItem extends AbsImageListViewItem {
 
-    private TextView mMainView;
+    private final TextView mMainView;
 
-    private TextView mDetailsView;
+    private final TextView mDetailsView;
 
     public ImageListItem(Context context, String text, String details, ScrollSpeedAdapter adapter) {
         super(context, R.layout.listview_item_image, R.id.item_image, R.id.item_image_viewswitcher, adapter);

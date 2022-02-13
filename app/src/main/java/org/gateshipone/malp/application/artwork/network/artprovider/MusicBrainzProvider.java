@@ -49,7 +49,7 @@ public class MusicBrainzProvider extends ArtProvider {
 
     private static final String COVERART_ARCHIVE_API_URL = "https://coverartarchive.org";
 
-    private RequestQueue mRequestQueue;
+    private final RequestQueue mRequestQueue;
 
     private static MusicBrainzProvider mInstance;
 

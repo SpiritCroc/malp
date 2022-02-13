@@ -34,11 +34,11 @@ import java.util.ArrayList;
 public class MPDArtist implements MPDGenericItem, Comparable<MPDArtist>, Parcelable {
     /* Artist properties */
     @NonNull
-    private String pArtistName;
+    private final String pArtistName;
 
     /* Musicbrainz ID */
     @NonNull
-    private ArrayList<String> pMBIDs;
+    private final ArrayList<String> pMBIDs;
 
     private boolean mImageFetching;
 

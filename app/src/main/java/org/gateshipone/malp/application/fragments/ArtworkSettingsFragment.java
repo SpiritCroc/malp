@@ -95,7 +95,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
         Preference bulkLoad = findPreference(getString(R.string.pref_bulk_load_key));
         bulkLoad.setOnPreferenceClickListener(preference -> {
 
-            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
             builder.setTitle(getResources().getString(R.string.bulk_download_notice_title));
             builder.setMessage(getResources().getString(R.string.bulk_download_notice_text));
 
@@ -103,7 +103,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
             builder.setPositiveButton(R.string.dialog_action_ok, (dialog, id) -> {
                 Intent serviceIntent = new Intent(getActivity(), BulkDownloadService.class);
                 serviceIntent.setAction(BulkDownloadService.ACTION_START_BULKDOWNLOAD);
-                SharedPreferences sharedPref = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
+                SharedPreferences sharedPref = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext().getApplicationContext());
                 serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_ARTIST_PROVIDER, sharedPref.getString(getString(R.string.pref_artist_provider_key),
                         getString(R.string.pref_artwork_provider_artist_default)));
                 serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_ALBUM_PROVIDER, sharedPref.getString(getString(R.string.pref_album_provider_key),
@@ -112,7 +112,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
                         getResources().getBoolean(R.bool.pref_download_wifi_default)));
                 serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_HTTP_COVER_REGEX, HTTPAlbumImageProvider.getInstance(getContext()).getRegex());
                 serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_MPD_COVER_ENABLED, MPDAlbumImageProvider.getInstance().getActive());
-                getActivity().startService(serviceIntent);
+                requireActivity().startService(serviceIntent);
             });
             AlertDialog dialog = builder.create();
             dialog.show();
@@ -122,12 +122,13 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
         });
     }
 
+    @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         // we have to set the background color at this point otherwise we loose the ripple effect
-        view.setBackgroundColor(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_background));
+        view.setBackgroundColor(ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_background));
 
         return view;
     }
@@ -199,7 +200,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
 
         if (key.equals(albumProviderKey) || key.equals(artistProviderKey) || key.equals(downloadWifiOnlyKey)) {
             Intent nextIntent = new Intent(BulkDownloadService.ACTION_CANCEL);
-            getActivity().getApplicationContext().sendBroadcast(nextIntent);
+            requireActivity().getApplicationContext().sendBroadcast(nextIntent);
 
             ArtworkManager artworkManager = ArtworkManager.getInstance(getContext());
 

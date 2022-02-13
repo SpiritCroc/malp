@@ -66,7 +66,7 @@ public class SearchResultViewModel extends GenericViewModel<MPDFileEntry> {
     }
 
     private static class TrackResponseHandler extends MPDResponseFileList {
-        private WeakReference<SearchResultViewModel> mSearchResultViewModel;
+        private final WeakReference<SearchResultViewModel> mSearchResultViewModel;
 
         private TrackResponseHandler(final SearchResultViewModel searchResultViewModel) {
             mSearchResultViewModel = new WeakReference<>(searchResultViewModel);

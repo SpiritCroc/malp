@@ -51,7 +51,7 @@ public class FanartCache {
 
     private final String mCacheBasePath;
 
-    private List<String> mLastAccessedMBIDs;
+    private final List<String> mLastAccessedMBIDs;
 
     private static FanartCache mInstance;
 
@@ -80,7 +80,6 @@ public class FanartCache {
         if (!artistDir.exists()) {
             return 0;
         }
-
 
         return artistDir.list().length;
     }
@@ -131,7 +130,7 @@ public class FanartCache {
 
         File outputFile = new File(mCacheBasePath + "/" + mbid + "/" + name);
         if (!outputFile.exists()) {
-            FileOutputStream outputStream = null;
+            FileOutputStream outputStream;
             try {
                 outputStream = new FileOutputStream(outputFile);
             } catch (FileNotFoundException e) {

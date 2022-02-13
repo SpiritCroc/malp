@@ -64,7 +64,7 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
         WORK_MBID
     }
 
-    private HashMap<StringTagTypes, String> pStringTags;
+    private final HashMap<StringTagTypes, String> pStringTags;
 
     /**
      * Length in seconds
