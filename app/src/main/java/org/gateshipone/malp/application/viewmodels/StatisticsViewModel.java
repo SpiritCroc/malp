@@ -73,7 +73,7 @@ public class StatisticsViewModel extends GenericViewModel<MPDStatistics> {
     }
 
 
-    public static class StatisticsViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+    public static class StatisticsViewModelFactory implements ViewModelProvider.Factory {
 
         private final Application mApplication;
 

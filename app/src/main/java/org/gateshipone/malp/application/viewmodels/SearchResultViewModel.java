@@ -82,7 +82,7 @@ public class SearchResultViewModel extends GenericViewModel<MPDFileEntry> {
         }
     }
 
-    public static class SearchResultViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+    public static class SearchResultViewModelFactory implements ViewModelProvider.Factory {
 
         private final Application mApplication;
 

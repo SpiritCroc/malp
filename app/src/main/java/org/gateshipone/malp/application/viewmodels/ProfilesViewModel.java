@@ -75,7 +75,7 @@ public class ProfilesViewModel extends GenericViewModel<MPDServerProfile> {
         }
     }
 
-    public static class ProfilesViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+    public static class ProfilesViewModelFactory implements ViewModelProvider.Factory {
 
         private final Application mApplication;
 

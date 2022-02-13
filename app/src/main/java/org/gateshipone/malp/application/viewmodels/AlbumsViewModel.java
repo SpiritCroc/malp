@@ -104,7 +104,7 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
         }
     }
 
-    public static class AlbumViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+    public static class AlbumViewModelFactory implements ViewModelProvider.Factory {
 
         private final Application mApplication;
 

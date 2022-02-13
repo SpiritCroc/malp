@@ -75,7 +75,7 @@ public class PlaylistTracksViewModel extends GenericViewModel<MPDFileEntry> {
         }
     }
 
-    public static class PlaylistTracksModelFactory extends ViewModelProvider.NewInstanceFactory {
+    public static class PlaylistTracksModelFactory implements ViewModelProvider.Factory {
 
         private final Application mApplication;
 

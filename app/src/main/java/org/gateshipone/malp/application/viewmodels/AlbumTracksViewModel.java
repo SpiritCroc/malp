@@ -93,7 +93,7 @@ public class AlbumTracksViewModel extends GenericViewModel<MPDFileEntry> {
         }
     }
 
-    public static class AlbumTracksModelFactory extends ViewModelProvider.NewInstanceFactory {
+    public static class AlbumTracksModelFactory implements ViewModelProvider.Factory {
 
         private final Application mApplication;
 

@@ -72,7 +72,7 @@ public class FilesViewModel extends GenericViewModel<MPDFileEntry> {
         }
     }
 
-    public static class FilesViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+    public static class FilesViewModelFactory implements ViewModelProvider.Factory {
 
         private final Application mApplication;
 

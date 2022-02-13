@@ -68,7 +68,7 @@ public class OutputsViewModel extends GenericViewModel<MPDOutput> {
         }
     }
 
-    public static class OutputsViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+    public static class OutputsViewModelFactory implements ViewModelProvider.Factory {
 
         private final Application mApplication;
 
