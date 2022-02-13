@@ -72,15 +72,12 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
      */
     private String mSearchString;
 
-    private int mCurrentTab = -1;
-
     private SearchView mSearchView;
 
     /**
      * Constant for state saving
      */
     public static final String MYMUSICFRAGMENT_SAVED_INSTANCE_SEARCH_STRING = "MyMusicFragment.SearchString";
-    public static final String MYMUSICFRAGMENT_SAVED_INSTANCE_CURRENT_TAB = "MyMusicFragment.CurrentTab";
 
     public static MyMusicTabsFragment newInstance(final DEFAULTTAB defaulttab) {
         final Bundle args = new Bundle();
@@ -103,35 +100,38 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         // create tabs
         final TabLayout tabLayout = view.findViewById(R.id.my_music_tab_layout);
 
-        // Icons
-        final ColorStateList tabColors = tabLayout.getTabTextColors();
-        final Resources res = getResources();
-        Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_recent_actors_24dp, null);
-        if (drawable != null) {
-            Drawable icon = DrawableCompat.wrap(drawable);
-            DrawableCompat.setTintList(icon, tabColors);
-            tabLayout.addTab(tabLayout.newTab().setIcon(icon));
-        }
-        drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_album_24dp, null);
-        if (drawable != null) {
-            Drawable icon = DrawableCompat.wrap(drawable);
-            DrawableCompat.setTintList(icon, tabColors);
-            tabLayout.addTab(tabLayout.newTab().setIcon(icon));
-        }
-
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
+        // setup viewpager
         mViewPager = view.findViewById(R.id.my_music_viewpager);
         mMyMusicPagerAdapter = new MyMusicPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mMyMusicPagerAdapter);
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setupWithViewPager(mViewPager, false);
         tabLayout.addOnTabSelectedListener(this);
+
+        // setup icons for tabs
+        final ColorStateList tabColors = tabLayout.getTabTextColors();
+        final Resources res = getResources();
+        Drawable drawable = null;
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            switch (i) {
+                case 0:
+                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_recent_actors_24dp, null);
+                    break;
+                case 1:
+                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_album_24dp, null);;
+                    break;
+            }
+
+            if (drawable != null) {
+                Drawable icon = DrawableCompat.wrap(drawable);
+                DrawableCompat.setTintList(icon, tabColors);
+                tabLayout.getTabAt(i).setIcon(icon);
+            }
+        }
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         // try to resume the saved search string
         if (savedInstanceState != null) {
             mSearchString = savedInstanceState.getString(MYMUSICFRAGMENT_SAVED_INSTANCE_SEARCH_STRING);
-            mCurrentTab = savedInstanceState.getInt(MYMUSICFRAGMENT_SAVED_INSTANCE_CURRENT_TAB);
-            mViewPager.setCurrentItem(mCurrentTab, false);
         }
 
         // activate options menu in toolbar
@@ -140,7 +140,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         // set start page
         final Bundle args = getArguments();
 
-        if (args != null && savedInstanceState == null && mCurrentTab == -1) {
+        if (args != null && savedInstanceState == null) {
             final DEFAULTTAB tab = DEFAULTTAB.values()[args.getInt(MY_MUSIC_REQUESTED_TAB)];
             switch (tab) {
                 case ARTISTS:
@@ -155,13 +155,10 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-
-        mCurrentTab = tab.getPosition();
-
         // set view pager to current page
-        mViewPager.setCurrentItem(mCurrentTab);
+        mViewPager.setCurrentItem(tab.getPosition());
 
-        final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(mCurrentTab);
+        final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(tab.getPosition());
         if (fragment != null) {
             fragment.getContent();
         }
@@ -223,7 +220,6 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         // save the already typed search string (or null if nothing is entered)
         outState.putString(MYMUSICFRAGMENT_SAVED_INSTANCE_SEARCH_STRING, mSearchString);
-        outState.putInt(MYMUSICFRAGMENT_SAVED_INSTANCE_CURRENT_TAB, mCurrentTab);
     }
 
     /**

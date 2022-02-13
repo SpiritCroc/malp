@@ -71,12 +71,6 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
      */
     private AbsListView mAdapterView;
 
-    /**
-     * Save the last position here. Gets reused when the user returns to this view after selecting sme
-     * albums.
-     */
-    private int mLastPosition = -1;
-
     private String mAlbumsPath;
 
     private AlbumCallback mAlbumSelectCallback;
@@ -192,24 +186,6 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
         }
     }
 
-    /**
-     * Called when the observed {@link androidx.lifecycle.LiveData} is changed.
-     * <p>
-     * This method will update the related adapter and the {@link androidx.swiperefreshlayout.widget.SwipeRefreshLayout} if present.
-     *
-     * @param model The data observed by the {@link androidx.lifecycle.LiveData}.
-     */
-    @Override
-    protected void onDataReady(List<MPDAlbum> model) {
-        super.onDataReady(model);
-
-        // Reset old scroll position
-        if (mLastPosition >= 0) {
-            mAdapterView.setSelection(mLastPosition);
-            mLastPosition = -1;
-        }
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -256,8 +232,6 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mLastPosition = position;
-
         MPDAlbum album = (MPDAlbum) mAdapter.getItem(position);
         Bitmap bitmap = null;
 

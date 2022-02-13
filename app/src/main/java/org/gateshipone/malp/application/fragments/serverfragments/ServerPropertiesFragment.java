@@ -69,27 +69,34 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
         // create tabs
         TabLayout tabLayout = view.findViewById(R.id.my_music_tab_layout);
 
+        // setup viewpager
         mViewPager = view.findViewById(R.id.my_music_viewpager);
         ServerPropertiesTabAdapter tabAdapter = new ServerPropertiesTabAdapter(getChildFragmentManager());
         mViewPager.setAdapter(tabAdapter);
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setupWithViewPager(mViewPager, false);
         tabLayout.addOnTabSelectedListener(this);
 
-        // Icons
+        // setup icons for tabs
         final ColorStateList tabColors = tabLayout.getTabTextColors();
-        Resources res = getResources();
-        Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_statistics_black_24dp, null);
-        if (drawable != null) {
-            Drawable icon = DrawableCompat.wrap(drawable);
-            DrawableCompat.setTintList(icon, tabColors);
-            tabLayout.addTab(tabLayout.newTab().setIcon(icon));
+        final Resources res = getResources();
+        Drawable drawable = null;
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            switch (i) {
+                case 0:
+                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_statistics_black_24dp, null);
+                    break;
+                case 1:
+                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_hearing_black_24dp, null);;
+                    break;
+            }
+
+            if (drawable != null) {
+                Drawable icon = DrawableCompat.wrap(drawable);
+                DrawableCompat.setTintList(icon, tabColors);
+                tabLayout.getTabAt(i).setIcon(icon);
+            }
         }
-        drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_hearing_black_24dp, null);
-        if (drawable != null) {
-            Drawable icon = DrawableCompat.wrap(drawable);
-            DrawableCompat.setTintList(icon, tabColors);
-            tabLayout.addTab(tabLayout.newTab().setIcon(icon));
-        }
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         mViewPager.setCurrentItem(0);
     }

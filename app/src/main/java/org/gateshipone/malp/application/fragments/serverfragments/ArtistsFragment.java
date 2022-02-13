@@ -67,12 +67,6 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
      */
     private AbsListView mAdapterView;
 
-    /**
-     * Save the last position here. Gets reused when the user returns to this view after selecting sme
-     * albums.
-     */
-    private int mLastPosition = -1;
-
     private ArtistSelectedCallback mSelectedCallback;
 
     private MPDAlbum.MPD_ALBUM_SORT_ORDER mAlbumSortOrder;
@@ -168,24 +162,6 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
         ArtworkManager.getInstance(getContext().getApplicationContext()).registerOnNewArtistImageListener((ArtistsAdapter) mAdapter);
     }
 
-    /**
-     * Called when the observed {@link androidx.lifecycle.LiveData} is changed.
-     * <p>
-     * This method will update the related adapter and the {@link androidx.swiperefreshlayout.widget.SwipeRefreshLayout} if present.
-     *
-     * @param model The data observed by the {@link androidx.lifecycle.LiveData}.
-     */
-    @Override
-    protected void onDataReady(List<MPDArtist> model) {
-        super.onDataReady(model);
-
-        // Reset old scroll position
-        if (mLastPosition >= 0) {
-            mAdapterView.setSelection(mLastPosition);
-            mLastPosition = -1;
-        }
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -248,8 +224,6 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mLastPosition = position;
-
         MPDArtist artist = (MPDArtist) mAdapter.getItem(position);
 
         Bitmap bitmap = null;
@@ -265,7 +239,6 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
     public interface ArtistSelectedCallback {
         void onArtistSelected(MPDArtist artistname, Bitmap bitmap);
     }
-
 
     private void enqueueArtist(int index) {
         MPDArtist artist = (MPDArtist) mAdapter.getItem(index);
