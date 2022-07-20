@@ -57,7 +57,7 @@ public class MPDAlbumImageProvider extends ArtProvider {
         }
         switch (model.getType()) {
             case ALBUM: {
-                MPDArtworkHandler.getAlbumArtworkForAlbum(model.getAlbumName(), model.getMBID(), new AlbumArtResponseListener(mResponseLooper, model, listener, errorListener));
+                MPDArtworkHandler.getAlbumArtworkForAlbum(model.getAlbumName(), model.getArtistName(), model.getMBID(), new AlbumArtResponseListener(mResponseLooper, model, listener, errorListener));
                 break;
             }
             case ARTIST:

@@ -130,12 +130,13 @@ public class MPDArtworkHandler extends MPDGenericHandler {
                     return;
                 }
                 String albumName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ALBUM_NAME);
+                String artistName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ARTIST_NAME);
                 String albumMBID = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ALBUM_MBID);
 
                 // Get album tracks first
                 List<MPDFileEntry> tracks = null;
                 try {
-                    tracks = MPDInterface.getArtworkInstance().getAlbumTracks(albumName, albumMBID);
+                    tracks = MPDInterface.getArtworkInstance().getArtistAlbumTracks(albumName, artistName, albumMBID);
                 } catch (MPDException e) {
                     Log.e(TAG, "Error fetching tracks for album: " + e.getError());
                 }
@@ -195,10 +196,11 @@ public class MPDArtworkHandler extends MPDGenericHandler {
         sendMsg(action);
     }
 
-    public static void getAlbumArtworkForAlbum(String albumName, String albumMBID, MPDResponseAlbumArt responseHandler) {
+    public static void getAlbumArtworkForAlbum(String albumName, String artistName, String albumMBID, MPDResponseAlbumArt responseHandler) {
         MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_ALBUM_ART_FOR_ALBUM);
         action.setResponseHandler(responseHandler);
         action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ALBUM_NAME, albumName);
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ARTIST_NAME, artistName);
         action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ALBUM_MBID, albumMBID);
 
         sendMsg(action);
