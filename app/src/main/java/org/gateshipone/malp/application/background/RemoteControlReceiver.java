@@ -51,22 +51,27 @@ public class RemoteControlReceiver extends BroadcastReceiver {
                 switch (event.getKeyCode()) {
                     case KeyEvent.KEYCODE_MEDIA_NEXT:
                         nextIntent = new Intent(BackgroundService.ACTION_NEXT);
+                        nextIntent.setPackage(context.getPackageName());
                         context.sendBroadcast(nextIntent);
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
                         nextIntent = new Intent(BackgroundService.ACTION_PREVIOUS);
+                        nextIntent.setPackage(context.getPackageName());
                         context.sendBroadcast(nextIntent);
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                         nextIntent = new Intent(BackgroundService.ACTION_PAUSE);
+                        nextIntent.setPackage(context.getPackageName());
                         context.sendBroadcast(nextIntent);
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PLAY:
                         nextIntent = new Intent(BackgroundService.ACTION_PLAY);
+                        nextIntent.setPackage(context.getPackageName());
                         context.sendBroadcast(nextIntent);
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PAUSE:
                         nextIntent = new Intent(BackgroundService.ACTION_PAUSE);
+                        nextIntent.setPackage(context.getPackageName());
                         context.sendBroadcast(nextIntent);
                         break;
                 }

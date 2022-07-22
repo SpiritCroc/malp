@@ -104,6 +104,7 @@ public class StreamPlaybackManager {
         Intent intent = new Intent();
         intent.setAction(BackgroundService.ACTION_STREAMING_STATUS_CHANGED);
         intent.putExtra(BackgroundService.INTENT_EXTRA_STREAMING_STATUS, status.ordinal());
+        intent.setPackage(mService.getPackageName());
         mService.sendBroadcast(intent);
     }
 

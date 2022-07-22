@@ -448,6 +448,7 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
      */
     private void notifyDisconnected() {
         Intent intent = new Intent(getApplicationContext(), WidgetProvider.class);
+        intent.setPackage(getApplicationContext().getPackageName());
         intent.setAction(ACTION_SERVER_DISCONNECTED);
         sendBroadcast(intent);
 
@@ -462,6 +463,7 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
      */
     private void notifyNewTrack(MPDTrack track) {
         Intent intent = new Intent(getApplicationContext(), WidgetProvider.class);
+        intent.setPackage(getApplicationContext().getPackageName());
         intent.setAction(ACTION_TRACK_CHANGED);
         intent.putExtra(INTENT_EXTRA_TRACK, track);
         sendBroadcast(intent);
@@ -474,6 +476,7 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
      */
     private void notifyNewStatus(MPDCurrentStatus status) {
         Intent intent = new Intent(getApplicationContext(), WidgetProvider.class);
+        intent.setPackage(getApplicationContext().getPackageName());
         intent.setAction(ACTION_STATUS_CHANGED);
         intent.putExtra(INTENT_EXTRA_STATUS, status);
         sendBroadcast(intent);
