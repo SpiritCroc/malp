@@ -1,0 +1,3 @@
+* Check for artist in MPD artwork retrieval if no MBID is present ([#273](https://gitlab.com/gateship-one/malp/-/issues/273))
+* Adapt to new Splashscreen API
+* Adapt backups für Android 12

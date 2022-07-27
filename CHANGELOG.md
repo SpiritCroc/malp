@@ -1,5 +1,11 @@
 # Changelog M.A.L.P
 
+## 1.2.10 Tag: release-37 (2022-07-27)
+
+* Check for artist in MPD artwork retrieval if no MBID is present ([#273](https://gitlab.com/gateship-one/malp/-/issues/273))
+* Adapt to new Splashscreen API
+* Adapt backups für Android 12
+
 ## 1.2.9 Tag: release-36 (2022-01-09)
 
 * Fix crash on device rotation ([#265](https://gitlab.com/gateship-one/malp/-/issues/265))
