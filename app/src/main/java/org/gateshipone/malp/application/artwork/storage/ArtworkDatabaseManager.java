@@ -480,6 +480,17 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
         database.close();
     }
 
+    public synchronized void clearBlockedDirectoryImages() {
+        SQLiteDatabase database = getWritableDatabase();
+
+        String where = DirectoryArtTable.COLUMN_IMAGE_NOT_FOUND + "=?";
+        String[] whereArgs = {"1"};
+
+        database.delete(DirectoryArtTable.TABLE_NAME, where, whereArgs);
+
+        database.close();
+    }
+
     public synchronized void removeArtistImage(final MPDArtist artist) {
         final SQLiteDatabase database = getWritableDatabase();
 

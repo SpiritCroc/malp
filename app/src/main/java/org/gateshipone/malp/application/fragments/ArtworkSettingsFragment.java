@@ -84,6 +84,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
         Preference clearBlockedAlbums = findPreference(getString(R.string.pref_clear_blocked_album_key));
         clearBlockedAlbums.setOnPreferenceClickListener(preference -> {
             ArtworkDatabaseManager.getInstance(getContext()).clearBlockedAlbumImages();
+            ArtworkDatabaseManager.getInstance(getContext()).clearBlockedDirectoryImages();
             return true;
         });
 
