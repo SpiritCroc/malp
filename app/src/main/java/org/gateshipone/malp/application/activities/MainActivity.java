@@ -32,6 +32,7 @@ import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -93,6 +94,8 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import org.gateshipone.malp.mpdservice.profilemanagement.MPDProfileManager;
 import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
+
+import java.util.List;
 
 public class MainActivity extends GenericActivity
         implements NavigationView.OnNavigationItemSelectedListener, AlbumCallback, ArtistsFragment.ArtistSelectedCallback,
@@ -192,6 +195,7 @@ public class MainActivity extends GenericActivity
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
             navigationView.setCheckedItem(navId);
+            inflateProfileMenu();
         }
 
 
@@ -917,5 +921,25 @@ public class MainActivity extends GenericActivity
         }
 
         return navId;
+    }
+    private void inflateProfileMenu() { // TODO call on profile edited/added/removed
+        final List<MPDServerProfile> profiles = MPDProfileManager.getInstance(this).getProfiles();
+        final NavigationView navigationView = findViewById(R.id.nav_view);
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (navigationView != null) {
+            SubMenu profilesMenu = navigationView.getMenu().findItem(R.id.nav_profile_section).getSubMenu();
+            profilesMenu.clear();
+            int i = 0;
+            for (MPDServerProfile profile: profiles) {
+                MenuItem profileItem = profilesMenu.add(0, i++, 0, profile.getProfileName()).setOnMenuItemClickListener(
+                        item -> {
+                            ConnectionManager.getInstance(getApplicationContext()).connectProfile(profile, getApplicationContext());
+                            drawer.closeDrawer(GravityCompat.START);
+                            return true;
+                        }
+                );
+                profileItem.setIcon(R.drawable.ic_settings_profiles_24dp);
+            }
+        }
     }
 }
