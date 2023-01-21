@@ -69,6 +69,8 @@ public class ArtworkDatabaseManager extends SQLiteOpenHelper {
     public static synchronized ArtworkDatabaseManager getInstance(final Context context) {
         if (null == mInstance) {
             mInstance = new ArtworkDatabaseManager(context);
+            mInstance.clearDirectoryImages();
+            mInstance.clearBlockedAlbumImages();
         }
         return mInstance;
     }
