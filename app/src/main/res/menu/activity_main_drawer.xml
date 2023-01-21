@@ -46,12 +46,6 @@
         android:icon="@drawable/ic_server_properties_24dp"
         android:title="@string/menu_server" />
     <item
-        android:id="@+id/nav_profile_section"
-        android:checkable="true"
-        android:title="@string/menu_profiles">
-        <menu />
-    </item>
-    <item
         android:checkable="true"
         android:title="@string/menu_settings">
         <menu>

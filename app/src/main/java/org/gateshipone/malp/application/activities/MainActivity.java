@@ -30,6 +30,7 @@ import android.preference.PreferenceManager;
 import android.transition.Slide;
 import android.view.ContextMenu;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -195,7 +196,6 @@ public class MainActivity extends GenericActivity
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
             navigationView.setCheckedItem(navId);
-            inflateProfileMenu();
         }
 
 
@@ -284,6 +284,17 @@ public class MainActivity extends GenericActivity
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        inflateProfileMenu(menu);
+        return super.onPrepareOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -922,24 +933,32 @@ public class MainActivity extends GenericActivity
 
         return navId;
     }
-    private void inflateProfileMenu() { // TODO call on profile edited/added/removed
+    private void inflateProfileMenu(Menu menu) { // TODO call on profile edited/added/removed
         final List<MPDServerProfile> profiles = MPDProfileManager.getInstance(this).getProfiles();
         final NavigationView navigationView = findViewById(R.id.nav_view);
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        final String selectedProfileName = ConnectionManager.getInstance(getApplicationContext()).getProfileName();
         if (navigationView != null) {
-            SubMenu profilesMenu = navigationView.getMenu().findItem(R.id.nav_profile_section).getSubMenu();
+            MenuItem profilesItem = menu.findItem(R.id.nav_profile_section);
+            if (profilesItem == null) {
+                return;
+            }
+            SubMenu profilesMenu = profilesItem.getSubMenu();
             profilesMenu.clear();
-            int i = 0;
+            int groupId = 1;
             for (MPDServerProfile profile: profiles) {
-                MenuItem profileItem = profilesMenu.add(0, i++, 0, profile.getProfileName()).setOnMenuItemClickListener(
+                int id = View.generateViewId();
+                MenuItem profileItem = profilesMenu.add(groupId, id, 0, profile.getProfileName()).setOnMenuItemClickListener(
                         item -> {
                             ConnectionManager.getInstance(getApplicationContext()).connectProfile(profile, getApplicationContext());
                             drawer.closeDrawer(GravityCompat.START);
+                            item.setChecked(true);
                             return true;
                         }
                 );
-                profileItem.setIcon(R.drawable.ic_settings_profiles_24dp);
+                profileItem.setChecked(selectedProfileName.equals(profile.getProfileName()));
             }
+            profilesMenu.setGroupCheckable(groupId, true, true);
         }
     }
 }
