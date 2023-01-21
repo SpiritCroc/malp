@@ -728,9 +728,18 @@ public class MainActivity extends GenericActivity
         mFAB.setOnClickListener(listener);
     }
 
+    private boolean titleIsProfileName = false;
     @Override
     public void setupToolbar(String title, boolean scrollingEnabled,
                              boolean drawerIndicatorEnabled, boolean showImage) {
+        // SC: overwrite files header with profile name
+        if (title.equals(getString(R.string.menu_files))) {
+            title = ConnectionManager.getInstance(getApplicationContext()).getProfileName();
+            titleIsProfileName = true;
+        } else {
+            titleIsProfileName = false;
+        }
+
         // set drawer state
         mDrawerToggle.setDrawerIndicatorEnabled(drawerIndicatorEnabled);
 
@@ -953,6 +962,9 @@ public class MainActivity extends GenericActivity
                             ConnectionManager.getInstance(getApplicationContext()).connectProfile(profile, getApplicationContext());
                             drawer.closeDrawer(GravityCompat.START);
                             item.setChecked(true);
+                            if (titleIsProfileName) {
+                                setTitle(item.getTitle());
+                            }
                             return true;
                         }
                 );
