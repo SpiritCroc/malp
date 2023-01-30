@@ -530,6 +530,7 @@ public class MainActivity extends GenericActivity
 
     @Override
     protected void onMPDError(MPDException.MPDServerException e) {
+        e.printStackTrace();
         View layout = findViewById(R.id.drawer_layout);
         if (layout != null) {
             String errorText = getString(R.string.snackbar_mpd_server_error_format, e.getErrorCode(), e.getCommandOffset(), e.getServerMessage());

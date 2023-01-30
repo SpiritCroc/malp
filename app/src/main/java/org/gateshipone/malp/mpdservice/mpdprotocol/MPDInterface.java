@@ -708,6 +708,7 @@ public class MPDInterface {
      * Jumps to the next song
      */
     public synchronized void nextSong() throws MPDException {
+        ensurePlaying();
         mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_NEXT);
     }
 
@@ -715,7 +716,16 @@ public class MPDInterface {
      * Jumps to the previous song
      */
     public synchronized void previousSong() throws MPDException {
+        ensurePlaying();
         mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_PREVIOUS);
+    }
+
+    private void ensurePlaying() throws MPDException {
+        MPDCurrentStatus status = getCurrentServerStatus();
+        MPDCurrentStatus.MPD_PLAYBACK_STATE state = status.getPlaybackState();
+        if (state != MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
+            playSongIndex(status.getCurrentSongIndex());
+        }
     }
 
     /**
