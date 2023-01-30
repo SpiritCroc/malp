@@ -533,7 +533,7 @@ public class MainActivity extends GenericActivity
         View layout = findViewById(R.id.drawer_layout);
         if (layout != null) {
             String errorText = getString(R.string.snackbar_mpd_server_error_format, e.getErrorCode(), e.getCommandOffset(), e.getServerMessage());
-            Snackbar sb = Snackbar.make(layout, errorText, Snackbar.LENGTH_LONG);
+            Snackbar sb = Snackbar.make(layout, errorText, Snackbar.LENGTH_SHORT);
 
             // style the snackbar text
             TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
@@ -548,7 +548,7 @@ public class MainActivity extends GenericActivity
         if (layout != null) {
             String errorText = getString(R.string.snackbar_mpd_connection_error_format, e.getError());
 
-            Snackbar sb = Snackbar.make(layout, errorText, Snackbar.LENGTH_LONG);
+            Snackbar sb = Snackbar.make(layout, errorText, Snackbar.LENGTH_SHORT);
 
             // style the snackbar text
             TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
