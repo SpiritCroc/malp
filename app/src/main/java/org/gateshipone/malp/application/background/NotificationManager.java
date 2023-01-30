@@ -153,9 +153,11 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
             // Check if stream playback is enabled or not
             if (mDismissible) {
                 mMediaSession.setCallback(new MALPMediaSessionCallback(mMediaSession));
+                /*
                 mVolumeControlProvider = new MALPVolumeControlProvider();
                 mVolumeControlProvider.setCurrentVolume(mLastStatus.getVolume());
                 mMediaSession.setPlaybackToRemote(mVolumeControlProvider);
+                 */
             }
             mMediaSession.setActive(true);
             mSessionActive = true;
