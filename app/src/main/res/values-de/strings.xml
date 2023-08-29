@@ -284,4 +284,5 @@
     <string name="bitrate_unit_kilo_bits_template">%1$d kbps</string>
     <string name="sampleformat_unit_bits_template">%1$s Bits</string>
     <string name="channels_template">%1$d Kanäle</string>
+    <string name="permission_request_notifications_snackbar_explanation">Benachrichtigungen erforderlich für den Bulkdownloader.</string>
 </resources>

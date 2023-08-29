@@ -24,7 +24,9 @@ package org.gateshipone.malp.application.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.transition.Slide;
@@ -42,6 +44,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -80,6 +83,7 @@ import org.gateshipone.malp.application.fragments.serverfragments.SavedPlaylists
 import org.gateshipone.malp.application.fragments.serverfragments.SearchFragment;
 import org.gateshipone.malp.application.fragments.serverfragments.ServerPropertiesFragment;
 import org.gateshipone.malp.application.fragments.serverfragments.SongDetailsDialog;
+import org.gateshipone.malp.application.utils.PermissionHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.views.CurrentPlaylistView;
 import org.gateshipone.malp.application.views.NowPlayingView;
@@ -877,6 +881,56 @@ public class MainActivity extends GenericActivity
 
         // Commit the transaction
         transaction.commit();
+    }
+
+    /**
+     * This method asks for permission to show notifications.
+     * A permission request will only executed if the device is using android 13 or newer.
+     */
+    public void requestPermissionShowNotifications() {
+        // request only works for android 13 or newer
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PermissionHelper.NOTIFICATION_PERMISSION)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                View layout = findViewById(R.id.drawer_layout);
+                if (layout != null) {
+                    Snackbar sb = Snackbar.make(layout, PermissionHelper.NOTIFICATION_PERMISSION_RATIONALE_TEXT, Snackbar.LENGTH_INDEFINITE);
+                    sb.setAction(R.string.permission_request_snackbar_button, view -> ActivityCompat.requestPermissions(this,
+                            new String[]{PermissionHelper.NOTIFICATION_PERMISSION},
+                            PermissionHelper.MY_PERMISSIONS_REQUEST_NOTIFICATIONS));
+                    // style the snackbar text
+                    TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+                    sbText.setTextColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent));
+                    sb.show();
+                }
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{PermissionHelper.NOTIFICATION_PERMISSION},
+                        PermissionHelper.MY_PERMISSIONS_REQUEST_NOTIFICATIONS);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PermissionHelper.MY_PERMISSIONS_REQUEST_NOTIFICATIONS) {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // permission was granted, yay!
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+                if (fragment instanceof ArtworkSettingsFragment) {
+                    // notification was requested for the Bulkdownloader
+                    ((ArtworkSettingsFragment) fragment).startBulkdownload();
+                }
+            }
+        }
     }
 
     private MyMusicTabsFragment.DEFAULTTAB getDefaultTab() {

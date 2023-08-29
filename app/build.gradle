@@ -50,11 +50,11 @@ android {
             }
         }
     }
-    compileSdkVersion 31
+    compileSdk 33
     defaultConfig {
         applicationId "org.gateshipone.malp"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 37
         versionName "1.2.10"
         signingConfig signingConfigs.config
