@@ -22,6 +22,7 @@
 
 package org.gateshipone.malp.application.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -319,6 +320,14 @@ public class MainActivity extends GenericActivity
                     return true;
                 }
             }
+        } else if (item.getItemId() == R.id.nav_clear_playlist) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.action_delete_playlist)
+                    .setMessage(R.string.dialog_message_delete_current_playlist)
+                    .setPositiveButton(R.string.dialog_action_yes, (dialog, which) -> MPDQueryHandler.clearPlaylist())
+                    .setNegativeButton(R.string.dialog_action_no, (dialog, which) -> {})
+                    .create().show();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

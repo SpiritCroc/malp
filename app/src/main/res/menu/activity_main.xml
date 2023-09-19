@@ -9,4 +9,10 @@
         android:icon="@drawable/ic_settings_profiles_24dp_tinted">
         <menu />
     </item>
+    <item
+        android:id="@+id/nav_clear_playlist"
+        android:title="@string/action_clear_playlist"
+        app:showAsAction="always"
+        android:orderInCategory="10"
+        android:icon="@drawable/ic_playlist_clear" />
 </menu>
