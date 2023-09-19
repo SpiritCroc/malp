@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 Team Gateship-One
+ *  Copyright (C) 2023 Team Gateship-One
  *  (Hendrik Borghorst & Frederik Luetkes)
  *
  *  The AUTHORS.md file contains a detailed contributors list:
@@ -39,12 +39,15 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.gateshipone.malp.R;
+import org.gateshipone.malp.application.MalpApplication;
+import org.gateshipone.malp.application.activities.MainActivity;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.artwork.BulkDownloadService;
 import org.gateshipone.malp.application.artwork.network.artprovider.HTTPAlbumImageProvider;
 import org.gateshipone.malp.application.artwork.network.artprovider.MPDAlbumImageProvider;
 import org.gateshipone.malp.application.artwork.storage.ArtworkDatabaseManager;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
+import org.gateshipone.malp.application.utils.PermissionHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 
 
@@ -96,30 +99,11 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
 
         Preference bulkLoad = findPreference(getString(R.string.pref_bulk_load_key));
         bulkLoad.setOnPreferenceClickListener(preference -> {
-
-            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
-            builder.setTitle(getResources().getString(R.string.bulk_download_notice_title));
-            builder.setMessage(getResources().getString(R.string.bulk_download_notice_text));
-
-
-            builder.setPositiveButton(R.string.dialog_action_ok, (dialog, id) -> {
-                Intent serviceIntent = new Intent(getActivity(), BulkDownloadService.class);
-                serviceIntent.setAction(BulkDownloadService.ACTION_START_BULKDOWNLOAD);
-                SharedPreferences sharedPref = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext().getApplicationContext());
-                serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_ARTIST_PROVIDER, sharedPref.getString(getString(R.string.pref_artist_provider_key),
-                        getString(R.string.pref_artwork_provider_artist_default)));
-                serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_ALBUM_PROVIDER, sharedPref.getString(getString(R.string.pref_album_provider_key),
-                        getString(R.string.pref_artwork_provider_album_default)));
-                serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_WIFI_ONLY, sharedPref.getBoolean(getString(R.string.pref_download_wifi_only_key),
-                        getResources().getBoolean(R.bool.pref_download_wifi_default)));
-                serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_HTTP_COVER_REGEX, HTTPAlbumImageProvider.getInstance(getContext()).getRegex());
-                serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_MPD_COVER_ENABLED, MPDAlbumImageProvider.getInstance().getActive());
-                requireActivity().startService(serviceIntent);
-            });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-
-
+            if (PermissionHelper.areNotificationsAllowed(requireActivity())) {
+                startBulkdownload();
+            } else {
+                ((MainActivity) requireActivity()).requestPermissionShowNotifications();
+            }
             return true;
         });
     }
@@ -216,6 +200,33 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
                 artworkManager.setWifiOnly(sharedPreferences.getBoolean(downloadWifiOnlyKey, getResources().getBoolean(R.bool.pref_download_wifi_default)));
             }
         }
+    }
+
+    /**
+     * Method to start the Bulkdownloader dialog which will then start the Bulkdownloader.
+     */
+    public void startBulkdownload() {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
+        builder.setTitle(getResources().getString(R.string.bulk_download_notice_title));
+        builder.setMessage(getResources().getString(R.string.bulk_download_notice_text));
+
+
+        builder.setPositiveButton(R.string.dialog_action_ok, (dialog, id) -> {
+            Intent serviceIntent = new Intent(getActivity(), BulkDownloadService.class);
+            serviceIntent.setAction(BulkDownloadService.ACTION_START_BULKDOWNLOAD);
+            SharedPreferences sharedPref = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext().getApplicationContext());
+            serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_ARTIST_PROVIDER, sharedPref.getString(getString(R.string.pref_artist_provider_key),
+                    getString(R.string.pref_artwork_provider_artist_default)));
+            serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_ALBUM_PROVIDER, sharedPref.getString(getString(R.string.pref_album_provider_key),
+                    getString(R.string.pref_artwork_provider_album_default)));
+            serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_WIFI_ONLY, sharedPref.getBoolean(getString(R.string.pref_download_wifi_only_key),
+                    getResources().getBoolean(R.bool.pref_download_wifi_default)));
+            serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_HTTP_COVER_REGEX, HTTPAlbumImageProvider.getInstance(getContext()).getRegex());
+            serviceIntent.putExtra(BulkDownloadService.BUNDLE_KEY_MPD_COVER_ENABLED, MPDAlbumImageProvider.getInstance().getActive());
+            requireActivity().startService(serviceIntent);
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
 }

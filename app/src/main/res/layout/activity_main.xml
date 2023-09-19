@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~  Copyright (C) 2020 Team Gateship-One
+  ~  Copyright (C) 2023 Team Gateship-One
   ~  (Hendrik Borghorst & Frederik Luetkes)
   ~
   ~  The AUTHORS.md file contains a detailed contributors list:
@@ -47,6 +47,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:theme="?attr/malp_navdrawer_theme"
+        app:itemTextAppearance="?attr/malp_navdrawer_theme"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer" />
 
