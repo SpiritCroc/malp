@@ -328,7 +328,7 @@ public class MPDCommands {
 
 
     private static String escapeString(String input) {
-        return input.replaceAll("\"", "\\\\\"").replaceAll("\\\\","\\\\\\\\");
+        return input.replaceAll("\\\\","\\\\\\\\").replaceAll("\"", "\\\\\"");
     }
 
     public static String MPD_COMMAND_GET_ALBUMART(String url, int offset) {
