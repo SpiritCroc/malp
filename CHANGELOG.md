@@ -1,5 +1,9 @@
 # Changelog M.A.L.P
 
+## 1.2.12 Tag: release-39 (2023-12-20)
+
+* Fix handling of album titles that contain double quotes ([288](https://gitlab.com/gateship-one/malp/-/issues/288))
+
 ## 1.2.11 Tag: release-38 (2023-08-30)
 
 * Migrate to android 13

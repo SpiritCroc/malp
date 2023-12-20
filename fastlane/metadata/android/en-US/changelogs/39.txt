@@ -1,0 +1,1 @@
+* Fix handling of album titles that contain double quotes ([288](https://gitlab.com/gateship-one/malp/-/issues/288))
