@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Process;
@@ -222,7 +223,11 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
         // Register the receiver with the system
-        registerReceiver(mBroadcastReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            registerReceiver(mBroadcastReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(mBroadcastReceiver, filter);
+        }
 
         // Create handler for service binding
         mHandler = new BackgroundServiceHandler(this);

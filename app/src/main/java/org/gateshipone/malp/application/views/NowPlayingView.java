@@ -33,6 +33,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -1140,7 +1141,11 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(BackgroundService.ACTION_STREAMING_STATUS_CHANGED);
-        getContext().getApplicationContext().registerReceiver(mStreamingStatusReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            getContext().getApplicationContext().registerReceiver(mStreamingStatusReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            getContext().getApplicationContext().registerReceiver(mStreamingStatusReceiver, filter);
+        }
 
         // Register with MPDStateMonitoring system
         MPDStateMonitoringHandler.getHandler().registerStatusListener(mStateListener);

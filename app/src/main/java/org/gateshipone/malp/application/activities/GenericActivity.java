@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -147,7 +148,11 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(BackgroundService.ACTION_STREAMING_STATUS_CHANGED);
-        getApplicationContext().registerReceiver(mStreamingStatusReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            getApplicationContext().registerReceiver(mStreamingStatusReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            getApplicationContext().registerReceiver(mStreamingStatusReceiver, filter);
+        }
 
         // Check if hardware key control is enabled by the user
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);

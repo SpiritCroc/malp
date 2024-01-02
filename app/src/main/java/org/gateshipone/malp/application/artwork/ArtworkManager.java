@@ -29,6 +29,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -144,7 +145,12 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
         ConnectionStateReceiver receiver = new ConnectionStateReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        mApplicationContext.registerReceiver(receiver, filter);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            mApplicationContext.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            mApplicationContext.registerReceiver(receiver, filter);
+        }
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mApplicationContext);
         mArtistProvider = sharedPref.getString(mApplicationContext.getString(R.string.pref_artist_provider_key), mApplicationContext.getString(R.string.pref_artwork_provider_artist_default));
