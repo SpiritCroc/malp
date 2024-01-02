@@ -36,5 +36,9 @@
         <attr name="malp_grid_gradient" format="reference" />
         <attr name="malp_navdrawer_theme" format="reference" />
         <attr name="malp_appbaroverlay_theme" format="reference" />
+        <attr name="malp_color_toggle_btn_active" format="reference|color" />
+        <attr name="malp_color_content_background" format="reference|color" />
+        <attr name="malp_color_on_surface" format="reference|color" />
+        <attr name="malp_color_on_primary" format="reference|color" />
     </declare-styleable>
 </resources>
