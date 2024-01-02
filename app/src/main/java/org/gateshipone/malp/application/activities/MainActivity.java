@@ -270,8 +270,6 @@ public class MainActivity extends GenericActivity
         } else if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
             NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
             if (nowPlayingView != null) {
-                View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-                coordinatorLayout.setVisibility(View.VISIBLE);
                 nowPlayingView.minimize();
             }
         } else {
@@ -395,8 +393,6 @@ public class MainActivity extends GenericActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         final int id = item.getItemId();
-        final View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-        coordinatorLayout.setVisibility(View.VISIBLE);
 
         final NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
         if (nowPlayingView != null) {
@@ -562,8 +558,6 @@ public class MainActivity extends GenericActivity
         if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
             NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
             if (nowPlayingView != null) {
-                View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-                coordinatorLayout.setVisibility(View.VISIBLE);
                 nowPlayingView.minimize();
             }
         }
@@ -593,8 +587,6 @@ public class MainActivity extends GenericActivity
         if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
             NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
             if (nowPlayingView != null) {
-                View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-                coordinatorLayout.setVisibility(View.VISIBLE);
                 nowPlayingView.minimize();
             }
         }
@@ -622,25 +614,20 @@ public class MainActivity extends GenericActivity
     @Override
     public void onStatusChanged(DRAG_STATUS status) {
         mNowPlayingDragStatus = status;
-        if (status == DRAG_STATUS.DRAGGED_UP) {
-            View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-            coordinatorLayout.setVisibility(View.INVISIBLE);
-        }
     }
 
     @Override
     public void onDragPositionChanged(float pos) {
-        if (mHeaderImageActive) {
             // Get the primary color of the active theme from the helper.
             int newColor = ThemeUtils.getThemeColor(this, R.attr.colorPrimaryDark);
 
-            // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
-            // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
-            int alphaOffset = (((255 - (int) (255.0 * pos)) << 24) | 0xFFFFFF);
-            // and with this mask to set the new alpha value.
-            newColor &= (alphaOffset);
-            getWindow().setStatusBarColor(newColor);
-        }
+        // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
+        // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
+        int alphaOffset = (((255 - (int) (255.0 * pos)) << 24) | 0xFFFFFF);
+        // and with this mask to set the new alpha value.
+        newColor &= (alphaOffset);
+
+        getWindow().setStatusBarColor(newColor);
     }
 
     @Override
@@ -650,10 +637,7 @@ public class MainActivity extends GenericActivity
 
     @Override
     public void onStartDrag() {
-        View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-        coordinatorLayout.setVisibility(View.VISIBLE);
     }
-
 
     @Override
     public void editProfile(MPDServerProfile profile) {
@@ -827,8 +811,6 @@ public class MainActivity extends GenericActivity
         if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
             NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
             if (nowPlayingView != null) {
-                View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-                coordinatorLayout.setVisibility(View.VISIBLE);
                 nowPlayingView.minimize();
             }
         }
