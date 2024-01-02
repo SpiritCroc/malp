@@ -162,10 +162,7 @@
                 style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/server_statistic_update_database"
-                android:textColor="?attr/malp_color_text_background_primary"
-                app:backgroundTint="?attr/malp_color_background_selected"
-                app:rippleColor="?attr/malp_color_text_background_secondary" />
+                android:text="@string/server_statistic_update_database" />
 
             <TextView
                 android:id="@+id/server_statistic_updateing_db"

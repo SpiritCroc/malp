@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
+            android:background="?attr/colorSurface"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:titleEnabled="false">
 
@@ -75,7 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/fab_margin"
             android:src="@drawable/ic_play_arrow_48dp"
-            android:tint="?attr/malp_color_text_accent"
+            android:tint="@color/design_default_color_on_primary"
             app:backgroundTint="?attr/colorAccent" />
     </LinearLayout>
 

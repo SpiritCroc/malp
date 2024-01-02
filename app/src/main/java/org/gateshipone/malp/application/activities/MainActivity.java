@@ -54,6 +54,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -618,8 +619,8 @@ public class MainActivity extends GenericActivity
 
     @Override
     public void onDragPositionChanged(float pos) {
-            // Get the primary color of the active theme from the helper.
-            int newColor = ThemeUtils.getThemeColor(this, R.attr.colorPrimaryDark);
+        // Get the primary color of the active theme from the helper.
+        int newColor = MaterialColors.getColor(this, R.attr.colorSurfaceContainer, 0);
 
         // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
         // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
@@ -717,7 +718,7 @@ public class MainActivity extends GenericActivity
                 mHeaderImageActive = true;
 
                 // Get the primary color of the active theme from the helper.
-                int newColor = ThemeUtils.getThemeColor(this, R.attr.colorPrimaryDark);
+                int newColor = ThemeUtils.getThemeColor(this, R.attr.colorSurface);
 
                 // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
                 // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
@@ -730,14 +731,14 @@ public class MainActivity extends GenericActivity
                 mHeaderImageActive = false;
 
                 // Get the primary color of the active theme from the helper.
-                getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorPrimaryDark));
+                getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorSurfaceContainer));
             }
         } else {
             // If in portrait mode (no collapsing image exists), the status bar also needs dark coloring
             mHeaderImageActive = false;
 
             // Get the primary color of the active theme from the helper.
-            getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorPrimaryDark));
+            getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorSurfaceContainer));
         }
         // set scrolling behaviour
         CollapsingToolbarLayout toolbar = findViewById(R.id.collapsing_toolbar);

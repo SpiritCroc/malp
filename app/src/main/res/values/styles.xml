@@ -290,6 +290,8 @@
         <item name="colorAccent">?attr/malp_color_accent</item>
         <item name="colorPrimary">?attr/malp_color_primary</item>
         <item name="colorOnPrimary">?attr/malp_color_text_accent</item>
+        <item name="colorSurface">?attr/colorPrimaryDark</item>
+        <item name="colorSurfaceContainer">?attr/colorPrimaryDark</item>
         <item name="android:colorPrimaryDark">?attr/malp_color_primary_dark</item>
         <item name="android:colorAccent">?attr/malp_color_accent</item>
         <item name="android:colorPrimary">?attr/malp_color_primary</item>
@@ -301,8 +303,11 @@
         <item name="android:textColor">?attr/malp_color_text_background_primary</item>
         <item name="malp_cover_background">#111111</item>
         <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
+        <item name="malp_color_content_background">?attr/malp_color_background</item>
+        <item name="malp_color_toggle_btn_active">?attr/colorAccent</item>
+        <item name="malp_color_on_surface">?attr/malp_color_text_background_primary</item>
+        <item name="malp_color_on_primary">?attr/malp_color_text_background_primary</item>
     </style>
-
 
     <style name="AppTheme.AppBarOverlay" parent="AppTheme">
         <item name="android:textColorSecondary">?attr/malp_color_text_accent</item>
@@ -358,6 +363,8 @@
         <item name="colorPrimaryDark">?attr/malp_color_primary_dark</item>
         <item name="colorAccent">?attr/malp_color_accent</item>
         <item name="colorPrimary">?attr/malp_color_primary</item>
+        <item name="colorSurface">?attr/colorPrimaryDark</item>
+        <item name="colorSurfaceContainer">?attr/colorPrimaryDark</item>
         <item name="android:colorPrimaryDark">?attr/malp_color_primary_dark</item>
         <item name="android:colorAccent">?attr/malp_color_accent</item>
         <item name="android:colorPrimary">?attr/malp_color_primary</item>
@@ -369,6 +376,10 @@
         <item name="android:textColor">?attr/malp_color_text_background_primary</item>
         <item name="malp_cover_background">#FFFFFF</item>
         <item name="malp_grid_gradient">@drawable/gradient_gridview_item_light</item>
+        <item name="malp_color_content_background">?attr/malp_color_background</item>
+        <item name="malp_color_toggle_btn_active">?attr/colorAccent</item>
+        <item name="malp_color_on_surface">?attr/malp_color_text_accent</item>
+        <item name="malp_color_on_primary">?attr/malp_color_text_accent</item>
     </style>
 
     <style name="AppThemeLight.AppBarOverlay" parent="AppThemeLight">

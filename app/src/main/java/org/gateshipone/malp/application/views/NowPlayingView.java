@@ -31,6 +31,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BlendMode;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -1203,7 +1204,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 break;
             case 1:
                 mBottomRepeatButton.setImageResource(R.drawable.ic_repeat_24dp);
-                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), android.R.attr.colorAccent)));
+                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_toggle_btn_active)));
                 break;
         }
 
@@ -1213,7 +1214,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
                 break;
             case 1:
-                mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), android.R.attr.colorAccent)));
+                mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_toggle_btn_active)));
                 break;
         }
 
@@ -1383,7 +1384,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 if (mViewSwitcher.getCurrentView() != mCoverImage) {
                     mViewSwitcher.showNext();
                 }
-                color = ThemeUtils.getThemeColor(getContext(), android.R.attr.textColor);
+                color = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_on_surface);
                 TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_playlist));
                 break;
             case PLAYLIST_VIEW:
@@ -1391,7 +1392,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 if (mViewSwitcher.getCurrentView() != mPlaylistView) {
                     mViewSwitcher.showNext();
                 }
-                color = ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent);
+                color = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_toggle_btn_active);
                 TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_cover));
                 break;
         }
