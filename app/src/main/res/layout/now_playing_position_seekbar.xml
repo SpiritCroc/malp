@@ -27,7 +27,8 @@
     android:layout_height="wrap_content"
     android:paddingLeft="@dimen/material_standard_horizontal_spacing"
     android:paddingTop="@dimen/material_content_spacing"
-    android:paddingRight="@dimen/material_standard_horizontal_spacing">
+    android:paddingRight="@dimen/material_standard_horizontal_spacing"
+    android:background="?attr/colorSurfaceContainer">
 
     <TextView
         android:id="@+id/now_playing_elapsedTime"

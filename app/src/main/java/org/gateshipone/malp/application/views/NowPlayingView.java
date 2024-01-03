@@ -934,28 +934,33 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         // add listener to top playpause button
         mTopPlayPauseButton.setOnClickListener(arg0 -> MPDCommandHandler.togglePause());
 
-        // Add listeners to top playlist button
-        mTopPlaylistButton.setOnClickListener(v -> {
+        // Check if playlist is attached to view switcher (single pane) or not (double pane layout)
+        if (mPlaylistView.getParent().equals(mViewSwitcher)) {
+            // Add listeners to top playlist button
+            mTopPlaylistButton.setOnClickListener(v -> {
 
-            if (mViewSwitcher.getCurrentView() != mPlaylistView) {
-                setViewSwitcherStatus(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.PLAYLIST_VIEW);
-            } else {
-                setViewSwitcherStatus(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.COVER_VIEW);
-            }
-
-            // report the change of the view
-            if (mDragStatusReceiver != null) {
-                // set view status
-                if (mViewSwitcher.getDisplayedChild() == 0) {
-                    // cover image is shown
-                    mDragStatusReceiver.onSwitchedViews(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.COVER_VIEW);
+                if (mViewSwitcher.getCurrentView() != mPlaylistView) {
+                    setViewSwitcherStatus(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.PLAYLIST_VIEW);
                 } else {
-                    // playlist view is shown
-                    mDragStatusReceiver.onSwitchedViews(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.PLAYLIST_VIEW);
-                    mPlaylistView.jumpToCurrentSong();
+                    setViewSwitcherStatus(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.COVER_VIEW);
                 }
-            }
-        });
+
+                // report the change of the view
+                if (mDragStatusReceiver != null) {
+                    // set view status
+                    if (mViewSwitcher.getDisplayedChild() == 0) {
+                        // cover image is shown
+                        mDragStatusReceiver.onSwitchedViews(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.COVER_VIEW);
+                    } else {
+                        // playlist view is shown
+                        mDragStatusReceiver.onSwitchedViews(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.PLAYLIST_VIEW);
+                        mPlaylistView.jumpToCurrentSong();
+                    }
+                }
+            });
+        } else {
+            mTopPlaylistButton.setVisibility(GONE);
+        }
 
         TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_playlist));
 
