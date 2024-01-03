@@ -39,6 +39,8 @@ public class GenericViewItemHolder extends RecyclerView.ViewHolder {
             ((FileListItem) itemView).setTitle(title);
         } else if (itemView instanceof GenericGridItem) {
             ((GenericGridItem) itemView).setTitle(title);
+        } else if (itemView instanceof ImageListItem) {
+            ((ImageListItem) itemView).setText(title);
         }
     }
 

@@ -33,6 +33,7 @@ import org.gateshipone.malp.application.listviewitems.AbsImageListViewItem;
 import org.gateshipone.malp.application.listviewitems.FileListItem;
 import org.gateshipone.malp.application.listviewitems.GenericGridItem;
 import org.gateshipone.malp.application.listviewitems.GenericViewItemHolder;
+import org.gateshipone.malp.application.listviewitems.ImageListItem;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 
@@ -63,7 +64,7 @@ public class AlbumsRecyclerViewAdapter extends GenericRecyclerViewAdapter<MPDAlb
         AbsImageListViewItem view;
 
         if (mUseList) {
-            view = new FileListItem(parent.getContext(), false, this);
+            view = new ImageListItem(parent.getContext(),null,null,this);
 
             // set a selectable background manually
             view.setBackgroundResource(ThemeUtils.getThemeResourceId(parent.getContext(), R.attr.selectableItemBackground));
