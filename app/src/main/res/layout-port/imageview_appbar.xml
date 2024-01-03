@@ -27,7 +27,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <org.gateshipone.malp.application.views.SquareImageView
+    <ImageView
         android:id="@+id/collapsing_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

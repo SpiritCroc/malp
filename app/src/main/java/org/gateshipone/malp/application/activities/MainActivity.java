@@ -773,15 +773,10 @@ public class MainActivity extends GenericActivity
         ImageView collapsingImage = findViewById(R.id.collapsing_image);
         if (collapsingImage != null) {
             collapsingImage.setImageBitmap(bm);
+            collapsingImage.setMinimumHeight(collapsingImage.getMeasuredWidth());
 
-            // FIXME DIRTY HACK: Manually fix the toolbar size to the screen width
-            CollapsingToolbarLayout toolbar = findViewById(R.id.collapsing_toolbar);
-            AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-
-            params.height = getWindow().getDecorView().getMeasuredWidth();
-
-            // Always expand the toolbar to show the complete image
             AppBarLayout appbar = findViewById(R.id.appbar);
+            // Always expand the toolbar to show the complete image
             appbar.setExpanded(true, false);
         }
     }
