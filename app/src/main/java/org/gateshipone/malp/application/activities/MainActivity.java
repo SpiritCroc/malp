@@ -521,9 +521,6 @@ public class MainActivity extends GenericActivity
             String errorText = getString(R.string.snackbar_mpd_server_error_format, e.getErrorCode(), e.getCommandOffset(), e.getServerMessage());
             Snackbar sb = Snackbar.make(layout, errorText, Snackbar.LENGTH_LONG);
 
-            // style the snackbar text
-            TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-            sbText.setTextColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent));
             sb.show();
         }
     }
@@ -533,12 +530,8 @@ public class MainActivity extends GenericActivity
         View layout = findViewById(R.id.drawer_layout);
         if (layout != null) {
             String errorText = getString(R.string.snackbar_mpd_connection_error_format, e.getError());
-
             Snackbar sb = Snackbar.make(layout, errorText, Snackbar.LENGTH_LONG);
 
-            // style the snackbar text
-            TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-            sbText.setTextColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent));
             sb.show();
         }
     }
@@ -879,9 +872,7 @@ public class MainActivity extends GenericActivity
                     sb.setAction(R.string.permission_request_snackbar_button, view -> ActivityCompat.requestPermissions(this,
                             new String[]{PermissionHelper.NOTIFICATION_PERMISSION},
                             PermissionHelper.MY_PERMISSIONS_REQUEST_NOTIFICATIONS));
-                    // style the snackbar text
-                    TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-                    sbText.setTextColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent));
+
                     sb.show();
                 }
             } else {
