@@ -23,7 +23,9 @@
 package org.gateshipone.malp.application.activities;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -47,8 +49,14 @@ public class ContributorsActivity extends GenericActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contributors);
 
-        getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_primary_dark));
-
+        // Read theme preference
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String themePref = sharedPref.getString(getString(R.string.pref_theme_key), getString(R.string.pref_theme_default));
+        if (themePref.equals(getString(R.string.pref_materialyou_key)) || themePref.equals(getString(R.string.pref_materialyou_auto_key)) ) {
+            getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorSurface));
+        } else {
+            getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_background));
+        }
         ListView contributors = findViewById(R.id.contributors_listview);
 
         String[] contributors_names = getResources().getStringArray(R.array.contributors);
