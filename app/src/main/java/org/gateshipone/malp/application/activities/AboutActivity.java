@@ -46,7 +46,7 @@ public class AboutActivity extends GenericActivity {
         // Read theme preference
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String themePref = sharedPref.getString(getString(R.string.pref_theme_key), getString(R.string.pref_theme_default));
-        if (themePref.equals(getString(R.string.pref_materialyou_key))) {
+        if (themePref.equals(getString(R.string.pref_materialyou_key)) || themePref.equals(getString(R.string.pref_materialyou_auto_key)) ) {
             getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorSurface));
         } else {
             getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_background));
