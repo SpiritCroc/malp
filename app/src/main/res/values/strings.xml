@@ -246,6 +246,7 @@
     <string name="preference_theme_item_light_green">Light Green</string>
     <string name="preference_theme_item_red">Red</string>
     <string name="preference_theme_item_oled_dark">OLED Dark</string>
+    <string name="preference_theme_item_materialyou_auto">Material You (Automatic dark/light)</string>
     <string name="preference_theme_item_materialyou">Material You</string>
 
     <string name="preference_album_sort_order_title">Artist Albums sort order</string>

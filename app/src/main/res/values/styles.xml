@@ -23,6 +23,54 @@
 <resources>
 
     <!-- Color themes -->
+    <style name="AppTheme.materialyou.dark" parent="Theme.Material3.DynamicColors.Dark">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="malp_color_primary">?attr/colorPrimaryDark</item>
+        <item name="malp_color_primary_dark">?attr/colorTertiary</item>
+        <item name="malp_color_accent">?attr/colorOnPrimary</item>
+        <item name="malp_color_background">@color/colorBackground_indigo</item>
+        <item name="malp_color_background_selected">@color/colorBackgroundSelected_indigo</item>
+        <item name="malp_color_divider">@color/colorDivider_indigo</item>
+        <item name="malp_color_navheader_icon">@color/colorNavheaderIcon_indigo</item>
+        <item name="malp_color_text_accent">?attr/colorOnSurface</item>
+        <item name="malp_color_text_background_primary">?attr/colorOnSurfaceVariant</item>
+        <item name="malp_color_text_background_secondary">?attr/colorOnSurface</item>
+        <item name="malp_cover_background">#111111</item>
+        <item name="malp_color_toggle_btn_active">@color/material_dynamic_tertiary50</item>
+        <item name="malp_color_content_background">?attr/colorSurface</item>
+        <item name="malp_color_on_surface">?attr/colorOnSurface</item>
+        <item name="malp_color_on_primary">?attr/colorOnPrimary</item>
+        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="malp_appbaroverlay_theme">@style/AppTheme.materialyou.appbar</item>
+    </style>
+
+    <style name="AppTheme.materialyou.light" parent="Theme.Material3.DynamicColors.Light">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="malp_color_primary">?attr/colorPrimaryDark</item>
+        <item name="malp_color_primary_dark">?attr/colorTertiary</item>
+        <item name="malp_color_accent">?attr/colorOnPrimary</item>
+        <item name="malp_color_background">@color/colorBackground_indigo</item>
+        <item name="malp_color_background_selected">@color/colorBackgroundSelected_indigo</item>
+        <item name="malp_color_divider">@color/colorDivider_indigo</item>
+        <item name="malp_color_navheader_icon">@color/colorNavheaderIcon_indigo</item>
+        <item name="malp_color_text_accent">?attr/colorOnSurface</item>
+        <item name="malp_color_text_background_primary">?attr/colorOnSurfaceVariant</item>
+        <item name="malp_color_text_background_secondary">?attr/colorOnSurface</item>
+        <item name="malp_cover_background">#111111</item>
+        <item name="malp_color_toggle_btn_active">@color/material_dynamic_tertiary50</item>
+        <item name="malp_color_content_background">?attr/colorSurface</item>
+        <item name="malp_color_on_surface">?attr/colorOnSurface</item>
+        <item name="malp_color_on_primary">?attr/colorOnPrimary</item>
+        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="malp_appbaroverlay_theme">@style/AppTheme.materialyou.appbar</item>
+    </style>
+
     <style name="AppTheme.materialyou" parent="Theme.Material3.DynamicColors.DayNight">
         <item name="windowActionBar">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>

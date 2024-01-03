@@ -53,6 +53,7 @@
         <item>@string/preference_theme_item_light_green</item>
         <item>@string/preference_theme_item_red</item>
         <item>@string/preference_theme_item_oled_dark</item>
+        <item>@string/preference_theme_item_materialyou_auto</item>
         <item>@string/preference_theme_item_materialyou</item>
     </string-array>
 

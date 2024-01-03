@@ -95,8 +95,10 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
                 setTheme(R.style.AppTheme_red);
             } else if (themePref.equals(getString(R.string.pref_oleddark_key))) {
                 setTheme(R.style.AppTheme_oledDark);
-            } else if (themePref.equals(getString(R.string.pref_materialyou_key))) {
+            } else if (themePref.equals(getString(R.string.pref_materialyou_auto_key))) {
                 setTheme(R.style.AppTheme_materialyou);
+            } else if (themePref.equals(getString(R.string.pref_materialyou_key))) {
+                setTheme(R.style.AppTheme_materialyou_dark);
             }
         } else {
             if (themePref.equals(getString(R.string.pref_indigo_key))) {
@@ -117,8 +119,10 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
                 setTheme(R.style.AppTheme_red_light);
             } else if (themePref.equals(getString(R.string.pref_oleddark_key))) {
                 setTheme(R.style.AppTheme_oledDark);
-            } else if (themePref.equals(getString(R.string.pref_materialyou_key))) {
+            } else if (themePref.equals(getString(R.string.pref_materialyou_auto_key))) {
                 setTheme(R.style.AppTheme_materialyou);
+            } else if (themePref.equals(getString(R.string.pref_materialyou_key))) {
+                setTheme(R.style.AppTheme_materialyou_light);
             }
         }
 
