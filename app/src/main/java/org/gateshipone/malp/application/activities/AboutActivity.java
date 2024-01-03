@@ -24,8 +24,10 @@ package org.gateshipone.malp.application.activities;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.TextView;
 
 import org.gateshipone.malp.BuildConfig;
@@ -41,7 +43,14 @@ public class AboutActivity extends GenericActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_primary_dark));
+        // Read theme preference
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String themePref = sharedPref.getString(getString(R.string.pref_theme_key), getString(R.string.pref_theme_default));
+        if (themePref.equals(getString(R.string.pref_materialyou_key))) {
+            getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorSurface));
+        } else {
+            getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_background));
+        }
 
         String versionName = BuildConfig.VERSION_NAME;
         ((TextView) findViewById(R.id.activity_about_version)).setText(versionName);
