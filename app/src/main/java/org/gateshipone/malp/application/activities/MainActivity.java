@@ -45,6 +45,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -126,13 +127,16 @@ public class MainActivity extends GenericActivity
     private VIEW_SWITCHER_STATUS mNowPlayingViewSwitcherStatus;
     private VIEW_SWITCHER_STATUS mSavedNowPlayingViewSwitcherStatus;
 
-    private boolean mHeaderImageActive;
-
     private boolean mUseArtistSort;
 
     private FloatingActionButton mFAB;
 
     private boolean mShowNPV = false;
+
+    private boolean mShowImage = false;
+
+    private ImageView mCollapsingImage;
+    private RelativeLayout mCollapsingImageLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -258,6 +262,8 @@ public class MainActivity extends GenericActivity
             transaction.commit();
         }
 
+        mCollapsingImage = findViewById(R.id.collapsing_image);
+        mCollapsingImageLayout = findViewById(R.id.appbar_image_layout);
     }
 
     @Override
@@ -449,6 +455,9 @@ public class MainActivity extends GenericActivity
     protected void onResume() {
         super.onResume();
 
+        mCollapsingImage = findViewById(R.id.collapsing_image);
+        mCollapsingImageLayout = findViewById(R.id.appbar_image_layout);
+
         final NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
         if (nowPlayingView != null) {
 
@@ -607,21 +616,37 @@ public class MainActivity extends GenericActivity
 
     @Override
     public void onStatusChanged(DRAG_STATUS status) {
+        DRAG_STATUS old = mNowPlayingDragStatus;
         mNowPlayingDragStatus = status;
+        switch (mNowPlayingDragStatus) {
+            case DRAGGING:
+                if (old == DRAG_STATUS.DRAGGED_DOWN) {
+                    setStatusBarColor(1.0f);
+                } else if (old == DRAG_STATUS.DRAGGED_UP) {
+                    if (mShowImage) {
+                        mCollapsingImageLayout.setVisibility(View.VISIBLE);
+                    }
+                    setStatusBarColor(0.0f);
+                }
+                break;
+            case DRAGGED_DOWN:
+                if (mShowImage) {
+                    mCollapsingImageLayout.setVisibility(View.VISIBLE);
+                }
+                setStatusBarColor(1.0f);
+                break;
+            case DRAGGED_UP:
+                if (mShowImage) {
+                    mCollapsingImageLayout.setVisibility(View.GONE);
+                }
+                setStatusBarColor(0.0f);
+                break;
+        }
     }
 
     @Override
     public void onDragPositionChanged(float pos) {
-        // Get the primary color of the active theme from the helper.
-        int newColor = MaterialColors.getColor(this, R.attr.colorSurfaceContainer, 0);
-
-        // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
-        // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
-        int alphaOffset = (((255 - (int) (255.0 * pos)) << 24) | 0xFFFFFF);
-        // and with this mask to set the new alpha value.
-        newColor &= (alphaOffset);
-
-        getWindow().setStatusBarColor(newColor);
+        setStatusBarColor(pos);
     }
 
     @Override
@@ -701,49 +726,25 @@ public class MainActivity extends GenericActivity
         // set drawer state
         mDrawerToggle.setDrawerIndicatorEnabled(drawerIndicatorEnabled);
 
-        RelativeLayout collapsingImageLayout = findViewById(R.id.appbar_image_layout);
-
-        ImageView collapsingImage = findViewById(R.id.collapsing_image);
-
-        if (collapsingImage != null) {
-            if (showImage) {
-                collapsingImageLayout.setVisibility(View.VISIBLE);
-                mHeaderImageActive = true;
-
-                // Get the primary color of the active theme from the helper.
-                int newColor = ThemeUtils.getThemeColor(this, R.attr.colorSurface);
-
-                // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
-                // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
-                int alphaOffset = (((255 - (int) (255.0 * (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP ? 0.0 : 1.0))) << 24) | 0xFFFFFF);
-                // and with this mask to set the new alpha value.
-                newColor &= (alphaOffset);
-                getWindow().setStatusBarColor(newColor);
-            } else {
-                collapsingImageLayout.setVisibility(View.GONE);
-                mHeaderImageActive = false;
-
-                // Get the primary color of the active theme from the helper.
-                getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorSurfaceContainer));
-            }
-        } else {
-            // If in portrait mode (no collapsing image exists), the status bar also needs dark coloring
-            mHeaderImageActive = false;
-
-            // Get the primary color of the active theme from the helper.
-            getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorSurfaceContainer));
-        }
         // set scrolling behaviour
         CollapsingToolbarLayout toolbar = findViewById(R.id.collapsing_toolbar);
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.height = -1;
+
+        mShowImage = showImage;
+
+        if (!mShowImage) {
+            mCollapsingImageLayout.setVisibility(View.GONE);
+        } else {
+            mCollapsingImageLayout.setVisibility(View.VISIBLE);
+        }
 
         if (scrollingEnabled && !showImage) {
             toolbar.setTitleEnabled(false);
             setTitle(title);
 
             params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL + AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED + AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-        } else if (!scrollingEnabled && showImage && collapsingImage != null) {
+        } else if (!scrollingEnabled && showImage && mCollapsingImage != null) {
             toolbar.setTitleEnabled(true);
             toolbar.setTitle(title);
 
@@ -754,6 +755,7 @@ public class MainActivity extends GenericActivity
             setTitle(title);
             params.setScrollFlags(0);
         }
+        setStatusBarColor();
     }
 
     @Override
@@ -763,15 +765,71 @@ public class MainActivity extends GenericActivity
 
     @Override
     public void setupToolbarImage(Bitmap bm) {
-        ImageView collapsingImage = findViewById(R.id.collapsing_image);
-        if (collapsingImage != null) {
-            collapsingImage.setImageBitmap(bm);
-            collapsingImage.setMinimumHeight(collapsingImage.getMeasuredWidth());
+        if (mCollapsingImage != null) {
+            mCollapsingImage.setImageBitmap(bm);
+            mCollapsingImage.setMinimumHeight(mCollapsingImage.getMeasuredWidth());
 
             AppBarLayout appbar = findViewById(R.id.appbar);
             // Always expand the toolbar to show the complete image
             appbar.setExpanded(true, false);
         }
+        mShowImage = bm != null;
+    }
+
+    private void setStatusBarColor() {
+        setStatusBarColor(-1.0f);
+    }
+
+    private void setStatusBarColor(float pos)
+    {
+        /*
+         * For the case of dragging it depends on the state of the toolbar image (cover/artist).
+         * - If an image is visible we will blend the bottom NPV color with transparent.
+         * - If no image is visible we will blend the top bar (colorSurface) with NPV color
+         */
+        if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGING) {
+            if (mShowImage) {
+
+                // Get the primary color of the active theme from the helper.
+                int newColor = MaterialColors.getColor(this, R.attr.colorSurfaceContainer, 0);
+
+                // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
+                // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
+                int alphaOffset = (((255 - (int) (255.0 * pos)) << 24) | 0xFFFFFF);
+                // and with this mask to set the new alpha value.
+                newColor &= (alphaOffset);
+                getWindow().setStatusBarColor(newColor);
+            } else {
+
+                // Get the primary color of the active theme from the helper.
+                int bottomColor = MaterialColors.getColor(this, R.attr.colorSurfaceContainer, 0);
+                int topColor = MaterialColors.getColor(this, R.attr.colorSurface, 0);
+
+                // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
+                // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
+                int blendColor = ColorUtils.blendARGB(topColor, bottomColor, 1.0f - pos);
+                // and with this mask to set the new alpha value.
+                getWindow().setStatusBarColor(blendColor);
+            }
+
+        } else if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
+            /*
+             * If NPV is dragged up we will always use the color of NPV for the status bar.
+             */
+            getWindow().setStatusBarColor(MaterialColors.getColor(this, R.attr.colorSurfaceContainer, 0));
+        } else {
+            /*
+             * If NPV is dragged down we will use:
+             * - No image: To the top bar color to prevent the title from sliding in the status bar (no transparency)
+             * - Image active: Complete transparent (to show the image under the status bar)
+             */
+            if (!mShowImage) {
+                getWindow().setStatusBarColor(MaterialColors.getColor(this, R.attr.colorSurface, 0));
+            } else {
+                getWindow().setStatusBarColor(0x000000);
+            }
+        }
+
     }
 
 

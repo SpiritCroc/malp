@@ -701,6 +701,9 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
                 }
             } else if (state == ViewDragHelper.STATE_DRAGGING) {
+                if (mDragStatusReceiver != null) {
+                    mDragStatusReceiver.onStatusChanged(NowPlayingDragStatusReceiver.DRAG_STATUS.DRAGGING);
+                }
                 /*
                  * Show both layouts to enable a smooth transition via
                  * alpha values of the layouts.
@@ -1458,7 +1461,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
     public interface NowPlayingDragStatusReceiver {
         // Possible values for DRAG_STATUS (up,down)
         enum DRAG_STATUS {
-            DRAGGED_UP, DRAGGED_DOWN
+            DRAGGED_UP, DRAGGED_DOWN, DRAGGING
         }
 
         // Possible values for the view in the viewswitcher (cover, playlist)
