@@ -1400,7 +1400,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 if (mViewSwitcher.getCurrentView() != mPlaylistView) {
                     mViewSwitcher.showNext();
                 }
-                color = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface);
+                color = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface_highlight);
                 TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_cover));
                 break;
         }
