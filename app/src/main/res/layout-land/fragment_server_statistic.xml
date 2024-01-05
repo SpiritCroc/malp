@@ -51,7 +51,7 @@
                     android:fontFamily="sans-serif-regular"
                     android:paddingTop="@dimen/material_content_spacing"
                     android:text="@string/server_statistic_artists_count"
-                    android:textColor="?attr/malp_color_text_background_secondary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_1" />
 
                 <TextView
@@ -59,7 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="?attr/malp_color_text_background_primary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_2" />
 
                 <TextView
@@ -68,7 +68,7 @@
                     android:fontFamily="sans-serif-regular"
                     android:paddingTop="@dimen/material_content_spacing"
                     android:text="@string/server_statistic_albums_count"
-                    android:textColor="?attr/malp_color_text_background_secondary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_1" />
 
                 <TextView
@@ -76,7 +76,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="?attr/malp_color_text_background_primary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_2" />
 
                 <TextView
@@ -85,7 +85,7 @@
                     android:fontFamily="sans-serif-regular"
                     android:paddingTop="@dimen/material_content_spacing"
                     android:text="@string/server_statistic_songs_count"
-                    android:textColor="?attr/malp_color_text_background_secondary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_1" />
 
                 <TextView
@@ -93,7 +93,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="?attr/malp_color_text_background_primary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_2" />
 
                 <TextView
@@ -102,7 +102,7 @@
                     android:fontFamily="sans-serif-regular"
                     android:paddingTop="@dimen/material_content_spacing"
                     android:text="@string/server_statistic_playtime"
-                    android:textColor="?attr/malp_color_text_background_secondary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_1" />
 
                 <TextView
@@ -110,7 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="?attr/malp_color_text_background_primary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_2" />
             </LinearLayout>
 
@@ -127,7 +127,7 @@
                     android:fontFamily="sans-serif-regular"
                     android:paddingTop="@dimen/material_content_spacing"
                     android:text="@string/server_statistic_uptime"
-                    android:textColor="?attr/malp_color_text_background_secondary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_1" />
 
                 <TextView
@@ -135,7 +135,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="?attr/malp_color_text_background_primary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_2" />
 
                 <TextView
@@ -144,7 +144,7 @@
                     android:fontFamily="sans-serif-regular"
                     android:paddingTop="@dimen/material_content_spacing"
                     android:text="@string/server_statistic_db_playtime"
-                    android:textColor="?attr/malp_color_text_background_secondary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_1" />
 
                 <TextView
@@ -152,7 +152,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="?attr/malp_color_text_background_primary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_2" />
 
                 <TextView
@@ -161,7 +161,7 @@
                     android:fontFamily="sans-serif-regular"
                     android:paddingTop="@dimen/material_content_spacing"
                     android:text="@string/server_statistic_db_update"
-                    android:textColor="?attr/malp_color_text_background_secondary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_1" />
 
                 <TextView
@@ -169,7 +169,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="?attr/malp_color_text_background_primary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_2" />
 
                 <com.google.android.material.button.MaterialButton
@@ -177,10 +177,7 @@
                     style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/server_statistic_update_database"
-                    android:textColor="?attr/malp_color_text_background_primary"
-                    app:backgroundTint="?attr/malp_color_background_selected"
-                    app:rippleColor="?attr/malp_color_text_background_secondary" />
+                    android:text="@string/server_statistic_update_database" />
 
                 <TextView
                     android:id="@+id/server_statistic_updateing_db"
@@ -198,7 +195,7 @@
                     android:fontFamily="sans-serif-regular"
                     android:paddingTop="@dimen/material_content_spacing"
                     android:text="@string/server_statistic_malp_server_info"
-                    android:textColor="?attr/malp_color_text_background_secondary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_1" />
 
                 <TextView
@@ -206,7 +203,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="?attr/malp_color_text_background_primary"
+                    android:textColor="?attr/app_color_on_content"
                     android:textSize="@dimen/material_font_style_size_body_2" />
             </LinearLayout>
 

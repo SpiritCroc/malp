@@ -30,6 +30,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.TextView;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.fragments.ErrorDialog;
@@ -43,14 +45,8 @@ public class AboutActivity extends GenericActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        // Read theme preference
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String themePref = sharedPref.getString(getString(R.string.pref_theme_key), getString(R.string.pref_theme_default));
-        if (themePref.equals(getString(R.string.pref_materialyou_key)) || themePref.equals(getString(R.string.pref_materialyou_auto_key)) ) {
-            getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorSurface));
-        } else {
-            getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_background));
-        }
+        getWindow().setStatusBarColor(MaterialColors.getColor(this, R.attr.app_color_content, 0));
+
 
         String versionName = BuildConfig.VERSION_NAME;
         ((TextView) findViewById(R.id.activity_about_version)).setText(versionName);

@@ -25,7 +25,7 @@
     android:id="@+id/now_playing_buttonLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurfaceContainer"
+    android:background="?attr/colorSurface"
     android:gravity="center_vertical"
     android:layout_weight="1"
     android:paddingBottom="@dimen/material_content_spacing">
@@ -38,7 +38,7 @@
         android:background="?android:selectableItemBackground"
         android:scaleType="center"
         android:src="@drawable/ic_repeat_24dp"
-        app:tint="?attr/malp_color_on_surface"
+        app:tint="?attr/app_color_on_surface"
         />
 
     <ImageButton
@@ -48,7 +48,7 @@
         android:layout_weight="1"
         android:background="?android:selectableItemBackground"
         android:scaleType="fitCenter"
-        app:tint="?attr/malp_color_on_surface"
+        app:tint="?attr/app_color_on_surface"
         android:src="@drawable/ic_skip_previous_48dp" />
 
     <ImageButton
@@ -58,7 +58,7 @@
         android:layout_weight="1"
         android:background="?android:selectableItemBackground"
         android:scaleType="fitCenter"
-        app:tint="?attr/malp_color_on_surface"
+        app:tint="?attr/app_color_on_surface"
         android:src="@drawable/ic_play_circle_fill_48dp" />
 
     <ImageButton
@@ -68,7 +68,7 @@
         android:layout_weight="1"
         android:background="?android:selectableItemBackground"
         android:scaleType="fitCenter"
-        app:tint="?attr/malp_color_on_surface"
+        app:tint="?attr/app_color_on_surface"
         android:src="@drawable/ic_stop_black_48dp" />
 
     <ImageButton
@@ -78,7 +78,7 @@
         android:layout_weight="1"
         android:background="?android:selectableItemBackground"
         android:scaleType="fitCenter"
-        app:tint="?attr/malp_color_on_surface"
+        app:tint="?attr/app_color_on_surface"
         android:src="@drawable/ic_skip_next_48dp" />
 
     <ImageButton
@@ -89,5 +89,5 @@
         android:background="?android:selectableItemBackground"
         android:scaleType="center"
         android:src="@drawable/ic_shuffle_24dp"
-        app:tint="?attr/malp_color_on_surface"/>
+        app:tint="?attr/app_color_on_surface"/>
 </LinearLayout>

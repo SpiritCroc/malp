@@ -34,7 +34,7 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
         android:scaleType="center"
-        app:tint="?attr/malp_color_on_surface"
+        app:tint="?attr/app_color_on_content"
         android:visibility="visible" />
 
     <LinearLayout
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-regular"
                 android:maxLines="1"
-                android:textColor="?attr/malp_color_text_background_primary"
+                android:textColor="?attr/app_color_on_content"
                 android:textSize="@dimen/material_font_style_size_subheading" />
 
             <TextView
@@ -69,7 +69,7 @@
                 android:fontFamily="sans-serif-regular"
                 android:maxLines="1"
                 android:text="@string/track_item_separator"
-                android:textColor="?attr/malp_color_text_background_primary"
+                android:textColor="?attr/app_color_on_content"
                 android:textSize="@dimen/material_font_style_size_subheading" />
 
             <TextView
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-regular"
                 android:maxLines="1"
-                android:textColor="?attr/malp_color_text_background_primary"
+                android:textColor="?attr/app_color_on_content"
                 android:textSize="@dimen/material_font_style_size_subheading" />
         </LinearLayout>
 
@@ -95,7 +95,7 @@
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-regular"
                 android:singleLine="true"
-                android:textColor="?attr/malp_color_text_background_secondary"
+                android:textColor="?attr/app_color_on_content"
                 android:textSize="@dimen/material_font_style_size_body_1" />
 
             <TextView
@@ -104,7 +104,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:singleLine="true"
-                android:textColor="?attr/malp_color_text_background_secondary" />
+                android:textColor="?attr/app_color_on_content" />
         </RelativeLayout>
     </LinearLayout>
 

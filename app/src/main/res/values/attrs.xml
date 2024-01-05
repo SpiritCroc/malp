@@ -22,23 +22,20 @@
 
 <resources>
     <declare-styleable name="AndroMPDColors">
-        <attr name="malp_color_primary" format="reference|color" />
-        <attr name="malp_color_primary_dark" format="reference|color" />
-        <attr name="malp_color_accent" format="reference|color" />
-        <attr name="malp_color_background" format="reference|color" />
-        <attr name="malp_color_background_selected" format="reference|color" />
-        <attr name="malp_color_text_accent" format="reference|color" />
-        <attr name="malp_color_text_background_secondary" format="reference|color" />
-        <attr name="malp_color_text_background_primary" format="reference|color" />
-        <attr name="malp_color_navheader_icon" format="reference|color" />
-        <attr name="malp_color_divider" format="reference|color" />
-        <attr name="malp_cover_background" format="reference|color" />
-        <attr name="malp_grid_gradient" format="reference" />
+        <attr name="malp_grid_gradient" format="reference" />u
         <attr name="malp_navdrawer_theme" format="reference" />
         <attr name="malp_appbaroverlay_theme" format="reference" />
-        <attr name="malp_color_toggle_btn_active" format="reference|color" />
-        <attr name="malp_color_content_background" format="reference|color" />
-        <attr name="malp_color_on_surface" format="reference|color" />
-        <attr name="malp_color_on_primary" format="reference|color" />
+
+        <attr name="app_color_surface" format="reference|color" />
+        <attr name="app_color_on_surface" format="reference|color" />
+        <attr name="app_color_on_surface_highlight" format="reference|color" />
+        <attr name="app_color_surface_darker" format="reference|color" />
+        <attr name="app_color_content" format="reference|color" />
+        <attr name="app_color_on_content" format="reference|color" />
+        <attr name="app_color_secondary" format="reference|color" />
+        <attr name="app_color_on_secondary" format="reference|color" />
+        <attr name="app_color_divider" format="reference|color" />
+        <attr name="app_color_cover_background" format="reference|color" />
+        <attr name="app_color_fanart_activity_tint" format="reference|color" />
     </declare-styleable>
 </resources>

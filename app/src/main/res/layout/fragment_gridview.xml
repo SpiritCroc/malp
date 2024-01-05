@@ -25,7 +25,7 @@
     android:id="@+id/refresh_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/malp_color_content_background">
+    android:background="?attr/app_color_content">
 
     <GridView
         android:id="@+id/grid_refresh_gridview"

@@ -1208,21 +1208,21 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         switch (status.getRepeat()) {
             case 0:
                 mBottomRepeatButton.setImageResource(R.drawable.ic_repeat_24dp);
-                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
+                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface)));
                 break;
             case 1:
                 mBottomRepeatButton.setImageResource(R.drawable.ic_repeat_24dp);
-                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_toggle_btn_active)));
+                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface_highlight)));
                 break;
         }
 
         // update random button
         switch (status.getRandom()) {
             case 0:
-                mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
+                mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface)));
                 break;
             case 1:
-                mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_toggle_btn_active)));
+                mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface_highlight)));
                 break;
         }
 
@@ -1256,8 +1256,8 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             mVolumeIcon.setImageResource(R.drawable.ic_volume_mute_black_48dp);
             mVolumeIconButtons.setImageResource(R.drawable.ic_volume_mute_black_48dp);
         }
-        mVolumeIcon.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
-        mVolumeIconButtons.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
+        mVolumeIcon.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface)));
+        mVolumeIconButtons.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface)));
 
         mVolumeText.setText(getResources().getString(R.string.volume_level_template, volume));
 
@@ -1311,7 +1311,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             mCoverImage.clearAlbumImage();
 
             // The same for the small header image
-            int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+            int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface);
 
             Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.cover_placeholder_128dp, null);
 
@@ -1392,7 +1392,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 if (mViewSwitcher.getCurrentView() != mCoverImage) {
                     mViewSwitcher.showNext();
                 }
-                color = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_on_surface);
+                color = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface);
                 TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_playlist));
                 break;
             case PLAYLIST_VIEW:
@@ -1400,7 +1400,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 if (mViewSwitcher.getCurrentView() != mPlaylistView) {
                     mViewSwitcher.showNext();
                 }
-                color = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_toggle_btn_active);
+                color = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface);
                 TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_cover));
                 break;
         }

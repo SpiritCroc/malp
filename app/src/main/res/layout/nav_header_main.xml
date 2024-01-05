@@ -48,7 +48,7 @@
         android:padding="@dimen/material_screen_edge_spacing"
         android:text="@string/app_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="?attr/malp_color_text_accent"
+        android:textColor="?attr/app_color_on_surface"
         android:textSize="@dimen/material_font_style_size_headline"/>
 
 </RelativeLayout>

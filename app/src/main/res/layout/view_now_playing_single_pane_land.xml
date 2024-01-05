@@ -42,7 +42,7 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/now_playing_headerLayout"
             android:layout_alignParentBottom="true"
-            android:background="?attr/malp_color_background">
+            android:background="?attr/colorSurfaceContainer">
 
 
             <ViewSwitcher
@@ -84,7 +84,7 @@
                                 android:fontFamily="sans-serif-regular"
                                 android:paddingTop="@dimen/material_content_spacing"
                                 android:text="@string/song_track_no"
-                                android:textColor="?attr/malp_color_text_background_secondary"
+                                android:textColor="?attr/app_color_on_content"
                                 android:textSize="@dimen/material_font_style_size_body_1" />
 
                             <TextView
@@ -92,7 +92,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:textColor="?attr/malp_color_text_background_primary"
+                                android:textColor="?attr/app_color_on_content"
                                 android:textSize="@dimen/material_font_style_size_body_2" />
 
                             <TextView
@@ -101,7 +101,7 @@
                                 android:layout_marginTop="@dimen/material_content_spacing"
                                 android:fontFamily="sans-serif-regular"
                                 android:text="@string/song_playlist_no"
-                                android:textColor="?attr/malp_color_text_background_secondary"
+                                android:textColor="?attr/app_color_on_content"
                                 android:textSize="@dimen/material_font_style_size_body_1" />
 
                             <TextView
@@ -109,7 +109,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:textColor="?attr/malp_color_text_background_primary"
+                                android:textColor="?attr/app_color_on_content"
                                 android:textSize="@dimen/material_font_style_size_body_2" />
 
                             <TextView
@@ -118,7 +118,7 @@
                                 android:layout_marginTop="@dimen/material_content_spacing"
                                 android:fontFamily="sans-serif-regular"
                                 android:text="@string/song_bitrate"
-                                android:textColor="?attr/malp_color_text_background_secondary"
+                                android:textColor="?attr/app_color_on_content"
                                 android:textSize="@dimen/material_font_style_size_body_1" />
 
                             <TextView
@@ -126,7 +126,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:textColor="?attr/malp_color_text_background_primary"
+                                android:textColor="?attr/app_color_on_content"
                                 android:textSize="@dimen/material_font_style_size_body_2" />
 
                             <TextView
@@ -135,7 +135,7 @@
                                 android:layout_marginTop="@dimen/material_content_spacing"
                                 android:fontFamily="sans-serif-regular"
                                 android:text="@string/song_audio_properties"
-                                android:textColor="?attr/malp_color_text_background_secondary"
+                                android:textColor="?attr/app_color_on_content"
                                 android:textSize="@dimen/material_font_style_size_body_1" />
 
                             <TextView
@@ -143,7 +143,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:textColor="?attr/malp_color_text_background_primary"
+                                android:textColor="?attr/app_color_on_content"
                                 android:textSize="@dimen/material_font_style_size_body_2" />
 
                             <TextView
@@ -152,7 +152,7 @@
                                 android:layout_marginTop="@dimen/material_content_spacing"
                                 android:fontFamily="sans-serif-regular"
                                 android:text="@string/song_uri"
-                                android:textColor="?attr/malp_color_text_background_secondary"
+                                android:textColor="?attr/app_color_on_content"
                                 android:textSize="@dimen/material_font_style_size_body_1" />
 
                             <TextView
@@ -160,7 +160,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:textColor="?attr/malp_color_text_background_primary"
+                                android:textColor="?attr/app_color_on_content"
                                 android:textSize="@dimen/material_font_style_size_body_2" />
                         </LinearLayout>
                     </LinearLayout>

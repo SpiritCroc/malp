@@ -58,7 +58,7 @@
                         android:layout_height="match_parent"
                         android:scaleType="fitCenter"
                         android:src="@drawable/cover_placeholder_128dp"
-                        app:tint="?attr/malp_color_text_background_primary" />
+                        app:tint="?attr/app_color_on_content" />
 
                     <ImageView
                         android:id="@+id/section_header_image"
@@ -83,7 +83,7 @@
                 android:layout_height="@dimen/list_divider_size"
                 android:layout_marginStart="@dimen/material_screen_edge_spacing"
                 android:layout_marginEnd="@dimen/material_screen_edge_spacing"
-                android:background="?attr/malp_color_divider" />
+                android:background="?attr/app_color_divider" />
         </LinearLayout>
 
         <include layout="@layout/listview_item_file" />

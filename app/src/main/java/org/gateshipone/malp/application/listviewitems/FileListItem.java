@@ -321,12 +321,12 @@ public class FileListItem extends AbsImageListViewItem {
      */
     public void setPlaying(boolean state) {
         if (state) {
-            int color = ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent);
+            int color = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_secondary);
             mTitleView.setTextColor(color);
             mNumberView.setTextColor(color);
             mSeparator.setTextColor(color);
         } else {
-            int color = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_background_primary);
+            int color = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_content);
             mTitleView.setTextColor(color);
             mNumberView.setTextColor(color);
             mSeparator.setTextColor(color);

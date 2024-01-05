@@ -38,11 +38,11 @@
             android:id="@+id/item_artists_cover_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/malp_cover_background"
+            android:background="?attr/app_color_cover_background"
             android:padding="16dp"
             android:scaleType="centerCrop"
             android:src="@drawable/cover_placeholder_128dp"
-            app:tint="?attr/malp_color_text_background_primary" />
+            app:tint="?attr/app_color_cover_background" />
 
         <ImageView
             android:id="@+id/item_artists_cover_image"

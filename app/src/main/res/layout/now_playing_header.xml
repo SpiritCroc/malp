@@ -26,7 +26,7 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:layout_alignParentTop="true"
-    android:background="?attr/colorSurfaceContainer"
+    android:background="?attr/colorSurface"
     android:orientation="horizontal">
 
     <ImageView
@@ -65,7 +65,7 @@
                 android:marqueeRepeatLimit="3"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:textColor="?attr/malp_color_text_accent" />
+                android:textColor="?attr/app_color_on_surface" />
         </LinearLayout>
 
         <!-- FIXME Workround for scrolling text jumping back, when position seekbar is updated -->
@@ -84,7 +84,7 @@
                 android:marqueeRepeatLimit="3"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:textColor="?attr/malp_color_text_accent" />
+                android:textColor="?attr/app_color_on_surface" />
 
         </LinearLayout>
 
@@ -105,7 +105,7 @@
             android:background="?attr/actionBarItemBackground"
             android:baselineAlignBottom="false"
             android:scaleType="centerInside"
-            app:tint="?attr/malp_color_on_surface"
+            app:tint="?attr/app_color_on_surface"
             android:src="@drawable/ic_queue_music_24dp" />
 
         <ImageButton
@@ -115,7 +115,7 @@
             android:layout_gravity="center"
             android:background="?attr/actionBarItemBackground"
             android:scaleType="centerInside"
-            app:tint="?attr/malp_color_on_surface"
+            app:tint="?attr/app_color_on_surface"
             android:src="@drawable/ic_more_vert_24dp" />
     </LinearLayout>
 
@@ -133,7 +133,7 @@
             android:background="?android:selectableItemBackground"
             android:baselineAlignBottom="false"
             android:scaleType="centerInside"
-            app:tint="?attr/malp_color_on_surface"
+            app:tint="?attr/app_color_on_surface"
             android:src="@drawable/ic_play_arrow_48dp" />
     </LinearLayout>
 

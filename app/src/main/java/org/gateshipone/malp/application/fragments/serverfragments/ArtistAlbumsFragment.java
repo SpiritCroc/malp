@@ -262,7 +262,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
             menuInflater.inflate(R.menu.fragment_menu_albums, menu);
 
             // get tint color
-            int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
+            int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.app_color_on_surface);
 
             Drawable drawable = menu.findItem(R.id.action_add_artist).getIcon();
             drawable = DrawableCompat.wrap(drawable);

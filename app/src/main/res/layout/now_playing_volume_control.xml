@@ -25,7 +25,7 @@
     android:id="@+id/volume_control_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurfaceContainer"
+    android:background="?attr/colorSurface"
     android:layout_weight="1"
     android:orientation="vertical">
 
@@ -41,7 +41,7 @@
             android:id="@+id/volume_icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            app:tint="?attr/malp_color_on_surface"
+            app:tint="?attr/app_color_on_surface"
             android:src="@drawable/ic_volume_high_black_48dp" />
 
         <SeekBar
@@ -66,7 +66,7 @@
             android:layout_marginEnd="4dp"
             android:background="?android:selectableItemBackground"
             android:src="@drawable/ic_minus_black_48dp"
-            app:tint="?attr/malp_color_on_surface" />
+            app:tint="?attr/app_color_on_surface" />
 
         <ImageView
             android:id="@+id/volume_icon_buttons"
@@ -74,7 +74,7 @@
             android:layout_height="32dp"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="4dp"
-            app:tint="?attr/malp_color_on_surface"
+            app:tint="?attr/app_color_on_surface"
             android:src="@drawable/ic_volume_high_black_48dp" />
 
         <TextView
@@ -84,7 +84,7 @@
             android:layout_marginEnd="4dp"
             android:gravity="center"
             android:text="100%"
-            android:textColor="?attr/malp_color_text_accent" />
+            android:textColor="?attr/app_color_on_surface" />
 
         <ImageButton
             android:id="@+id/volume_button_plus"
@@ -93,6 +93,6 @@
             android:layout_marginEnd="4dp"
             android:background="?android:selectableItemBackground"
             android:src="@drawable/ic_plus_black_48dp"
-            app:tint="?attr/malp_color_on_surface" />
+            app:tint="?attr/app_color_on_surface" />
     </LinearLayout>
 </LinearLayout>

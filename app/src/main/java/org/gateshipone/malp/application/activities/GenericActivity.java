@@ -102,21 +102,21 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
             }
         } else {
             if (themePref.equals(getString(R.string.pref_indigo_key))) {
-                setTheme(R.style.AppTheme_indigo_light);
+                setTheme(R.style.AppTheme_light_indigo);
             } else if (themePref.equals(getString(R.string.pref_orange_key))) {
-                setTheme(R.style.AppTheme_orange_light);
+                setTheme(R.style.AppTheme_light_orange);
             } else if (themePref.equals(getString(R.string.pref_deeporange_key))) {
-                setTheme(R.style.AppTheme_deepOrange_light);
+                setTheme(R.style.AppTheme_light_deepOrange);
             } else if (themePref.equals(getString(R.string.pref_blue_key))) {
-                setTheme(R.style.AppTheme_blue_light);
+                setTheme(R.style.AppTheme_light_blue);
             } else if (themePref.equals(getString(R.string.pref_darkgrey_key))) {
-                setTheme(R.style.AppTheme_darkGrey_light);
+                setTheme(R.style.AppTheme_light_darkGrey);
             } else if (themePref.equals(getString(R.string.pref_brown_key))) {
-                setTheme(R.style.AppTheme_brown_light);
+                setTheme(R.style.AppTheme_light_brown);
             } else if (themePref.equals(getString(R.string.pref_lightgreen_key))) {
-                setTheme(R.style.AppTheme_lightGreen_light);
+                setTheme(R.style.AppTheme_light_lightGreen);
             } else if (themePref.equals(getString(R.string.pref_red_key))) {
-                setTheme(R.style.AppTheme_red_light);
+                setTheme(R.style.AppTheme_light_red);
             } else if (themePref.equals(getString(R.string.pref_oleddark_key))) {
                 setTheme(R.style.AppTheme_oledDark);
             } else if (themePref.equals(getString(R.string.pref_materialyou_auto_key))) {

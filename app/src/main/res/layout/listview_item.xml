@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-regular"
         android:maxLines="1"
-        android:textColor="?attr/malp_color_text_background_primary"
+        android:textColor="?attr/app_color_on_content"
         android:textSize="@dimen/material_font_style_size_subheading"
         tools:text="title" />
 
@@ -54,7 +54,7 @@
             android:ellipsize="end"
             android:fontFamily="sans-serif-regular"
             android:maxLines="1"
-            android:textColor="?attr/malp_color_text_background_secondary"
+            android:textColor="?attr/app_color_on_content"
             android:textSize="@dimen/material_font_style_size_body_1"
             tools:text="subtitle" />
 
@@ -65,7 +65,7 @@
             android:layout_alignParentEnd="true"
             android:fontFamily="sans-serif-regular"
             android:maxLines="1"
-            android:textColor="?attr/malp_color_text_background_primary"
+            android:textColor="?attr/app_color_on_content"
             android:textSize="@dimen/material_font_style_size_body_1"
             tools:text="additional subtitle" />
     </RelativeLayout>

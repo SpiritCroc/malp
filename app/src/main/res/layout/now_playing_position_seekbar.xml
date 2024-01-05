@@ -28,7 +28,7 @@
     android:paddingLeft="@dimen/material_standard_horizontal_spacing"
     android:paddingTop="@dimen/material_content_spacing"
     android:paddingRight="@dimen/material_standard_horizontal_spacing"
-    android:background="?attr/colorSurfaceContainer">
+    android:background="?attr/colorSurface">
 
     <TextView
         android:id="@+id/now_playing_elapsedTime"
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:gravity="center"
-        android:textColor="?attr/malp_color_text_accent" />
+        android:textColor="?attr/app_color_on_surface" />
 
     <TextView
         android:id="@+id/now_playing_duration"
@@ -44,5 +44,5 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:gravity="center"
-        android:textColor="?attr/malp_color_text_accent" />
+        android:textColor="?attr/app_color_on_surface" />
 </RelativeLayout>

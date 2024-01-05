@@ -77,7 +77,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         // we have to set the background color at this point otherwise we loose the ripple effect
-        view.setBackgroundColor(ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_content_background));
+        view.setBackgroundColor(ThemeUtils.getThemeColor(requireContext(), R.attr.app_color_content));
 
         return view;
     }

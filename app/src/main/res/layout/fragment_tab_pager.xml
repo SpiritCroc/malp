@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorSurfaceContainer"
         app:tabIndicatorColor="?attr/colorAccent"
-        app:tabIconTint="?attr/malp_color_on_surface"/>
+        app:tabIconTint="?attr/app_color_on_surface"/>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/my_music_viewpager"

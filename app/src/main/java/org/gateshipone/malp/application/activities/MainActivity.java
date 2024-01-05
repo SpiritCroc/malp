@@ -785,7 +785,7 @@ public class MainActivity extends GenericActivity
         /*
          * For the case of dragging it depends on the state of the toolbar image (cover/artist).
          * - If an image is visible we will blend the bottom NPV color with transparent.
-         * - If no image is visible we will blend the top bar (colorSurface) with NPV color
+         * - If no image is visible no change
          */
         if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGING) {
             if (mShowImage) {
@@ -799,24 +799,13 @@ public class MainActivity extends GenericActivity
                 // and with this mask to set the new alpha value.
                 newColor &= (alphaOffset);
                 getWindow().setStatusBarColor(newColor);
-            } else {
-
-                // Get the primary color of the active theme from the helper.
-                int bottomColor = MaterialColors.getColor(this, R.attr.colorSurfaceContainer, 0);
-                int topColor = MaterialColors.getColor(this, R.attr.colorSurface, 0);
-
-                // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
-                // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
-                int blendColor = ColorUtils.blendARGB(topColor, bottomColor, 1.0f - pos);
-                // and with this mask to set the new alpha value.
-                getWindow().setStatusBarColor(blendColor);
             }
 
         } else if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
             /*
              * If NPV is dragged up we will always use the color of NPV for the status bar.
              */
-            getWindow().setStatusBarColor(MaterialColors.getColor(this, R.attr.colorSurfaceContainer, 0));
+            getWindow().setStatusBarColor(MaterialColors.getColor(this, R.attr.colorSurface, 0));
         } else {
             /*
              * If NPV is dragged down we will use:

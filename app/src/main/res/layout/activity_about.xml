@@ -22,6 +22,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="?attr/app_color_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -46,7 +47,7 @@
             android:fontFamily="sans-serif-light"
             android:gravity="center"
             android:text="@string/app_name_nice"
-            android:textColor="?attr/malp_color_accent"
+            android:textColor="?attr/app_color_secondary"
             android:textSize="@dimen/material_font_style_size_headline" />
 
         <LinearLayout
@@ -62,7 +63,7 @@
                 android:fontFamily="sans-serif-light"
                 android:gravity="center"
                 android:text="@string/activity_about_version"
-                android:textColor="?attr/malp_color_text_background_secondary"
+                android:textColor="?attr/app_color_secondary"
                 android:textSize="@dimen/material_font_style_size_subheading" />
 
             <TextView
@@ -71,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
                 android:gravity="center"
-                android:textColor="?attr/malp_color_text_background_secondary"
+                android:textColor="?attr/app_color_secondary"
                 android:textSize="@dimen/material_font_style_size_subheading"
                 tools:text="1.2.5" />
         </LinearLayout>
@@ -90,7 +91,7 @@
                 android:fontFamily="sans-serif-light"
                 android:gravity="center"
                 android:text="@string/activity_about_git_hash"
-                android:textColor="?attr/malp_color_text_background_secondary"
+                android:textColor="?attr/app_color_on_content"
                 android:textSize="@dimen/material_font_style_size_subheading" />
 
             <TextView
@@ -99,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
                 android:gravity="center"
-                android:textColor="?attr/malp_color_text_background_secondary"
+                android:textColor="?attr/app_color_on_content"
                 android:textSize="@dimen/material_font_style_size_subheading"
                 tools:text="2a0f134" />
         </LinearLayout>
@@ -113,10 +114,7 @@
             android:layout_marginTop="@dimen/material_content_spacing"
             android:fontFamily="sans-serif-medium"
             android:text="@string/contributors_title"
-            android:textColor="?attr/malp_color_text_background_primary"
-            android:textSize="@dimen/material_font_style_size_subheading"
-            app:backgroundTint="?attr/malp_color_background_selected"
-            app:rippleColor="?attr/malp_color_text_background_secondary" />
+            android:textSize="@dimen/material_font_style_size_subheading"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -202,9 +200,7 @@
             android:layout_marginTop="@dimen/material_content_spacing"
             android:fontFamily="sans-serif-medium"
             android:text="@string/thirdparty_licenses_dialog_title"
-            android:textColor="?attr/malp_color_text_background_primary"
-            android:textSize="@dimen/material_font_style_size_caption"
-            app:rippleColor="?attr/malp_color_text_background_secondary" />
+            android:textSize="@dimen/material_font_style_size_caption" />
     </LinearLayout>
 
 </ScrollView>
