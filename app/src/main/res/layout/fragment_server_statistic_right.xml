@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Copyright (C) 2023 Team Gateship-One
+  ~  (Hendrik Borghorst & Frederik Luetkes)
+  ~
+  ~  The AUTHORS.md file contains a detailed contributors list:
+  ~  <https://gitlab.com/gateship-one/malp/blob/master/AUTHORS.md>
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:layout_margin="@dimen/material_content_spacing">
+
+    <TextView
+        android:id="@+id/server_statistic_server_playtime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="?attr/app_color_on_content"
+        android:textSize="@dimen/material_font_style_size_body_2" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-regular"
+        android:paddingTop="@dimen/material_content_spacing"
+        android:text="@string/server_statistic_uptime"
+        android:textColor="?attr/app_color_on_content"
+        android:textSize="@dimen/material_font_style_size_body_1" />
+
+    <TextView
+        android:id="@+id/server_statistic_server_uptime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="?attr/app_color_on_content"
+        android:textSize="@dimen/material_font_style_size_body_2" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-regular"
+        android:paddingTop="@dimen/material_content_spacing"
+        android:text="@string/server_statistic_db_playtime"
+        android:textColor="?attr/app_color_on_content"
+        android:textSize="@dimen/material_font_style_size_body_1" />
+
+    <TextView
+        android:id="@+id/server_statistic_db_playtime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="?attr/app_color_on_content"
+        android:textSize="@dimen/material_font_style_size_body_2" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-regular"
+        android:paddingTop="@dimen/material_content_spacing"
+        android:text="@string/server_statistic_db_update"
+        android:textColor="?attr/app_color_on_content"
+        android:textSize="@dimen/material_font_style_size_body_1" />
+
+    <TextView
+        android:id="@+id/server_statistic_db_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="?attr/app_color_on_content"
+        android:textSize="@dimen/material_font_style_size_body_2" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/server_statistic_update_db_btn"
+        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/server_statistic_update_database" />
+
+    <TextView
+        android:id="@+id/server_statistic_updateing_db"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/server_statistic_updateing_database"
+        android:textColor="#ff4444"
+        android:textSize="@dimen/material_font_style_size_body_2"
+        android:visibility="gone" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-regular"
+        android:paddingTop="@dimen/material_content_spacing"
+        android:text="@string/server_statistic_malp_server_info"
+        android:textColor="?attr/app_color_on_content"
+        android:textSize="@dimen/material_font_style_size_body_1" />
+
+    <TextView
+        android:id="@+id/server_statistic_malp_server_information"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="?attr/app_color_on_content"
+        android:textSize="@dimen/material_font_style_size_body_2" />
+</LinearLayout>
