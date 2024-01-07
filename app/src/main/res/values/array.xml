@@ -43,7 +43,7 @@
         <item>@string/contributor_translator_swedish</item>
     </string-array>
 
-    <string-array name="preference_odyssey_styles">
+    <string-array name="preference_legacy_styles">
         <item>@string/preference_theme_item_indigo</item>
         <item>@string/preference_theme_item_orange</item>
         <item>@string/preference_theme_item_deep_orange</item>
@@ -53,6 +53,14 @@
         <item>@string/preference_theme_item_light_green</item>
         <item>@string/preference_theme_item_red</item>
         <item>@string/preference_theme_item_oled_dark</item>
+    </string-array>
+
+    <string-array name="preference_material_you_styles">
+        <item>@string/preference_theme_item_indigo</item>
+        <item>@string/preference_theme_item_orange</item>
+        <item>@string/preference_theme_item_blue</item>
+        <item>@string/preference_theme_item_light_green</item>
+        <item>@string/preference_theme_item_red</item>
         <item>@string/preference_theme_item_materialyou_auto</item>
         <item>@string/preference_theme_item_materialyou</item>
     </string-array>

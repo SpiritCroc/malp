@@ -246,8 +246,8 @@
     <string name="preference_theme_item_light_green">Light Green</string>
     <string name="preference_theme_item_red">Red</string>
     <string name="preference_theme_item_oled_dark">OLED Dark</string>
-    <string name="preference_theme_item_materialyou_auto">Material You (Automatic dark/light)</string>
-    <string name="preference_theme_item_materialyou">Material You</string>
+    <string name="preference_theme_item_materialyou_auto">Dynamic Theme (Automatic dark/light)</string>
+    <string name="preference_theme_item_materialyou">Dynamic Theme (Manual)</string>
 
     <string name="preference_album_sort_order_title">Artist Albums sort order</string>
     <string name="preference_album_sort_order_message">Sort by</string>
@@ -258,6 +258,9 @@
 
     <string name="preference_dark_theme_title">Dark theme</string>
     <string name="preference_dark_theme_message">Use a dark theme</string>
+
+    <string name="preference_legacy_theme_title">Legacy theme</string>
+    <string name="preference_legacy_theme_message">Use the bright color legacy theming used in previous versions.</string>
 
     <string name="preference_show_artist_image_title">Show artist image</string>
     <string name="preference_show_artist_image_text">Alternate between the album cover and an image of the artist in the

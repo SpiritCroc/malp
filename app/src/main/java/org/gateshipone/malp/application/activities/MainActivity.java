@@ -55,6 +55,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -193,6 +194,7 @@ public class MainActivity extends GenericActivity
             mDrawerToggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(mDrawerToggle);
             mDrawerToggle.syncState();
+            mDrawerToggle.getDrawerArrowDrawable().setColor(MaterialColors.getColor(this, R.attr.app_color_on_surface, 0));
         }
 
         int navId = switchToSettings ? R.id.nav_app_settings : getDefaultViewID();
@@ -731,6 +733,8 @@ public class MainActivity extends GenericActivity
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.height = -1;
 
+        MaterialToolbar materialToolbar = findViewById(R.id.toolbar);
+
         mShowImage = showImage;
 
         if (!mShowImage) {
@@ -752,6 +756,7 @@ public class MainActivity extends GenericActivity
             params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED + AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
         } else {
             toolbar.setTitleEnabled(false);
+
             setTitle(title);
             params.setScrollFlags(0);
         }
@@ -791,7 +796,7 @@ public class MainActivity extends GenericActivity
             if (mShowImage) {
 
                 // Get the primary color of the active theme from the helper.
-                int newColor = MaterialColors.getColor(this, R.attr.colorSurfaceContainer, 0);
+                int newColor = MaterialColors.getColor(this, R.attr.colorSurface, 0);
 
                 // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
                 // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
@@ -809,14 +814,11 @@ public class MainActivity extends GenericActivity
         } else {
             /*
              * If NPV is dragged down we will use:
-             * - No image: To the top bar color to prevent the title from sliding in the status bar (no transparency)
+             * - No image: Transparent toolbar (so that the NavDrawer slides visible beneath the StatusBar), statusBarScrim prevents
+             *             the TopBar's title to be visible under it.
              * - Image active: Complete transparent (to show the image under the status bar)
              */
-            if (!mShowImage) {
-                getWindow().setStatusBarColor(MaterialColors.getColor(this, R.attr.colorSurface, 0));
-            } else {
-                getWindow().setStatusBarColor(0x000000);
-            }
+            getWindow().setStatusBarColor(0x000000);
         }
 
     }

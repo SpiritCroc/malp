@@ -41,7 +41,7 @@
         android:layout_width="fill_parent"
         android:layout_height="128dp"
         android:layout_alignTop="@id/collapsing_image"
-        android:background="@drawable/album_imagebar_gradient_top"
+        android:background="@drawable/album_imagebar_gradient_top_material_you"
         android:visibility="visible" />
 
     <View

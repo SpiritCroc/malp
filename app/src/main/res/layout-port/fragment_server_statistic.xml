@@ -25,6 +25,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/app_color_content"
     android:orientation="vertical">
 
     <ScrollView
@@ -45,7 +46,7 @@
                 android:paddingTop="@dimen/material_content_spacing"
                 android:text="@string/server_statistic_artists_count"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_1" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"/>
 
             <TextView
                 android:id="@+id/server_statistic_artist_count"
@@ -53,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_2" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -62,7 +63,7 @@
                 android:paddingTop="@dimen/material_content_spacing"
                 android:text="@string/server_statistic_albums_count"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_1" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"/>
 
             <TextView
                 android:id="@+id/server_statistic_albums_count"
@@ -70,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_2" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -79,7 +80,7 @@
                 android:paddingTop="@dimen/material_content_spacing"
                 android:text="@string/server_statistic_songs_count"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_1" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
 
             <TextView
                 android:id="@+id/server_statistic_songs_count"
@@ -87,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_2" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -96,7 +97,7 @@
                 android:paddingTop="@dimen/material_content_spacing"
                 android:text="@string/server_statistic_playtime"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_1" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
 
             <TextView
                 android:id="@+id/server_statistic_server_playtime"
@@ -104,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_2" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -113,7 +114,7 @@
                 android:paddingTop="@dimen/material_content_spacing"
                 android:text="@string/server_statistic_uptime"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_1" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
 
             <TextView
                 android:id="@+id/server_statistic_server_uptime"
@@ -121,7 +122,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_2" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -130,7 +131,7 @@
                 android:paddingTop="@dimen/material_content_spacing"
                 android:text="@string/server_statistic_db_playtime"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_1" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
 
             <TextView
                 android:id="@+id/server_statistic_db_playtime"
@@ -138,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_2" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -147,7 +148,7 @@
                 android:paddingTop="@dimen/material_content_spacing"
                 android:text="@string/server_statistic_db_update"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_1" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
 
             <TextView
                 android:id="@+id/server_statistic_db_update"
@@ -155,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_2" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/server_statistic_update_db_btn"
@@ -181,7 +182,7 @@
                 android:paddingTop="@dimen/material_content_spacing"
                 android:text="@string/server_statistic_malp_server_info"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_1" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"/>
 
             <TextView
                 android:id="@+id/server_statistic_malp_server_information"
@@ -189,7 +190,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_2" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
         </LinearLayout>
     </ScrollView>
 

@@ -23,7 +23,6 @@
 <resources>
     <declare-styleable name="AndroMPDColors">
         <attr name="malp_grid_gradient" format="reference" />u
-        <attr name="malp_navdrawer_theme" format="reference" />
         <attr name="malp_appbaroverlay_theme" format="reference" />
 
         <attr name="app_color_surface" format="reference|color" />
@@ -36,5 +35,7 @@
         <attr name="app_color_on_secondary" format="reference|color" />
         <attr name="app_color_cover_background" format="reference|color" />
         <attr name="app_color_fanart_activity_tint" format="reference|color" />
+
+        <attr name="app_toolbar_style" format="reference" />
     </declare-styleable>
 </resources>

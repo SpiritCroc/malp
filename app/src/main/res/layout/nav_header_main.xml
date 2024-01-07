@@ -27,7 +27,7 @@
     android:background="@drawable/side_nav_bar"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:theme="@style/AppTheme.NavDrawerHeader">
+    >
 
     <ImageView
         android:id="@+id/imageView"

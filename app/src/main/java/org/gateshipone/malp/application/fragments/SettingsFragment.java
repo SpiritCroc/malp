@@ -69,6 +69,16 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             dialog.show(requireActivity().getSupportFragmentManager(), "Volume steps");
             return true;
         });
+
+        boolean legacyTheme = sharedPref.getBoolean(getString(R.string.pref_legacy_theme_key), getResources().getBoolean(R.bool.pref_theme_legacy_default));
+        if (legacyTheme) {
+            findPreference(getString(R.string.pref_materialyou_theme_selector_key)).setVisible(false);
+            findPreference(getString(R.string.pref_legacy_theme_selector_key)).setVisible(true);
+        } else {
+            findPreference(getString(R.string.pref_materialyou_theme_selector_key)).setVisible(true);
+            findPreference(getString(R.string.pref_legacy_theme_selector_key)).setVisible(false);
+        }
+
     }
 
     @NonNull
@@ -134,7 +144,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_theme_key)) || key.equals(getString(R.string.pref_dark_theme_key))) {
+        if (key.equals(getString(R.string.pref_legacy_theme_selector_key)) || key.equals(getString(R.string.pref_dark_theme_key)) ||
+                key.equals(getString(R.string.pref_legacy_theme_key)) || key.equals(getString(R.string.pref_materialyou_theme_selector_key))) {
             Intent intent = requireActivity().getIntent();
             intent.putExtra(MainActivity.MAINACTIVITY_INTENT_EXTRA_REQUESTEDVIEW, MainActivity.REQUESTEDVIEW.SETTINGS.ordinal());
             requireActivity().finish();
