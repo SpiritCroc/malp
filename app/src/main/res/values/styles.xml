@@ -27,7 +27,6 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="windowNoTitle">true</item>
-        <item name="app_color_divider">@color/app_color_divider_indigo</item>
         <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="app_color_surface">?attr/colorSurface</item>
@@ -46,7 +45,6 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="windowNoTitle">true</item>
-        <item name="app_color_divider">@color/app_color_divider_indigo</item>
         <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="app_color_surface">?attr/colorSurface</item>
@@ -65,7 +63,6 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="windowNoTitle">true</item>
-        <item name="app_color_divider">@color/app_color_divider_indigo</item>
         <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="app_color_surface">?attr/colorSurface</item>
@@ -86,7 +83,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_indigo</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_indigo</item>
         <item name="app_color_content">@color/app_color_background_content_indigo</item>
-        <item name="app_color_divider">@color/app_color_divider_indigo</item>
     </style>
 
     <style name="AppTheme.orange" parent="AppTheme">
@@ -96,7 +92,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_orange</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_orange</item>
         <item name="app_color_content">@color/app_color_background_content_orange</item>
-        <item name="app_color_divider">@color/app_color_divider_orange</item>
     </style>
 
     <style name="AppTheme.deepOrange" parent="AppTheme">
@@ -106,7 +101,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_deepOrange</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_deepOrange</item>
         <item name="app_color_content">@color/app_color_background_content_deepOrange</item>
-        <item name="app_color_divider">@color/app_color_divider_deepOrange</item>
     </style>
 
     <style name="AppTheme.blue" parent="AppTheme">
@@ -116,7 +110,7 @@
         <item name="app_color_secondary">@color/app_color_secondary_blue</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_blue</item>
         <item name="app_color_content">@color/app_color_background_content_blue</item>
-        <item name="app_color_divider">@color/app_color_divider_blue</item>
+
     </style>
 
     <style name="AppTheme.darkGrey" parent="AppTheme">
@@ -126,7 +120,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_darkGrey</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_darkGrey</item>
         <item name="app_color_content">@color/app_color_background_content_darkGrey</item>
-        <item name="app_color_divider">@color/app_color_divider_darkGrey</item>
     </style>
 
     <style name="AppTheme.brown" parent="AppTheme">
@@ -136,7 +129,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_brown</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_brown</item>
         <item name="app_color_content">@color/app_color_background_content_brown</item>
-        <item name="app_color_divider">@color/app_color_divider_brown</item>
     </style>
 
     <style name="AppTheme.lightGreen" parent="AppTheme">
@@ -146,7 +138,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_lightGreen</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_lightGreen</item>
         <item name="app_color_content">@color/app_color_background_content_lightGreen</item>
-        <item name="app_color_divider">@color/app_color_divider_lightGreen</item>
     </style>
 
     <style name="AppTheme.red" parent="AppTheme">
@@ -156,7 +147,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_red</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_red</item>
         <item name="app_color_content">@color/app_color_background_content_red</item>
-        <item name="app_color_divider">@color/app_color_divider_red</item>
     </style>
 
     <style name="AppTheme.light_indigo" parent="AppThemeLight">
@@ -166,7 +156,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_light_indigo</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_light_indigo</item>
         <item name="app_color_content">@color/app_color_background_content_light_indigo</item>
-        <item name="app_color_divider">@color/app_color_divider_light_indigo</item>
     </style>
 
     <style name="AppTheme.light_orange" parent="AppThemeLight">
@@ -176,7 +165,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_light_orange</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_light_orange</item>
         <item name="app_color_content">@color/app_color_background_content_light_orange</item>
-        <item name="app_color_divider">@color/app_color_divider_light_orange</item>
     </style>
 
     <style name="AppTheme.light_deepOrange" parent="AppThemeLight">
@@ -187,7 +175,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_light_deepOrange</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_light_deepOrange</item>
         <item name="app_color_content">@color/app_color_background_content_light_deepOrange</item>
-        <item name="app_color_divider">@color/app_color_divider_light_deepOrange</item>
     </style>
 
     <style name="AppTheme.light_blue" parent="AppThemeLight">
@@ -197,7 +184,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_light_blue</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_light_blue</item>
         <item name="app_color_content">@color/app_color_background_content_light_blue</item>
-        <item name="app_color_divider">@color/app_color_divider_light_blue</item>
     </style>
 
     <style name="AppTheme.light_darkGrey" parent="AppThemeLight">
@@ -207,7 +193,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_light_darkGrey</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_light_darkGrey</item>
         <item name="app_color_content">@color/app_color_background_content_light_darkGrey</item>
-        <item name="app_color_divider">@color/app_color_divider_light_darkGrey</item>
     </style>
 
     <style name="AppTheme.light_brown" parent="AppThemeLight">
@@ -217,7 +202,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_light_brown</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_light_brown</item>
         <item name="app_color_content">@color/app_color_background_content_light_brown</item>
-        <item name="app_color_divider">@color/app_color_divider_light_brown</item>
     </style>
 
     <style name="AppTheme.light_lightGreen" parent="AppThemeLight">
@@ -228,7 +212,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_light_lightGreen</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_light_lightGreen</item>
         <item name="app_color_content">@color/app_color_background_content_light_lightGreen</item>
-        <item name="app_color_divider">@color/app_color_divider_light_lightGreen</item>
     </style>
 
     <style name="AppTheme.light_red" parent="AppThemeLight">
@@ -238,7 +221,6 @@
         <item name="app_color_secondary">@color/app_color_secondary_light_red</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_light_red</item>
         <item name="app_color_content">@color/app_color_background_content_light_red</item>
-        <item name="app_color_divider">@color/app_color_divider_light_red</item>
     </style>
 
     <style name="AppTheme.oledDark" parent="AppTheme">
@@ -248,11 +230,9 @@
         <item name="app_color_secondary">@color/app_color_secondary_oledDark</item>
         <item name="app_color_on_secondary">@color/app_color_on_secondary_oledDark</item>
         <item name="app_color_content">@color/app_color_background_content_oledDark</item>
-        <item name="app_color_divider">@color/app_color_divider_oledDark</item>
     </style>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.Bridge">
-        <item name="android:listDivider">@drawable/recyclerview_divider</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
@@ -271,7 +251,6 @@
     </style>
 
     <style name="AppThemeLight" parent="Theme.MaterialComponents.Light.Bridge">
-        <item name="android:listDivider">@drawable/recyclerview_divider</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>

@@ -34,7 +34,6 @@
         <attr name="app_color_on_content" format="reference|color" />
         <attr name="app_color_secondary" format="reference|color" />
         <attr name="app_color_on_secondary" format="reference|color" />
-        <attr name="app_color_divider" format="reference|color" />
         <attr name="app_color_cover_background" format="reference|color" />
         <attr name="app_color_fanart_activity_tint" format="reference|color" />
     </declare-styleable>

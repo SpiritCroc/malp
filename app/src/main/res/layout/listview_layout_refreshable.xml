@@ -31,8 +31,6 @@
         android:id="@+id/main_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="?attr/app_color_divider"
-        android:dividerHeight="@dimen/list_divider_size"
         android:fastScrollAlwaysVisible="false"
         android:fastScrollEnabled="true"
         android:scrollingCache="true"

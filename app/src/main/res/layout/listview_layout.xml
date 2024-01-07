@@ -31,8 +31,6 @@
         android:fastScrollAlwaysVisible="false"
         android:fastScrollEnabled="true"
         android:fastScrollStyle="?attr/colorAccent"
-        android:divider="?attr/app_color_divider"
-        android:dividerHeight="@dimen/list_divider_size"
         android:nestedScrollingEnabled="true"
         android:scrollingCache="true"
         android:scrollbarStyle="outsideOverlay"
