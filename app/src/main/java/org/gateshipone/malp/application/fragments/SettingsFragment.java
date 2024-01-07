@@ -70,7 +70,20 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             return true;
         });
 
+
+        // Read theme preference
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         boolean legacyTheme = sharedPref.getBoolean(getString(R.string.pref_legacy_theme_key), getResources().getBoolean(R.bool.pref_theme_legacy_default));
+        String themePref = sharedPref.getString(getString(R.string.pref_legacy_theme_selector_key), getString(R.string.pref_oleddark_key));
+        if (legacyTheme && themePref.equals(getString(R.string.pref_oleddark_key))) {
+            findPreference(getString(R.string.pref_dark_theme_key)).setVisible(false);
+        }
+
+        themePref = sharedPref.getString(getString(R.string.pref_materialyou_theme_selector_key), getString(R.string.pref_oleddark_key) );
+        if (!legacyTheme && themePref.equals(getString(R.string.pref_materialyou_auto_key))) {
+            findPreference(getString(R.string.pref_dark_theme_key)).setVisible(false);
+        }
+
         if (legacyTheme) {
             findPreference(getString(R.string.pref_materialyou_theme_selector_key)).setVisible(false);
             findPreference(getString(R.string.pref_legacy_theme_selector_key)).setVisible(true);
