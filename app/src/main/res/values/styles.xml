@@ -327,8 +327,48 @@
 
     <style name="AppTheme.Toolbar" parent="AppTheme"></style>
 
+    <style name="AppTheme.materialyou.parent.dark" parent="Theme.Material3.Dark">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="app_color_surface">?attr/colorSurface</item>
+        <item name="app_color_on_surface">?attr/colorOnSurface</item>
+        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
+        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
+        <item name="app_color_content">?attr/colorSurfaceContainer</item>
+        <item name="app_color_on_content">?attr/colorOnSurface</item>
+        <item name="app_color_secondary">?attr/colorSecondary</item>
+        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
+        <item name="app_color_cover_background">@android:color/black</item>
+        <item name="app_color_fanart_activity_tint">#ffffff</item>
+        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
+        <item name="app_toolbar_style">@style/AppTheme.You.Dark.Toolbar</item>
+    </style>
 
-    <style name="AppTheme.materialyou.indigo.dark" parent="Theme.Material3.Dark">
+    <style name="AppTheme.materialyou.parent.light" parent="Theme.Material3.Light">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="app_color_surface">?attr/colorSurface</item>
+        <item name="app_color_on_surface">?attr/colorOnSurface</item>
+        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
+        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
+        <item name="app_color_content">?attr/colorSurfaceContainer</item>
+        <item name="app_color_on_content">?attr/colorOnSurface</item>
+        <item name="app_color_secondary">?attr/colorSecondary</item>
+        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
+        <item name="app_color_cover_background">@android:color/black</item>
+        <item name="app_color_fanart_activity_tint">#ffffff</item>
+        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
+        <item name="app_toolbar_style">@style/AppTheme.You.Light.Toolbar</item>
+    </style>
+
+    <style name="AppTheme.materialyou.indigo.dark" parent="AppTheme.materialyou.parent.dark">
         <item name="colorPrimary">@color/md_theme_dark_indigo_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_indigo_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_indigo_primaryContainer</item>
@@ -356,26 +396,9 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_dark_indigo_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_dark_indigo_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_indigo_inversePrimary</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="app_color_surface">?attr/colorSurface</item>
-        <item name="app_color_on_surface">?attr/colorOnSurface</item>
-        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
-        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
-        <item name="app_color_content">?attr/colorSurfaceContainer</item>
-        <item name="app_color_on_content">?attr/colorOnSurface</item>
-        <item name="app_color_secondary">?attr/colorSecondary</item>
-        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
-        <item name="app_color_cover_background">@android:color/black</item>
-        <item name="app_color_fanart_activity_tint">#ffffff</item>
-        <item name="app_toolbar_style">@style/AppTheme.You.Dark.Toolbar</item>
-        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
     </style>
 
-    <style name="AppTheme.materialyou.indigo.light" parent="Theme.Material3.Light">
+    <style name="AppTheme.materialyou.indigo.light" parent="AppTheme.materialyou.parent.light">
         <item name="colorPrimary">@color/md_theme_light_indigo_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_indigo_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_indigo_primaryContainer</item>
@@ -404,27 +427,9 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_light_indigo_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_light_indigo_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_indigo_inversePrimary</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="app_color_surface">?attr/colorSurface</item>
-        <item name="app_color_on_surface">?attr/colorOnSurface</item>
-        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
-        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
-        <item name="app_color_content">?attr/colorSurfaceContainer</item>
-        <item name="app_color_on_content">?attr/colorOnSurface</item>
-        <item name="app_color_secondary">?attr/colorSecondary</item>
-        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
-        <item name="app_color_cover_background">@android:color/black</item>
-        <item name="app_color_fanart_activity_tint">#ffffff</item>
-        <item name="app_toolbar_style">@style/AppTheme.You.Light.Toolbar</item>
-        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
     </style>
 
-    <style name="AppTheme.materialyou.orange.dark" parent="Theme.Material3.Dark">
+    <style name="AppTheme.materialyou.orange.dark" parent="AppTheme.materialyou.parent.dark">
         <item name="colorPrimary">@color/md_theme_dark_orange_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_orange_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_orange_primaryContainer</item>
@@ -452,26 +457,9 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_dark_orange_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_dark_orange_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_orange_inversePrimary</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="app_color_surface">?attr/colorSurface</item>
-        <item name="app_color_on_surface">?attr/colorOnSurface</item>
-        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
-        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
-        <item name="app_color_content">?attr/colorSurfaceContainer</item>
-        <item name="app_color_on_content">?attr/colorOnSurface</item>
-        <item name="app_color_secondary">?attr/colorSecondary</item>
-        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
-        <item name="app_color_cover_background">@android:color/black</item>
-        <item name="app_color_fanart_activity_tint">#ffffff</item>
-        <item name="app_toolbar_style">@style/AppTheme.You.Dark.Toolbar</item>
-        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
     </style>
 
-    <style name="AppTheme.materialyou.orange.light" parent="Theme.Material3.Light">
+    <style name="AppTheme.materialyou.orange.light" parent="AppTheme.materialyou.parent.light">
         <item name="colorPrimary">@color/md_theme_light_orange_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_orange_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_orange_primaryContainer</item>
@@ -500,27 +488,9 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_light_orange_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_light_orange_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_orange_inversePrimary</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="app_color_surface">?attr/colorSurface</item>
-        <item name="app_color_on_surface">?attr/colorOnSurface</item>
-        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
-        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
-        <item name="app_color_content">?attr/colorSurfaceContainer</item>
-        <item name="app_color_on_content">?attr/colorOnSurface</item>
-        <item name="app_color_secondary">?attr/colorSecondary</item>
-        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
-        <item name="app_color_cover_background">@android:color/black</item>
-        <item name="app_color_fanart_activity_tint">#ffffff</item>
-        <item name="app_toolbar_style">@style/AppTheme.You.Light.Toolbar</item>
-        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
     </style>
 
-    <style name="AppTheme.materialyou.blue.dark" parent="Theme.Material3.Dark">
+    <style name="AppTheme.materialyou.blue.dark" parent="AppTheme.materialyou.parent.dark">
         <item name="colorPrimary">@color/md_theme_dark_blue_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_blue_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_blue_primaryContainer</item>
@@ -547,26 +517,9 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_dark_blue_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_dark_blue_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_blue_inversePrimary</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="app_color_surface">?attr/colorSurface</item>
-        <item name="app_color_on_surface">?attr/colorOnSurface</item>
-        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
-        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
-        <item name="app_color_content">?attr/colorSurfaceContainer</item>
-        <item name="app_color_on_content">?attr/colorOnSurface</item>
-        <item name="app_color_secondary">?attr/colorSecondary</item>
-        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
-        <item name="app_color_cover_background">@android:color/black</item>
-        <item name="app_color_fanart_activity_tint">#ffffff</item>
-        <item name="app_toolbar_style">@style/AppTheme.You.Dark.Toolbar</item>
-        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
     </style>
 
-    <style name="AppTheme.materialyou.blue.light" parent="Theme.Material3.Light">
+    <style name="AppTheme.materialyou.blue.light" parent="AppTheme.materialyou.parent.light">
         <item name="colorPrimary">@color/md_theme_light_blue_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_blue_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_blue_primaryContainer</item>
@@ -594,27 +547,9 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_light_blue_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_light_blue_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_blue_inversePrimary</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="app_color_surface">?attr/colorSurface</item>
-        <item name="app_color_on_surface">?attr/colorOnSurface</item>
-        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
-        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
-        <item name="app_color_content">?attr/colorSurfaceContainer</item>
-        <item name="app_color_on_content">?attr/colorOnSurface</item>
-        <item name="app_color_secondary">?attr/colorSecondary</item>
-        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
-        <item name="app_color_cover_background">@android:color/black</item>
-        <item name="app_color_fanart_activity_tint">#ffffff</item>
-        <item name="app_toolbar_style">@style/AppTheme.You.Light.Toolbar</item>
-        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
     </style>
 
-    <style name="AppTheme.materialyou.green.dark" parent="Theme.Material3.Dark">
+    <style name="AppTheme.materialyou.green.dark" parent="AppTheme.materialyou.parent.dark">
         <item name="colorPrimary">@color/md_theme_dark_green_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_green_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_green_primaryContainer</item>
@@ -641,26 +576,9 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_dark_green_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_dark_green_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_green_inversePrimary</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="app_color_surface">?attr/colorSurface</item>
-        <item name="app_color_on_surface">?attr/colorOnSurface</item>
-        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
-        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
-        <item name="app_color_content">?attr/colorSurfaceContainer</item>
-        <item name="app_color_on_content">?attr/colorOnSurface</item>
-        <item name="app_color_secondary">?attr/colorSecondary</item>
-        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
-        <item name="app_color_cover_background">@android:color/black</item>
-        <item name="app_color_fanart_activity_tint">#ffffff</item>
-        <item name="app_toolbar_style">@style/AppTheme.You.Dark.Toolbar</item>
-        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
     </style>
 
-    <style name="AppTheme.materialyou.green.light" parent="Theme.Material3.Light">
+    <style name="AppTheme.materialyou.green.light" parent="AppTheme.materialyou.parent.light">
         <item name="colorPrimary">@color/md_theme_light_green_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_green_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_green_primaryContainer</item>
@@ -688,27 +606,9 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_light_green_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_light_green_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_green_inversePrimary</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="app_color_surface">?attr/colorSurface</item>
-        <item name="app_color_on_surface">?attr/colorOnSurface</item>
-        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
-        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
-        <item name="app_color_content">?attr/colorSurfaceContainer</item>
-        <item name="app_color_on_content">?attr/colorOnSurface</item>
-        <item name="app_color_secondary">?attr/colorSecondary</item>
-        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
-        <item name="app_color_cover_background">@android:color/black</item>
-        <item name="app_color_fanart_activity_tint">#ffffff</item>
-        <item name="app_toolbar_style">@style/AppTheme.You.Light.Toolbar</item>
-        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
     </style>
 
-    <style name="AppTheme.materialyou.red.dark" parent="Theme.Material3.Dark">
+    <style name="AppTheme.materialyou.red.dark" parent="AppTheme.materialyou.parent.dark">
         <item name="colorPrimary">@color/md_theme_dark_red_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_red_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_red_primaryContainer</item>
@@ -735,26 +635,9 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_dark_red_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_dark_red_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_red_inversePrimary</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="app_color_surface">?attr/colorSurface</item>
-        <item name="app_color_on_surface">?attr/colorOnSurface</item>
-        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
-        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
-        <item name="app_color_content">?attr/colorSurfaceContainer</item>
-        <item name="app_color_on_content">?attr/colorOnSurface</item>
-        <item name="app_color_secondary">?attr/colorSecondary</item>
-        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
-        <item name="app_color_cover_background">@android:color/black</item>
-        <item name="app_color_fanart_activity_tint">#ffffff</item>
-        <item name="app_toolbar_style">@style/AppTheme.You.Dark.Toolbar</item>
-        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
     </style>
 
-    <style name="AppTheme.materialyou.red.light" parent="Theme.Material3.Light">
+    <style name="AppTheme.materialyou.red.light" parent="AppTheme.materialyou.parent.light">
         <item name="colorPrimary">@color/md_theme_light_red_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_red_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_red_primaryContainer</item>
@@ -782,26 +665,5 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_light_red_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_light_red_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_red_inversePrimary</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="malp_grid_gradient">@drawable/gradient_gridview_item_dark</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="app_color_surface">?attr/colorSurface</item>
-        <item name="app_color_on_surface">?attr/colorOnSurface</item>
-        <item name="app_color_on_surface_highlight">?attr/app_color_secondary</item>
-        <item name="app_color_surface_darker">@color/material_dynamic_primary30</item>
-        <item name="app_color_content">?attr/colorSurfaceContainer</item>
-        <item name="app_color_on_content">?attr/colorOnSurface</item>
-        <item name="app_color_secondary">?attr/colorSecondary</item>
-        <item name="app_color_on_secondary">?attr/colorOnSecondary</item>
-        <item name="app_color_cover_background">@android:color/black</item>
-        <item name="app_color_fanart_activity_tint">#ffffff</item>
-        <item name="app_toolbar_style">@style/AppTheme.You.Light.Toolbar</item>
-        <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
     </style>
-
-
-
 </resources>
