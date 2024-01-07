@@ -293,6 +293,22 @@
         <item name="app_color_on_content">@android:color/black</item>
         <item name="app_color_fanart_activity_tint">#ffffff</item>
         <item name="app_toolbar_style">@style/AppTheme.Toolbar</item>
+        <!-- Change the dialog theming to prevent unreadable text in light theme -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.Light.MaterialAlertDialog</item>
+    </style>Dialog
+
+    <style name="ThemeOverlay.App.Light.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/AppTheme.Light.AlertDialogStyle</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/AppTheme.Light.MaterialAlertDialogTitle.Text</item>
+    </style>
+
+    <style name="AppTheme.Light.MaterialAlertDialogTitle.Text" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textColor">?attr/app_color_on_content</item>
+    </style>
+
+    <style name="AppTheme.Light.AlertDialogStyle" parent="MaterialAlertDialog.Material3">
+        <item name="backgroundTint">?attr/app_color_content</item>
+        <item name="android:textColor">?attr/app_color_on_content</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
