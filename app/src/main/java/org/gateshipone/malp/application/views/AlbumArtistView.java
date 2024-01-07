@@ -176,7 +176,7 @@ public class AlbumArtistView extends ViewSwitcher {
      */
     public void clearAlbumImage() {
         // get tint color
-        int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_cover_background);
+        int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_content);
 
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.cover_placeholder, null);
 
