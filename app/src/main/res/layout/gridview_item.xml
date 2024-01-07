@@ -38,7 +38,7 @@
             android:id="@+id/item_artists_cover_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/app_color_cover_background"
+            android:background="?attr/colorSurfaceVariant"
             android:padding="16dp"
             android:scaleType="centerCrop"
             android:src="@drawable/cover_placeholder_128dp"
