@@ -57,29 +57,26 @@
                 android:id="@+id/track_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
                 android:maxLines="1"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_subheading" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
             <TextView
                 android:id="@+id/track_separator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
                 android:maxLines="1"
                 android:text="@string/track_item_separator"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_subheading" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
             <TextView
                 android:id="@+id/track_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
                 android:maxLines="1"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_subheading" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
         </LinearLayout>
 
         <RelativeLayout
@@ -96,7 +93,7 @@
                 android:fontFamily="sans-serif-regular"
                 android:singleLine="true"
                 android:textColor="?attr/app_color_on_content"
-                android:textSize="@dimen/material_font_style_size_body_1" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
             <TextView
                 android:id="@+id/track_duration"
@@ -104,7 +101,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:singleLine="true"
-                android:textColor="?attr/app_color_on_content" />
+                android:textColor="?attr/app_color_on_content"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
         </RelativeLayout>
     </LinearLayout>
 

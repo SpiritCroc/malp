@@ -30,16 +30,14 @@
         android:id="@+id/song_details_item_key"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-regular"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"/>
 
     <TextView
         android:id="@+id/song_details_item_value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-medium"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.BodySmall"/>
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
 
 </LinearLayout>

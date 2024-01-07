@@ -75,7 +75,7 @@
                     android:fontFamily="sans-serif-regular"
                     android:maxLines="1"
                     android:paddingStart="@dimen/material_standard_horizontal_spacing"
-                    android:textSize="@dimen/material_font_style_size_title" />
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
             </LinearLayout>
 
             <com.google.android.material.divider.MaterialDivider
