@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+                android:textAppearance="?attr/app_text_list_title" />
 
             <TextView
                 android:id="@+id/track_separator"
@@ -68,7 +68,7 @@
                 android:maxLines="1"
                 android:text="@string/track_item_separator"
                 android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+                android:textAppearance="?attr/app_text_list_title" />
 
             <TextView
                 android:id="@+id/track_title"
@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+                android:textAppearance="?attr/app_text_list_title" />
         </LinearLayout>
 
         <RelativeLayout
@@ -90,10 +90,9 @@
                 android:layout_alignParentStart="true"
                 android:layout_toStartOf="@+id/track_duration"
                 android:ellipsize="end"
-                android:fontFamily="sans-serif-regular"
                 android:singleLine="true"
                 android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+                android:textAppearance="?attr/app_text_list_subtitle" />
 
             <TextView
                 android:id="@+id/track_duration"
@@ -102,7 +101,7 @@
                 android:layout_alignParentEnd="true"
                 android:singleLine="true"
                 android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+                android:textAppearance="?attr/app_text_list_subtitle" />
         </RelativeLayout>
     </LinearLayout>
 

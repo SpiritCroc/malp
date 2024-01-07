@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.BodySmall"/>
+        android:textAppearance="@style/TextAppearance.Material3.LabelSmall"/>
 
     <TextView
         android:id="@+id/song_details_item_value"

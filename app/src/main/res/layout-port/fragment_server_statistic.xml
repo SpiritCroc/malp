@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  Copyright (C) 2023 Team Gateship-One
   ~  (Hendrik Borghorst & Frederik Luetkes)
   ~
@@ -34,164 +33,12 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="@dimen/material_screen_edge_spacing"
-            android:paddingEnd="@dimen/material_screen_edge_spacing">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
-                android:paddingTop="@dimen/material_content_spacing"
-                android:text="@string/server_statistic_artists_count"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"/>
+            <include layout="@layout/fragment_server_statistic_left" />
 
-            <TextView
-                android:id="@+id/server_statistic_artist_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
-                android:paddingTop="@dimen/material_content_spacing"
-                android:text="@string/server_statistic_albums_count"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"/>
-
-            <TextView
-                android:id="@+id/server_statistic_albums_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
-                android:paddingTop="@dimen/material_content_spacing"
-                android:text="@string/server_statistic_songs_count"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
-
-            <TextView
-                android:id="@+id/server_statistic_songs_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
-                android:paddingTop="@dimen/material_content_spacing"
-                android:text="@string/server_statistic_playtime"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
-
-            <TextView
-                android:id="@+id/server_statistic_server_playtime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
-                android:paddingTop="@dimen/material_content_spacing"
-                android:text="@string/server_statistic_uptime"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
-
-            <TextView
-                android:id="@+id/server_statistic_server_uptime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
-                android:paddingTop="@dimen/material_content_spacing"
-                android:text="@string/server_statistic_db_playtime"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
-
-            <TextView
-                android:id="@+id/server_statistic_db_playtime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
-                android:paddingTop="@dimen/material_content_spacing"
-                android:text="@string/server_statistic_db_update"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
-
-            <TextView
-                android:id="@+id/server_statistic_db_update"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/server_statistic_update_db_btn"
-                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/server_statistic_update_database" />
-
-            <TextView
-                android:id="@+id/server_statistic_updateing_db"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/server_statistic_updateing_database"
-                android:textColor="#ff4444"
-                android:textSize="@dimen/material_font_style_size_body_2"
-                android:visibility="gone" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-regular"
-                android:paddingTop="@dimen/material_content_spacing"
-                android:text="@string/server_statistic_malp_server_info"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"/>
-
-            <TextView
-                android:id="@+id/server_statistic_malp_server_information"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="?attr/app_color_on_content"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+            <include layout="@layout/fragment_server_statistic_right" />
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>

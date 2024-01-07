@@ -21,7 +21,6 @@
   -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Color themes -->
     <style name="AppTheme.materialyou.dark" parent="Theme.Material3.DynamicColors.Dark">
         <item name="windowActionBar">false</item>
@@ -41,6 +40,8 @@
         <item name="app_color_fanart_activity_tint">#ffffff</item>
         <item name="app_toolbar_style">@style/AppTheme.You.Dark.DynamicColors.Toolbar</item>
         <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
+        <item name="app_text_list_title">@style/TextAppearance.Material3.TitleMedium</item>
+        <item name="app_text_list_subtitle">@style/TextAppearance.Material3.BodyMedium</item>
     </style>
 
     <style name="AppTheme.You.Dark.DynamicColors.Toolbar" parent="AppTheme.materialyou.dark"></style>
@@ -68,6 +69,8 @@
         <item name="app_color_fanart_activity_tint">#ffffff</item>
         <item name="app_toolbar_style">@style/AppTheme.You.Light.DynamicColors.Toolbar</item>
         <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
+        <item name="app_text_list_title">@style/TextAppearance.Material3.TitleMedium</item>
+        <item name="app_text_list_subtitle">@style/TextAppearance.Material3.BodyMedium</item>
     </style>
 
     <style name="AppTheme.You.Light.Toolbar" parent="ThemeOverlay.Material3.Toolbar.Surface">
@@ -95,6 +98,8 @@
         <item name="app_color_fanart_activity_tint">#ffffff</item>
         <item name="app_toolbar_style">@style/AppTheme.You.DynamicColors.Toolbar</item>
         <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
+        <item name="app_text_list_title">@style/TextAppearance.Material3.TitleMedium</item>
+        <item name="app_text_list_subtitle">@style/TextAppearance.Material3.BodyMedium</item>
     </style>
 
     <!-- Reference: https://github.com/material-components/material-components-android/issues/2828 -->
@@ -279,6 +284,8 @@
         <item name="app_color_fanart_activity_tint">#ffffff</item>
         <item name="app_toolbar_style">@style/AppTheme.Toolbar</item>
         <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
+        <item name="app_text_list_title">@style/TextAppearance.Material3.TitleMedium</item>
+        <item name="app_text_list_subtitle">@style/TextAppearance.Material3.BodyMedium</item>
     </style>
 
     <style name="AppThemeLight" parent="Theme.Material3.Light.NoActionBar">
@@ -302,6 +309,8 @@
         <item name="app_color_on_content">@android:color/black</item>
         <item name="app_color_fanart_activity_tint">#ffffff</item>
         <item name="app_toolbar_style">@style/AppTheme.Toolbar</item>
+        <item name="app_text_list_title">@style/TextAppearance.Material3.TitleMedium</item>
+        <item name="app_text_list_subtitle">@style/TextAppearance.Material3.BodyMedium</item>
         <!-- Change the dialog theming to prevent unreadable text in light theme -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.Light.MaterialAlertDialog</item>
         <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
@@ -345,6 +354,8 @@
         <item name="app_color_fanart_activity_tint">#ffffff</item>
         <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
         <item name="app_toolbar_style">@style/AppTheme.You.Dark.Toolbar</item>
+        <item name="app_text_list_title">@style/TextAppearance.Material3.TitleMedium</item>
+        <item name="app_text_list_subtitle">@style/TextAppearance.Material3.BodyMedium</item>
     </style>
 
     <style name="AppTheme.materialyou.parent.light" parent="Theme.Material3.Light">
@@ -366,6 +377,8 @@
         <item name="app_color_fanart_activity_tint">#ffffff</item>
         <item name="switchPreferenceCompatStyle">@style/MaterialSwitchPreferenceCompat</item>
         <item name="app_toolbar_style">@style/AppTheme.You.Light.Toolbar</item>
+        <item name="app_text_list_title">@style/TextAppearance.Material3.TitleMedium</item>
+        <item name="app_text_list_subtitle">@style/TextAppearance.Material3.BodyMedium</item>
     </style>
 
     <style name="AppTheme.materialyou.indigo.dark" parent="AppTheme.materialyou.parent.dark">

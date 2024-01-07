@@ -70,13 +70,12 @@
                 android:layout_gravity="center_horizontal"
                 android:ellipsize="marquee"
                 android:focusable="true"
-                android:fontFamily="sans-serif-medium"
                 android:gravity="center_horizontal"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/material_font_style_size_title" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
             <TextView
                 android:id="@+id/textview_track_album"
@@ -85,13 +84,12 @@
                 android:layout_gravity="center_horizontal"
                 android:ellipsize="marquee"
                 android:focusable="true"
-                android:fontFamily="sans-serif-regular"
                 android:gravity="center_horizontal"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/material_font_style_size_subheading" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
 
             <TextView
                 android:id="@+id/textview_track_artist"
@@ -100,13 +98,12 @@
                 android:layout_gravity="center_horizontal"
                 android:ellipsize="marquee"
                 android:focusable="true"
-                android:fontFamily="sans-serif-regular"
                 android:gravity="center_horizontal"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/material_font_style_size_subheading" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
         </LinearLayout>
 
         <LinearLayout
@@ -172,7 +169,8 @@
                     android:layout_marginEnd="4dp"
                     android:gravity="center"
                     android:text="100%"
-                    android:textColor="?attr/app_color_fanart_activity_tint" />
+                    android:textColor="?attr/app_color_fanart_activity_tint"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium"/>
 
                 <ImageButton
                     android:id="@+id/volume_button_plus"

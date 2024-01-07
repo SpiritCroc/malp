@@ -36,11 +36,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
         android:gravity="center"
         android:text="@string/contributors_title"
         android:textColor="?attr/app_color_secondary"
-        android:textSize="@dimen/material_font_style_size_headline" />
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge" />
 
     <ListView
         android:id="@+id/contributors_listview"

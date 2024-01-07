@@ -61,11 +61,11 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
                 android:focusable="true"
-                android:fontFamily="sans-serif-medium"
                 android:marqueeRepeatLimit="3"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:textColor="?attr/app_color_on_surface" />
+                android:textColor="?attr/app_color_on_surface"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
         </LinearLayout>
 
         <!-- FIXME Workround for scrolling text jumping back, when position seekbar is updated -->
@@ -80,11 +80,11 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
                 android:focusable="true"
-                android:fontFamily="sans-serif-regular"
                 android:marqueeRepeatLimit="3"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:textColor="?attr/app_color_on_surface" />
+                android:textColor="?attr/app_color_on_surface"
+                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"/>
 
         </LinearLayout>
 
