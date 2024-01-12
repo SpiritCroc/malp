@@ -133,7 +133,10 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
      */
     private final Context mApplicationContext;
 
-    ConnectionStateReceiver mReceiver;
+    /**
+     * Receiver that is called if user's device connection changes (e.g. Wifi -> celluar).
+     */
+    private final ConnectionStateReceiver mReceiver;
 
     private ArtworkManager(final Context context) {
 
