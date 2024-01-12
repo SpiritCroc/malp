@@ -23,6 +23,7 @@
 package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 
+
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -54,7 +55,10 @@ public class MPDFileListFilter {
                         && ((!albumArtist.isEmpty() && !track.getStringTag(MPDTrack.StringTagTypes.ARTISTSORT).isEmpty() && track.getStringTag(MPDTrack.StringTagTypes.ARTISTSORT).equalsIgnoreCase(albumArtist))
                         ||
                         // OR if albumartist tag matches
-                        (!albumArtist.isEmpty() && !track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT).isEmpty() && track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT).equalsIgnoreCase(albumArtist)))
+                        (!albumArtist.isEmpty() && !track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT).isEmpty() && track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT).equalsIgnoreCase(albumArtist))
+                        // Fallback, if neither artistsort or albumartistsort is set, to regular artist tag
+                || (!albumArtist.isEmpty() && track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTISTSORT).isEmpty() && track.getStringTag(MPDTrack.StringTagTypes.ARTISTSORT).isEmpty() &&
+                        !track.getStringTag(MPDTrack.StringTagTypes.ARTIST).isEmpty() && track.getStringTag(MPDTrack.StringTagTypes.ARTIST).equalsIgnoreCase(albumArtist)))
         );
     }
 
