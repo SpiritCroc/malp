@@ -202,6 +202,75 @@ public class MPDInterface {
     /**
      * Get a list of all albums by an artist where artist is part of or artist is the AlbumArtist (tag)
      *
+     * @param albumArtistName Artist to filter album list with.
+     * @return List of MPDAlbum objects
+     */
+    public List<MPDAlbum> getAlbumArtistAlbums(String albumArtistName) throws MPDException {
+        MPDCapabilities capabilities;
+        synchronized (this) {
+            capabilities = mConnection.getServerCapabilities();
+        }
+
+        // Failsafe
+        if (!capabilities.hasTagAlbumArtist()) {
+            return getArtistAlbums(albumArtistName);
+        }
+
+        if (capabilities.hasTagAlbumArtist()) {
+            List<MPDAlbum> result;
+            synchronized (this) {
+                // Use a hashset for the results, to filter duplicates that will exist.
+
+
+                // Also get the list where artistName matches on AlbumArtist
+                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMARTIST_ALBUMS(albumArtistName, capabilities));
+
+                result = MPDResponseParser.parseMPDAlbums(mConnection);
+            }
+
+            // Sort the created list
+            Collections.sort(result);
+            return result;
+        }
+        return null;
+    }
+
+    /**
+     * Get a list of all albums by an albumartist (sort) where artist is part of or artist is the AlbumArtist (tag)
+     *
+     * @param albumArtistName Artist to filter album list with.
+     * @return List of MPDAlbum objects
+     */
+    public List<MPDAlbum> getAlbumArtistSortAlbums(String albumArtistName) throws MPDException {
+        MPDCapabilities capabilities;
+        synchronized (this) {
+            capabilities = mConnection.getServerCapabilities();
+        }
+
+        // Failsafe
+        if (!capabilities.hasTagAlbumArtistSort()) {
+            return getAlbumArtistAlbums(albumArtistName);
+        }
+
+        if (capabilities.hasTagAlbumArtistSort()) {
+            List<MPDAlbum> result;
+            synchronized (this) {
+                // Get the list where artistName matches on AlbumArtist
+                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMARTISTSORT_ALBUMS(albumArtistName, capabilities));
+
+                result = MPDResponseParser.parseMPDAlbums(mConnection);
+            }
+
+            // Sort the created list
+            Collections.sort(result);
+            return result;
+        }
+        return null;
+    }
+
+    /**
+     * Get a list of all albums by an artist where artist is part of or artist is the AlbumArtist (tag)
+     *
      * @param artistName Artist to filter album list with.
      * @return List of MPDAlbum objects
      */

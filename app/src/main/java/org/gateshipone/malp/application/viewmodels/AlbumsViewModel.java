@@ -52,6 +52,8 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
 
     private final boolean mUseArtistSort;
 
+    private final boolean mUseAlbumArtist;
+
     private AlbumsViewModel(@NonNull final Application application, final String artistName, final String albumsPath) {
         super(application);
 
@@ -63,6 +65,7 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(application);
         mSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, application);
         mUseArtistSort = sharedPref.getBoolean(application.getString(R.string.pref_use_artist_sort_key), application.getResources().getBoolean(R.bool.pref_use_artist_sort_default));
+        mUseAlbumArtist = sharedPref.getBoolean(application.getString(R.string.pref_use_album_artists_key), application.getResources().getBoolean(R.bool.pref_use_album_artists_default));
     }
 
     @Override
@@ -75,9 +78,17 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
             }
         } else {
             if (!mUseArtistSort) {
-                MPDQueryHandler.getArtistAlbums(mAlbumsResponseHandler, mArtistName);
+                if (!mUseAlbumArtist) {
+                    MPDQueryHandler.getArtistAlbums(mAlbumsResponseHandler, mArtistName);
+                } else {
+                    MPDQueryHandler.getAlbumArtistAlbums(mAlbumsResponseHandler, mArtistName);
+                }
             } else {
-                MPDQueryHandler.getArtistSortAlbums(mAlbumsResponseHandler, mArtistName);
+                if (!mUseAlbumArtist) {
+                    MPDQueryHandler.getArtistSortAlbums(mAlbumsResponseHandler, mArtistName);
+                } else {
+                    MPDQueryHandler.getAlbumArtistAlbumsSort(mAlbumsResponseHandler, mArtistName);
+                }
             }
         }
     }
