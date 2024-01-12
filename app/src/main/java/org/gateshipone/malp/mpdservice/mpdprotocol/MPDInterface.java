@@ -1228,7 +1228,7 @@ public class MPDInterface {
                         // TODO: In the future this could be fixed by reading until the socket is exhausted.
                         Log.e(TAG, "Can't understand MPD anymore (chunkSize): " + path + " - " + e.getMessage());
                         Log.e(TAG, "Can't recover because binary read length is undefined");
-                        throw new MPDException("Cover error:" + e.getMessage());
+                        throw new MPDException.MPDConnectionException("Cover error:" + e.getMessage());
                     }
 
                     byte[] readData;

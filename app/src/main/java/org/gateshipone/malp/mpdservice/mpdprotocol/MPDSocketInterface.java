@@ -199,9 +199,13 @@ public class MPDSocketInterface {
         String key = mLineBuffer.toString("UTF-8");
 
         if (key.startsWith("ACK")) {
+            // Check if there is still data available, might be the case if aborted because of ":"
+            if (localReadPos != mReadBufferWritePos) {
+                key += readLine();
+            }
             mValueRead = true;
             // MPD error occurred, prepare MPDException here
-            throw new MPDException(key);
+            throw new MPDException.MPDServerException(key);
         }
 
         MPDResponses.MPD_RESPONSE_KEY keyEnum = MPDResponses.RESPONSE_KEYMAP.get(key);

@@ -707,7 +707,7 @@ class MPDResponseParser {
             }
         } catch (MPDSocketInterface.NoKeyReadException e) {
             e.printStackTrace();
-            throw new MPDException("Read value before key");
+            throw new MPDException.MPDConnectionException("Read value before key");
         }
         return stats;
     }
