@@ -234,8 +234,8 @@
     <string name="contributor_translator_korean">Koreanische Übersetzung</string>
     <string name="notification_channel_name_playback">Wiedergabe</string>
     <string name="notification_channel_name_bulk_download">Downloader</string>
-    <string name="snackbar_mpd_server_error_format">Fehler %d/%d: %s</string>
-    <string name="snackbar_mpd_connection_error_format">Fehler: %s</string>
+    <string name="snackbar_mpd_server_error_format">MPD-Fehler %d/%d: %s</string>
+    <string name="snackbar_mpd_connection_error_format">Verbindungsfehler: %s</string>
     <string name="action_switch_to_output">Wechsel zu Audioausgang</string>
     <string name="action_toggle_outputs">Audioausgang umschalten</string>
     <string name="fragment_profile_http_cover_enabled">Bevorzuge HTTP-basierte Albenbilder</string>

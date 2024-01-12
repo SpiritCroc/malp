@@ -198,8 +198,8 @@
     <string name="server_statistic_updateing_database">Server is updating its database, please wait!</string>
 
     <!-- Snackbar text -->
-    <string name="snackbar_mpd_server_error_format">Error %d/%d: %s</string>
-    <string name="snackbar_mpd_connection_error_format">EtrackUrirror: %s</string>
+    <string name="snackbar_mpd_server_error_format">MPD Error %d/%d: %s</string>
+    <string name="snackbar_mpd_connection_error_format">Connection error: %s</string>
 
     <!-- Sharing text -->
     <string name="sharing_song_details">I\'m listening to %s by %s from album %s</string>
