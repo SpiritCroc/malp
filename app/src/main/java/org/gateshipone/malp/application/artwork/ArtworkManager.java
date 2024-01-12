@@ -133,6 +133,8 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
      */
     private final Context mApplicationContext;
 
+    ConnectionStateReceiver mReceiver;
+
     private ArtworkManager(final Context context) {
 
         mApplicationContext = context.getApplicationContext();
@@ -142,14 +144,14 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
         mArtistListeners = new ArrayList<>();
         mAlbumListeners = new ArrayList<>();
 
-        ConnectionStateReceiver receiver = new ConnectionStateReceiver();
+        mReceiver = new ConnectionStateReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            mApplicationContext.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            mApplicationContext.registerReceiver(mReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
         } else {
-            mApplicationContext.registerReceiver(receiver, filter);
+            mApplicationContext.registerReceiver(mReceiver, filter);
         }
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mApplicationContext);
@@ -158,6 +160,11 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
         mWifiOnly = sharedPref.getBoolean(mApplicationContext.getString(R.string.pref_download_wifi_only_key), mApplicationContext.getResources().getBoolean(R.bool.pref_download_wifi_default));
 
         MPDAlbumImageProvider.getInstance().setResponseLooper(Looper.getMainLooper());
+    }
+
+    @Override
+    protected void finalize() {
+        mApplicationContext.unregisterReceiver(mReceiver);
     }
 
     public static synchronized ArtworkManager getInstance(final Context context) {
