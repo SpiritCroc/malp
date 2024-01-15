@@ -1249,7 +1249,10 @@ public class MPDInterface {
                             abort = true;
                         } else {
                             // Copy chunk to final output array
-                            System.arraycopy(readData, 0, imageData, ((int) imageSize - dataToRead), chunkSize);
+                            if (readData != null) {
+                                // Spurious crash happened here with src being null
+                                System.arraycopy(readData, 0, imageData, ((int) imageSize - dataToRead), chunkSize);
+                            }
                             dataToRead -= chunkSize;
                         }
                     }
