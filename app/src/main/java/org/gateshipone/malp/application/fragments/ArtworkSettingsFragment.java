@@ -170,7 +170,6 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.artwork_settings);
-        PreferenceManager.setDefaultValues(getActivity(), R.xml.artwork_settings, false);
     }
 
     /**

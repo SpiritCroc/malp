@@ -152,7 +152,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public void onCreatePreferences(Bundle bundle, String s) {
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.main_settings);
-        PreferenceManager.setDefaultValues(getActivity(), R.xml.main_settings, false);
     }
 
     @Override
