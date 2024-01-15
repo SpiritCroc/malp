@@ -332,6 +332,7 @@
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/colorIconBackground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/icon_inner</item>
     </style>
 
     <style name="AppTheme.Toolbar" parent="AppTheme"></style>
