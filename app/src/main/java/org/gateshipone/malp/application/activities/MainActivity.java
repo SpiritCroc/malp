@@ -575,8 +575,7 @@ public class MainActivity extends GenericActivity
         // fragment,
         // and add the transaction to the back stack so the user can navigate
         // back
-        newFragment.setEnterTransition(new Slide(Gravity.BOTTOM));
-        newFragment.setExitTransition(new Slide(Gravity.TOP));
+        transaction.setCustomAnimations(R.anim.fragment_slide_in_bottom, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out_bottom);
         transaction.replace(R.id.fragment_container, newFragment, AlbumTracksFragment.TAG);
         transaction.addToBackStack("AlbumTracksFragment");
 
@@ -600,8 +599,7 @@ public class MainActivity extends GenericActivity
         ArtistAlbumsFragment newFragment = ArtistAlbumsFragment.newInstance(artist, bitmap);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        newFragment.setEnterTransition(new Slide(Gravity.BOTTOM));
-        newFragment.setExitTransition(new Slide(Gravity.TOP));
+        transaction.setCustomAnimations(R.anim.fragment_slide_in_bottom, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out_bottom);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -671,9 +669,9 @@ public class MainActivity extends GenericActivity
         // Create fragment and give it an argument for the selected article
         EditProfileFragment newFragment = EditProfileFragment.newInstance(profile);
 
+
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        transaction.setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -693,8 +691,7 @@ public class MainActivity extends GenericActivity
         PlaylistTracksFragment newFragment = PlaylistTracksFragment.newInstance(name);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        transaction.setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -732,8 +729,6 @@ public class MainActivity extends GenericActivity
         CollapsingToolbarLayout toolbar = findViewById(R.id.collapsing_toolbar);
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.height = -1;
-
-        MaterialToolbar materialToolbar = findViewById(R.id.toolbar);
 
         mShowImage = showImage;
 
@@ -833,8 +828,7 @@ public class MainActivity extends GenericActivity
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        transaction.setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out);
 
         transaction.addToBackStack("FilesFragment" + path);
         transaction.replace(R.id.fragment_container, newFragment);
@@ -856,8 +850,7 @@ public class MainActivity extends GenericActivity
         AlbumsFragment newFragment = AlbumsFragment.newInstance(path);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        transaction.setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -893,8 +886,7 @@ public class MainActivity extends GenericActivity
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        transaction.setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out);
 
         transaction.addToBackStack("ArtworkSettingsFragment");
         transaction.replace(R.id.fragment_container, newFragment);
