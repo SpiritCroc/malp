@@ -354,14 +354,12 @@ class MPDResponseParser {
                     if (null != tempFileEntry) {
                         trackList.add(tempFileEntry);
                     }
-                    Log.v(TAG, "New Playlist item");
                     tempFileEntry = new MPDPlaylist(value);
                     break;
                 case RESPONSE_DIRECTORY:
                     if (null != tempFileEntry) {
                         trackList.add(tempFileEntry);
                     }
-                    Log.v(TAG, "New Dir item");
                     tempFileEntry = new MPDDirectory(value);
                     break;
                 default:
