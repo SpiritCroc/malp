@@ -30,12 +30,13 @@ import androidx.annotation.NonNull;
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.listviewitems.AbsImageListViewItem;
-import org.gateshipone.malp.application.listviewitems.FileListItem;
 import org.gateshipone.malp.application.listviewitems.GenericGridItem;
 import org.gateshipone.malp.application.listviewitems.GenericViewItemHolder;
 import org.gateshipone.malp.application.listviewitems.ImageListItem;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+
+import java.util.HashMap;
 
 public class AlbumsRecyclerViewAdapter extends GenericRecyclerViewAdapter<MPDAlbum, GenericViewItemHolder> implements ArtworkManager.onNewAlbumImageListener {
 
@@ -44,6 +45,8 @@ public class AlbumsRecyclerViewAdapter extends GenericRecyclerViewAdapter<MPDAlb
     private int mItemSize;
 
     private final ArtworkManager mArtworkManager;
+
+    private final HashMap<MPDAlbum, Integer> mAlbumPositionMap;
 
     public AlbumsRecyclerViewAdapter(final Context context, final boolean useList) {
         super();
@@ -56,6 +59,7 @@ public class AlbumsRecyclerViewAdapter extends GenericRecyclerViewAdapter<MPDAlb
         } else {
             mItemSize = (int) context.getResources().getDimension(R.dimen.grid_item_height);
         }
+        mAlbumPositionMap = new HashMap<>();
     }
 
     @NonNull
@@ -82,6 +86,7 @@ public class AlbumsRecyclerViewAdapter extends GenericRecyclerViewAdapter<MPDAlb
     @Override
     public void onBindViewHolder(@NonNull GenericViewItemHolder holder, int position) {
         final MPDAlbum album = getItem(position);
+        mAlbumPositionMap.put(album, position);
 
         holder.setTitle(album.getName());
 
@@ -126,6 +131,10 @@ public class AlbumsRecyclerViewAdapter extends GenericRecyclerViewAdapter<MPDAlb
 
     @Override
     public void newAlbumImage(MPDAlbum album) {
-        notifyDataSetChanged();
+        Integer position;
+        position = mAlbumPositionMap.get(album);
+        if (position != null) {
+            notifyItemChanged(position);
+        }
     }
 }

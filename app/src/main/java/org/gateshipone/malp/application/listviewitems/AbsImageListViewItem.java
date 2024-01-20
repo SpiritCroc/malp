@@ -24,6 +24,7 @@ package org.gateshipone.malp.application.listviewitems;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.animation.AnimationUtils;
@@ -31,6 +32,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ViewSwitcher;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
+import com.google.android.material.color.MaterialColors;
+
+import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.ScrollSpeedAdapter;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.utils.AsyncLoader;
@@ -50,6 +56,9 @@ public abstract class AbsImageListViewItem extends RelativeLayout implements Cov
 
     protected final AsyncLoader.CoverViewHolder mHolder;
 
+    final private Drawable mPlaceholder;
+
+    final private int mPlaceholderPadding;
 
     public AbsImageListViewItem(Context context, int layoutID, int imageviewID, int switcherID, ScrollSpeedAdapter adapter) {
         super(context);
@@ -66,14 +75,15 @@ public abstract class AbsImageListViewItem extends RelativeLayout implements Cov
         mHolder.imageDimension = new Pair<>(0,0);
 
         mCoverDone = false;
-        if ( null != mImageView && null != mSwitcher) {
-            mSwitcher.setOutAnimation(null);
-            mSwitcher.setInAnimation(null);
-            mImageView.setImageDrawable(null);
-            mSwitcher.setDisplayedChild(0);
+        if (null != mSwitcher) {
             mSwitcher.setOutAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_out));
             mSwitcher.setInAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in));
         }
+        if (null != mImageView) {
+            mImageView.setBackgroundColor(MaterialColors.getColor(getContext(), R.attr.colorSurfaceVariant,0));
+        }
+        mPlaceholder = AppCompatResources.getDrawable(getContext(), R.drawable.cover_placeholder_128dp);
+        mPlaceholderPadding = getContext().getResources().getDimensionPixelSize(R.dimen.material_standard_horizontal_spacing);
     }
 
     public void setImageDimension(int width, int height) {
@@ -104,6 +114,7 @@ public abstract class AbsImageListViewItem extends RelativeLayout implements Cov
         mHolder.modelItem = modelItem;
     }
 
+
     /**
      * If this GridItem gets detached from the parent it makes no sense to let
      * the task for image retrieval running. (non-Javadoc)
@@ -133,9 +144,11 @@ public abstract class AbsImageListViewItem extends RelativeLayout implements Cov
         if (null != image) {
             mCoverDone = true;
 
+            mImageView.setPadding(0,0,0,0);
             mImageView.setImageBitmap(image);
             mSwitcher.setDisplayedChild(1);
         } else {
+
             // Cancel old task
             if (mLoaderTask != null) {
                 mLoaderTask.cancel(true);
@@ -144,10 +157,15 @@ public abstract class AbsImageListViewItem extends RelativeLayout implements Cov
             mHolder.modelItem = null;
 
             mCoverDone = false;
-            mSwitcher.setOutAnimation(null);
-            mSwitcher.setInAnimation(null);
-            mImageView.setImageDrawable(null);
-            mSwitcher.setDisplayedChild(0);
+            mImageView.setPadding(mPlaceholderPadding, mPlaceholderPadding, mPlaceholderPadding, mPlaceholderPadding);
+            mImageView.setImageDrawable(mPlaceholder);
+
+            if (mSwitcher.getDisplayedChild() != 0) {
+                mSwitcher.setOutAnimation(null);
+                mSwitcher.setInAnimation(null);
+                mSwitcher.setDisplayedChild(0);
+            }
+
             mSwitcher.setOutAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_out));
             mSwitcher.setInAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in));
         }
