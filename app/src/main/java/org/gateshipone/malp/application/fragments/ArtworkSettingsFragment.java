@@ -112,7 +112,7 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         // we have to set the background color at this point otherwise we loose the ripple effect
-        view.setBackgroundColor(ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_background));
+        view.setBackgroundColor(ThemeUtils.getThemeColor(requireContext(), R.attr.app_color_content));
 
         return view;
     }
@@ -170,7 +170,6 @@ public class ArtworkSettingsFragment extends PreferenceFragmentCompat implements
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.artwork_settings);
-        PreferenceManager.setDefaultValues(getActivity(), R.xml.artwork_settings, false);
     }
 
     /**

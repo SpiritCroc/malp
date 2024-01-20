@@ -147,7 +147,7 @@
             android:layout_gravity="center"
             android:text="@string/widget_connect"
             android:textAlignment="center"
-            android:textColor="@color/colorAccent_deepOrange"
+            android:textColor="@color/app_color_secondary_deepOrange"
             android:textSize="@dimen/material_font_style_size_subheading" />
     </LinearLayout>
 </RelativeLayout>

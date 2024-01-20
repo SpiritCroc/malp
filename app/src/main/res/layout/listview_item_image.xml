@@ -40,8 +40,9 @@
             android:layout_height="match_parent"
             android:padding="16dp"
             android:scaleType="centerCrop"
+            android:background="?attr/colorSurfaceVariant"
             android:src="@drawable/cover_placeholder_128dp"
-            app:tint="?attr/malp_color_text_background_primary" />
+            app:tint="?attr/app_color_on_content" />
 
         <ImageView
             android:id="@+id/item_image"

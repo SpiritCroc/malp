@@ -309,8 +309,8 @@ public class FanartActivity extends GenericActivity implements FanartManager.OnF
             mVolumeIcon.setImageResource(R.drawable.ic_volume_mute_black_48dp);
             mVolumeIconButtons.setImageResource(R.drawable.ic_volume_mute_black_48dp);
         }
-        mVolumeIcon.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent)));
-        mVolumeIconButtons.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent)));
+        mVolumeIcon.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(this, R.attr.app_color_fanart_activity_tint)));
+        mVolumeIconButtons.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(this, R.attr.app_color_fanart_activity_tint)));
 
         mVolumeText.setText(String.valueOf(volume) + '%');
 

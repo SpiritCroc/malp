@@ -31,13 +31,11 @@
 
 <CheckedTextView
     android:id="@+id/item_output_name"
-    android:text="Bla"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fontFamily="sans-serif-regular"
     android:textSize="@dimen/material_font_style_size_subheading"
-    android:textColor="?attr/malp_color_text_background_primary"
+    android:textColor="?attr/app_color_on_content"
     android:gravity="center"
     android:checkMark="?android:attr/listChoiceIndicatorMultiple"
-    />
+    android:textAppearance="?attr/app_text_list_title" />
 </LinearLayout>

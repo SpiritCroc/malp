@@ -31,6 +31,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BlendMode;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -700,6 +701,9 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
                 }
             } else if (state == ViewDragHelper.STATE_DRAGGING) {
+                if (mDragStatusReceiver != null) {
+                    mDragStatusReceiver.onStatusChanged(NowPlayingDragStatusReceiver.DRAG_STATUS.DRAGGING);
+                }
                 /*
                  * Show both layouts to enable a smooth transition via
                  * alpha values of the layouts.
@@ -933,28 +937,33 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         // add listener to top playpause button
         mTopPlayPauseButton.setOnClickListener(arg0 -> MPDCommandHandler.togglePause());
 
-        // Add listeners to top playlist button
-        mTopPlaylistButton.setOnClickListener(v -> {
+        // Check if playlist is attached to view switcher (single pane) or not (double pane layout)
+        if (mPlaylistView.getParent().equals(mViewSwitcher)) {
+            // Add listeners to top playlist button
+            mTopPlaylistButton.setOnClickListener(v -> {
 
-            if (mViewSwitcher.getCurrentView() != mPlaylistView) {
-                setViewSwitcherStatus(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.PLAYLIST_VIEW);
-            } else {
-                setViewSwitcherStatus(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.COVER_VIEW);
-            }
-
-            // report the change of the view
-            if (mDragStatusReceiver != null) {
-                // set view status
-                if (mViewSwitcher.getDisplayedChild() == 0) {
-                    // cover image is shown
-                    mDragStatusReceiver.onSwitchedViews(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.COVER_VIEW);
+                if (mViewSwitcher.getCurrentView() != mPlaylistView) {
+                    setViewSwitcherStatus(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.PLAYLIST_VIEW);
                 } else {
-                    // playlist view is shown
-                    mDragStatusReceiver.onSwitchedViews(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.PLAYLIST_VIEW);
-                    mPlaylistView.jumpToCurrentSong();
+                    setViewSwitcherStatus(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.COVER_VIEW);
                 }
-            }
-        });
+
+                // report the change of the view
+                if (mDragStatusReceiver != null) {
+                    // set view status
+                    if (mViewSwitcher.getDisplayedChild() == 0) {
+                        // cover image is shown
+                        mDragStatusReceiver.onSwitchedViews(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.COVER_VIEW);
+                    } else {
+                        // playlist view is shown
+                        mDragStatusReceiver.onSwitchedViews(NowPlayingDragStatusReceiver.VIEW_SWITCHER_STATUS.PLAYLIST_VIEW);
+                        mPlaylistView.jumpToCurrentSong();
+                    }
+                }
+            });
+        } else {
+            mTopPlaylistButton.setVisibility(GONE);
+        }
 
         TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_playlist));
 
@@ -1199,21 +1208,21 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         switch (status.getRepeat()) {
             case 0:
                 mBottomRepeatButton.setImageResource(R.drawable.ic_repeat_24dp);
-                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
+                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface)));
                 break;
             case 1:
                 mBottomRepeatButton.setImageResource(R.drawable.ic_repeat_24dp);
-                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), android.R.attr.colorAccent)));
+                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface_highlight)));
                 break;
         }
 
         // update random button
         switch (status.getRandom()) {
             case 0:
-                mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
+                mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface)));
                 break;
             case 1:
-                mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), android.R.attr.colorAccent)));
+                mBottomRandomButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface_highlight)));
                 break;
         }
 
@@ -1247,8 +1256,8 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             mVolumeIcon.setImageResource(R.drawable.ic_volume_mute_black_48dp);
             mVolumeIconButtons.setImageResource(R.drawable.ic_volume_mute_black_48dp);
         }
-        mVolumeIcon.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
-        mVolumeIconButtons.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
+        mVolumeIcon.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface)));
+        mVolumeIconButtons.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface)));
 
         mVolumeText.setText(getResources().getString(R.string.volume_level_template, volume));
 
@@ -1302,7 +1311,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             mCoverImage.clearAlbumImage();
 
             // The same for the small header image
-            int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent);
+            int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface);
 
             Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.cover_placeholder_128dp, null);
 
@@ -1383,7 +1392,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 if (mViewSwitcher.getCurrentView() != mCoverImage) {
                     mViewSwitcher.showNext();
                 }
-                color = ThemeUtils.getThemeColor(getContext(), android.R.attr.textColor);
+                color = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface);
                 TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_playlist));
                 break;
             case PLAYLIST_VIEW:
@@ -1391,7 +1400,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 if (mViewSwitcher.getCurrentView() != mPlaylistView) {
                     mViewSwitcher.showNext();
                 }
-                color = ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent);
+                color = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface_highlight);
                 TooltipCompat.setTooltipText(mTopPlaylistButton, getResources().getString(R.string.action_npv_show_cover));
                 break;
         }
@@ -1452,7 +1461,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
     public interface NowPlayingDragStatusReceiver {
         // Possible values for DRAG_STATUS (up,down)
         enum DRAG_STATUS {
-            DRAGGED_UP, DRAGGED_DOWN
+            DRAGGED_UP, DRAGGED_DOWN, DRAGGING
         }
 
         // Possible values for the view in the viewswitcher (cover, playlist)

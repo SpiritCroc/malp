@@ -100,6 +100,8 @@
     <string name="preference_album_sort_order_summary">Wähle die Sortierung für Alben eines Interpreten.</string>
     <string name="preference_album_sort_order_name">Name</string>
     <string name="preference_album_sort_order_year">Jahr</string>
+    <string name="preference_theme_item_materialyou_auto">Systembasiert (automatisch dunkel\/hell)</string>
+    <string name="preference_theme_item_materialyou">Systembasiert (manuell dunkel/hell)</string>
     <string name="preference_album_sort_order_title">Albensortierung</string>
     <string name="preference_album_sort_order_message">Sortiere nach</string>
     <string name="search_choice_album">Album</string>
@@ -216,6 +218,8 @@
     <string name="preference_use_english_wikipedia_text">Verwende englische Wikipedia-Version um Seiten zu finden</string>
     <string name="action_reset_artwork">Bild neuladen</string>
     <string name="server_statistic_updateing_database">Server aktualisiert seine Datenbank, bitte warten!</string>
+    <string name="preference_legacy_theme_title">Altes Design</string>
+    <string name="preference_legacy_theme_message">Verwende die intensiven Farbschemen aus vorherigen Versionen. Diese Farbschemen entsprechen nicht den aktuellen Material Design Richtlinien und sind nur für langzeit Benutzer enthalten. Die neuen Farbschemen wurden mit dem Material Theme Builder erstellt.</string>
     <string name="preference_show_artist_image_title">Interpretenbild anzeigen</string>
     <string name="preference_show_artist_image_text">Abwechselnd das Albumcover und ein Bild des Interpreten in der aktuellen Liedansicht anzeigen</string>
     <string name="action_remove_album">Album entfernen</string>

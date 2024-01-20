@@ -25,6 +25,8 @@ package org.gateshipone.malp.application;
 import android.app.Application;
 import android.os.StrictMode;
 
+import com.google.android.material.color.DynamicColors;
+
 import org.gateshipone.malp.BuildConfig;
 
 public class MalpApplication extends Application {
@@ -47,5 +49,6 @@ public class MalpApplication extends Application {
         }
 
         super.onCreate();
+        DynamicColors.applyToActivitiesIfAvailable(this);
     }
 }

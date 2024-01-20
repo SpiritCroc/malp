@@ -58,7 +58,7 @@
                         android:layout_height="match_parent"
                         android:scaleType="fitCenter"
                         android:src="@drawable/cover_placeholder_128dp"
-                        app:tint="?attr/malp_color_text_background_primary" />
+                        app:tint="?attr/app_color_on_content" />
 
                     <ImageView
                         android:id="@+id/section_header_image"
@@ -72,18 +72,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:fontFamily="sans-serif-regular"
                     android:maxLines="1"
                     android:paddingStart="@dimen/material_standard_horizontal_spacing"
-                    android:textSize="@dimen/material_font_style_size_title" />
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
             </LinearLayout>
 
-            <View
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/list_divider_size"
                 android:layout_marginStart="@dimen/material_screen_edge_spacing"
-                android:layout_marginEnd="@dimen/material_screen_edge_spacing"
-                android:background="?attr/malp_color_divider" />
+                android:layout_marginEnd="@dimen/material_screen_edge_spacing" />
         </LinearLayout>
 
         <include layout="@layout/listview_item_file" />

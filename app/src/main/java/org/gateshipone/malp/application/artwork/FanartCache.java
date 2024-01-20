@@ -101,7 +101,10 @@ public class FanartCache {
         mLastAccessedMBIDs.add(0, mbid);
         File artistDir = new File(mCacheBasePath + "/" + mbid);
         File[] subFiles = artistDir.listFiles(File::isFile);
-        return subFiles[index];
+        if (subFiles != null && subFiles.length > index) {
+            return subFiles[index];
+        }
+        return null;
     }
 
     /**

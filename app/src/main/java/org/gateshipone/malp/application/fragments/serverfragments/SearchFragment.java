@@ -309,7 +309,7 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
         menuInflater.inflate(R.menu.fragment_menu_search_tracks, menu);
 
         // get tint color
-        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
+        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.app_color_on_surface);
 
         Drawable drawable = menu.findItem(R.id.action_add_search_result).getIcon();
         drawable = DrawableCompat.wrap(drawable);
