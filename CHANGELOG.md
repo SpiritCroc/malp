@@ -1,5 +1,14 @@
 # Changelog M.A.L.P
 
+## 1.3.0 Tag: release-40 (2024-01-21)
+* Material You design implementation
+* Flickering fixes for album images
+* ArtistSort fixes
+* Albumartist fixes
+* MPD Error propagation fixes
+* Monochromatic launcher icon
+* Smaller fixes
+
 ## 1.2.12 Tag: release-39 (2023-12-20)
 
 * Fix handling of album titles that contain double quotes ([288](https://gitlab.com/gateship-one/malp/-/issues/288))

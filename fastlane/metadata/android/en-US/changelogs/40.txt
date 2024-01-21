@@ -1,0 +1,7 @@
+* Material You design implementation
+* Flickering fixes for album images
+* ArtistSort fixes
+* Albumartist fixes
+* MPD Error propagation fixes
+* Monochromatic launcher icon
+* Smaller fixes
