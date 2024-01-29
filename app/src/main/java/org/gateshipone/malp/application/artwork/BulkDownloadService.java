@@ -142,7 +142,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            registerReceiver(mConnectionStateChangeReceiver, filter, RECEIVER_NOT_EXPORTED);
+            registerReceiver(mConnectionStateChangeReceiver, filter, RECEIVER_EXPORTED);
         } else {
             registerReceiver(mConnectionStateChangeReceiver, filter);
         }
@@ -281,7 +281,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
             intentFilter.addAction(ACTION_CANCEL);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                registerReceiver(mBroadcastReceiver, intentFilter, RECEIVER_NOT_EXPORTED);
+                registerReceiver(mBroadcastReceiver, intentFilter, RECEIVER_EXPORTED);
             } else {
                 registerReceiver(mBroadcastReceiver, intentFilter);
             }
