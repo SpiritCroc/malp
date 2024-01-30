@@ -33,6 +33,7 @@ import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseArtis
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseFileList;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseHandler;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseOutputList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponsePartitionList;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseServerStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCapabilities;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCommands;
@@ -43,6 +44,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -402,6 +404,14 @@ public class MPDQueryHandler extends MPDGenericHandler {
                 MPDInterface.getGenericInstance().loadPlaylist(playlistName);
                 MPDInterface.getGenericInstance().playSongIndex(0);
 
+            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_NEW_PARTITION) {
+                String partitionName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PARTITION_NAME);
+
+                MPDInterface.getGenericInstance().newPartition(partitionName);
+            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_DELETE_PARTITION) {
+                String partitionName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PARTITION_NAME);
+
+                MPDInterface.getGenericInstance().deletePartition(partitionName);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_ADD_ARTIST_ALBUM) {
                 String albumname = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ALBUM_NAME);
                 String artistname = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ARTIST_NAME);
@@ -533,6 +543,12 @@ public class MPDQueryHandler extends MPDGenericHandler {
                 List<MPDOutput> outputList = MPDInterface.getGenericInstance().getOutputs();
 
                 ((MPDResponseOutputList) responseHandler).sendOutputs(outputList);
+            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_PARTITIONS) {
+                responseHandler = mpdAction.getResponseHandler();
+
+                List<MPDPartition> partitionList = MPDInterface.getGenericInstance().getPartitions();
+
+                ((MPDResponsePartitionList) responseHandler).sendPartitions(partitionList);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_SERVER_STATISTICS) {
                 responseHandler = mpdAction.getResponseHandler();
 
@@ -975,6 +991,19 @@ public class MPDQueryHandler extends MPDGenericHandler {
     }
 
     /**
+     * Requests a list of available partitions configured on the MPD server.
+     *
+     * @param responseHandler The handler used to send the requested data.
+     */
+    public static void getPartitions(MPDResponsePartitionList responseHandler) {
+        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_PARTITIONS);
+
+        action.setResponseHandler(responseHandler);
+
+        sendMsg(action);
+    }
+
+    /**
      * Requests a statistics object for the connected mpd server.
      *
      * @param responseHandler The handler used to send the requested data.
@@ -1173,6 +1202,15 @@ public class MPDQueryHandler extends MPDGenericHandler {
                 MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PLAYLIST_NAME, name);
     }
 
+    public static void newPartition(String name) {
+        genericStringAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_NEW_PARTITION,
+                MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PARTITION_NAME, name);
+    }
+
+    public static void deletePartition(String name) {
+        genericStringAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_DELETE_PARTITION,
+                MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PARTITION_NAME, name);
+    }
 
     public static void updateDatabase(String path) {
         genericStringAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_UPDATE_DATABASE,

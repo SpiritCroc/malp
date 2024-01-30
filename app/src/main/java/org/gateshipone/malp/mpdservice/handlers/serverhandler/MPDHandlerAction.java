@@ -110,7 +110,10 @@ public class MPDHandlerAction {
         ACTION_UPDATE_DATABASE,
         ACTION_SEARCH_FILES,
         ACTION_ADD_SEARCH_FILES,
-        ACTION_PLAY_SEARCH_FILES
+        ACTION_PLAY_SEARCH_FILES,
+        ACTION_GET_PARTITIONS,
+        ACTION_NEW_PARTITION,
+        ACTION_DELETE_PARTITION,
     }
 
 
@@ -128,6 +131,7 @@ public class MPDHandlerAction {
         EXTRA_PATH,
         EXTRA_SEARCH_TERM,
         EXTRA_ALBUM_MBID,
+        EXTRA_PARTITION_NAME,
     }
 
     /**
