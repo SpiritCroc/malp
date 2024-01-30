@@ -543,6 +543,12 @@ public class MPDQueryHandler extends MPDGenericHandler {
                 List<MPDOutput> outputList = MPDInterface.getGenericInstance().getOutputs();
 
                 ((MPDResponseOutputList) responseHandler).sendOutputs(outputList);
+            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_OUTPUTS_ALL_PARTITIONS) {
+                responseHandler = mpdAction.getResponseHandler();
+
+                List<MPDOutput> outputList = MPDInterface.getGenericInstance().getAllPartitionOutputs();
+
+                ((MPDResponseOutputList) responseHandler).sendOutputs(outputList);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_PARTITIONS) {
                 responseHandler = mpdAction.getResponseHandler();
 
@@ -984,6 +990,19 @@ public class MPDQueryHandler extends MPDGenericHandler {
      */
     public static void getOutputs(MPDResponseOutputList responseHandler) {
         MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_OUTPUTS);
+
+        action.setResponseHandler(responseHandler);
+
+        sendMsg(action);
+    }
+
+    /**
+     * Requests a list of available outputs for all partitions configured on the MPD server.
+     *
+     * @param responseHandler The handler used to send the requested data.
+     */
+    public static void getOutputsAllPartitions(MPDResponseOutputList responseHandler) {
+        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_OUTPUTS_ALL_PARTITIONS);
 
         action.setResponseHandler(responseHandler);
 

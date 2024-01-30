@@ -177,6 +177,7 @@ public class MPDResponses {
         map.put("Genre", MPD_RESPONSE_KEY.RESPONSE_GENRE);
         map.put("Comment", MPD_RESPONSE_KEY.RESPONSE_COMMENT);
         map.put("Label", MPD_RESPONSE_KEY.RESPONSE_LABEL);
+        map.put("partition", MPD_RESPONSE_KEY.RESPONSE_PARTITION);
 
         return map;
     }

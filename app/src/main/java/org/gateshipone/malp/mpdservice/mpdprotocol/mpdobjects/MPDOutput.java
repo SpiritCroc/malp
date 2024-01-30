@@ -32,6 +32,8 @@ public class MPDOutput implements MPDGenericItem {
     private boolean mActive;
     private final int mOutputId;
 
+    private String mPartition;
+
     public MPDOutput(@NonNull String name, boolean enabled, int id) {
         mOutputName = name;
         mActive = enabled;
@@ -55,6 +57,13 @@ public class MPDOutput implements MPDGenericItem {
         mActive = active;
     }
 
+    public void setPartitionName(String name) {
+        mPartition = name;
+    }
+
+    public String getPartitionName() {
+        return mPartition;
+    }
 
     @Override
     @NonNull

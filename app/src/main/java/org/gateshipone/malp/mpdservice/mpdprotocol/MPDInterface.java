@@ -1109,6 +1109,32 @@ public class MPDInterface {
     }
 
     /**
+     * Returns the list of MPDOutputs of all partitions to the outside callers.
+     *
+     * @return List of MPDOutput objects or null in case of error.
+     */
+    public synchronized List<MPDOutput> getAllPartitionOutputs() throws MPDException {
+        List<MPDPartition> partitions = getPartitions();
+
+        List<MPDOutput> outputs = new ArrayList<>();
+
+        String currentPartition = getCurrentServerStatus().getPartition();
+
+        for (MPDPartition partition : partitions) {
+            String partitionName = partition.getPartitionName();
+            switchPartition(partitionName, false);
+            List<MPDOutput> partitionOutputs = getOutputs();
+            for (MPDOutput output : partitionOutputs) {
+                output.setPartitionName(partitionName);
+            }
+        }
+
+        switchPartition(currentPartition, false);
+
+        return outputs;
+    }
+
+    /**
      * Returns the list of MPDPartition to the outside callers.
      *
      * @return List of MPDPartition objects or null in case of error.
@@ -1135,6 +1161,19 @@ public class MPDInterface {
      */
     public synchronized void deletePartition(String name) throws MPDException {
         mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_DELETE_PARTITION(name));
+    }
+
+    /**
+     * Deletes a partition
+     * @param name of partition to delete
+     * @throws MPDException
+     */
+    public synchronized void switchPartition(String name, boolean invalidate) throws MPDException {
+        mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_SWITCH_PARTITION(name));
+
+        if (invalidate) {
+            checkCacheState();
+        }
     }
 
     /**

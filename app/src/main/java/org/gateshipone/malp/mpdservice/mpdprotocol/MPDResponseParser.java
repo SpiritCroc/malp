@@ -626,6 +626,9 @@ class MPDResponseParser {
                     case RESPONSE_UPDATING_DB:
                         status.setUpdateDBJob(Integer.parseInt(value));
                         break;
+                    case RESPONSE_PARTITION:
+                        status.setPartition(value);
+                        break;
                     default:
                         break;
                 }
