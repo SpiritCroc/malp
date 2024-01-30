@@ -338,4 +338,18 @@ public class MPDCommands {
     public static String MPD_COMMAND_GET_READPICTURE(String url, int offset) {
         return "readpicture \"" + escapeString(url) + "\" " + offset;
     }
+
+    public static final String MPD_COMMAND_GET_PARTITIONS = "listpartitions";
+
+    public static String MPD_COMMAND_NEW_PARTITION(String name) {
+        return "newpartition \"" + escapeString(name) + "\"";
+    }
+
+    public static String MPD_COMMAND_DELETE_PARTITION(String name) {
+        return "delpartition \"" + escapeString(name) + "\"";
+    }
+
+    public static String MPD_COMMAND_SWITCH_PARTITION(String name) {
+        return "partition \"" + escapeString(name) + "\"";
+    }
 }

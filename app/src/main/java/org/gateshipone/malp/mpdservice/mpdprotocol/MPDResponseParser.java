@@ -31,6 +31,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
@@ -823,5 +824,40 @@ class MPDResponseParser {
         }
 
         return outputList;
+    }
+
+    /**
+     * Private parsing method for MPDs output lists.
+     *
+     * @return A list of MPDOutput objects with name,active,id values if successful. Otherwise empty list.
+     * @throws MPDException if an error from MPD was received during reading
+     */
+    static List<MPDPartition> parseMPDPartitions(final MPDConnection connection) throws MPDException {
+        ArrayList<MPDPartition> partitionList = new ArrayList<>();
+        // Parse partitions
+        String partitionName = null;
+        boolean partitionActive = false;
+
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+
+        key = connection.readKey();
+
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
+            }
+            if (key.equals(MPDResponses.MPD_RESPONSE_KEY.RESPONSE_PARTITION)) {
+                partitionName = value;
+                MPDPartition partition = new MPDPartition(partitionName, partitionActive);
+                partitionList.add(partition);
+            }
+
+            key = connection.readKey();
+        }
+
+        return partitionList;
     }
 }

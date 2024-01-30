@@ -106,6 +106,7 @@ public class MPDResponses {
         RESPONSE_COMMENT,
         RESPONSE_LABEL,
         RESPONSE_UNKNOWN,
+        RESPONSE_PARTITION,
     }
 
     private static Map<String, MPD_RESPONSE_KEY> createResponseMap() {

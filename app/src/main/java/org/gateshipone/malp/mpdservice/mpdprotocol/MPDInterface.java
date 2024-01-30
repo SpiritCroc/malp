@@ -32,6 +32,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -1105,6 +1106,35 @@ public class MPDInterface {
         mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_OUTPUTS);
 
         return MPDResponseParser.parseMPDOutputs(mConnection);
+    }
+
+    /**
+     * Returns the list of MPDPartition to the outside callers.
+     *
+     * @return List of MPDPartition objects or null in case of error.
+     */
+    public synchronized List<MPDPartition> getPartitions() throws MPDException {
+        mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_PARTITIONS);
+
+        return MPDResponseParser.parseMPDPartitions(mConnection);
+    }
+
+    /**
+     * Creates a new partition
+     * @param name of the new partition
+     * @throws MPDException
+     */
+    public synchronized void newPartition(String name) throws MPDException {
+        mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_NEW_PARTITION(name));
+    }
+
+    /**
+     * Deletes a partition
+     * @param name of partition to delete
+     * @throws MPDException
+     */
+    public synchronized void deletePartition(String name) throws MPDException {
+        mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_DELETE_PARTITION(name));
     }
 
     /**
