@@ -1197,11 +1197,14 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
                 break;
             case MPD_PAUSING:
+                mTopPlayPauseButton.setImageResource(R.drawable.ic_play_arrow_48dp);
+                mBottomPlayPauseButton.setImageResource(R.drawable.ic_play_circle_fill_48dp);
+                break;
             case MPD_STOPPED:
                 mTopPlayPauseButton.setImageResource(R.drawable.ic_play_arrow_48dp);
                 mBottomPlayPauseButton.setImageResource(R.drawable.ic_play_circle_fill_48dp);
 
-
+                updateMPDCurrentTrack(new MPDTrack(""));
                 break;
         }
 
