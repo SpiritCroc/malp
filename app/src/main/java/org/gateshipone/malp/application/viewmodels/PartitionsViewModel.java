@@ -28,58 +28,58 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseOutputList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponsePartitionList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class OutputsViewModel extends GenericViewModel<MPDOutput> {
+public class PartitionsViewModel extends GenericViewModel<MPDPartition> {
 
-    private final OutputsHandler mOutputsHandler;
+    private final PartitionHandler mPartitionHandler;
 
-    private OutputsViewModel(@NonNull final Application application) {
+    private PartitionsViewModel(@NonNull final Application application) {
         super(application);
 
-        mOutputsHandler = new OutputsHandler(this);
+        mPartitionHandler = new PartitionHandler(this);
     }
 
     @Override
     void loadData() {
-        MPDQueryHandler.getOutputsAllPartitions(mOutputsHandler);
+        MPDQueryHandler.getPartitions(mPartitionHandler);
     }
 
-    private static class OutputsHandler extends MPDResponseOutputList {
+    private static class PartitionHandler extends MPDResponsePartitionList {
 
-        private final WeakReference<OutputsViewModel> mOutputsViewModel;
+        private final WeakReference<PartitionsViewModel> mOutputsViewModel;
 
-        OutputsHandler(final OutputsViewModel outputsViewModel) {
+        PartitionHandler(final PartitionsViewModel outputsViewModel) {
             mOutputsViewModel = new WeakReference<>(outputsViewModel);
         }
 
         @Override
-        public void handleOutputs(List<MPDOutput> outputList) {
-            final OutputsViewModel viewModel = mOutputsViewModel.get();
+        public void handlePartitions(List<MPDPartition> partitionList) {
+            final PartitionsViewModel viewModel = mOutputsViewModel.get();
 
             if (viewModel != null) {
-                viewModel.setData(outputList);
+                viewModel.setData(partitionList);
             }
         }
     }
 
-    public static class OutputsViewModelFactory implements ViewModelProvider.Factory {
+    public static class PartitionsViewModelFactory implements ViewModelProvider.Factory {
 
         private final Application mApplication;
 
-        public OutputsViewModelFactory(final Application application) {
+        public PartitionsViewModelFactory(final Application application) {
             mApplication = application;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) new OutputsViewModel(mApplication);
+            return (T) new PartitionsViewModel(mApplication);
         }
     }
 }

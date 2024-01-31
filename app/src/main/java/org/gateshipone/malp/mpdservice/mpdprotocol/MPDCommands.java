@@ -352,4 +352,8 @@ public class MPDCommands {
     public static String MPD_COMMAND_SWITCH_PARTITION(String name) {
         return "partition \"" + escapeString(name) + "\"";
     }
+
+    public static String MPD_COMMAND_MOVE_OUTPUT(String name) {
+        return "moveoutput \"" + escapeString(name) + "\"";
+    }
 }

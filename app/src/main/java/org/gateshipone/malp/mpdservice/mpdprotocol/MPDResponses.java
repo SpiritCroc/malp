@@ -88,6 +88,7 @@ public class MPDResponses {
         RESPONSE_OUTPUT_ID,
         RESPONSE_OUTPUT_NAME,
         RESPONSE_OUTPUT_ENABLED,
+        RESPONSE_OUTPUT_PLUGIN,
         RESPONSE_UPTIME,
         RESPONSE_PLAYTIME,
         RESPONSE_ARTISTS,
@@ -160,6 +161,7 @@ public class MPDResponses {
         map.put("outputid", MPD_RESPONSE_KEY.RESPONSE_OUTPUT_ID);
         map.put("outputname", MPD_RESPONSE_KEY.RESPONSE_OUTPUT_NAME);
         map.put("outputenabled", MPD_RESPONSE_KEY.RESPONSE_OUTPUT_ENABLED);
+        map.put("plugin", MPD_RESPONSE_KEY.RESPONSE_OUTPUT_PLUGIN);
         map.put("uptime", MPD_RESPONSE_KEY.RESPONSE_UPTIME);
         map.put("playtime", MPD_RESPONSE_KEY.RESPONSE_PLAYTIME);
         map.put("artists", MPD_RESPONSE_KEY.RESPONSE_ARTISTS);

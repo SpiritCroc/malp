@@ -1127,6 +1127,7 @@ public class MPDInterface {
             for (MPDOutput output : partitionOutputs) {
                 output.setPartitionName(partitionName);
             }
+            outputs.addAll(partitionOutputs);
         }
 
         switchPartition(currentPartition, false);
@@ -1141,8 +1142,18 @@ public class MPDInterface {
      */
     public synchronized List<MPDPartition> getPartitions() throws MPDException {
         mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_PARTITIONS);
+        List<MPDPartition> partitions = MPDResponseParser.parseMPDPartitions(mConnection);
 
-        return MPDResponseParser.parseMPDPartitions(mConnection);
+        MPDCurrentStatus status = getCurrentServerStatus();
+
+        for (MPDPartition partition : partitions) {
+            if (partition.getPartitionName().equals(status.getPartition())) {
+                partition.setPartitionState(true);
+                break;
+            }
+        }
+
+        return partitions;
     }
 
     /**
@@ -1177,6 +1188,29 @@ public class MPDInterface {
     }
 
     /**
+     * Moves an output to the current partition
+     * @param name of partition to delete
+     * @throws MPDException
+     */
+    public synchronized void moveOutputToCurrentPartiton(String name) throws MPDException {
+        mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_MOVE_OUTPUT(name));
+    }
+
+    public synchronized void moveOutputToPartition(String output, String partition) throws MPDException {
+        String currentPartition = getCurrentServerStatus().getPartition();
+
+        if (!partition.equals(currentPartition)) {
+            switchPartition(partition, false);
+        }
+
+        moveOutputToCurrentPartiton(output);
+
+        if (!partition.equals(currentPartition)) {
+            switchPartition(currentPartition, false);
+        }
+    }
+
+    /**
      * Toggles the state of the output with the id.
      *
      * @param id Id of the output to toggle (active/deactive)
@@ -1194,6 +1228,20 @@ public class MPDInterface {
                     enableOutput(id);
                 }
             }
+        }
+    }
+
+    public synchronized void toggleOutputPartition(int id, String partition) throws MPDException {
+        String currentPartition = getCurrentServerStatus().getPartition();
+
+        if (!partition.equals(currentPartition)) {
+            switchPartition(partition, false);
+        }
+
+        toggleOutput(id);
+
+        if (!partition.equals(currentPartition)) {
+            switchPartition(currentPartition, false);
         }
     }
 

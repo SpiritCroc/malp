@@ -24,7 +24,11 @@ package org.gateshipone.malp.application.fragments.serverfragments;
 
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -39,11 +43,20 @@ import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.OutputAdapter;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.OutputsViewModel;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponsePartitionList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
+import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
+
+import java.util.List;
 
 public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements AbsListView.OnItemClickListener {
     public static final String TAG = OutputsFragment.class.getSimpleName();
+
+    private List<MPDPartition> mPartitions;
+
+    private PartitionResponseHandler mPartitionHandler;
 
     public static OutputsFragment newInstance() {
         return new OutputsFragment();
@@ -72,6 +85,8 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
         setHasOptionsMenu(true);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
+        mPartitionHandler = new PartitionResponseHandler(this);
+        MPDQueryHandler.getPartitions(mPartitionHandler);
     }
 
     @Override
@@ -82,7 +97,45 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MPDOutput output = (MPDOutput) mAdapter.getItem(position);
-        MPDCommandHandler.toggleOutput(output.getID());
+        MPDQueryHandler.toggleOutputPartition(output);
         ((OutputAdapter) mAdapter).setOutputActive(position, !output.getOutputState());
+        refreshContent();
+    }
+
+    private static class PartitionResponseHandler extends MPDResponsePartitionList {
+        OutputsFragment mFragment;
+
+        ContextMenu mMenu;
+        public PartitionResponseHandler(OutputsFragment fragment) {
+            mFragment = fragment;
+        }
+
+        @Override
+        public void handlePartitions(List<MPDPartition> partitionList) {
+            mFragment.mPartitions = partitionList;
+        }
+
+    }
+
+    /**
+     * Create the context menu.
+     */
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        for (MPDPartition partition : mPartitions) {
+            MenuItem item = menu.add(partition.getPartitionName());
+            item.setOnMenuItemClickListener(menuItem -> {
+                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+                if (info == null) {
+                    return false;
+                }
+                MPDQueryHandler.moveOutputToPartition(mAdapter.getItem(info.position),partition);
+                refreshContent();
+                return false;
+            });
+        }
     }
 }

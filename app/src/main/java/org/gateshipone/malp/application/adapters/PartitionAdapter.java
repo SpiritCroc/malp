@@ -27,34 +27,44 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.gateshipone.malp.application.listviewitems.OutputListItem;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
+import org.gateshipone.malp.application.listviewitems.PartitionListItem;
+import org.gateshipone.malp.application.listviewitems.ProfileListItem;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
+import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
 
-public class OutputAdapter extends GenericSectionAdapter<MPDOutput> {
+public class PartitionAdapter extends GenericSectionAdapter<MPDPartition> {
     private final Context mContext;
 
-    public OutputAdapter(Context context) {
+    public PartitionAdapter(Context context) {
         mContext = context;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        MPDOutput output = (MPDOutput)getItem(position);
+        MPDPartition partition = (MPDPartition) getItem(position);
 
-        if ( convertView == null ) {
-            // Create a new View and not reuse it
-            convertView = new OutputListItem(mContext, output);
+        // Profile name
+        String partitionName = partition.getPartitionName();
+
+        boolean checked = partition.getPartitionState();
+
+        if (convertView != null) {
+            PartitionListItem partitionListItem = (PartitionListItem) convertView;
+
+            partitionListItem.setPartitionName(partitionName);
+            partitionListItem.setChecked(checked);
         } else {
-            OutputListItem outputItem = (OutputListItem)convertView;
-            outputItem.setOutput(output);
+            convertView = new PartitionListItem(mContext, partitionName, checked);
         }
 
         return convertView;
     }
 
-    public void setOutputActive(int index, boolean active ) {
-        MPDOutput output = (MPDOutput)getItem(index);
-        output.setOutputState(active);
+    public void setActive(int position, boolean active) {
+        for (MPDPartition partition : mModelData) {
+            partition.setPartitionState(false);
+        }
+        ((MPDPartition) getItem(position)).setPartitionState(active);
         notifyDataSetChanged();
     }
 }

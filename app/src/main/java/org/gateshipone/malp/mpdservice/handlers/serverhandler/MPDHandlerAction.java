@@ -115,6 +115,9 @@ public class MPDHandlerAction {
         ACTION_GET_PARTITIONS,
         ACTION_NEW_PARTITION,
         ACTION_DELETE_PARTITION,
+        ACTION_SWITCH_PARTITION,
+        ACTION_MOVE_OUTPUT_TO_PARTITION,
+        ACTION_TOGGLE_PARTITION_OUTPUT,
     }
 
 
@@ -133,6 +136,7 @@ public class MPDHandlerAction {
         EXTRA_SEARCH_TERM,
         EXTRA_ALBUM_MBID,
         EXTRA_PARTITION_NAME,
+        EXTRA_OUTPUT_NAME,
     }
 
     /**

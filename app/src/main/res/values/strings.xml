@@ -103,6 +103,8 @@
     <string name="action_npv_show_cover">Show cover</string>
     <string name="action_npv_more_options">More options</string>
 
+    <string name="action_remove_partition">Remove partition</string>
+
     <!-- Menu entries -->
     <string name="menu_library">Library</string>
     <string name="menu_settings">Settings</string>
@@ -110,6 +112,7 @@
     <string name="menu_profiles">Profiles</string>
     <string name="menu_playlists">Playlists</string>
     <string name="menu_outputs">Outputs</string>
+    <string name="menu_partitions">Partitions</string>
     <string name="menu_files">Files</string>
     <string name="menu_statistic">Statistics</string>
     <string name="menu_app_settings">App settings</string>
@@ -230,6 +233,9 @@
     <!-- dialog default names  -->
     <string name="default_playlist_title">New Playlist</string>
     <string name="create_new_playlist">Create new playlist</string>
+
+    <string name="default_partition_title">new_partition</string>
+    <string name="create_new_partition">Create new partition</string>
 
     <string name="preference_launch_faq">F.A.Q.</string>
     <string name="preference_launch_faq_text">Information how to get help for this application</string>

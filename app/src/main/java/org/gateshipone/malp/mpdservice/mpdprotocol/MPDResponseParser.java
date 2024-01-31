@@ -786,6 +786,7 @@ class MPDResponseParser {
         ArrayList<MPDOutput> outputList = new ArrayList<>();
         // Parse outputs
         String outputName = null;
+        String outputPlugin = null;
         boolean outputActive = false;
         int outputId = -1;
 
@@ -803,13 +804,18 @@ class MPDResponseParser {
             switch (key) {
                 case RESPONSE_OUTPUT_ID:
                     if (null != outputName) {
-                        MPDOutput tempOutput = new MPDOutput(outputName, outputActive, outputId);
-                        outputList.add(tempOutput);
+                        if (outputPlugin == null || !outputPlugin.equals("dummy")) {
+                            MPDOutput tempOutput = new MPDOutput(outputName, outputActive, outputId, outputPlugin);
+                            outputList.add(tempOutput);
+                        }
                     }
                     outputId = Integer.parseInt(value);
                     break;
                 case RESPONSE_OUTPUT_NAME:
                     outputName = value;
+                    break;
+                case RESPONSE_OUTPUT_PLUGIN:
+                    outputPlugin = value;
                     break;
                 case RESPONSE_OUTPUT_ENABLED:
                     outputActive = value.equals("1");
@@ -822,8 +828,10 @@ class MPDResponseParser {
 
         // Add remaining output to list
         if (null != outputName) {
-            MPDOutput tempOutput = new MPDOutput(outputName, outputActive, outputId);
-            outputList.add(tempOutput);
+            if (outputPlugin == null || !outputPlugin.equals("dummy")) {
+                MPDOutput tempOutput = new MPDOutput(outputName, outputActive, outputId, outputPlugin);
+                outputList.add(tempOutput);
+            }
         }
 
         return outputList;

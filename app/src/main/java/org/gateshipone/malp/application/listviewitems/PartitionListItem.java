@@ -25,36 +25,38 @@ package org.gateshipone.malp.application.listviewitems;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.gateshipone.malp.R;
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
-public class OutputListItem extends LinearLayout {
+public class PartitionListItem extends LinearLayout {
 
-    CheckBox mCheckbox;
-    TextView mMainTextview;
-    TextView mSecondaryTextview;
+    TextView mPartitionNameView;
 
-    public OutputListItem(Context context, MPDOutput output){
+    TextView mHostnameAndPortView;
+
+    RadioButton mRadioButton;
+
+    public PartitionListItem(final Context context, final String profilename, final boolean checked) {
         super(context);
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.listview_item_output, this, true);
+        inflater.inflate(R.layout.listview_item_partition, this, true);
 
-        mMainTextview = findViewById(R.id.item_text_primary);
-        mSecondaryTextview = findViewById(R.id.item_text_secondary);
-        mCheckbox = findViewById(R.id.item_output_checkbox);
+        mPartitionNameView = findViewById(R.id.item_title);
+        mPartitionNameView.setText(profilename);
 
-        setOutput(output);
+        mRadioButton = findViewById(R.id.item_profile_radiobtn);
+        mRadioButton.setChecked(checked);
     }
 
-    public void setOutput(MPDOutput output) {
-        mMainTextview.setText(output.getOutputName());
-        mSecondaryTextview.setText(output.getPartitionName());
-        mCheckbox.setChecked(output.getOutputState());
+    public void setPartitionName(final String partitionName) {
+        mPartitionNameView.setText(partitionName);
     }
 
+    public void setChecked(final boolean checked) {
+        mRadioButton.setChecked(checked);
+    }
 }

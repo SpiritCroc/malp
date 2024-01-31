@@ -45,6 +45,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
+import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCapabilities;
 
 public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTabSelectedListener {
     public static final String TAG = ServerPropertiesFragment.class.getSimpleName();
@@ -75,25 +76,35 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
         mViewPager.setAdapter(tabAdapter);
         tabLayout.setupWithViewPager(mViewPager, false);
         tabLayout.addOnTabSelectedListener(this);
+        
 
         // setup icons for tabs
         final ColorStateList tabColors = tabLayout.getTabTextColors();
         final Resources res = getResources();
         Drawable drawable = null;
+        String title = "";
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             switch (i) {
                 case 0:
                     drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_statistics_black_24dp, null);
+                    title = getString(R.string.menu_statistic);
                     break;
                 case 1:
+                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_partitions_24dp, null);
+                    title = getString(R.string.menu_partitions);
+                    break;
+                case 2:
                     drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_hearing_black_24dp, null);
+                    title = getString(R.string.menu_outputs);
                     break;
             }
 
             if (drawable != null) {
                 Drawable icon = DrawableCompat.wrap(drawable);
                 DrawableCompat.setTintList(icon, tabColors);
-                tabLayout.getTabAt(i).setIcon(icon);
+                TabLayout.Tab tab = tabLayout.getTabAt(i);
+                tab.setIcon(icon);
+                tab.setText(title);
             }
         }
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -110,9 +121,10 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
             if (mViewPager.getCurrentItem() == 0) {
                 mFABCallback.setupToolbar(getString(R.string.menu_statistic), false, true, false);
             } else if (mViewPager.getCurrentItem() == 1) {
+                mFABCallback.setupToolbar(getString(R.string.menu_partitions), false, true, false);
+            } else if (mViewPager.getCurrentItem() == 2) {
                 mFABCallback.setupToolbar(getString(R.string.menu_outputs), false, true, false);
             }
-
         }
     }
 
@@ -145,6 +157,8 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
                 if (tab.getPosition() == 0) {
                     mFABCallback.setupToolbar(getString(R.string.menu_statistic), false, true, false);
                 } else if (tab.getPosition() == 1) {
+                    mFABCallback.setupToolbar(getString(R.string.menu_partitions), false, true, false);
+                } else if (tab.getPosition() == 2) {
                     mFABCallback.setupToolbar(getString(R.string.menu_outputs), false, true, false);
                 }
             }
@@ -162,7 +176,7 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
     }
 
     private static class ServerPropertiesTabAdapter extends FragmentStatePagerAdapter {
-        static final int NUMBER_OF_PAGES = 2;
+        static final int NUMBER_OF_PAGES = 3;
 
         ServerPropertiesTabAdapter(FragmentManager fm) {
             super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
@@ -185,6 +199,8 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
                 case 0:
                     return ServerStatisticFragment.newInstance();
                 case 1:
+                    return PartitionsFragment.newInstance();
+                case 2:
                     return OutputsFragment.newInstance();
                 default:
                     // should not happen throw exception

@@ -47,7 +47,7 @@ public abstract class MPDResponsePartitionList extends MPDResponseHandler {
 
         /* Call album response handler */
         List<MPDPartition> partitionList = (List<MPDPartition>)msg.obj;
-        handleParitions(partitionList);
+        handlePartitions(partitionList);
     }
 
     /**
@@ -66,5 +66,5 @@ public abstract class MPDResponsePartitionList extends MPDResponseHandler {
      * This can be used for updating lists of adapters and views.
      * @param partitionList List of MPDPartition objects containing a list of available MPD outputs
      */
-    abstract public void handleParitions(List<MPDPartition> partitionList);
+    abstract public void handlePartitions(List<MPDPartition> partitionList);
 }
