@@ -117,6 +117,7 @@
     <string name="menu_statistic">Statistics</string>
     <string name="menu_app_settings">App settings</string>
     <string name="menu_information">Information</string>
+    <string name="menu_move_output">Move output to partition</string>
 
     <string name="menu_search">Search</string>
 

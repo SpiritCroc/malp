@@ -29,6 +29,7 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -46,6 +47,7 @@ import org.gateshipone.malp.application.viewmodels.OutputsViewModel;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponsePartitionList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
+import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 
@@ -58,12 +60,15 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
 
     private PartitionResponseHandler mPartitionHandler;
 
+    private boolean mPartitionSupport;
+
     public static OutputsFragment newInstance() {
         return new OutputsFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mPartitionSupport = MPDInterface.getGenericInstance().getServerCapabilities().hasPartitions();
         return inflater.inflate(R.layout.listview_layout, container, false);
     }
 
@@ -124,8 +129,13 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
+        if (!mPartitionSupport) {
+            return;
+        }
+
+        SubMenu submenu = menu.addSubMenu(getString(R.string.menu_move_output));
         for (MPDPartition partition : mPartitions) {
-            MenuItem item = menu.add(partition.getPartitionName());
+            MenuItem item = submenu.add(partition.getPartitionName());
             item.setOnMenuItemClickListener(menuItem -> {
                 AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 

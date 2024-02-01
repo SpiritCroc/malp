@@ -70,6 +70,8 @@ public class MPDCapabilities {
     private boolean mHasAlbumArt;
     private boolean mHasReadPicture;
 
+    private boolean mHasPartitions;
+
     public MPDCapabilities(String version, List<String> commands, List<String> tags) {
         String[] versions = version.split("\\.");
         if (versions.length == 3) {
@@ -124,6 +126,7 @@ public class MPDCapabilities {
             mHasSearchAdd = commands.contains(MPDCommands.MPD_COMMAND_ADD_SEARCH_FILES_CMD_NAME);
             mHasPlaylistFind = commands.contains(MPDCommands.MPD_COMMAND_PLAYLIST_FIND);
             mHasReadPicture = commands.contains(MPDCommands.MPD_COMMAND_READ_PICTURE);
+            mHasPartitions = commands.contains(MPDCommands.MPD_COMMAND_GET_PARTITIONS);
         }
 
 
@@ -222,6 +225,10 @@ public class MPDCapabilities {
         return mMultipleListGroupFixed;
     }
 
+    public boolean hasPartitions() {
+        return mHasPartitions;
+    }
+
     public String getServerFeatures() {
         return "MPD protocol version: " + mMajorVersion + '.' + mMinorVersion + '.' + mPatchVersion + '\n'
                 + "TAGS:" + '\n'
@@ -233,6 +240,7 @@ public class MPDCapabilities {
                 + "Fast search add: " + mHasSearchAdd + '\n'
                 + "List grouping: " + mHasListGroup + '\n'
                 + "List filtering: " + mHasListFiltering + '\n'
+                + "Partitioning: " + mHasPartitions + '\n'
                 + "Fast ranged currentplaylist delete: " + mHasCurrentPlaylistRemoveRange + '\n'
                 + "MPD based album artwork: " + mHasAlbumArt + '|' + mHasReadPicture + '\n'
                 + (mMopidyDetected ? "Mopidy detected, consider using the real MPD server (www.musicpd.org)!\n" : "")
