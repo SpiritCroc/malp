@@ -396,4 +396,11 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
     public boolean equalsStringTag(StringTagTypes tag, MPDTrack compTrack) {
         return getStringTag(tag).equals(compTrack.getStringTag(tag));
     }
+
+    public boolean isDummy() {
+        if (mPath.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -49,8 +49,6 @@ public abstract class MPDStatusChangeHandler extends Handler {
         } else if ( msg.obj instanceof MPDTrack) {
             onNewTrackReady((MPDTrack) msg.obj);
         }
-
-
     }
 
     public void newMPDStatusReady(MPDCurrentStatus status ) {

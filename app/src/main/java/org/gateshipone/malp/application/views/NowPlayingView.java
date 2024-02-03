@@ -42,6 +42,7 @@ import android.os.RemoteException;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -1308,7 +1309,6 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         String title = track.getVisibleTitle();
         mTrackName.setText(title);
 
-
         mTrackAdditionalInfo.setText(track.getSubLine(getContext()));
 
         if (null == mLastTrack || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM, mLastTrack) || !track.equalsStringTag(MPDTrack.StringTagTypes.ALBUM_MBID, mLastTrack)) {
@@ -1343,7 +1343,6 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         }
 
         mLastTrack = track;
-
     }
 
 
@@ -1630,7 +1629,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         public void receiveBitmap(final Bitmap bm, final CoverBitmapLoader.IMAGE_TYPE type) {
             if (bm != null) {
                 Activity activity = (Activity) getContext();
-                if (activity != null) {
+                if (activity != null && (mLastTrack != null && !mLastTrack.isDummy())) {
                     // Run on the UI thread of the activity because we are modifying gui elements.
                     activity.runOnUiThread(() -> {
                         if (type == CoverBitmapLoader.IMAGE_TYPE.ALBUM_IMAGE) {

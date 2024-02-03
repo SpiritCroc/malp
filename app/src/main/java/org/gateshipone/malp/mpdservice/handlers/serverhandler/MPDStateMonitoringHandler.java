@@ -146,8 +146,6 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
         /* Catch MPD exceptions here for now. */
         MPDResponseHandler responseHandler;
         MPDHandlerAction.NET_HANDLER_ACTION action = mpdAction.getAction();
-
-
     }
 
     private void stopInterpolation() {
@@ -186,7 +184,8 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
             return;
         }
 
-        if (status.getCurrentSongIndex() != mLastStatus.getCurrentSongIndex() || status.getPlaylistVersion() != mLastStatus.getPlaylistVersion()) {
+        if ((mLastStatus.getPlaybackState() == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_STOPPED && status.getPlaybackState() != MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_STOPPED) ||
+                status.getCurrentSongIndex() != mLastStatus.getCurrentSongIndex() || status.getPlaylistVersion() != mLastStatus.getPlaylistVersion()) {
             // New track started playing. Get it and inform the listener.
             try {
                 mLastFile = MPDInterface.getGenericInstance().getCurrentSong();
