@@ -109,8 +109,12 @@ public class MPDInterface {
     public synchronized void connect() throws MPDException {
         mConnection.connectToServer();
 
-        if (mPartition != null && !mPartition.equals("default")) {
-            switchPartition(mPartition, false);
+        if (mPartition != null && !mPartition.equals("") && !mPartition.equals("default")) {
+            try {
+                switchPartition(mPartition, false);
+            } catch (MPDException e) {
+                Log.w(TAG, "Invalid partition (" + mPartition + "), fail silently");
+            }
         }
         invalidateCache();
     }
