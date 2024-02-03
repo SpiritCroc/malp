@@ -68,10 +68,6 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
 
     private static final int SHORT_RECONNECT_TRIES = 5;
 
-    private String mHostname;
-    private String mPassword;
-    private int mPort;
-
     private boolean mAutoConnect = true;
 
     private boolean mDisconnectRequested;
@@ -92,9 +88,8 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
     private ConnectionManager(Context context) {
         super(context.getMainLooper());
         MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(this);
-        mHostname = null;
-        mPassword = null;
         mUseCounter = 0;
+        mServerProfile = null;
         mApplicationContext = context.getApplicationContext();
     }
 
@@ -110,9 +105,6 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
         if (null == profile) {
             return;
         }
-        mHostname = profile.getHostname();
-        mPassword = profile.getPassword();
-        mPort = profile.getPort();
 
         MPDProfileManager.getInstance(context).deleteProfile(profile);
         profile.setAutoconnect(true);
@@ -120,13 +112,13 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
 
         mConnectionManager.mServerProfile = profile;
 
-        MPDCommandHandler.getHandler().setServerParameters(mHostname, mPassword, mPort);
+        MPDCommandHandler.getHandler().setServerParameters(mServerProfile);
     }
 
     public void reconnectLastServer(Context context) {
         ConnectionManager instance = getInstance(context);
 
-        if (instance.mHostname == null && null != context) {
+        if (instance.mServerProfile == null && null != context) {
             // Not connected so far
             autoConnect(context);
         }
@@ -351,4 +343,13 @@ public class ConnectionManager extends MPDConnectionStateChangeHandler {
         }
     }
 
+    public synchronized void setPartition(String partition) {
+        if (mServerProfile == null) {
+            return;
+        }
+
+        mServerProfile.setPartition(partition);
+        MPDProfileManager.getInstance(mApplicationContext).deleteProfile(mServerProfile);
+        MPDProfileManager.getInstance(mApplicationContext).addProfile(mServerProfile);
+    }
 }

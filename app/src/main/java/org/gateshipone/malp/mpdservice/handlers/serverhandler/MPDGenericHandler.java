@@ -32,6 +32,7 @@ import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionErrorHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDException;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
+import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
 
 import java.util.ArrayList;
 
@@ -114,11 +115,12 @@ public abstract class MPDGenericHandler extends Handler {
             // Get the message extras
             String hostname = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SERVER_HOSTNAME);
             String password = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SERVER_PASSWORD);
+            String partition = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PARTITION_NAME);
             Integer port = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SERVER_PORT);
             if ((null == hostname) || (null == port)) {
                 return;
             }
-            MPDInterface.getGenericInstance().setServerParameters(hostname, password, port);
+            MPDInterface.getGenericInstance().setServerParameters(hostname, password, port, partition);
         } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_CONNECT_MPD_SERVER) {
             // Connect to the mpd server. Server parameters have to be set before.
             try {
@@ -155,15 +157,16 @@ public abstract class MPDGenericHandler extends Handler {
      * @param password Password that is used to authenticate with the server. Can be left empty.
      * @param port     Port to use for the connection. (Default: 6600)
      */
-    public void setServerParameters(String hostname, String password, int port) {
+    public void setServerParameters(MPDServerProfile profile) {
         MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_SET_SERVER_PARAMETERS);
         Message msg = Message.obtain();
         if (msg == null) {
             return;
         }
-        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SERVER_HOSTNAME, hostname);
-        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SERVER_PASSWORD, password);
-        action.setIntExtras(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SERVER_PORT, port);
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SERVER_HOSTNAME, profile.getHostname());
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_SERVER_PASSWORD, profile.getPassword());
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PARTITION_NAME, profile.getPartition());
+        action.setIntExtras(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SERVER_PORT, profile.getPort());
         msg.obj = action;
         sendMessage(msg);
     }

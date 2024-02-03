@@ -226,6 +226,7 @@ public class MPDCapabilities {
     }
 
     public boolean hasPartitions() {
+//        return false;
         return mHasPartitions;
     }
 

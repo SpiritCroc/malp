@@ -51,10 +51,12 @@ import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.OutputsViewModel;
 import org.gateshipone.malp.application.viewmodels.PartitionsViewModel;
+import org.gateshipone.malp.mpdservice.ConnectionManager;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
+import org.gateshipone.malp.mpdservice.profilemanagement.MPDProfileManager;
 
 public class PartitionsFragment extends GenericMPDFragment<MPDPartition> implements AbsListView.OnItemClickListener {
     public static final String TAG = PartitionsFragment.class.getSimpleName();
@@ -98,6 +100,7 @@ public class PartitionsFragment extends GenericMPDFragment<MPDPartition> impleme
         MPDPartition partition = (MPDPartition) mAdapter.getItem(position);
         MPDQueryHandler.switchPartition(partition.getPartitionName());
         ((PartitionAdapter) mAdapter).setActive(position, true);
+        ConnectionManager.getInstance(this.getContext()).setPartition(partition.getPartitionName());
     }
 
     @Override

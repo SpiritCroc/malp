@@ -53,6 +53,8 @@ public class MPDInterface {
     private static int mPort;
     private static String mPassword;
 
+    private static String mPartition;
+
     private MPDCache mCache;
 
     private static final long MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50 MB
@@ -84,10 +86,12 @@ public class MPDInterface {
     private static MPDInterface mArtworkInterface;
     private static MPDInterface mGenericInterface;
 
-    public void setServerParameters(String hostname, String password, int port) {
+    public void setServerParameters(String hostname, String password, int port, String partition) {
         mHostname = hostname;
         mPassword = password;
         mPort = port;
+
+        mPartition = partition;
 
         if (mGenericInterface != null) {
             mGenericInterface.setInstanceServerParameters(hostname, password, port);
@@ -104,6 +108,10 @@ public class MPDInterface {
 
     public synchronized void connect() throws MPDException {
         mConnection.connectToServer();
+
+        if (mPartition != null && !mPartition.equals("default")) {
+            switchPartition(mPartition, false);
+        }
         invalidateCache();
     }
 
@@ -1185,6 +1193,8 @@ public class MPDInterface {
         if (invalidate) {
             checkCacheState();
         }
+
+        mPartition = name;
     }
 
     /**
