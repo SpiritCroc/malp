@@ -52,8 +52,13 @@ public class OutputListItem extends LinearLayout {
     }
 
     public void setOutput(MPDOutput output) {
+        String partition = output.getPartitionName();
         mMainTextview.setText(output.getOutputName());
-        mSecondaryTextview.setText(output.getPartitionName());
+        if (partition != null && !partition.isEmpty()) {
+            mSecondaryTextview.setText(output.getPartitionName());
+        } else {
+            mSecondaryTextview.setVisibility(GONE);
+        }
         mCheckbox.setChecked(output.getOutputState());
     }
 
