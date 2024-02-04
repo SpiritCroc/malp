@@ -153,9 +153,7 @@ public abstract class MPDGenericHandler extends Handler {
      * Set the server parameters for the connection. MUST be called before trying to
      * initiate a connection because it will fail otherwise.
      *
-     * @param hostname Hostname or ip address to connect to.
-     * @param password Password that is used to authenticate with the server. Can be left empty.
-     * @param port     Port to use for the connection. (Default: 6600)
+     * @param profile MPDProfile to set parameters from
      */
     public void setServerParameters(MPDServerProfile profile) {
         MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_SET_SERVER_PARAMETERS);

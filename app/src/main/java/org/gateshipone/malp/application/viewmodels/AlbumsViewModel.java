@@ -35,6 +35,7 @@ import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -49,10 +50,9 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
     private final String mAlbumsPath;
 
     private final MPDAlbum.MPD_ALBUM_SORT_ORDER mSortOrder;
+    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
 
-    private final boolean mUseArtistSort;
-
-    private final boolean mUseAlbumArtist;
+    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
     private AlbumsViewModel(@NonNull final Application application, final String artistName, final String albumsPath) {
         super(application);
@@ -64,8 +64,8 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
 
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(application);
         mSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, application);
-        mUseArtistSort = sharedPref.getBoolean(application.getString(R.string.pref_use_artist_sort_key), application.getResources().getBoolean(R.bool.pref_use_artist_sort_default));
-        mUseAlbumArtist = sharedPref.getBoolean(application.getString(R.string.pref_use_album_artists_key), application.getResources().getBoolean(R.bool.pref_use_album_artists_default));
+        mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, application);
+        mArtistSortSelector = PreferenceHelper.getArtistSortSelector(sharedPref, application);
     }
 
     @Override
@@ -77,19 +77,7 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
                 MPDQueryHandler.getAlbumsInPath(mAlbumsPath, mAlbumsResponseHandler);
             }
         } else {
-            if (!mUseArtistSort) {
-                if (!mUseAlbumArtist) {
-                    MPDQueryHandler.getArtistAlbums(mAlbumsResponseHandler, mArtistName);
-                } else {
-                    MPDQueryHandler.getAlbumArtistAlbums(mAlbumsResponseHandler, mArtistName);
-                }
-            } else {
-                if (!mUseAlbumArtist) {
-                    MPDQueryHandler.getArtistSortAlbums(mAlbumsResponseHandler, mArtistName);
-                } else {
-                    MPDQueryHandler.getAlbumArtistAlbumsSort(mAlbumsResponseHandler, mArtistName);
-                }
-            }
+            MPDQueryHandler.getArtistAlbums(mAlbumsResponseHandler, mArtistName, mAlbumArtistSelector, mArtistSortSelector, mSortOrder);
         }
     }
 
@@ -106,10 +94,6 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
             final AlbumsViewModel albumsViewModel = mAlbumViewModel.get();
 
             if (albumsViewModel != null) {
-                // If artist albums and sort by year is active, resort the list
-                if (albumsViewModel.mSortOrder == MPDAlbum.MPD_ALBUM_SORT_ORDER.DATE && !((null == albumsViewModel.mArtistName) || albumsViewModel.mArtistName.isEmpty())) {
-                    Collections.sort(albumList, new MPDAlbum.MPDAlbumDateComparator());
-                }
                 albumsViewModel.setData(albumList);
             }
         }

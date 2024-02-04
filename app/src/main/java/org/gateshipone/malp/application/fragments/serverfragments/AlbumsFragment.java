@@ -48,6 +48,7 @@ import org.gateshipone.malp.application.adapters.AlbumsAdapter;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.callbacks.AlbumCallback;
 import org.gateshipone.malp.application.listviewitems.AbsImageListViewItem;
+import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ScrollSpeedListener;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.viewmodels.AlbumsViewModel;
@@ -55,6 +56,7 @@ import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.SearchViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
 public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements AdapterView.OnItemClickListener {
     public static final String TAG = AlbumsFragment.class.getSimpleName();
@@ -67,6 +69,9 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     private String mAlbumsPath;
 
     private AlbumCallback mAlbumSelectCallback;
+    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
+
 
     public static AlbumsFragment newInstance(@Nullable final String albumPath) {
         final Bundle args = new Bundle();
@@ -100,6 +105,8 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         final String viewAppearance = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
+        mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, requireContext());
+        mArtistSortSelector = PreferenceHelper.getArtistSortSelector(sharedPref, requireContext());
 
         final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
 
@@ -264,7 +271,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     private void enqueueAlbum(int index) {
         final MPDAlbum album = (MPDAlbum) mAdapter.getItem(index);
 
-        MPDQueryHandler.addArtistAlbum(album.getName(), album.getArtistName(), album.getMBID());
+        MPDQueryHandler.addArtistAlbum(album, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     /**
@@ -275,7 +282,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     private void playAlbum(int index) {
         final MPDAlbum album = (MPDAlbum) mAdapter.getItem(index);
 
-        MPDQueryHandler.playArtistAlbum(album.getName(), album.getArtistName(), album.getMBID());
+        MPDQueryHandler.playArtistAlbum(album, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     public void applyFilter(String name) {

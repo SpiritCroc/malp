@@ -32,6 +32,9 @@ public class MPDCommands {
 
     private static String createAlbumGroupString(MPDCapabilities caps) {
         String groups = "";
+        if (!caps.hasListGroup()) {
+            return groups;
+        }
         if (caps.hasTagAlbumArtist()) {
             groups += " group albumartist";
         }
@@ -56,7 +59,7 @@ public class MPDCommands {
         }
     }
 
-    public static String MPD_COMMAND_REQUEST_ARTIST_ALBUMS(String artistName, MPDCapabilities caps) {
+    public static String  MPD_COMMAND_REQUEST_ARTIST_ALBUMS(String artistName, MPDCapabilities caps) {
         if (caps.hasListGroup()) {
             return "list album artist \"" + escapeString(artistName) + "\"" + createAlbumGroupString(caps);
         } else {
@@ -66,7 +69,11 @@ public class MPDCommands {
 
 
     public static String MPD_COMMAND_REQUEST_ARTISTSORT_ALBUMS(String artistName, MPDCapabilities caps) {
-        return "list album artistsort \"" + escapeString(artistName) + "\"" + createAlbumGroupString(caps);
+        if (caps.hasTagArtistSort()) {
+            return "list album artistsort \"" + escapeString(artistName) + "\"" + createAlbumGroupString(caps);
+        } else {
+            return MPD_COMMAND_REQUEST_ARTIST_ALBUMS(artistName, caps);
+        }
     }
 
     public static String MPD_COMMAND_REQUEST_ALBUMS_FOR_PATH(String path, MPDCapabilities caps) {
@@ -79,11 +86,19 @@ public class MPDCommands {
     }
 
     public static String MPD_COMMAND_REQUEST_ALBUMARTIST_ALBUMS(String artistName, MPDCapabilities caps) {
-        return "list album albumartist \"" + escapeString(artistName) + "\"" + createAlbumGroupString(caps);
+        if (caps.hasTagAlbumArtist()) {
+            return "list album albumartist \"" + escapeString(artistName) + "\"" + createAlbumGroupString(caps);
+        } else {
+            return MPD_COMMAND_REQUEST_ARTIST_ALBUMS(artistName, caps);
+        }
     }
 
     public static String MPD_COMMAND_REQUEST_ALBUMARTISTSORT_ALBUMS(String artistName, MPDCapabilities caps) {
-        return "list album albumartistsort \"" + escapeString(artistName) + "\"" + createAlbumGroupString(caps);
+        if (caps.hasTagAlbumArtistSort()) {
+            return "list album albumartistsort \"" + escapeString(artistName) + "\"" + createAlbumGroupString(caps);
+        } else {
+            return MPD_COMMAND_REQUEST_ARTIST_ALBUMS(artistName, caps);
+        }
     }
 
 
@@ -91,35 +106,47 @@ public class MPDCommands {
         return "find album \"" + escapeString(albumName) + "\"";
     }
 
-    public static String MPD_COMMAND_REQUEST_ARTISTS(boolean groupMBID) {
-        if (!groupMBID) {
+    public static String MPD_COMMAND_REQUEST_ARTISTS(MPDCapabilities capabilities) {
+        if (!(capabilities.hasListGroup() && capabilities.hasMusicBrainzTags())) {
             return "list artist";
         } else {
             return "list artist group MUSICBRAINZ_ARTISTID";
         }
     }
 
-    public static String MPD_COMMAND_REQUEST_ALBUMARTISTS(boolean groupMBID) {
-        if (!groupMBID) {
-            return "list albumartist";
+    public static String MPD_COMMAND_REQUEST_ALBUMARTISTS(MPDCapabilities capabilities) {
+        if (capabilities.hasTagAlbumArtist()) {
+            if (!(capabilities.hasListGroup() && capabilities.hasMusicBrainzTags())) {
+                return "list albumartist";
+            } else {
+                return "list albumartist group MUSICBRAINZ_ARTISTID";
+            }
         } else {
-            return "list albumartist group MUSICBRAINZ_ARTISTID";
+            return MPD_COMMAND_REQUEST_ARTISTS(capabilities);
         }
     }
 
-    public static String MPD_COMMAND_REQUEST_ARTISTS_SORT(boolean groupMBID) {
-        if (!groupMBID) {
-            return "list artistsort";
+    public static String MPD_COMMAND_REQUEST_ARTISTS_SORT(MPDCapabilities capabilities) {
+        if (capabilities.hasTagArtistSort()) {
+            if (!(capabilities.hasListGroup() && capabilities.hasMusicBrainzTags())) {
+                return "list artistsort";
+            } else {
+                return "list artistsort group MUSICBRAINZ_ARTISTID";
+            }
         } else {
-            return "list artistsort group MUSICBRAINZ_ARTISTID";
+            return MPD_COMMAND_REQUEST_ARTISTS(capabilities);
         }
     }
 
-    public static String MPD_COMMAND_REQUEST_ALBUMARTISTS_SORT(boolean groupMBID) {
-        if (!groupMBID) {
-            return "list albumartistsort";
+    public static String MPD_COMMAND_REQUEST_ALBUMARTISTS_SORT(MPDCapabilities capabilities) {
+        if (capabilities.hasTagAlbumArtistSort()) {
+            if (!(capabilities.hasListGroup() && capabilities.hasMusicBrainzTags())) {
+                return "list albumartistsort";
+            } else {
+                return "list albumartistsort group MUSICBRAINZ_ARTISTID";
+            }
         } else {
-            return "list albumartistsort group MUSICBRAINZ_ARTISTID";
+            return MPD_COMMAND_REQUEST_ARTISTS(capabilities);
         }
     }
 

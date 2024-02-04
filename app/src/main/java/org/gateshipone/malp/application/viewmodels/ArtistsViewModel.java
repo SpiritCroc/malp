@@ -39,34 +39,23 @@ public class ArtistsViewModel extends GenericViewModel<MPDArtist> {
 
     private final MPDResponseArtistList mArtistResponseHandler;
 
-    private final boolean mUseAlbumArtists;
+    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
-    private final boolean mUseArtistSort;
 
-    private ArtistsViewModel(final Application application, final boolean useAlbumArtists, final boolean useArtistSort) {
+    private ArtistsViewModel(final Application application, final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR albumArtistSelector,
+                             final MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector) {
         super(application);
 
         mArtistResponseHandler = new ArtistResponseHandler(this);
 
-        mUseAlbumArtists = useAlbumArtists;
-        mUseArtistSort = useArtistSort;
+        mAlbumArtistSelector = albumArtistSelector;
+        mArtistSortSelector = artistSortSelector;
     }
 
     @Override
     void loadData() {
-        if (!mUseAlbumArtists) {
-            if (!mUseArtistSort) {
-                MPDQueryHandler.getArtists(mArtistResponseHandler);
-            } else {
-                MPDQueryHandler.getArtistSort(mArtistResponseHandler);
-            }
-        } else {
-            if (!mUseArtistSort) {
-                MPDQueryHandler.getAlbumArtists(mArtistResponseHandler);
-            } else {
-                MPDQueryHandler.getAlbumArtistSort(mArtistResponseHandler);
-            }
-        }
+        MPDQueryHandler.getArtists(mArtistResponseHandler, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     private static class ArtistResponseHandler extends MPDResponseArtistList {
@@ -90,20 +79,20 @@ public class ArtistsViewModel extends GenericViewModel<MPDArtist> {
 
         private final Application mApplication;
 
-        private final boolean mUseAlbumArtists;
+        private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+        private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
-        private final boolean mUseArtistSort;
-
-        public ArtistViewModelFactory(final Application application, final boolean useAlbumArtists, final boolean useArtistSort) {
+        public ArtistViewModelFactory(final Application application, final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR albumArtistSelector,
+                                      final MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector) {
             mApplication = application;
-            mUseAlbumArtists = useAlbumArtists;
-            mUseArtistSort = useArtistSort;
+            mAlbumArtistSelector = albumArtistSelector;
+            mArtistSortSelector = artistSortSelector;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) new ArtistsViewModel(mApplication, mUseAlbumArtists, mUseArtistSort);
+            return (T) new ArtistsViewModel(mApplication, mAlbumArtistSelector, mArtistSortSelector);
         }
     }
 }

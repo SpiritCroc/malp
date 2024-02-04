@@ -75,13 +75,14 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
 
     private AlbumCallback mAlbumSelectCallback;
 
-    private boolean mUseArtistSort;
-
     private Bitmap mBitmap;
 
     private CoverBitmapLoader mBitmapLoader;
 
     private MPDAlbum.MPD_ALBUM_SORT_ORDER mSortOrder;
+    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+
+    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
     /**
      * Save the last position here. Gets reused when the user returns to this view after selecting sme
@@ -130,8 +131,8 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
 
         registerForContextMenu(mRecyclerView);
         mSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, requireContext());
-
-        mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
+        mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, requireContext());
+        mArtistSortSelector = PreferenceHelper.getArtistSortSelector(sharedPref, requireContext());
 
         /* Check if an artistname was given in the extras */
         Bundle args = requireArguments();
@@ -349,11 +350,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
         if (null != mFABCallback) {
             if (null != mArtist && !mArtist.getArtistName().isEmpty()) {
                 mFABCallback.setupFAB(true, view -> {
-                    if (mUseArtistSort) {
-                        MPDQueryHandler.playArtistSort(mArtist.getArtistName(), mSortOrder);
-                    } else {
-                        MPDQueryHandler.playArtist(mArtist.getArtistName(), mSortOrder);
-                    }
+                    MPDQueryHandler.playArtist(mArtist.getArtistName(), mSortOrder, mAlbumArtistSelector, mArtistSortSelector);
                 });
                 if (mBitmap == null) {
                     final View rootView = requireView();
@@ -400,14 +397,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
     private void enqueueAlbum(int index) {
         MPDAlbum album = (MPDAlbum) mAdapter.getItem(index);
 
-        // If artist albums are shown set artist for the album (necessary for old MPD version, which don't
-        // support group commands and therefore do not provide artist tags for albums)
-        if (mArtist != null && !mArtist.getArtistName().isEmpty() && album.getArtistName().isEmpty()) {
-            album.setArtistName(mArtist.getArtistName());
-            album.setArtistSortName(mArtist.getArtistName());
-        }
-
-        MPDQueryHandler.addArtistAlbum(album.getName(), album.getArtistName(), album.getMBID());
+        MPDQueryHandler.addArtistAlbum(album, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     /**
@@ -418,20 +408,13 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
     private void playAlbum(int index) {
         MPDAlbum album = (MPDAlbum) mAdapter.getItem(index);
 
-        // If artist albums are shown set artist for the album (necessary for old MPD version, which don't
-        // support group commands and therefore do not provide artist tags for albums)
-        if (mArtist != null && !mArtist.getArtistName().isEmpty() && album.getArtistName().isEmpty()) {
-            album.setArtistName(mArtist.getArtistName());
-            album.setArtistSortName(mArtist.getArtistName());
-        }
-
-        MPDQueryHandler.playArtistAlbum(album.getName(), album.getArtistName(), album.getMBID());
+        MPDQueryHandler.playArtistAlbum(album, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     /**
      * Enqueues the artist that is currently shown (if the fragment is not shown for all albums)
      */
     private void enqueueArtist() {
-        MPDQueryHandler.addArtist(mArtist.getArtistName(), mSortOrder);
+        MPDQueryHandler.addArtist(mArtist.getArtistName(), mSortOrder, mAlbumArtistSelector, mArtistSortSelector);
     }
 }

@@ -63,10 +63,9 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
     private ArtistSelectedCallback mSelectedCallback;
 
     private MPDAlbum.MPD_ALBUM_SORT_ORDER mAlbumSortOrder;
+    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
-    private boolean mUseAlbumArtists;
-
-    private boolean mUseArtistSort;
 
     public static ArtistsFragment newInstance() {
         return new ArtistsFragment();
@@ -97,8 +96,8 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
         final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
 
         mAlbumSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, requireContext());
-        mUseAlbumArtists = sharedPref.getBoolean(getString(R.string.pref_use_album_artists_key), getResources().getBoolean(R.bool.pref_use_album_artists_default));
-        mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
+        mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, requireContext());
+        mArtistSortSelector = PreferenceHelper.getArtistSortSelector(sharedPref, requireContext());
 
         AbsListView adapterView;
         if (useList) {
@@ -142,7 +141,7 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
 
     @Override
     GenericViewModel<MPDArtist> getViewModel() {
-        return new ViewModelProvider(this, new ArtistsViewModel.ArtistViewModelFactory(requireActivity().getApplication(), mUseAlbumArtists, mUseArtistSort)).get(ArtistsViewModel.class);
+        return new ViewModelProvider(this, new ArtistsViewModel.ArtistViewModelFactory(requireActivity().getApplication(), mAlbumArtistSelector, mArtistSortSelector)).get(ArtistsViewModel.class);
     }
 
     @Override
@@ -237,13 +236,13 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
     private void enqueueArtist(int index) {
         MPDArtist artist = (MPDArtist) mAdapter.getItem(index);
 
-        MPDQueryHandler.addArtist(artist.getArtistName(), mAlbumSortOrder);
+        MPDQueryHandler.addArtist(artist.getArtistName(), mAlbumSortOrder, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     private void playArtist(int index) {
         MPDArtist artist = (MPDArtist) mAdapter.getItem(index);
 
-        MPDQueryHandler.playArtist(artist.getArtistName(), mAlbumSortOrder);
+        MPDQueryHandler.playArtist(artist.getArtistName(), mAlbumSortOrder, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     public void applyFilter(String name) {

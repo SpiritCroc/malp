@@ -33,6 +33,29 @@ import java.util.ArrayList;
 
 public class MPDArtist implements MPDGenericItem, Comparable<MPDArtist>, Parcelable {
     /* Artist properties */
+
+    public enum MPD_ALBUM_ARTIST_SELECTOR {
+        /**
+         * Use Artist
+         */
+        MPD_ALBUM_ARTIST_SELECTOR_ARTIST,
+        /**
+         * Use AlbumArtist
+         */
+        MPD_ALBUM_ARTIST_SELECTOR_ALBUMARTIST,
+    }
+
+    public enum MPD_ARTIST_SORT_SELECTOR {
+        /**
+         * Use Artist/AlbumArtist tags
+         */
+        MPD_ARTIST_SORT_SELECTOR_ARTIST,
+        /**
+         * Use ArtistSort/AlbumArtistSort tags
+         */
+        MPD_ARTIST_SORT_SELECTOR_ARTISTSORT,
+    }
+
     @NonNull
     private final String pArtistName;
 

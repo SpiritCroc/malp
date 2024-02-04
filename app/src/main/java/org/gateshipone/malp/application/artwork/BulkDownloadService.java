@@ -334,7 +334,8 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     private void fetchAllArtists() {
         if (mArtworkManager.hasImageProvider(ArtworkRequestModel.ArtworkRequestType.ARTIST)) {
-            MPDQueryHandler.getArtists(new ArtistsResponseHandler(this));
+            MPDQueryHandler.getArtists(new ArtistsResponseHandler(this),
+                    MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ARTIST, MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST);
         } else {
             startBulkDownload();
         }

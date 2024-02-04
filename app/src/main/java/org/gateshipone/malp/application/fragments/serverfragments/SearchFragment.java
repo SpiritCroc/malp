@@ -58,6 +58,7 @@ import org.gateshipone.malp.application.views.NowPlayingView;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCommands;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -80,6 +81,9 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
     private MPDCommands.MPD_SEARCH_TYPE mSearchType;
 
     private MPDAlbum.MPD_ALBUM_SORT_ORDER mAlbumSortOrder;
+    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+
+    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
     private PreferenceHelper.LIBRARY_TRACK_CLICK_ACTION mClickAction;
 
@@ -142,6 +146,10 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
         // Get album sort order
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext());
         mAlbumSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, requireContext());
+
+        mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, requireContext());
+        mArtistSortSelector = PreferenceHelper.getArtistSortSelector(sharedPref, requireContext());
+
         mClickAction = PreferenceHelper.getClickAction(sharedPref, requireContext());
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
@@ -266,24 +274,16 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
             songDetailsDialog.show(requireActivity().getSupportFragmentManager(), "SongDetails");
             return true;
         } else if (itemId == R.id.action_add_album) {
-            String artist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
-            if (artist.isEmpty()) {
-                artist = track.getStringTag(MPDTrack.StringTagTypes.ARTIST);
-            }
-            MPDQueryHandler.addArtistAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM), artist, track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
+            MPDQueryHandler.addArtistAlbum(track.getAlbum(), mAlbumArtistSelector, mArtistSortSelector);
             return true;
         } else if (itemId == R.id.action_play_album) {
-            String artist = track.getStringTag(MPDTrack.StringTagTypes.ALBUMARTIST);
-            if (artist.isEmpty()) {
-                artist = track.getStringTag(MPDTrack.StringTagTypes.ARTIST);
-            }
-            MPDQueryHandler.playArtistAlbum(track.getStringTag(MPDTrack.StringTagTypes.ALBUM), artist, track.getStringTag(MPDTrack.StringTagTypes.ALBUM_MBID));
+            MPDQueryHandler.playArtistAlbum(track.getAlbum(), mAlbumArtistSelector, mArtistSortSelector);
             return true;
         } else if (itemId == R.id.action_add_artist) {
-            MPDQueryHandler.addArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder);
+            MPDQueryHandler.addArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder, mAlbumArtistSelector, mArtistSortSelector);
             return true;
         } else if (itemId == R.id.action_play_artist) {
-            MPDQueryHandler.playArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder);
+            MPDQueryHandler.playArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder, mAlbumArtistSelector, mArtistSortSelector);
             return true;
         } else if (itemId == R.id.menu_group_album) {
             // Save position for later use
