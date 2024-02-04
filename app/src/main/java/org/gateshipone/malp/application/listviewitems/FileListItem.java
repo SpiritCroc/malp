@@ -212,7 +212,11 @@ public class FileListItem extends AbsImageListViewItem {
                 mNumberView.setVisibility(VISIBLE);
             } else {
                 mTitleView.setText(track.getFilename());
-                mAdditionalInfoView.setText(track.getLastModifiedString());
+                if (track.hasLastModifiedDate()) {
+                    mAdditionalInfoView.setText(track.getLastModifiedString());
+                } else {
+                    mAdditionalInfoView.setVisibility(GONE);
+                }
 
                 mSeparator.setVisibility(GONE);
                 mNumberView.setVisibility(GONE);
@@ -251,7 +255,11 @@ public class FileListItem extends AbsImageListViewItem {
         final Context context = getContext();
 
         mTitleView.setText(directory.getSectionTitle());
-        mAdditionalInfoView.setText(directory.getLastModifiedString());
+        if (directory.hasLastModifiedDate()) {
+            mAdditionalInfoView.setText(directory.getLastModifiedString());
+        } else {
+            mAdditionalInfoView.setVisibility(GONE);
+        }
 
         mSeparator.setVisibility(GONE);
         mNumberView.setVisibility(GONE);

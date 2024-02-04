@@ -38,6 +38,7 @@ public abstract class MPDFileEntry implements MPDGenericItem, Comparable<MPDFile
 
     @NonNull
     private Date mLastModifiedDate = new Date(0);
+    private boolean mHasLastModifiedDate = false;
 
     protected MPDFileEntry() {}
 
@@ -66,16 +67,20 @@ public abstract class MPDFileEntry implements MPDGenericItem, Comparable<MPDFile
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
             mLastModifiedDate = format.parse(lastModified);
+            mHasLastModifiedDate = true;
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
     }
 
     @NonNull
     public String getLastModifiedString() {
         DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
         return format.format(mLastModifiedDate);
+    }
+
+    public boolean hasLastModifiedDate() {
+        return mHasLastModifiedDate;
     }
 
     /**
