@@ -91,7 +91,9 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
         mPartitionHandler = new PartitionResponseHandler(this);
-        MPDQueryHandler.getPartitions(mPartitionHandler);
+        if (mPartitionSupport) {
+            MPDQueryHandler.getPartitions(mPartitionHandler);
+        }
     }
 
     @Override

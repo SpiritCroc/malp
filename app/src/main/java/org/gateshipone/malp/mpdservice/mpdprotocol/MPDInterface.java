@@ -1129,6 +1129,9 @@ public class MPDInterface {
         List<MPDPartition> partitions = getPartitions();
 
         List<MPDOutput> outputs = new ArrayList<>();
+        if (!getServerCapabilities().hasPartitions()) {
+            return getOutputs();
+        }
 
         String currentPartition = getCurrentServerStatus().getPartition();
 
@@ -1153,6 +1156,9 @@ public class MPDInterface {
      * @return List of MPDPartition objects or null in case of error.
      */
     public synchronized List<MPDPartition> getPartitions() throws MPDException {
+        if (!getServerCapabilities().hasPartitions()) {
+            return null;
+        }
         mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_PARTITIONS);
         List<MPDPartition> partitions = MPDResponseParser.parseMPDPartitions(mConnection);
 
