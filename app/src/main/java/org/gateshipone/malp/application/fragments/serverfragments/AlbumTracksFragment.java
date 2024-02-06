@@ -330,6 +330,16 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         } else if (itemId == R.id.action_show_all_tracks) {
             mAlbum.setMBID("");
             mAlbum.setArtistName("");
+
+            // There might be an image now that was previously not mapped
+            final View rootView = getView();
+            if (rootView != null) {
+                getView().post(() -> {
+                    final int size = rootView.getWidth();
+                    mBitmapLoader.getAlbumImage(mAlbum, false, size, size);
+                });
+            }
+            refreshContent();
             return true;
         }
 
