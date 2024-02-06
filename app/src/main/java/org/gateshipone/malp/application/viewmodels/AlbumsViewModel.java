@@ -24,7 +24,7 @@ package org.gateshipone.malp.application.viewmodels;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;

@@ -26,7 +26,7 @@ package org.gateshipone.malp.application.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Looper;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;

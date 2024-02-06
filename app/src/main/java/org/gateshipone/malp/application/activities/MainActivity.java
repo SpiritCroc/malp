@@ -28,7 +28,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.transition.Slide;
 import android.view.ContextMenu;
 import android.view.Gravity;

@@ -25,7 +25,7 @@ package org.gateshipone.malp.mpdservice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import org.gateshipone.malp.BuildConfig;

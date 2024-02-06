@@ -31,7 +31,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.WindowManager;
