@@ -120,7 +120,7 @@ public class WidgetProvider extends AppWidgetProvider {
                 views.setImageViewBitmap(R.id.widget_big_cover, mLastCover);
             } else {
                 // Reuse the image from last calls if the album is the same
-                views.setImageViewResource(R.id.widget_big_cover, R.drawable.icon_outline_256dp);
+                views.setImageViewResource(R.id.widget_big_cover, R.drawable.widget_icon);
             }
 
 
@@ -195,7 +195,7 @@ public class WidgetProvider extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.widget_big_cover, mainPendingIntent);
 
             // Set application icon outline as a image again
-            views.setImageViewResource(R.id.widget_big_cover, R.drawable.icon_outline_256dp);
+            views.setImageViewResource(R.id.widget_big_cover, R.drawable.widget_icon);
 
             views.setViewVisibility(R.id.widget_control_layout, View.GONE);
             views.setViewVisibility(R.id.widget_disconnected_layout, View.VISIBLE);
