@@ -49,6 +49,5 @@ public class MalpApplication extends Application {
         }
 
         super.onCreate();
-        DynamicColors.applyToActivitiesIfAvailable(this);
     }
 }
