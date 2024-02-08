@@ -115,7 +115,7 @@ public class MPDCache {
     }
 
     private final static int ARTIST_ALBUM_MAX_SIZE = 20;
-    private final long mVersion;
+    private long mVersion;
     private CacheRequest<MPDAlbum> mAlbumsRequest;
     private CacheRequest<MPDArtist> mArtistsRequest;
     private final LruCache<String, MPDArtistAlbumsRequest> mArtistAlbumCache;
@@ -131,6 +131,22 @@ public class MPDCache {
 
     public void cacheAlbums(List<MPDAlbum> albums) {
         mAlbumsRequest = new MPDAlbumsRequest(albums);
+    }
+
+    public void invalidate() {
+        if (mAlbumsRequest != null) {
+            mAlbumsRequest = null;
+        }
+        if (mArtistsRequest != null) {
+            mArtistsRequest = null;
+        }
+
+        mArtistAlbumCache.evictAll();
+    }
+
+    public void setVersion(long version) {
+        invalidate();
+        mVersion = version;
     }
 
     public List<MPDAlbum> getCachedAlbums() {

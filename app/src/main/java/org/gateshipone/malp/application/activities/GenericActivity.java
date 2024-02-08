@@ -23,6 +23,7 @@
 package org.gateshipone.malp.application.activities;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -33,6 +34,8 @@ import android.os.Looper;
 import android.os.RemoteException;
 import androidx.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 
@@ -246,6 +249,23 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
         } else if (key.equals(getString(R.string.pref_keep_display_on_key))) {
             mKeepDisplayOn = sharedPreferences.getBoolean(getString(R.string.pref_keep_display_on_key),getResources().getBoolean(R.bool.pref_keep_display_on_default));
             handleKeepDisplayOnSetting();
+        }
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Log.w(TAG, "Trim memory: " + level);
+        switch (level) {
+            case TRIM_MEMORY_UI_HIDDEN:
+            case TRIM_MEMORY_BACKGROUND:
+            case TRIM_MEMORY_MODERATE:
+            case TRIM_MEMORY_RUNNING_CRITICAL:
+            case TRIM_MEMORY_RUNNING_LOW:
+            case TRIM_MEMORY_RUNNING_MODERATE:
+            case TRIM_MEMORY_COMPLETE:
+                MPDInterface.memoryPressure();
+                break;
         }
     }
 

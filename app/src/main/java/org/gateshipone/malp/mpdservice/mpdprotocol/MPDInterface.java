@@ -62,6 +62,7 @@ public class MPDInterface {
 
     private MPDInterface(boolean autoDisconnect) {
         mConnection = new MPDConnection(autoDisconnect);
+        mCache = new MPDCache(0);
     }
 
     public static synchronized MPDInterface getGenericInstance() {
@@ -80,6 +81,16 @@ public class MPDInterface {
         }
 
         return mArtworkInterface;
+    }
+
+    public static synchronized void memoryPressure() {
+        if (mArtworkInterface != null) {
+            mArtworkInterface.invalidateCache();
+        }
+
+        if (mGenericInterface != null) {
+            mGenericInterface.invalidateCache();
+        }
     }
 
     // Connection methods
@@ -103,7 +114,6 @@ public class MPDInterface {
     }
 
     private void setInstanceServerParameters(String hostname, String password, int port) {
-        mCache = new MPDCache(0);
         mConnection.setServerParameters(hostname, password, port);
     }
 
@@ -160,7 +170,9 @@ public class MPDInterface {
         List<MPDAlbum> albums;
         checkCacheState();
 
-        albums = mCache.getCachedAlbums();
+        synchronized (mCache) {
+            albums = mCache.getCachedAlbums();
+        }
         if (albums != null) {
             return albums;
         }
@@ -182,7 +194,9 @@ public class MPDInterface {
             }
         }
 
-        mCache.cacheAlbums(albums);
+        synchronized (mCache) {
+            mCache.cacheAlbums(albums);
+        }
         return albums;
     }
 
@@ -226,7 +240,10 @@ public class MPDInterface {
             capabilities = mConnection.getServerCapabilities();
         }
 
-        List<MPDAlbum> result = mCache.getCachedArtistAlbumsRequest(artistName, albumArtistSelector, artistSortSelector, sortOrder);
+        List<MPDAlbum> result;
+        synchronized (mCache) {
+            result = mCache.getCachedArtistAlbumsRequest(artistName, albumArtistSelector, artistSortSelector, sortOrder);
+        }
 
         if (result != null) {
             return result;
@@ -259,8 +276,9 @@ public class MPDInterface {
             Collections.sort(result);
         }
 
-        mCache.cacheArtistAlbumsRequests(artistName, result, albumArtistSelector, artistSortSelector, sortOrder);
-
+        synchronized (mCache) {
+            mCache.cacheArtistAlbumsRequests(artistName, result, albumArtistSelector, artistSortSelector, sortOrder);
+        }
         return result;
     }
 
@@ -273,7 +291,10 @@ public class MPDInterface {
     public List<MPDArtist> getArtists(MPDArtist.MPD_ALBUM_ARTIST_SELECTOR albumArtistSelector, MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector) throws MPDException {
         checkCacheState();
         // Get list of artists for MBID correction
-        List<MPDArtist> normalArtists = mCache.getCachedArtistsRequest(albumArtistSelector, artistSortSelector);
+        List<MPDArtist> normalArtists;
+        synchronized (mCache) {
+            normalArtists = mCache.getCachedArtistsRequest(albumArtistSelector, artistSortSelector);
+        }
 
         if (normalArtists != null) {
             return normalArtists;
@@ -335,7 +356,9 @@ public class MPDInterface {
             artists.remove(0);
         }
 
-        mCache.cacheArtistsRequests(artists, albumArtistSelector, artistSortSelector);
+        synchronized (mCache) {
+            mCache.cacheArtistsRequests(artists, albumArtistSelector, artistSortSelector);
+        }
         return artists;
     }
 
@@ -1122,15 +1145,21 @@ public class MPDInterface {
     }
 
     private void checkCacheState() throws MPDException {
-        if (mCache.getVersion() != getServerStatistics().getLastDBUpdate()) {
-            invalidateCache();
+        long version = getServerStatistics().getLastDBUpdate();
+        synchronized (mCache) {
+            if (mCache.getVersion() != getServerStatistics().getLastDBUpdate()) {
+                invalidateCache();
+                mCache.setVersion(version);
+            }
         }
     }
 
-    private void invalidateCache() throws MPDException {
+    private void invalidateCache() {
         if (BuildConfig.DEBUG) {
             Log.v(TAG, "MPD cache invalidate");
         }
-        mCache = new MPDCache(getServerStatistics().getLastDBUpdate());
+        synchronized (mCache) {
+            mCache.invalidate();
+        }
     }
 }
