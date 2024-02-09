@@ -24,10 +24,8 @@ package org.gateshipone.malp.application.fragments.serverfragments;
 
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
@@ -45,7 +43,6 @@ import org.gateshipone.malp.application.adapters.OutputAdapter;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.OutputsViewModel;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponsePartitionList;
-import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
@@ -124,6 +121,8 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
 
     }
 
+    private MPDOutput mContextMenuOutput = null;
+
     /**
      * Create the context menu.
      */
@@ -139,15 +138,31 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
         for (MPDPartition partition : mPartitions) {
             MenuItem item = submenu.add(partition.getPartitionName());
             item.setOnMenuItemClickListener(menuItem -> {
-                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-
-                if (info == null) {
+                if (mContextMenuOutput == null) {
                     return false;
                 }
-                MPDQueryHandler.moveOutputToPartition(mAdapter.getItem(info.position),partition);
+
+                MPDQueryHandler.moveOutputToPartition(mContextMenuOutput, partition);
                 refreshContent();
-                return false;
+                mContextMenuOutput = null;
+                return true;
             });
         }
     }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        if (info == null) {
+            return super.onContextItemSelected(item);
+        }
+
+        final int itemId = item.getItemId();
+        int position = info.position;
+        mContextMenuOutput = mAdapter.getItem(position);
+
+        return super.onContextItemSelected(item);
+    }
+
 }
