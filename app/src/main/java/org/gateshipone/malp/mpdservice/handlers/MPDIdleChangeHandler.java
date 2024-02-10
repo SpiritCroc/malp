@@ -27,6 +27,9 @@ import android.os.Looper;
 import android.os.Message;
 
 public abstract class MPDIdleChangeHandler extends Handler {
+    public MPDIdleChangeHandler() {
+        super();
+    }
     public MPDIdleChangeHandler(Looper looper) {
         super(looper);
     }
@@ -35,6 +38,60 @@ public abstract class MPDIdleChangeHandler extends Handler {
         IDLE,
         NOIDLE,
     }
+
+    public enum CHANGED_SUBSYSTEM {
+        DATABASE,
+        UPDATE,
+        STORED_PLAYLIST,
+        PLAYLIST,
+        PLAYER,
+        MIXER,
+        OUTPUT,
+        OPTIONS,
+        PARTITION,
+        STICKER,
+        SUBSCRIPTION,
+        MESSAGE,
+        NEIGHBOR,
+        MOUNT
+    }
+
+    public static class MPDChangedSubsystemsResponse {
+        private final boolean[] mChangedSubsystems;
+
+        public MPDChangedSubsystemsResponse() {
+            mChangedSubsystems = new boolean[CHANGED_SUBSYSTEM.values().length];
+        }
+
+        public void setSubsystemChanged(CHANGED_SUBSYSTEM subsystem, boolean changed) {
+            mChangedSubsystems[subsystem.ordinal()] = changed;
+        }
+
+        public boolean getSubsystemChanged(CHANGED_SUBSYSTEM subsystem) {
+            return mChangedSubsystems[subsystem.ordinal()];
+        }
+    }
+
+    public static class MPDIdleChangeHandlerAction {
+        private final IDLE_STATE mIdleState;
+        private MPDChangedSubsystemsResponse mChangedSubsystems;
+        public MPDIdleChangeHandlerAction(IDLE_STATE state) {
+            mIdleState = state;
+        }
+
+        public IDLE_STATE getIdleState() {
+            return mIdleState;
+        }
+
+        public void setChangedSubsystems(MPDChangedSubsystemsResponse response) {
+            mChangedSubsystems = response;
+        }
+
+        public MPDChangedSubsystemsResponse getChangedSubsystems() {
+            return mChangedSubsystems;
+        }
+    }
+
     /**
      * Handles the change of the connection of the MPDConnection. Can be used
      * to get notified on connect & disconnect.
@@ -44,14 +101,14 @@ public abstract class MPDIdleChangeHandler extends Handler {
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
 
-        IDLE_STATE state = (IDLE_STATE) msg.obj;
-        switch (state) {
+        MPDIdleChangeHandlerAction action = (MPDIdleChangeHandlerAction) msg.obj;
+        switch (action.getIdleState()) {
             case IDLE: {
                 onIdle();
                 break;
             }
             case NOIDLE: {
-                onNoIdle();
+                onNoIdle(action.getChangedSubsystems());
                 break;
             }
         }
@@ -59,16 +116,22 @@ public abstract class MPDIdleChangeHandler extends Handler {
 
     public void idle() {
         Message msg = obtainMessage();
-        msg.obj = IDLE_STATE.IDLE;
+
+        MPDIdleChangeHandlerAction action = new MPDIdleChangeHandlerAction(IDLE_STATE.IDLE);
+
+        msg.obj = action;
         sendMessage(msg);
     }
 
-    public void noIdle() {
+    public void noIdle(MPDChangedSubsystemsResponse response) {
         Message msg = obtainMessage();
-        msg.obj = IDLE_STATE.NOIDLE;
+        MPDIdleChangeHandlerAction action = new MPDIdleChangeHandlerAction(IDLE_STATE.NOIDLE);
+        action.setChangedSubsystems(response);
+
+        msg.obj = action;
         sendMessage(msg);
     }
 
     protected abstract void onIdle();
-    protected abstract void onNoIdle();
+    protected abstract void onNoIdle(MPDChangedSubsystemsResponse response);
 }

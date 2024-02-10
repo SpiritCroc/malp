@@ -42,12 +42,15 @@ import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.OutputAdapter;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.OutputsViewModel;
+import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponsePartitionList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
+import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDStateMonitoringHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements AbsListView.OnItemClickListener {
@@ -62,6 +65,8 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
     public static OutputsFragment newInstance() {
         return new OutputsFragment();
     }
+
+    private StateUpdateHandler mStateHandler;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,6 +93,15 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
         mPartitionHandler = new PartitionResponseHandler(this);
+        mStateHandler = new StateUpdateHandler(this);
+        MPDStateMonitoringHandler.getHandler().registerIdleListener(mStateHandler);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Get latest list of partitions
         if (mPartitionSupport) {
             MPDQueryHandler.getPartitions(mPartitionHandler);
         }
@@ -98,12 +112,24 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
         return new ViewModelProvider(this, new OutputsViewModel.OutputsViewModelFactory(requireActivity().getApplication())).get(OutputsViewModel.class);
     }
 
+    private void updatePartitions() {
+        if (mPartitionSupport) {
+            MPDQueryHandler.getPartitions(mPartitionHandler);
+        }
+    }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MPDOutput output = (MPDOutput) mAdapter.getItem(position);
         MPDQueryHandler.toggleOutputPartition(output);
         ((OutputAdapter) mAdapter).setOutputActive(position, !output.getOutputState());
         refreshContent();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        MPDStateMonitoringHandler.getHandler().unRegisterIdleListener(mStateHandler);
     }
 
     private static class PartitionResponseHandler extends MPDResponsePartitionList {
@@ -165,4 +191,36 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
         return super.onContextItemSelected(item);
     }
 
+
+    private static class StateUpdateHandler extends MPDIdleChangeHandler {
+        private final WeakReference<OutputsFragment> mFragment;
+
+        public StateUpdateHandler(OutputsFragment fragment) {
+            mFragment = new WeakReference<>(fragment);
+        }
+
+        @Override
+        protected void onIdle() {
+
+        }
+
+        @Override
+        protected void onNoIdle(MPDChangedSubsystemsResponse response) {
+            if (response.getSubsystemChanged(CHANGED_SUBSYSTEM.OUTPUT)) {
+                OutputsFragment fragment = mFragment.get();
+                if (fragment == null) {
+                    return;
+                }
+
+                fragment.refreshContent();
+            } else if (response.getSubsystemChanged(CHANGED_SUBSYSTEM.PARTITION)) {
+                OutputsFragment fragment = mFragment.get();
+                if (fragment == null) {
+                    return;
+                }
+
+                fragment.updatePartitions();
+            }
+        }
+    }
 }

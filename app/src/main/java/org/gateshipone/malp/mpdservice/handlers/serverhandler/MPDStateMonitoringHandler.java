@@ -26,6 +26,7 @@ package org.gateshipone.malp.mpdservice.handlers.serverhandler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -67,6 +68,8 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
      */
     private final ArrayList<MPDStatusChangeHandler> mStatusListeners;
 
+    private final ArrayList<MPDIdleChangeHandler> mIdleChangeListeners;
+
     /**
      * Timer used to periodically resync the state with the mpd server between interpolating
      * the time values.
@@ -104,6 +107,7 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
         mInterpolateTimer = new Timer();
 
         mStatusListeners = new ArrayList<>();
+        mIdleChangeListeners = new ArrayList<>();
 
         MPDInterface.getGenericInstance().addMPDIdleChangeHandler(new IdleStateListener(this, looper));
         MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(new ConnectionStateListener(this, looper));
@@ -251,6 +255,22 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
         }
     }
 
+    public void registerIdleListener(MPDIdleChangeHandler handler) {
+        if (null != handler) {
+            synchronized (mIdleChangeListeners) {
+                mIdleChangeListeners.add(handler);
+            }
+        }
+    }
+
+    public void unRegisterIdleListener(MPDIdleChangeHandler handler) {
+        if (null != handler) {
+            synchronized (mIdleChangeListeners) {
+                mIdleChangeListeners.remove(handler);
+            }
+        }
+    }
+
 
     private void distributeNewStatus(MPDCurrentStatus status) {
         synchronized (mStatusListeners) {
@@ -295,9 +315,14 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
 
     }
 
-    public void onNoIdle() {
+    public void onNoIdle(MPDIdleChangeHandler.MPDChangedSubsystemsResponse changedSubsystems) {
+        // FIXME keep legacy update for all state changes from server
         // Server idle is over (reason unclear), resync the state
         resynchronizeState();
+
+        for (MPDIdleChangeHandler idleHandler : mIdleChangeListeners) {
+            idleHandler.noIdle(changedSubsystems);
+        }
     }
 
     public void setRefreshInterval(int interval) {
@@ -335,8 +360,8 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
         }
 
         @Override
-        protected void onNoIdle() {
-            mParent.get().onNoIdle();
+        protected void onNoIdle(MPDChangedSubsystemsResponse changedSubsystems) {
+            mParent.get().onNoIdle(changedSubsystems);
         }
     }
 

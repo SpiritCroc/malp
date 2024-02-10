@@ -52,14 +52,20 @@ import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.OutputsViewModel;
 import org.gateshipone.malp.application.viewmodels.PartitionsViewModel;
 import org.gateshipone.malp.mpdservice.ConnectionManager;
+import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
+import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDStateMonitoringHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.profilemanagement.MPDProfileManager;
 
+import java.lang.ref.WeakReference;
+
 public class PartitionsFragment extends GenericMPDFragment<MPDPartition> implements AbsListView.OnItemClickListener {
     public static final String TAG = PartitionsFragment.class.getSimpleName();
+
+    private StateUpdateHandler mStateHandler;
 
     public static PartitionsFragment newInstance() {
         return new PartitionsFragment();
@@ -88,11 +94,19 @@ public class PartitionsFragment extends GenericMPDFragment<MPDPartition> impleme
         setHasOptionsMenu(true);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
+        mStateHandler = new StateUpdateHandler(this);
+        MPDStateMonitoringHandler.getHandler().registerIdleListener(mStateHandler);
     }
 
     @Override
     GenericViewModel<MPDPartition> getViewModel() {
         return new ViewModelProvider(this, new PartitionsViewModel.PartitionsViewModelFactory(requireActivity().getApplication())).get(PartitionsViewModel.class);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        MPDStateMonitoringHandler.getHandler().unRegisterIdleListener(mStateHandler);
     }
 
     @Override
@@ -177,5 +191,30 @@ public class PartitionsFragment extends GenericMPDFragment<MPDPartition> impleme
         }
 
         return super.onContextItemSelected(item);
+    }
+
+    private static class StateUpdateHandler extends MPDIdleChangeHandler {
+        private final WeakReference<PartitionsFragment> mFragment;
+
+        public StateUpdateHandler(PartitionsFragment fragment) {
+            mFragment = new WeakReference<>(fragment);
+        }
+
+        @Override
+        protected void onIdle() {
+
+        }
+
+        @Override
+        protected void onNoIdle(MPDChangedSubsystemsResponse response) {
+            if (response.getSubsystemChanged(CHANGED_SUBSYSTEM.PARTITION)) {
+                PartitionsFragment fragment = mFragment.get();
+                if (fragment == null) {
+                    return;
+                }
+
+                fragment.refreshContent();
+            }
+        }
     }
 }

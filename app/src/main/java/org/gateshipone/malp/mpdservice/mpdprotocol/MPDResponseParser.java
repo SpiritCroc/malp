@@ -25,6 +25,7 @@ package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 import android.util.Log;
 
+import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
@@ -870,5 +871,30 @@ class MPDResponseParser {
         }
 
         return partitionList;
+    }
+
+    static MPDIdleChangeHandler.MPDChangedSubsystemsResponse parseMPDIdleResponse(final MPDConnection connection) throws MPDException {
+        MPDIdleChangeHandler.MPDChangedSubsystemsResponse response = new MPDIdleChangeHandler.MPDChangedSubsystemsResponse();
+
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+
+        key = connection.readKey();
+        String value = "";
+        MPDIdleChangeHandler.CHANGED_SUBSYSTEM responseValue;
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
+            }
+            responseValue = MPDResponses.IDLE_RESPONSE_VALUES.get(value);
+            if (key.equals(MPDResponses.MPD_RESPONSE_KEY.RESPONSE_CHANGED) && responseValue != null) {
+                    response.setSubsystemChanged(responseValue, true);
+            }
+
+            key = connection.readKey();
+        }
+
+        return response;
     }
 }

@@ -881,6 +881,9 @@ public class MPDInterface {
 
         switchPartition(currentPartition, false);
 
+        // Consume all the changes because we have to change partitions to get a list of all outputs and their partitions
+        mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_START_IDLE);
+
         return outputs;
     }
 

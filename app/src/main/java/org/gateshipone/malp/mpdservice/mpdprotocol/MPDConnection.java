@@ -959,15 +959,15 @@ class MPDConnection {
         @Override
         public void run() {
             String response;
+            MPDIdleChangeHandler.MPDChangedSubsystemsResponse idleResponse = null;
+
             // Wait for noidle. This should block until the server is ready for commands again
+
             try {
-                response = waitForIdleResponse();
-            } catch (IOException e) {
-                if (BuildConfig.DEBUG) {
-                    Log.v(TAG, "IOException on waitforIdleResponse!: " + e.getMessage());
-                }
+                idleResponse = MPDResponseParser.parseMPDIdleResponse(MPDConnection.this);
+            } catch (MPDException e) {
+                Log.e(TAG, "MPDException: " + e.getMessage() + " while unidling");
                 handleSocketError();
-                return;
             }
 
             // Cancel the timeout task
@@ -985,43 +985,13 @@ class MPDConnection {
                 }
             }
 
-
-            // Check if noidle was sent or if server changed externally
-            if (response.startsWith(MPDResponses.MPD_RESPONSE_CHANGED)) {
-                // External change
-                if (BuildConfig.DEBUG) {
-                    Log.v(TAG, "External changes");
-                }
-
-                while (!response.equals("OK")) {
-                    try {
-                        response = readLineInternal();
-                    } catch (MPDException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                changeState(CONNECTION_STATES.READY_FOR_COMMANDS);
-
-                mConnectionLock.release();
-                notifyIdleListener();
-
-                scheduleIDLE();
-            } else if (response.isEmpty()) {
-                if (BuildConfig.DEBUG) {
-                    Log.e(TAG, "Error during idling");
-                }
-                handleSocketError();
-                mConnectionLock.release();
-            } else {
-                // Noidle sent
-                // Release connection
-                if (BuildConfig.DEBUG) {
-                    Log.v(TAG, "No external change, response: " + response);
-                }
-                changeState(CONNECTION_STATES.READY_FOR_COMMANDS);
-                mConnectionLock.release();
+            if (idleResponse != null) {
+                notifyIdleListener(idleResponse);
             }
+
+            changeState(CONNECTION_STATES.READY_FOR_COMMANDS);
+            scheduleIDLE();
+            mConnectionLock.release();
         }
     }
 
@@ -1202,10 +1172,10 @@ class MPDConnection {
         }
     }
 
-    private void notifyIdleListener() {
+    private void notifyIdleListener(MPDIdleChangeHandler.MPDChangedSubsystemsResponse changedSubsystems) {
         synchronized (mIdleListeners) {
             for (MPDIdleChangeHandler listener : mIdleListeners) {
-                listener.noIdle();
+                listener.noIdle(changedSubsystems);
             }
         }
     }
