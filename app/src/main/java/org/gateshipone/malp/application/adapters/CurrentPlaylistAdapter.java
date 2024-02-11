@@ -571,6 +571,8 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
         MPDStateMonitoringHandler.getHandler().registerStatusListener(mStateListener);
         MPDInterface.getGenericInstance().addMPDConnectionStateChangeListener(mConnectionListener);
 
+        mWindowEnabled = MPDInterface.getGenericInstance().getServerCapabilities().hasRangedCurrentPlaylist();
+
 
         // Reset old states because it is not ensured that it has any meaning.
         mLastStatus = null;
