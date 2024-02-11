@@ -38,6 +38,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
+
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.Menu;
@@ -1313,12 +1315,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             // The same for the small header image
             int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface);
 
-            Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.cover_placeholder_128dp, null);
-
-            if (drawable != null) {
-                drawable = DrawableCompat.wrap(drawable);
-                DrawableCompat.setTint(drawable, tintColor);
-            }
+            Drawable drawable = AppCompatResources.getDrawable(getContext(), R.drawable.cover_placeholder_128dp);
 
             mTopCoverImage.setImageDrawable(drawable);
             // Start the cover loader
