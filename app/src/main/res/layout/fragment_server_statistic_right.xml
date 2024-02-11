@@ -29,27 +29,19 @@
     android:layout_margin="@dimen/material_content_spacing">
 
     <TextView
-        android:id="@+id/server_statistic_server_playtime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
-
-
-    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/material_content_spacing"
         android:text="@string/server_statistic_uptime"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
     <TextView
         android:id="@+id/server_statistic_server_uptime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
     <TextView
         android:layout_width="match_parent"
@@ -57,14 +49,14 @@
         android:paddingTop="@dimen/material_content_spacing"
         android:text="@string/server_statistic_db_playtime"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
     <TextView
         android:id="@+id/server_statistic_db_playtime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
     <TextView
         android:layout_width="match_parent"
@@ -72,14 +64,14 @@
         android:paddingTop="@dimen/material_content_spacing"
         android:text="@string/server_statistic_db_update"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
     <TextView
         android:id="@+id/server_statistic_db_update"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/server_statistic_update_db_btn"
@@ -94,7 +86,7 @@
         android:layout_height="wrap_content"
         android:text="@string/server_statistic_updateing_database"
         android:textColor="#ff4444"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
         android:visibility="gone" />
 
     <TextView
@@ -103,12 +95,12 @@
         android:paddingTop="@dimen/material_content_spacing"
         android:text="@string/server_statistic_malp_server_info"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
     <TextView
         android:id="@+id/server_statistic_malp_server_information"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="?attr/app_color_on_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 </LinearLayout>
