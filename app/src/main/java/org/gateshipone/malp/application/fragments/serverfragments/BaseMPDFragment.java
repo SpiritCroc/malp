@@ -24,15 +24,20 @@ package org.gateshipone.malp.application.fragments.serverfragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
+import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
+import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDStateMonitoringHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
 
@@ -58,9 +63,27 @@ public abstract class BaseMPDFragment<T extends MPDGenericItem> extends DialogFr
      */
     private boolean mDataReady;
 
+    private StateUpdateHandler mStateHandler;
+
     abstract void swapModel(List<T> model);
 
     abstract GenericViewModel<T> getViewModel();
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mStateHandler = new StateUpdateHandler(this);
+        MPDStateMonitoringHandler.getHandler().registerIdleListener(mStateHandler);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        MPDStateMonitoringHandler.getHandler().unRegisterIdleListener(mStateHandler);
+        mStateHandler = null;
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -168,11 +191,37 @@ public abstract class BaseMPDFragment<T extends MPDGenericItem> extends DialogFr
             if (fragment == null) {
                 return;
             }
+            fragment.refreshContent();
             synchronized (fragment) {
                 if (!fragment.isDetached()) {
                     // TODO is this necessary?
                     fragment.finishedLoading();
                 }
+            }
+        }
+    }
+
+    private static class StateUpdateHandler extends MPDIdleChangeHandler {
+        private final WeakReference<BaseMPDFragment<?>> mFragment;
+
+        public StateUpdateHandler(BaseMPDFragment<?> fragment) {
+            mFragment = new WeakReference<>(fragment);
+        }
+
+        @Override
+        protected void onIdle() {
+
+        }
+
+        @Override
+        protected void onNoIdle(MPDChangedSubsystemsResponse response) {
+            if (response.getSubsystemChanged(CHANGED_SUBSYSTEM.DATABASE) || response.getSubsystemChanged(CHANGED_SUBSYSTEM.UPDATE)) {
+                BaseMPDFragment<?> fragment = mFragment.get();
+                if (fragment == null) {
+                    return;
+                }
+
+                fragment.refreshContent();
             }
         }
     }
