@@ -985,7 +985,7 @@ class MPDConnection {
                     }
 
                     // Timeout, abort!
-                    mConnectionLock.release();
+                    // Lock is already released by readKey function
                     return;
                 }
             }
