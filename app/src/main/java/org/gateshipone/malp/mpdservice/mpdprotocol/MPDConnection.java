@@ -239,6 +239,7 @@ class MPDConnection {
             }
             mSocket = null;
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             if (BuildConfig.DEBUG) {
                 Log.v(TAG, "Error during read error handling");
             }
@@ -304,6 +305,7 @@ class MPDConnection {
         try {
             mSocket.connect(new InetSocketAddress(mHostname, mPort), SOCKET_TIMEOUT);
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             handleSocketError();
             mConnectionLock.release();
             throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -318,6 +320,7 @@ class MPDConnection {
                 try {
                     mSocketInterface = new MPDSocketInterface(mSocket.getInputStream(), mSocket.getOutputStream());
                 } catch (IOException e) {
+                    Log.w(TAG, "IO error: " + e.getMessage());
                     handleSocketError();
                     mConnectionLock.release();
                     throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -328,6 +331,7 @@ class MPDConnection {
             try {
                 waitForResponse();
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 mConnectionLock.release();
                 throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -370,6 +374,7 @@ class MPDConnection {
                 try {
                     waitForResponse();
                 } catch (IOException e) {
+                    Log.w(TAG, "IO error: " + e.getMessage());
                     handleSocketError();
                     mConnectionLock.release();
                     throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -379,6 +384,7 @@ class MPDConnection {
                 try {
                     commands = MPDResponseParser.parseMPDCommands(this);
                 } catch (IOException e) {
+                    Log.w(TAG, "IO error: " + e.getMessage());
                     handleSocketError();
                     mConnectionLock.release();
                     throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -388,6 +394,7 @@ class MPDConnection {
                 try {
                     waitForResponse();
                 } catch (IOException e) {
+                    Log.w(TAG, "IO error: " + e.getMessage());
                     handleSocketError();
                     mConnectionLock.release();
                     throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -435,6 +442,7 @@ class MPDConnection {
         try {
             waitForResponse();
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -474,6 +482,7 @@ class MPDConnection {
                 mSocket = null;
             }
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             if (BuildConfig.DEBUG) {
                 Log.v(TAG, "Error during disconnecting:" + e);
             }
@@ -584,6 +593,7 @@ class MPDConnection {
         try {
             waitForResponse(responseTimeout);
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             handleSocketError();
             mConnectionLock.release();
         }
@@ -679,6 +689,7 @@ class MPDConnection {
         try {
             waitForResponse();
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             handleSocketError();
             mConnectionLock.release();
         }
@@ -867,6 +878,7 @@ class MPDConnection {
         try {
             return (null != mSocket) && (null != mSocketInterface) && mSocket.isConnected() && mSocketInterface.readReady();
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             handleSocketError();
             return false;
         }
@@ -1012,6 +1024,7 @@ class MPDConnection {
             try {
                 line = mSocketInterface.readLine();
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 mConnectionLock.release();
                 return "";
@@ -1055,6 +1068,7 @@ class MPDConnection {
             try {
                 keyValue = mSocketInterface.readValue();
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 mConnectionLock.release();
                 return "";
@@ -1072,6 +1086,7 @@ class MPDConnection {
             try {
                 key = mSocketInterface.readKey();
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 mConnectionLock.release();
                 return null;
@@ -1115,6 +1130,7 @@ class MPDConnection {
             try {
                 return mSocketInterface.readBinary(size);
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 return null;
             }
@@ -1134,6 +1150,7 @@ class MPDConnection {
             try {
                 line = mSocketInterface.readLine();
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 return "";
             }
