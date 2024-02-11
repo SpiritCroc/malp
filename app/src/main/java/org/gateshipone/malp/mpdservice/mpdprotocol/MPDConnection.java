@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
 import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
+import org.gateshipone.malp.mpdservice.mpdprotocol.helper.DebugSemaphore;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
@@ -198,7 +199,11 @@ class MPDConnection {
         mIdleListeners = new ArrayList<>();
         mStateListeners = new ArrayList<>();
 
-        mConnectionLock = new Semaphore(1);
+        if (!BuildConfig.DEBUG) {
+            mConnectionLock = new Semaphore(1);
+        } else {
+            mConnectionLock = new DebugSemaphore(1);
+        }
 
         mIDLETimer = new Timer();
 
