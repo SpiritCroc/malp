@@ -81,7 +81,7 @@ public class MPDCommands {
             return "list album base \"" + escapeString(path) + "\"" + createAlbumGroupString(caps);
         } else {
             // FIXME check if correct. Possible fallback for group missing -> base command also missing.
-            return "list album";
+            return MPD_COMMAND_REQUEST_ALBUMS(caps);
         }
     }
 
