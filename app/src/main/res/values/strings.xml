@@ -221,6 +221,9 @@
 
     <string name="dialog_share_song_details">Share song details</string>
 
+    <string name="song_details_dialog_title">Song details</string>
+
+
     <string name="dialog_no_browser_found_title">No Browser available</string>
     <string name="dialog_no_browser_found_message">Your device is missing a browser</string>
 
