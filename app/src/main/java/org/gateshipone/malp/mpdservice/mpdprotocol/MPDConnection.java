@@ -737,14 +737,12 @@ class MPDConnection {
 
         // Start timeout task
         synchronized (mReadTimeoutTimer) {
-            if (mReadTimeoutTask != null) {
-                // Another deidling is already running, abort
-                return;
-            }
-            mReadTimeoutTask = new ReadTimeoutTask();
-            mReadTimeoutTimer.schedule(mReadTimeoutTask, DEIDLE_TIMEOUT);
-            if (BuildConfig.DEBUG) {
-                Log.v(TAG, "noidle read timeout scheduled");
+            if (mReadTimeoutTask == null) {
+                mReadTimeoutTask = new ReadTimeoutTask();
+                mReadTimeoutTimer.schedule(mReadTimeoutTask, DEIDLE_TIMEOUT);
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "noidle read timeout scheduled");
+                }
             }
         }
 
@@ -975,22 +973,19 @@ class MPDConnection {
     private class IdleThread extends Thread {
         @Override
         public void run() {
-            String response;
             MPDIdleChangeHandler.MPDChangedSubsystemsResponse idleResponse = null;
 
             // Wait for noidle. This should block until the server is ready for commands again
-
             try {
                 idleResponse = MPDResponseParser.parseMPDIdleResponse(MPDConnection.this);
             } catch (MPDException e) {
                 Log.e(TAG, "MPDException: " + e.getMessage() + " while unidling");
                 handleSocketError();
             }
-
-            // Cancel the timeout task
-            cancelReadTimeoutWait();
-
             synchronized (MPDConnection.this) {
+                // Cancel the timeout task
+                cancelReadTimeoutWait();
+
                 if (mConnectionState != CONNECTION_STATES.GOING_NOIDLE && mConnectionState != CONNECTION_STATES.IDLE) {
                     if (BuildConfig.DEBUG) {
                         Log.w(TAG, "Timeout during deidle, releasing connection");
@@ -1000,15 +995,16 @@ class MPDConnection {
                     // Lock is already released by readKey function
                     return;
                 }
-            }
 
-            if (idleResponse != null) {
-                notifyIdleListener(idleResponse);
-            }
 
-            changeState(CONNECTION_STATES.READY_FOR_COMMANDS);
-            scheduleIDLE();
-            mConnectionLock.release();
+                if (idleResponse != null) {
+                    notifyIdleListener(idleResponse);
+                }
+
+                changeState(CONNECTION_STATES.READY_FOR_COMMANDS);
+                scheduleIDLE();
+                mConnectionLock.release();
+            }
         }
     }
 
