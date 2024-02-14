@@ -1315,9 +1315,6 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             // Show the placeholder image until the cover fetch process finishes
             mCoverImage.clearAlbumImage();
 
-            // The same for the small header image
-            int tintColor = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_surface);
-
             Drawable drawable = AppCompatResources.getDrawable(getContext(), R.drawable.cover_placeholder_128dp);
 
             mTopCoverImage.setImageDrawable(drawable);
