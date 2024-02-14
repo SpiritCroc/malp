@@ -473,6 +473,13 @@ public class MPDInterface {
      */
     public List<MPDFileEntry> getFiles(String path) throws MPDException {
         List<MPDFileEntry> retList;
+
+        checkCacheState();
+        retList = mCache.getFiles(path);
+        if (retList != null) {
+            return retList;
+        }
+
         synchronized (this) {
             mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_FILES_INFO(path));
 
@@ -480,6 +487,7 @@ public class MPDInterface {
             retList = MPDResponseParser.parseMPDTracks(mConnection);
         }
         Collections.sort(retList);
+        mCache.cacheFiles(retList, path);
         return retList;
     }
 

@@ -22,19 +22,24 @@
 
 package org.gateshipone.malp.mpdservice.mpdprotocol;
 
+import androidx.annotation.NonNull;
 import androidx.collection.LruCache;
 
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 
 import java.util.List;
 
 public class MPDCache {
 
+    private final static String TAG = MPDCache.class.getSimpleName();
+
     public enum CACHE_TYPE {
         CACHE_TYPE_ARTISTS,
         CACHE_TYPE_ALBUMS,
         CACHE_TYPE_ARTIST_ALBUMS,
+        CACHE_TYPE_FILES,
     }
 
     public abstract class CacheRequest<T> {
@@ -114,15 +119,36 @@ public class MPDCache {
         }
     }
 
-    private final static int ARTIST_ALBUM_MAX_SIZE = 20;
+    /**
+     * Limit of albums cache
+     */
+    private final static int ARTIST_ALBUM_MAX_SIZE = 100;
+
+    /**
+     * Limit of file entries in cache
+     */
+    private final static int FILE_MAX_SIZE = 10000;
     private long mVersion;
     private CacheRequest<MPDAlbum> mAlbumsRequest;
     private CacheRequest<MPDArtist> mArtistsRequest;
     private final LruCache<String, MPDArtistAlbumsRequest> mArtistAlbumCache;
 
+    private final LruCache<String, List<MPDFileEntry>> mFileCache;
+
     public MPDCache(long version) {
         mVersion = version;
-        mArtistAlbumCache = new LruCache<>(ARTIST_ALBUM_MAX_SIZE);
+        mArtistAlbumCache = new LruCache<String, MPDArtistAlbumsRequest>(ARTIST_ALBUM_MAX_SIZE) {
+            @Override
+            protected int sizeOf(@NonNull String key, @NonNull MPDArtistAlbumsRequest artistAlbumsRequest) {
+                return artistAlbumsRequest.getObjects().size();
+            }
+        };
+        mFileCache = new LruCache<String, List<MPDFileEntry>>(FILE_MAX_SIZE) {
+            @Override
+            protected int sizeOf(@NonNull String key, @NonNull List<MPDFileEntry> files) {
+                return files.size();
+            }
+        };
     }
 
     public long getVersion() {
@@ -142,10 +168,13 @@ public class MPDCache {
         }
 
         mArtistAlbumCache.evictAll();
+        mFileCache.evictAll();
     }
 
     public void setVersion(long version) {
-        invalidate();
+        if (mVersion != version) {
+            invalidate();
+        }
         mVersion = version;
     }
 
@@ -193,5 +222,12 @@ public class MPDCache {
         return null;
     }
 
+    public void cacheFiles(List<MPDFileEntry> files, String path) {
+        mFileCache.put(path, files);
+    }
+
+    public List<MPDFileEntry> getFiles(String path) {
+        return mFileCache.get(path);
+    }
 
 }
