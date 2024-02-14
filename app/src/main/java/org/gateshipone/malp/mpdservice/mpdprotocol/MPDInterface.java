@@ -50,11 +50,11 @@ public class MPDInterface {
 
     private final MPDConnection mConnection;
 
-    private static String mHostname;
+    private static String mHostname = "";
     private static int mPort;
-    private static String mPassword;
+    private static String mPassword = "";
 
-    private static String mPartition;
+    private static String mPartition = "";
 
     private MPDCache mCache;
 
@@ -98,7 +98,12 @@ public class MPDInterface {
     private static MPDInterface mArtworkInterface;
     private static MPDInterface mGenericInterface;
 
-    public void setServerParameters(String hostname, String password, int port, String partition) {
+    public static void setServerParameters(String hostname, String password, int port, String partition) {
+        boolean serverChanged = false;
+        if (!mHostname.equals(hostname) || mPort != port) {
+            serverChanged = true;
+        }
+
         mHostname = hostname;
         mPassword = password;
         mPort = port;
@@ -107,9 +112,15 @@ public class MPDInterface {
 
         if (mGenericInterface != null) {
             mGenericInterface.setInstanceServerParameters(hostname, password, port);
+            if (serverChanged) {
+                mGenericInterface.invalidateCache();
+            }
         }
         if (mArtworkInterface != null) {
             mArtworkInterface.setInstanceServerParameters(hostname, password, port);
+            if (serverChanged) {
+                mArtworkInterface.invalidateCache();
+            }
         }
     }
 
@@ -127,7 +138,6 @@ public class MPDInterface {
                 Log.w(TAG, "Invalid partition (" + mPartition + "), fail silently");
             }
         }
-        invalidateCache();
     }
 
     public synchronized void disconnect() {

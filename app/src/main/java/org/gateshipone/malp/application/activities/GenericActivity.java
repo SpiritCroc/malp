@@ -259,6 +259,7 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
         switch (level) {
             case TRIM_MEMORY_UI_HIDDEN:
             case TRIM_MEMORY_BACKGROUND:
+                break;
             case TRIM_MEMORY_MODERATE:
             case TRIM_MEMORY_RUNNING_CRITICAL:
             case TRIM_MEMORY_RUNNING_LOW:
