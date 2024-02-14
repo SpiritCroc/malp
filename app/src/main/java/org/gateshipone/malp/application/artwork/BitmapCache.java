@@ -44,7 +44,7 @@ public class BitmapCache {
     /**
      * Maximum size of the cache in kilobytes
      */
-    private static final int mCacheSize = mMaxMemory / 4;
+    private static final int mCacheSize = mMaxMemory / 8;
 
     /**
      * Hash prefix for album images
@@ -249,6 +249,7 @@ public class BitmapCache {
      */
     private void printUsage() {
         Log.v(TAG, "Cache usage: " + ((mCache.size() * 100) / mCache.maxSize()) + '%');
+        Log.v(TAG, "Cache size=" + mCache.size() + " / " + mCache.maxSize());
         int missCount = mCache.missCount();
         int hitCount = mCache.hitCount();
         if (missCount > 0) {
