@@ -108,8 +108,9 @@ public class MPDResponses {
         RESPONSE_GENRE,
         RESPONSE_COMMENT,
         RESPONSE_LABEL,
-        RESPONSE_UNKNOWN,
         RESPONSE_PARTITION,
+        RESPONSE_FORMAT,
+        RESPONSE_UNKNOWN,
     }
 
 
@@ -183,6 +184,7 @@ public class MPDResponses {
         map.put("Genre", MPD_RESPONSE_KEY.RESPONSE_GENRE);
         map.put("Comment", MPD_RESPONSE_KEY.RESPONSE_COMMENT);
         map.put("Label", MPD_RESPONSE_KEY.RESPONSE_LABEL);
+        map.put("Format", MPD_RESPONSE_KEY.RESPONSE_FORMAT);
         map.put("partition", MPD_RESPONSE_KEY.RESPONSE_PARTITION);
 
         return map;

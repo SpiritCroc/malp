@@ -61,7 +61,8 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
         ALBUMARTIST_MBID,
         TRACK_MBID,
         RELEASETRACK_MBID,
-        WORK_MBID
+        WORK_MBID,
+        FILE_FORMAT,
     }
 
     private final HashMap<StringTagTypes, String> pStringTags;

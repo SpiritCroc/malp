@@ -432,6 +432,9 @@ class MPDResponseParser {
                     case RESPONSE_COMMENT:
                         ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.COMMENT, value);
                         break;
+                    case RESPONSE_FORMAT:
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.FILE_FORMAT, value);
+                        break;
                     case RESPONSE_TIME:
                         try {
                             ((MPDTrack) tempFileEntry).setLength(Integer.parseInt(value));
