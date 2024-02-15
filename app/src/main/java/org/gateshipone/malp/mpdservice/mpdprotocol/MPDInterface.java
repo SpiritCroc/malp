@@ -1009,6 +1009,12 @@ public class MPDInterface {
     }
 
     public synchronized void toggleOutputPartition(int id, String partition) throws MPDException {
+        if (!getServerCapabilities().hasPartitions()) {
+            // Fallback
+            toggleOutput(id);
+            return;
+        }
+
         String currentPartition = getCurrentServerStatus().getPartition();
 
         if (!partition.equals(currentPartition)) {
