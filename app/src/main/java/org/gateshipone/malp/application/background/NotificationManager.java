@@ -387,13 +387,6 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
      */
     public synchronized void setMPDStatus(MPDCurrentStatus status) {
         if (mSessionActive) {
-            // Check if playing or not. If activate the service as foreground
-            if (status.getPlaybackState() != MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
-                mService.stopForeground(false);
-            } else {
-                mService.startForeground(NOTIFICATION_ID, mNotification);
-            }
-
             // Only update the notification if playback state really changed
             if ((mLastStatus.getPlaybackState() != status.getPlaybackState()) ||
                     (mLastStatus.getCurrentSongIndex() != status.getCurrentSongIndex())) {
@@ -473,6 +466,11 @@ public class NotificationManager implements CoverBitmapLoader.CoverBitmapListene
         }
     }
 
+    /**
+     * Setting whether the notification can be swiped away. If so, it means that local
+     * streaming playback is enabled.
+     * @param dismissible True if not playing locally, false if stream is played on device
+     */
     public synchronized void setDismissible(boolean dismissible) {
         mDismissible = dismissible;
 
