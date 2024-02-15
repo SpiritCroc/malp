@@ -293,6 +293,12 @@ public class FileListItem extends AbsImageListViewItem {
         mNumberView.setVisibility(GONE);
         mDurationView.setVisibility(GONE);
 
+        if (playlist.hasLastModifiedDate()) {
+            mAdditionalInfoView.setText(playlist.getLastModifiedString());
+        } else {
+            mAdditionalInfoView.setVisibility(GONE);
+        }
+
         if (mShowIcon) {
             Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_queue_music_black_48dp);
 
