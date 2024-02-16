@@ -337,6 +337,8 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         notifyDisconnected();
         mNotificationManager.hideNotification();
 
+        stopForegroundTimeout();
+
         stopSelf();
     }
 
@@ -678,6 +680,15 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         }
     }
 
+    private void stopForegroundTimeout() {
+        synchronized (mStopForegroundTimer) {
+            if (mStopForegroundTask != null) {
+                mStopForegroundTask.cancel();
+                mStopForegroundTask = null;
+            }
+        }
+    }
+
     /**
      * Private class to react to changes in MPDs connection state changes.
      */
@@ -699,15 +710,19 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
          */
         @Override
         public void onDisconnected() {
+            BackgroundService service = mService.get();
+            if (service == null) {
+                return;
+            }
             if (BuildConfig.DEBUG) {
                 Log.v(TAG, "Disconnected");
             }
 
-            mService.get().mConnecting = false;
-            mService.get().shutdownService();
+            service.mConnecting = false;
+            service.shutdownService();
 
-            if (mService.get().mPlaybackManager != null && mService.get().mPlaybackManager.isPlaying()) {
-                mService.get().mPlaybackManager.stop();
+            if (service.mPlaybackManager != null && service.mPlaybackManager.isPlaying()) {
+                service.mPlaybackManager.stop();
             }
         }
     }
@@ -730,19 +745,14 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
             }
 
             if (service.mLastStatus.getPlaybackState() != status.getPlaybackState()) {
-                synchronized (service.mStopForegroundTimer) {
-                    if (service.mStopForegroundTask != null) {
-                        service.mStopForegroundTask.cancel();
-                        service.mStopForegroundTask = null;
-                    }
-                }
+                service.stopForegroundTimeout();
                 if (status.getPlaybackState() == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING && service.mWasStreaming) {
                     service.startStreamingPlayback();
                 } else if (service.mWasStreaming) {
                     service.stopStreamingPlayback();
                 }
 
-                if (status.getPlaybackState() != MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING) {
+                if (status.getPlaybackState() != MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING && MPDInterface.getGenericInstance().isConnected()) {
                     synchronized (service.mStopForegroundTimer) {
                         service.mStopForegroundTask = new StopForegroundTask(service);
                         service.mStopForegroundTimer.schedule(service.mStopForegroundTask, FOREGROUND_TIMEOUT);
@@ -780,7 +790,7 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
             BackgroundService service = mService.get();
             if (service != null) {
                 if (BuildConfig.DEBUG) {
-                    Log.e(TAG, "Forground timeout expired, closing");
+                    Log.v(TAG, "Forground timeout expired, closing");
                 }
                 service.onMPDDisconnect();
             }
