@@ -318,6 +318,9 @@ public class MPDStateMonitoringHandler extends MPDGenericHandler {
     public void onNoIdle(MPDIdleChangeHandler.MPDChangedSubsystemsResponse changedSubsystems) {
         // FIXME keep legacy update for all state changes from server
         // Server idle is over (reason unclear), resync the state
+        if (!changedSubsystems.getSomethingChanged()) {
+            return;
+        }
         resynchronizeState();
 
         for (MPDIdleChangeHandler idleHandler : mIdleChangeListeners) {

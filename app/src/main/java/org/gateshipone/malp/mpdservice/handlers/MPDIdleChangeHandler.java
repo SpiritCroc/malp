@@ -59,16 +59,24 @@ public abstract class MPDIdleChangeHandler extends Handler {
     public static class MPDChangedSubsystemsResponse {
         private final boolean[] mChangedSubsystems;
 
+        private boolean mChanges;
         public MPDChangedSubsystemsResponse() {
             mChangedSubsystems = new boolean[CHANGED_SUBSYSTEM.values().length];
         }
 
         public void setSubsystemChanged(CHANGED_SUBSYSTEM subsystem, boolean changed) {
+            if (changed) {
+                mChanges = true;
+            }
             mChangedSubsystems[subsystem.ordinal()] = changed;
         }
 
         public boolean getSubsystemChanged(CHANGED_SUBSYSTEM subsystem) {
             return mChangedSubsystems[subsystem.ordinal()];
+        }
+
+        public boolean getSomethingChanged() {
+            return mChanges;
         }
     }
 
