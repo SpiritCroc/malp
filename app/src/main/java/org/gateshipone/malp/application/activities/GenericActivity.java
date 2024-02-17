@@ -255,7 +255,6 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        Log.w(TAG, "Trim memory: " + level);
         switch (level) {
             case TRIM_MEMORY_UI_HIDDEN:
             case TRIM_MEMORY_BACKGROUND:
@@ -265,6 +264,7 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
             case TRIM_MEMORY_RUNNING_LOW:
             case TRIM_MEMORY_RUNNING_MODERATE:
             case TRIM_MEMORY_COMPLETE:
+                Log.v(TAG,"Memory pressure: " + level + " trying to reduce memory consumption");
                 MPDInterface.memoryPressure();
                 break;
         }
