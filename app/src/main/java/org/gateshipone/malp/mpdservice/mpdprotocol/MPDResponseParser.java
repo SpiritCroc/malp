@@ -900,4 +900,31 @@ class MPDResponseParser {
 
         return response;
     }
+
+    static void parseMPDPlaylistLength(final MPDConnection connection, MPDPlaylist playlist) throws MPDException {
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+
+        key = connection.readKey();
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
+            }
+            if (key.equals(MPDResponses.MPD_RESPONSE_KEY.RESPONSE_SONGS)) {
+                try {
+                    playlist.setTitleCount(Integer.parseInt(value));
+                } catch (NumberFormatException ignored) {
+                }
+            } else if (key.equals(MPDResponses.MPD_RESPONSE_KEY.RESPONSE_PLAYTIME)) {
+                try {
+                    playlist.setLength(Integer.parseInt(value));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+
+            key = connection.readKey();
+        }
+    }
 }

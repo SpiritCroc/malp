@@ -295,4 +295,12 @@
     <string name="sampleformat_unit_bits_template">%1$s Bits</string>
     <string name="channels_template">%1$d Kanäle</string>
     <string name="permission_request_notifications_snackbar_explanation">Benachrichtigungen erforderlich für den Bulkdownloader.</string>
+    <plurals name="playlist_count_template_length">
+        <item quantity="one">%d Lied — %s</item>
+        <item quantity="other">%d Lieder — %s</item>
+    </plurals>
+    <plurals name="playlist_count_template">
+        <item quantity="one">%d Lied</item>
+        <item quantity="other">%d Lieder</item>
+    </plurals>
 </resources>

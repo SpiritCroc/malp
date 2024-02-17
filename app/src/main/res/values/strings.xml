@@ -481,7 +481,14 @@
     <string name="samplerate_unit_hertz_template" translatable="false">%1$d Hz</string>
     <string name="sampleformat_unit_bits_template">%1$s bits</string>
     <string name="channels_template">%1$d channels</string>
-
+    <plurals name="playlist_count_template_length">
+        <item quantity="one">%d song — %s</item>
+        <item quantity="other">%d songs — %s</item>
+    </plurals>
+    <plurals name="playlist_count_template">
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d songs</item>
+    </plurals>
     <!-- permission request -->
     <string name="permission_request_snackbar_button" translatable="false">@android:string/ok</string>
     <string name="permission_request_notifications_snackbar_explanation">Show Notifications Permission is required for Bulkdownloader.</string>

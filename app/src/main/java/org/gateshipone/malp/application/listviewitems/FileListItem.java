@@ -25,6 +25,7 @@ package org.gateshipone.malp.application.listviewitems;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -291,12 +292,25 @@ public class FileListItem extends AbsImageListViewItem {
 
         mSeparator.setVisibility(GONE);
         mNumberView.setVisibility(GONE);
-        mDurationView.setVisibility(GONE);
 
         if (playlist.hasLastModifiedDate()) {
+            mAdditionalInfoView.setVisibility(VISIBLE);
             mAdditionalInfoView.setText(playlist.getLastModifiedString());
         } else {
             mAdditionalInfoView.setVisibility(GONE);
+        }
+
+        int titleCount = playlist.getTitleCount();
+        int length = playlist.getLength();
+        if (titleCount != MPDPlaylist.NOT_SET) {
+            mDurationView.setVisibility(VISIBLE);
+            if (length > 0) {
+                mDurationView.setText(getResources().getQuantityString(R.plurals.playlist_count_template_length, titleCount, titleCount, FormatHelper.formatTracktimeFromS(length)));
+            } else {
+                mDurationView.setText(getResources().getQuantityString(R.plurals.playlist_count_template, titleCount, titleCount));
+            }
+        } else {
+            mDurationView.setVisibility(GONE);
         }
 
         if (mShowIcon) {

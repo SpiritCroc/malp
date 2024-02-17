@@ -493,7 +493,7 @@ public class CurrentPlaylistAdapter extends BaseAdapter implements ArtworkManage
             // Get the lock to prevent race-conditions.
             mListsLock.writeLock().lock();
 
-            if (mWindowedPlaylists.length <= start / WINDOW_SIZE) {
+            if (mWindowedPlaylists == null || mWindowedPlaylists.length <= start / WINDOW_SIZE) {
                 // Obviously we received old data here. Abort handling.
                 // Crash reported via Google Play (07.11.2016)
                 mListsLock.writeLock().unlock();

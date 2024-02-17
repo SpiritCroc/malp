@@ -34,6 +34,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -372,6 +373,11 @@ public class MPDInterface {
         return artists;
     }
 
+    public synchronized void getPlaylistInformation(MPDPlaylist playlist) throws MPDException {
+        mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_PLAYLIST_LENGTH(playlist.getFilename()));
+        MPDResponseParser.parseMPDPlaylistLength(mConnection, playlist);
+    }
+
     /**
      * Get a list of all playlists available in MPDs database
      *
@@ -385,6 +391,16 @@ public class MPDInterface {
             playlists = MPDResponseParser.parseMPDTracks(mConnection);
         }
         Collections.sort(playlists);
+
+        // Check if server supports playlistlength command
+        if (getServerCapabilities().hasPlaylistLength()) {
+            for (MPDFileEntry fileEntry : playlists) {
+                if (fileEntry instanceof MPDPlaylist) {
+                    getPlaylistInformation((MPDPlaylist) fileEntry);
+                }
+            }
+        }
+
         return playlists;
     }
 

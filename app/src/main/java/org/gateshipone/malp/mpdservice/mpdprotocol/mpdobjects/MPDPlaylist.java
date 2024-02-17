@@ -26,6 +26,10 @@ package org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects;
 import androidx.annotation.NonNull;
 
 public class MPDPlaylist extends MPDFileEntry implements MPDGenericItem {
+    public static int NOT_SET = -1;
+    private int mLength = NOT_SET;
+    private int mTitleCount = NOT_SET;
+
     public MPDPlaylist(@NonNull String path) {
         super(path);
     }
@@ -40,5 +44,21 @@ public class MPDPlaylist extends MPDFileEntry implements MPDGenericItem {
         String anotherTitle = another.getFilename();
 
         return title.toLowerCase().compareTo(anotherTitle.toLowerCase());
+    }
+
+    public void setLength(int seconds) {
+        mLength = seconds;
+    }
+
+    public int getLength() {
+        return mLength;
+    }
+
+    public void setTitleCount(int count) {
+        mTitleCount = count;
+    }
+
+    public int getTitleCount() {
+        return mTitleCount;
     }
 }

@@ -167,6 +167,7 @@ public class MPDCommands {
     public static final String MPD_COMMAND_GET_SAVED_PLAYLISTS = "listplaylists";
 
     public static final String MPD_COMMAND_GET_CURRENT_PLAYLIST = "playlistinfo";
+    public static final String MPD_COMMAND_GET_PLAYLIST_LENGTH = "playlistlength";
 
     public static String MPD_COMMAND_GET_CURRENT_PLAYLIST_WINDOW(int start, int end) {
         return "playlistinfo " + start + ':' + end;
@@ -198,6 +199,10 @@ public class MPDCommands {
 
     public static String MPD_COMMAND_REMOVE_TRACK_FROM_PLAYLIST(String playlistName, int position) {
         return "playlistdelete \"" + escapeString(playlistName) + "\" " + position;
+    }
+
+    public static String MPD_COMMAND_GET_PLAYLIST_LENGTH(String playlistName) {
+        return MPD_COMMAND_GET_PLAYLIST_LENGTH + " \"" + escapeString(playlistName) + "\" ";
     }
 
     public static final String MPD_COMMAND_GET_CURRENT_SONG = "currentsong";
@@ -383,4 +388,5 @@ public class MPDCommands {
     public static String MPD_COMMAND_MOVE_OUTPUT(String name) {
         return "moveoutput \"" + escapeString(name) + "\"";
     }
+
 }
