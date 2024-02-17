@@ -478,7 +478,7 @@
     <string name="tag_header_template" translatable="false">%1$s:</string>
 
     <string name="bitrate_unit_kilo_bits_template">%1$d kbps</string>
-    <string name="samplerate_unit_hertz_template">%1$d Hz</string>
+    <string name="samplerate_unit_hertz_template" translatable="false">%1$d Hz</string>
     <string name="sampleformat_unit_bits_template">%1$s bits</string>
     <string name="channels_template">%1$d channels</string>
 
