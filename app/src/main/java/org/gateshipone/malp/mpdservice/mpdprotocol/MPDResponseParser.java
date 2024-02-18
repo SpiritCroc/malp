@@ -31,6 +31,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFilterObject;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
@@ -926,5 +927,31 @@ class MPDResponseParser {
 
             key = connection.readKey();
         }
+    }
+
+    static List<MPDFilterObject> parseTagEntryList(final MPDConnection connection) throws MPDException {
+        ArrayList<MPDFilterObject> entryList = new ArrayList<>();
+        // Parse entry
+        String entryName = null;
+
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+
+        key = connection.readKey();
+
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
+            }
+            entryList.add(new MPDFilterObject(value));
+
+
+            key = connection.readKey();
+        }
+
+        Collections.sort(entryList);
+        return entryList;
     }
 }

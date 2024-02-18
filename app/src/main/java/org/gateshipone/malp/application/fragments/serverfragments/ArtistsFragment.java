@@ -28,6 +28,9 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import androidx.preference.PreferenceManager;
+
+import android.util.Log;
+import android.util.Pair;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -60,15 +63,32 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements AdapterView.OnItemClickListener {
     public static final String TAG = ArtistsFragment.class.getSimpleName();
 
+    private static final String REQUESTED_TAG_NAME = "ARG_TAG_NAME";
+    private static final String REQUESTED_TAG_VALUE = "ARG_TAG_VALUE";
+
     private ArtistSelectedCallback mSelectedCallback;
 
     private MPDAlbum.MPD_ALBUM_SORT_ORDER mAlbumSortOrder;
     private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
     private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
+    private String mTagName;
+    private String mTagValue;
+
 
     public static ArtistsFragment newInstance() {
         return new ArtistsFragment();
+    }
+
+    public static ArtistsFragment newInstance(Pair<String, String> tagFilter) {
+        final Bundle args = new Bundle();
+        if (tagFilter != null) {
+            args.putString(REQUESTED_TAG_NAME, tagFilter.first);
+            args.putString(REQUESTED_TAG_VALUE, tagFilter.second);
+        }
+        ArtistsFragment fragment = new ArtistsFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -94,6 +114,15 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
         final String viewAppearance = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
 
         final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
+
+        final Bundle args = getArguments();
+
+        if (args != null && savedInstanceState == null) {
+            mTagName = args.getString(REQUESTED_TAG_NAME);
+            mTagValue = args.getString(REQUESTED_TAG_VALUE);
+        }
+
+        Log.e(TAG, "Tag[" + mTagName + "]=" + mTagValue);
 
         mAlbumSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, requireContext());
         mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, requireContext());
@@ -141,7 +170,7 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
 
     @Override
     GenericViewModel<MPDArtist> getViewModel() {
-        return new ViewModelProvider(this, new ArtistsViewModel.ArtistViewModelFactory(requireActivity().getApplication(), mAlbumArtistSelector, mArtistSortSelector)).get(ArtistsViewModel.class);
+        return new ViewModelProvider(this, new ArtistsViewModel.ArtistViewModelFactory(requireActivity().getApplication(), mAlbumArtistSelector, mArtistSortSelector, new Pair<>(mTagName, mTagValue))).get(ArtistsViewModel.class);
     }
 
     @Override
@@ -150,7 +179,13 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
 
         if (null != mFABCallback) {
             mFABCallback.setupFAB(false, null);
-            mFABCallback.setupToolbar(getString(R.string.app_name), true, true, false);
+            String title;
+            if (mTagValue == null || mTagValue.isEmpty()) {
+                title = getString(R.string.app_name);
+            } else {
+                title = mTagValue;
+            }
+            mFABCallback.setupToolbar(title, true, true, false);
         }
         ArtworkManager.getInstance(requireContext().getApplicationContext()).registerOnNewArtistImageListener((ArtistsAdapter) mAdapter);
     }

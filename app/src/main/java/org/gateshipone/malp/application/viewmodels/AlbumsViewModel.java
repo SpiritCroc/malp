@@ -24,6 +24,8 @@ package org.gateshipone.malp.application.viewmodels;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.util.Pair;
+
 import androidx.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
@@ -50,17 +52,23 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
     private final String mAlbumsPath;
 
     private final MPDAlbum.MPD_ALBUM_SORT_ORDER mSortOrder;
-    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+    private final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
 
-    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
+    private final MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
-    private AlbumsViewModel(@NonNull final Application application, final String artistName, final String albumsPath) {
+    private final String mTagName;
+    private final String mTagValue;
+
+    private AlbumsViewModel(@NonNull final Application application, final String artistName, final String albumsPath, final String tagName, final String tagValue) {
         super(application);
 
         mAlbumsResponseHandler = new AlbumResponseHandler(this);
 
         mArtistName = artistName;
         mAlbumsPath = albumsPath;
+
+        mTagName = tagName;
+        mTagValue = tagValue;
 
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(application);
         mSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, application);
@@ -72,7 +80,7 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
     void loadData() {
         if ((null == mArtistName) || mArtistName.isEmpty()) {
             if (null == mAlbumsPath || mAlbumsPath.isEmpty()) {
-                MPDQueryHandler.getAlbums(mAlbumsResponseHandler);
+                MPDQueryHandler.getAlbums(mAlbumsResponseHandler, new Pair<>(mTagName, mTagValue));
             } else {
                 MPDQueryHandler.getAlbumsInPath(mAlbumsPath, mAlbumsResponseHandler);
             }
@@ -107,16 +115,26 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
 
         private final String mAlbumsPath;
 
-        public AlbumViewModelFactory(final Application application, final String artistName, final String albumsPath) {
+        private final String mTagName;
+        private final String mTagValue;
+
+        public AlbumViewModelFactory(final Application application, final String artistName, final String albumsPath, final Pair<String, String> tagFilter) {
             mApplication = application;
             mArtistName = artistName;
             mAlbumsPath = albumsPath;
+            if (tagFilter != null) {
+                mTagName = tagFilter.first;
+                mTagValue = tagFilter.second;
+            } else {
+                mTagName = null;
+                mTagValue = null;
+            }
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) new AlbumsViewModel(mApplication, mArtistName, mAlbumsPath);
+            return (T) new AlbumsViewModel(mApplication, mArtistName, mAlbumsPath, mTagName, mTagValue);
         }
     }
 }

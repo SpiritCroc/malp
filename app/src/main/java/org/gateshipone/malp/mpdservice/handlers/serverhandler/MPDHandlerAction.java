@@ -110,6 +110,7 @@ public class MPDHandlerAction {
         ACTION_SWITCH_PARTITION,
         ACTION_MOVE_OUTPUT_TO_PARTITION,
         ACTION_TOGGLE_PARTITION_OUTPUT,
+        ACTION_GET_TAG_FILTER_ENTRIES,
     }
 
 
@@ -129,6 +130,8 @@ public class MPDHandlerAction {
         EXTRA_ALBUM_MBID,
         EXTRA_PARTITION_NAME,
         EXTRA_OUTPUT_NAME,
+        EXTRA_TAG_NAME,
+        EXTRA_TAG_VALUE,
     }
 
     /**

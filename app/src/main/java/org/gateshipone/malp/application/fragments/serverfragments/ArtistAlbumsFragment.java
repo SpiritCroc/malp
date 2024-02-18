@@ -156,7 +156,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
 
     @Override
     GenericViewModel<MPDAlbum> getViewModel() {
-        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(requireActivity().getApplication(), mArtist.getArtistName(), null)).get(AlbumsViewModel.class);
+        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(requireActivity().getApplication(), mArtist.getArtistName(), null, null)).get(AlbumsViewModel.class);
     }
 
     @Override

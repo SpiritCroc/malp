@@ -25,6 +25,7 @@ package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MPDCapabilities {
@@ -73,6 +74,8 @@ public class MPDCapabilities {
     private boolean mHasPartitions;
 
     private boolean mHasPlaylistLength;
+
+    private List<String> mTags;
 
     public MPDCapabilities(String version, List<String> commands, List<String> tags) {
         String[] versions = version.split("\\.");
@@ -134,6 +137,7 @@ public class MPDCapabilities {
 
 
         if (null != tags) {
+            mTags = tags;
             for (String tag : tags) {
                 String tagLC = tag.toLowerCase();
                 if (tagLC.contains(MPD_TAG_TYPE_MUSICBRAINZ)) {
@@ -234,6 +238,13 @@ public class MPDCapabilities {
 
     public boolean hasPlaylistLength() {
         return mHasPlaylistLength;
+    }
+
+    public List<String> getTags() {
+        if (mTags == null) {
+            mTags = new ArrayList<>();
+        }
+        return mTags;
     }
 
     public String getServerFeatures() {

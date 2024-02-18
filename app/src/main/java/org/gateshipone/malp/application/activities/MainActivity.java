@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.preference.PreferenceManager;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuInflater;
@@ -86,6 +87,7 @@ import org.gateshipone.malp.application.fragments.serverfragments.SavedPlaylists
 import org.gateshipone.malp.application.fragments.serverfragments.SearchFragment;
 import org.gateshipone.malp.application.fragments.serverfragments.ServerPropertiesFragment;
 import org.gateshipone.malp.application.fragments.serverfragments.SongDetailsDialog;
+import org.gateshipone.malp.application.fragments.serverfragments.TagSelectFragment;
 import org.gateshipone.malp.application.utils.PermissionHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.views.CurrentPlaylistView;
@@ -105,7 +107,8 @@ public class MainActivity extends GenericActivity
         implements NavigationView.OnNavigationItemSelectedListener, AlbumCallback, ArtistsFragment.ArtistSelectedCallback,
         ProfileManageCallbacks, PlaylistCallback,
         NowPlayingView.NowPlayingDragStatusReceiver, FilesFragment.FilesCallback,
-        FABFragmentCallback, SettingsFragment.OnArtworkSettingsRequestedCallback {
+        FABFragmentCallback, SettingsFragment.OnArtworkSettingsRequestedCallback,
+        TagSelectFragment.TagSelectCallback {
 
     private static final String TAG = "MainActivity";
 
@@ -428,6 +431,9 @@ public class MainActivity extends GenericActivity
         } else if (id == R.id.nav_search) {
             fragment = SearchFragment.newInstance();
             fragmentTag = SearchFragment.TAG;
+        } else if (id == R.id.nav_tag_browser) {
+            fragment = TagSelectFragment.newInstance();
+            fragmentTag = TagSelectFragment.TAG;
         } else if (id == R.id.nav_profiles) {
             fragment = ProfilesFragment.newInstance();
             fragmentTag = ProfilesFragment.TAG;
@@ -981,5 +987,26 @@ public class MainActivity extends GenericActivity
         }
 
         return navId;
+    }
+
+    @Override
+    public void onTagSelected(String tagName, String tagValue) {
+        // Create fragment and give it an argument for the selected article
+        MyMusicTabsFragment newFragment = MyMusicTabsFragment.newInstance(getDefaultTab(), tagName, tagValue);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.fragment_slide_in_bottom, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out_bottom);
+        // Replace whatever is in the fragment_container view with this
+        // fragment,
+        // and add the transaction to the back stack so the user can navigate
+        // back
+        transaction.replace(R.id.fragment_container, newFragment, MyMusicTabsFragment.TAG);
+        transaction.addToBackStack("TagedMyMusicFragment");
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setCheckedItem(R.id.nav_tag_browser);
+
+        // Commit the transaction
+        transaction.commit();
     }
 }

@@ -24,6 +24,7 @@ package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 
 import android.util.Log;
+import android.util.Pair;
 
 import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
@@ -32,6 +33,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFilterObject;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
@@ -177,12 +179,14 @@ public class MPDInterface {
      *
      * @return List of MPDAlbum
      */
-    public List<MPDAlbum> getAlbums() throws MPDException {
-        List<MPDAlbum> albums;
+    public List<MPDAlbum> getAlbums(Pair<String, String> tagFilter) throws MPDException {
+        List<MPDAlbum> albums = null;
         checkCacheState();
 
-        synchronized (mCache) {
-            albums = mCache.getCachedAlbums();
+        if (tagFilter == null) {
+            synchronized (mCache) {
+                albums = mCache.getCachedAlbums();
+            }
         }
         if (albums != null) {
             return albums;
@@ -190,7 +194,7 @@ public class MPDInterface {
 
         synchronized (this) {
             // Get a list of albums. Check if server is new enough for MB and AlbumArtist filtering
-            mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMS(mConnection.getServerCapabilities()));
+            mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMS(mConnection.getServerCapabilities(), tagFilter));
 
             // Remove empty albums at beginning of the list
             albums = MPDResponseParser.parseMPDAlbums(mConnection);
@@ -205,8 +209,10 @@ public class MPDInterface {
             }
         }
 
-        synchronized (mCache) {
-            mCache.cacheAlbums(albums);
+        if (tagFilter == null) {
+            synchronized (mCache) {
+                mCache.cacheAlbums(albums);
+            }
         }
         return albums;
     }
@@ -299,12 +305,14 @@ public class MPDInterface {
      *
      * @return List of MPDArtist objects
      */
-    public List<MPDArtist> getArtists(MPDArtist.MPD_ALBUM_ARTIST_SELECTOR albumArtistSelector, MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector) throws MPDException {
+    public List<MPDArtist> getArtists(MPDArtist.MPD_ALBUM_ARTIST_SELECTOR albumArtistSelector, MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector, Pair<String,String> tagFilter) throws MPDException {
         checkCacheState();
         // Get list of artists for MBID correction
-        List<MPDArtist> normalArtists;
-        synchronized (mCache) {
-            normalArtists = mCache.getCachedArtistsRequest(albumArtistSelector, artistSortSelector);
+        List<MPDArtist> normalArtists = null;
+        if (tagFilter == null) {
+            synchronized (mCache) {
+                normalArtists = mCache.getCachedArtistsRequest(albumArtistSelector, artistSortSelector);
+            }
         }
 
         if (normalArtists != null) {
@@ -315,18 +323,16 @@ public class MPDInterface {
             capabilities = mConnection.getServerCapabilities();
         }
 
-
-
         List<MPDArtist> artists;
         synchronized (this) {
             if (albumArtistSelector == MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ARTIST && artistSortSelector == MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST) {
-                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS(capabilities));
+                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS(capabilities, tagFilter));
             } else if (albumArtistSelector == MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ALBUMARTIST && artistSortSelector == MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST) {
-                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMARTISTS(capabilities));
+                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMARTISTS(capabilities, tagFilter));
             } else if (albumArtistSelector == MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ARTIST && artistSortSelector == MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTISTSORT) {
-                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS_SORT(capabilities));
+                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS_SORT(capabilities, tagFilter));
             } else if (albumArtistSelector == MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ALBUMARTIST && artistSortSelector == MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTISTSORT) {
-                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMARTISTS_SORT(capabilities));
+                mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ALBUMARTISTS_SORT(capabilities, tagFilter));
             }
 
             artists = MPDResponseParser.parseMPDArtists(mConnection, capabilities.hasMusicBrainzTags(), capabilities.hasListGroup());
@@ -340,9 +346,9 @@ public class MPDInterface {
              */
             if (albumArtistSelector == MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ALBUMARTIST) {
                 if (artistSortSelector == MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST) {
-                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS(capabilities));
+                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS(capabilities, tagFilter));
                 } else {
-                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS_SORT(capabilities));
+                    mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_REQUEST_ARTISTS_SORT(capabilities, tagFilter));
                 }
                 normalArtists = MPDResponseParser.parseMPDArtists(mConnection, capabilities.hasMusicBrainzTags(), capabilities.hasListGroup());
 
@@ -367,8 +373,10 @@ public class MPDInterface {
             artists.remove(0);
         }
 
-        synchronized (mCache) {
-            mCache.cacheArtistsRequests(artists, albumArtistSelector, artistSortSelector);
+        if (tagFilter == null) {
+            synchronized (mCache) {
+                mCache.cacheArtistsRequests(artists, albumArtistSelector, artistSortSelector);
+            }
         }
         return artists;
     }
@@ -886,6 +894,12 @@ public class MPDInterface {
         mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_OUTPUTS);
 
         return MPDResponseParser.parseMPDOutputs(mConnection);
+    }
+
+    public synchronized List<MPDFilterObject> getTagEntries(String tagName) throws MPDException {
+        mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_TAG_ITEMS(tagName));
+
+        return MPDResponseParser.parseTagEntryList(mConnection);
     }
 
     /**

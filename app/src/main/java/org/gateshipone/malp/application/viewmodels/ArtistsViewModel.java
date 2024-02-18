@@ -23,6 +23,8 @@
 package org.gateshipone.malp.application.viewmodels;
 
 import android.app.Application;
+import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -39,23 +41,29 @@ public class ArtistsViewModel extends GenericViewModel<MPDArtist> {
 
     private final MPDResponseGenericList<MPDArtist> mArtistResponseHandler;
 
-    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
-    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
+    private final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+    private final MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
+    private final String mTagName;
+    private final String mTagValue;
 
     private ArtistsViewModel(final Application application, final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR albumArtistSelector,
-                             final MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector) {
+                             final MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector, String tagName, String tagValue) {
         super(application);
 
         mArtistResponseHandler = new ArtistResponseHandler(this);
 
         mAlbumArtistSelector = albumArtistSelector;
         mArtistSortSelector = artistSortSelector;
+
+        mTagName = tagName;
+        mTagValue = tagValue;
     }
 
     @Override
     void loadData() {
-        MPDQueryHandler.getArtists(mArtistResponseHandler, mAlbumArtistSelector, mArtistSortSelector);
+        Log.e(ArtistsViewModel.class.getSimpleName(), "Tag[" + mTagName + "]=" + mTagValue);
+        MPDQueryHandler.getArtists(mArtistResponseHandler, mAlbumArtistSelector, mArtistSortSelector, new Pair<>(mTagName, mTagValue));
     }
 
     private static class ArtistResponseHandler extends MPDResponseGenericList<MPDArtist> {
@@ -79,20 +87,31 @@ public class ArtistsViewModel extends GenericViewModel<MPDArtist> {
 
         private final Application mApplication;
 
-        private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
-        private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
+        private final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+        private final MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
+
+        private final String mTagName;
+        private final String mTagValue;
 
         public ArtistViewModelFactory(final Application application, final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR albumArtistSelector,
-                                      final MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector) {
+                                      final MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector, Pair<String, String> tagFilter) {
             mApplication = application;
             mAlbumArtistSelector = albumArtistSelector;
             mArtistSortSelector = artistSortSelector;
+
+            if (tagFilter != null) {
+                mTagName = tagFilter.first;
+                mTagValue = tagFilter.second;
+            } else {
+                mTagName = null;
+                mTagValue = null;
+            }
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) new ArtistsViewModel(mApplication, mAlbumArtistSelector, mArtistSortSelector);
+            return (T) new ArtistsViewModel(mApplication, mAlbumArtistSelector, mArtistSortSelector, mTagName, mTagValue);
         }
     }
 }
