@@ -50,8 +50,8 @@ public class MPDSocketInterface {
 
     private final byte[] mReadBuffer;
 
-    private int mReadBufferWritePos;
-    private int mReadBufferReadPos;
+    private int mWritePos;
+    private int mReadPos;
 
     private final ByteArrayOutputStream mLineBuffer;
 
@@ -68,8 +68,8 @@ public class MPDSocketInterface {
         mWriter = new PrintWriter(outputStream);
         mReadBuffer = new byte[READ_BUFFER_SIZE];
 
-        mReadBufferReadPos = 0;
-        mReadBufferWritePos = 0;
+        mReadPos = 0;
+        mWritePos = 0;
 
         mLineBuffer = new ByteArrayOutputStream();
     }
@@ -83,8 +83,8 @@ public class MPDSocketInterface {
      * @throws IOException
      */
     private void fillReadBuffer() throws IOException {
-        mReadBufferWritePos = mInputStream.read(mReadBuffer, 0, READ_BUFFER_SIZE);
-        mReadBufferReadPos = 0;
+        mWritePos = mInputStream.read(mReadBuffer, 0, READ_BUFFER_SIZE);
+        mReadPos = 0;
     }
 
     private void skipBytes(int size) throws IOException {
@@ -98,7 +98,7 @@ public class MPDSocketInterface {
             dataToRead = Math.min(readyData, (size - dataRead));
 
             dataRead += dataToRead;
-            mReadBufferReadPos += dataToRead;
+            mReadPos += dataToRead;
 
             // Check if the data buffer is depleted
             if (dataReady() == 0 && dataRead != size) {
@@ -108,7 +108,7 @@ public class MPDSocketInterface {
     }
 
     private int dataReady() {
-        return mReadBufferWritePos - mReadBufferReadPos;
+        return mWritePos - mReadPos;
     }
 
     /**
@@ -120,13 +120,13 @@ public class MPDSocketInterface {
     public String readLine() throws IOException {
         mLineBuffer.reset();
 
-        int localReadPos = mReadBufferReadPos;
+        int localReadPos = mReadPos;
         // Read until newline
         while (true) {
             // End of buffer reached
-            if (localReadPos == mReadBufferWritePos) {
+            if (localReadPos == mWritePos) {
                 // Copy what we've read so far to the string buffer
-                mLineBuffer.write(mReadBuffer, mReadBufferReadPos, (localReadPos - mReadBufferReadPos));
+                mLineBuffer.write(mReadBuffer, mReadPos, (localReadPos - mReadPos));
 
                 fillReadBuffer();
                 localReadPos = 0;
@@ -135,8 +135,8 @@ public class MPDSocketInterface {
 
             // Newline found, write buffer and break loop here
             if (mReadBuffer[localReadPos] == '\n') {
-                mLineBuffer.write(mReadBuffer, mReadBufferReadPos, (localReadPos - mReadBufferReadPos));
-                mReadBufferReadPos = localReadPos + 1;
+                mLineBuffer.write(mReadBuffer, mReadPos, (localReadPos - mReadPos));
+                mReadPos = localReadPos + 1;
                 break;
             }
 
@@ -167,13 +167,13 @@ public class MPDSocketInterface {
         mValueRead = false;
         mLineBuffer.reset();
 
-        int localReadPos = mReadBufferReadPos;
+        int localReadPos = mReadPos;
         // Read until newline
         while (true) {
             // End of buffer reached
-            if (localReadPos == mReadBufferWritePos) {
+            if (localReadPos == mWritePos || mReadPos == mReadBuffer.length) {
                 // Copy what we've read so far to the string buffer
-                mLineBuffer.write(mReadBuffer, mReadBufferReadPos, (localReadPos - mReadBufferReadPos));
+                mLineBuffer.write(mReadBuffer, mReadPos, (localReadPos - mReadPos));
 
                 fillReadBuffer();
                 localReadPos = 0;
@@ -181,14 +181,14 @@ public class MPDSocketInterface {
             }
 
             if (mReadBuffer[localReadPos] == ':') {
-                mLineBuffer.write(mReadBuffer, mReadBufferReadPos, (localReadPos - mReadBufferReadPos));
-                mReadBufferReadPos = localReadPos;
+                mLineBuffer.write(mReadBuffer, mReadPos, (localReadPos - mReadPos));
+                mReadPos = localReadPos;
                 break;
             }
             // Newline found, write buffer and break loop here
             if (mReadBuffer[localReadPos] == '\n') {
-                mLineBuffer.write(mReadBuffer, mReadBufferReadPos, (localReadPos - mReadBufferReadPos));
-                mReadBufferReadPos = localReadPos + 1;
+                mLineBuffer.write(mReadBuffer, mReadPos, (localReadPos - mReadPos));
+                mReadPos = localReadPos + 1;
                 break;
             }
 
@@ -200,7 +200,7 @@ public class MPDSocketInterface {
 
         if (key.startsWith("ACK")) {
             // Check if there is still data available, might be the case if aborted because of ":"
-            if (localReadPos != mReadBufferWritePos) {
+            if (localReadPos != mWritePos) {
                 key += readLine();
             }
             mValueRead = true;
@@ -240,11 +240,11 @@ public class MPDSocketInterface {
 
         int skipChars = 0;
 
-        int localReadPos = mReadBufferReadPos;
+        int localReadPos = mReadPos;
         // Read until newline
         while (true) {
             // Skip initial spaces as separators
-            if (!whiteSpacesHandled && localReadPos == mReadBufferWritePos) {
+            if (!whiteSpacesHandled && localReadPos == mWritePos) {
                 // Skip data and refresh buffer
                 fillReadBuffer();
                 localReadPos = 0;
@@ -253,15 +253,15 @@ public class MPDSocketInterface {
             } else if (!whiteSpacesHandled && ((mReadBuffer[localReadPos] == ' ') || (mReadBuffer[localReadPos] == ':'))) {
                 skipChars++;
             } else if (!whiteSpacesHandled && mReadBuffer[localReadPos] != ' ') {
-                mReadBufferReadPos += skipChars;
+                mReadPos += skipChars;
                 skipChars = 0;
                 whiteSpacesHandled = true;
             }
 
             // End of buffer reached
-            if (localReadPos == mReadBufferWritePos) {
+            if (localReadPos == mWritePos) {
                 // Copy what we've read so far to the string buffer
-                mLineBuffer.write(mReadBuffer, mReadBufferReadPos, (localReadPos - mReadBufferReadPos));
+                mLineBuffer.write(mReadBuffer, mReadPos, (localReadPos - mReadPos));
 
                 fillReadBuffer();
                 localReadPos = 0;
@@ -270,8 +270,8 @@ public class MPDSocketInterface {
 
             // Newline found, write buffer and break loop here
             if (mReadBuffer[localReadPos] == '\n') {
-                mLineBuffer.write(mReadBuffer, mReadBufferReadPos, (localReadPos - mReadBufferReadPos));
-                mReadBufferReadPos = localReadPos + 1;
+                mLineBuffer.write(mReadBuffer, mReadPos, (localReadPos - mReadPos));
+                mReadPos = localReadPos + 1;
                 break;
             }
 
@@ -314,9 +314,9 @@ public class MPDSocketInterface {
             dataToRead = Math.min(readyData, (size - dataRead));
 
             // Read data that is ready or requested
-            System.arraycopy(mReadBuffer, mReadBufferReadPos, data, dataRead, dataToRead);
+            System.arraycopy(mReadBuffer, mReadPos, data, dataRead, dataToRead);
             dataRead += dataToRead;
-            mReadBufferReadPos += dataToRead;
+            mReadPos += dataToRead;
 
             // Check if the data buffer is depleted
             if (dataReady() == 0 && dataRead != size) {
