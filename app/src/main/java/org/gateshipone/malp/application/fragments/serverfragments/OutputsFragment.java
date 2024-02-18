@@ -43,7 +43,7 @@ import org.gateshipone.malp.application.adapters.OutputAdapter;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.OutputsViewModel;
 import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponsePartitionList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDStateMonitoringHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
@@ -132,7 +132,7 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
         MPDStateMonitoringHandler.getHandler().unRegisterIdleListener(mStateHandler);
     }
 
-    private static class PartitionResponseHandler extends MPDResponsePartitionList {
+    private static class PartitionResponseHandler extends MPDResponseGenericList<MPDPartition> {
         OutputsFragment mFragment;
 
         ContextMenu mMenu;
@@ -141,10 +141,9 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
         }
 
         @Override
-        public void handlePartitions(List<MPDPartition> partitionList) {
-            mFragment.mPartitions = partitionList;
+        public void handleList(List<MPDPartition> itemList) {
+            mFragment.mPartitions = itemList;
         }
-
     }
 
     private MPDOutput mContextMenuOutput = null;

@@ -25,13 +25,13 @@ package org.gateshipone.malp.mpdservice.handlers.responsehandler;
 
 import android.os.Message;
 
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
+
 import java.util.List;
 
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
+public abstract class MPDResponseGenericList<T> extends MPDResponseHandler {
 
-public abstract class MPDResponseOutputList extends MPDResponseHandler {
-
-    public MPDResponseOutputList() {
+    public MPDResponseGenericList() {
 
     }
 
@@ -45,17 +45,17 @@ public abstract class MPDResponseOutputList extends MPDResponseHandler {
         super.handleMessage(msg);
 
         /* Call album response handler */
-        List<MPDOutput> outputList = (List<MPDOutput>)msg.obj;
-        handleOutputs(outputList);
+        List<T> itemList = (List<T>)msg.obj;
+        handleList(itemList);
     }
 
     /**
      * Sends the list of outputs to the receiving handler looper
-     * @param outputList
+     * @param itemList
      */
-    public void sendOutputs(List<MPDOutput> outputList) {
+    public void sendList(List<T> itemList) {
         Message responseMessage = this.obtainMessage();
-        responseMessage.obj = outputList;
+        responseMessage.obj = itemList;
         sendMessage(responseMessage);
     }
 
@@ -63,7 +63,7 @@ public abstract class MPDResponseOutputList extends MPDResponseHandler {
      * Abstract method to be implemented by the user of the MPD implementation.
      * This should be a callback for the UI thread and run in the UI thread.
      * This can be used for updating lists of adapters and views.
-     * @param outputList List of MPDOutput objects containing a list of available MPD outputs
+     * @param itemList List of MPDPartition objects containing a list of available MPD outputs
      */
-    abstract public void handleOutputs(List<MPDOutput> outputList);
+    abstract public void handleList(List<T> itemList);
 }

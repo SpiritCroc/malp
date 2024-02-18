@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponsePartitionList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 
@@ -37,12 +37,12 @@ import java.util.List;
 
 public class PartitionsViewModel extends GenericViewModel<MPDPartition> {
 
-    private final PartitionHandler mPartitionHandler;
+    private final GenericHandler mPartitionHandler;
 
     private PartitionsViewModel(@NonNull final Application application) {
         super(application);
 
-        mPartitionHandler = new PartitionHandler(this);
+        mPartitionHandler = new GenericHandler(this);
     }
 
     @Override
@@ -50,20 +50,20 @@ public class PartitionsViewModel extends GenericViewModel<MPDPartition> {
         MPDQueryHandler.getPartitions(mPartitionHandler);
     }
 
-    private static class PartitionHandler extends MPDResponsePartitionList {
+    private static class GenericHandler extends MPDResponseGenericList<MPDPartition> {
 
         private final WeakReference<PartitionsViewModel> mOutputsViewModel;
 
-        PartitionHandler(final PartitionsViewModel outputsViewModel) {
+        GenericHandler(final PartitionsViewModel outputsViewModel) {
             mOutputsViewModel = new WeakReference<>(outputsViewModel);
         }
 
         @Override
-        public void handlePartitions(List<MPDPartition> partitionList) {
+        public void handleList(List<MPDPartition> itemList) {
             final PartitionsViewModel viewModel = mOutputsViewModel.get();
 
             if (viewModel != null) {
-                viewModel.setData(partitionList);
+                viewModel.setData(itemList);
             }
         }
     }

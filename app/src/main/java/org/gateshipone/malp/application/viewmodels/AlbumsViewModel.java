@@ -32,7 +32,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
@@ -43,7 +43,7 @@ import java.util.List;
 
 public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
 
-    private final MPDResponseAlbumList mAlbumsResponseHandler;
+    private final MPDResponseGenericList<MPDAlbum> mAlbumsResponseHandler;
 
     private final String mArtistName;
 
@@ -81,7 +81,7 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
         }
     }
 
-    private static class AlbumResponseHandler extends MPDResponseAlbumList {
+    private static class AlbumResponseHandler extends MPDResponseGenericList<MPDAlbum> {
 
         private final WeakReference<AlbumsViewModel> mAlbumViewModel;
 
@@ -90,7 +90,7 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
         }
 
         @Override
-        public void handleAlbums(final List<MPDAlbum> albumList) {
+        public void handleList(final List<MPDAlbum> albumList) {
             final AlbumsViewModel albumsViewModel = mAlbumViewModel.get();
 
             if (albumsViewModel != null) {

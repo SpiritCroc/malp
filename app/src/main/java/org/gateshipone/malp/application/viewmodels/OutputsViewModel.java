@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseOutputList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
@@ -50,7 +50,7 @@ public class OutputsViewModel extends GenericViewModel<MPDOutput> {
         MPDQueryHandler.getOutputsAllPartitions(mOutputsHandler);
     }
 
-    private static class OutputsHandler extends MPDResponseOutputList {
+    private static class OutputsHandler extends MPDResponseGenericList<MPDOutput> {
 
         private final WeakReference<OutputsViewModel> mOutputsViewModel;
 
@@ -59,7 +59,7 @@ public class OutputsViewModel extends GenericViewModel<MPDOutput> {
         }
 
         @Override
-        public void handleOutputs(List<MPDOutput> outputList) {
+        public void handleList(List<MPDOutput> outputList) {
             final OutputsViewModel viewModel = mOutputsViewModel.get();
 
             if (viewModel != null) {

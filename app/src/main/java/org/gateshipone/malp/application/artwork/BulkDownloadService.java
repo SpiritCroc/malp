@@ -60,8 +60,7 @@ import org.gateshipone.malp.application.artwork.storage.ImageNotFoundException;
 import org.gateshipone.malp.application.utils.NetworkUtils;
 import org.gateshipone.malp.mpdservice.ConnectionManager;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumList;
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseArtistList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseFileList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
@@ -528,7 +527,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         }
     }
 
-    private static class ArtistsResponseHandler extends MPDResponseArtistList {
+    private static class ArtistsResponseHandler extends MPDResponseGenericList<MPDArtist> {
         private final WeakReference<BulkDownloadService> mBulkDownloadService;
 
         ArtistsResponseHandler(final BulkDownloadService bulkDownloadService) {
@@ -536,7 +535,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         }
 
         @Override
-        public void handleArtists(List<MPDArtist> artistList) {
+        public void handleList(List<MPDArtist> artistList) {
             final BulkDownloadService bulkDownloadService = mBulkDownloadService.get();
 
             if (bulkDownloadService != null) {
@@ -545,7 +544,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         }
     }
 
-    private static class AlbumsResponseHandler extends MPDResponseAlbumList {
+    private static class AlbumsResponseHandler extends MPDResponseGenericList<MPDAlbum> {
         private final WeakReference<BulkDownloadService> mBulkDownloadService;
 
         AlbumsResponseHandler(final BulkDownloadService bulkDownloadService) {
@@ -553,7 +552,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         }
 
         @Override
-        public void handleAlbums(List<MPDAlbum> albumList) {
+        public void handleList(List<MPDAlbum> albumList) {
             final BulkDownloadService bulkDownloadService = mBulkDownloadService.get();
 
             if (bulkDownloadService != null) {

@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseArtistList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
@@ -37,7 +37,7 @@ import java.util.List;
 
 public class ArtistsViewModel extends GenericViewModel<MPDArtist> {
 
-    private final MPDResponseArtistList mArtistResponseHandler;
+    private final MPDResponseGenericList<MPDArtist> mArtistResponseHandler;
 
     private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
     private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
@@ -58,7 +58,7 @@ public class ArtistsViewModel extends GenericViewModel<MPDArtist> {
         MPDQueryHandler.getArtists(mArtistResponseHandler, mAlbumArtistSelector, mArtistSortSelector);
     }
 
-    private static class ArtistResponseHandler extends MPDResponseArtistList {
+    private static class ArtistResponseHandler extends MPDResponseGenericList<MPDArtist> {
         private final WeakReference<ArtistsViewModel> mArtistViewModel;
 
         private ArtistResponseHandler(final ArtistsViewModel artistsViewModel) {
@@ -66,7 +66,7 @@ public class ArtistsViewModel extends GenericViewModel<MPDArtist> {
         }
 
         @Override
-        public void handleArtists(final List<MPDArtist> artistList) {
+        public void handleList(final List<MPDArtist> artistList) {
             final ArtistsViewModel artistsViewModel = mArtistViewModel.get();
 
             if (artistsViewModel != null) {

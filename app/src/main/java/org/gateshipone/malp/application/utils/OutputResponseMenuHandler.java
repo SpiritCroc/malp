@@ -31,14 +31,14 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 import org.gateshipone.malp.R;
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseOutputList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class OutputResponseMenuHandler extends MPDResponseOutputList {
+public class OutputResponseMenuHandler extends MPDResponseGenericList<MPDOutput> {
 
     private final WeakReference<Context> mContext;
 
@@ -50,7 +50,7 @@ public class OutputResponseMenuHandler extends MPDResponseOutputList {
     }
 
     @Override
-    public void handleOutputs(final List<MPDOutput> outputList) {
+    public void handleList(final List<MPDOutput> outputList) {
         // we need at least 2 output plugins configured
         if (outputList != null && outputList.size() > 1) {
             PopupMenu popup = new PopupMenu(mContext.get(), mView.get());
