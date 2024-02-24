@@ -84,6 +84,11 @@ public class MPDSocketInterface {
      */
     private void fillReadBuffer() throws IOException {
         mWritePos = mInputStream.read(mReadBuffer, 0, READ_BUFFER_SIZE);
+        if (mWritePos == -1) {
+            // EOF
+            mWritePos = 0;
+            throw new IOException("EOF reached");
+        }
         mReadPos = 0;
     }
 
@@ -171,7 +176,7 @@ public class MPDSocketInterface {
         // Read until newline
         while (true) {
             // End of buffer reached
-            if (localReadPos == mWritePos || mReadPos == mReadBuffer.length) {
+            if (localReadPos == mWritePos) {
                 // Copy what we've read so far to the string buffer
                 mLineBuffer.write(mReadBuffer, mReadPos, (localReadPos - mReadPos));
 
