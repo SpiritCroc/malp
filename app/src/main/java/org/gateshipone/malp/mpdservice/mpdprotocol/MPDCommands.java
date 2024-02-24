@@ -66,7 +66,7 @@ public class MPDCommands {
     /* Database request commands */
     public static String MPD_COMMAND_REQUEST_ALBUMS(MPDCapabilities caps, Pair<String, String> tagFilter) {
         if (tagFilter == null) {
-            return "list album " + createArtistsGroupString(caps);
+            return "list album " + createAlbumGroupString(caps);
         } else {
             return "list album \"(" + tagFilter.first + " == \\\"" + tagFilter.second + "\\\")\" " + createAlbumGroupString(caps);
         }
