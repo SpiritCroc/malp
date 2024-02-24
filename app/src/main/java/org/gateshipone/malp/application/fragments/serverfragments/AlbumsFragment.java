@@ -281,12 +281,15 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
             } else {
                 mFABCallback.setupFAB(false, null);
                 String title;
+                boolean backButton;
                 if (mTagValue == null || mTagValue.isEmpty()) {
                     title = getString(R.string.app_name);
+                    backButton = false;
                 } else {
                     title = mTagValue;
+                    backButton = true;
                 }
-                mFABCallback.setupToolbar(title, true, true, false);
+                mFABCallback.setupToolbar(title, true, !backButton, false);
 
             }
         }

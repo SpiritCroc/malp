@@ -180,12 +180,15 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
         if (null != mFABCallback) {
             mFABCallback.setupFAB(false, null);
             String title;
+            boolean backbutton;
             if (mTagValue == null || mTagValue.isEmpty()) {
                 title = getString(R.string.app_name);
+                backbutton = false;
             } else {
                 title = mTagValue;
+                backbutton = true;
             }
-            mFABCallback.setupToolbar(title, true, true, false);
+            mFABCallback.setupToolbar(title, true, !backbutton, false);
         }
         ArtworkManager.getInstance(requireContext().getApplicationContext()).registerOnNewArtistImageListener((ArtistsAdapter) mAdapter);
     }
