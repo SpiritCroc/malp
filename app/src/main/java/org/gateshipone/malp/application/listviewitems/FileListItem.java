@@ -40,6 +40,7 @@ import org.gateshipone.malp.application.utils.FormatHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaytime;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 
@@ -300,9 +301,10 @@ public class FileListItem extends AbsImageListViewItem {
             mAdditionalInfoView.setVisibility(GONE);
         }
 
-        int titleCount = playlist.getTitleCount();
-        int length = playlist.getLength();
-        if (titleCount != MPDPlaylist.NOT_SET) {
+        MPDPlaytime playtime = playlist.getPlaytime();
+        if (playtime != null) {
+            int length = playtime.getPlaytimeS();
+            int titleCount = playtime.getSongCount();
             mDurationView.setVisibility(VISIBLE);
             if (length > 0) {
                 mDurationView.setText(getResources().getQuantityString(R.plurals.playlist_count_template_length, titleCount, titleCount, FormatHelper.formatTracktimeFromS(length)));

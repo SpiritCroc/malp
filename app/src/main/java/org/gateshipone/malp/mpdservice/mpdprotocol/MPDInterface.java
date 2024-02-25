@@ -37,6 +37,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFilterObject;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaytime;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -383,7 +384,8 @@ public class MPDInterface {
 
     public synchronized void getPlaylistInformation(MPDPlaylist playlist) throws MPDException {
         mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_PLAYLIST_LENGTH(playlist.getFilename()));
-        MPDResponseParser.parseMPDPlaylistLength(mConnection, playlist);
+        MPDPlaytime playtime = MPDResponseParser.parseMPDPlaylistLength(mConnection);
+        playlist.setPlaytime(playtime);
     }
 
     /**

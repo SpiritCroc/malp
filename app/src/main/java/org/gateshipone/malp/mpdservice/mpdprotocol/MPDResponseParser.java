@@ -35,6 +35,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFilterObject;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaytime;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -902,8 +903,9 @@ class MPDResponseParser {
         return response;
     }
 
-    static void parseMPDPlaylistLength(final MPDConnection connection, MPDPlaylist playlist) throws MPDException {
+    static MPDPlaytime parseMPDPlaylistLength(final MPDConnection connection) throws MPDException {
         MPDResponses.MPD_RESPONSE_KEY key = null;
+        MPDPlaytime playtime = new MPDPlaytime();
 
         key = connection.readKey();
         String value = "";
@@ -915,18 +917,19 @@ class MPDResponseParser {
             }
             if (key.equals(MPDResponses.MPD_RESPONSE_KEY.RESPONSE_SONGS)) {
                 try {
-                    playlist.setTitleCount(Integer.parseInt(value));
+                    playtime.setSongCount(Integer.parseInt(value));
                 } catch (NumberFormatException ignored) {
                 }
             } else if (key.equals(MPDResponses.MPD_RESPONSE_KEY.RESPONSE_PLAYTIME)) {
                 try {
-                    playlist.setLength(Integer.parseInt(value));
+                    playtime.setPlaytime(Integer.parseInt(value));
                 } catch (NumberFormatException ignored) {
                 }
             }
 
             key = connection.readKey();
         }
+        return playtime;
     }
 
     static List<MPDFilterObject> parseTagEntryList(final MPDConnection connection) throws MPDException {

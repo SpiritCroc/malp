@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2023 Team Gateship-One
+ *  Copyright (C) 2024 Team Gateship-One
  *  (Hendrik Borghorst & Frederik Luetkes)
  *
  *  The AUTHORS.md file contains a detailed contributors list:
@@ -22,32 +22,23 @@
 
 package org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects;
 
+public class MPDPlaytime {
+    private int mSongCount;
+    private int mPlaytimeS;
 
-import androidx.annotation.NonNull;
-
-public class MPDPlaylist extends MPDFileEntry implements MPDGenericItem {
-    private MPDPlaytime mPlaytime = null;
-    public MPDPlaylist(@NonNull String path) {
-        super(path);
+    public int getSongCount() {
+        return mSongCount;
     }
 
-    @Override
-    public String getSectionTitle() {
-        return getFilename();
+    public void setSongCount(int songCount) {
+        mSongCount = songCount;
     }
 
-    public int compareTo(@NonNull MPDPlaylist another) {
-        String title = getFilename();
-        String anotherTitle = another.getFilename();
-
-        return title.toLowerCase().compareTo(anotherTitle.toLowerCase());
+    public int getPlaytimeS() {
+        return mPlaytimeS;
     }
 
-    public void setPlaytime(MPDPlaytime playtime) {
-        mPlaytime = playtime;
-    }
-
-    public MPDPlaytime getPlaytime() {
-        return mPlaytime;
+    public void setPlaytime(int playtimeS) {
+        mPlaytimeS = playtimeS;
     }
 }
