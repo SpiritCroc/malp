@@ -27,9 +27,9 @@ import android.os.Message;
 
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 
-public abstract class MPDResponseServerStatistics extends MPDResponseHandler {
+public abstract class MPDResonseGenericObject extends MPDResponseHandler {
 
-    public MPDResponseServerStatistics() {
+    public MPDResonseGenericObject() {
 
     }
 
@@ -45,16 +45,16 @@ public abstract class MPDResponseServerStatistics extends MPDResponseHandler {
 
         /* Call album response handler */
         MPDStatistics stats = (MPDStatistics)msg.obj;
-        handleStatistic(stats);
+        handleObject(stats);
     }
 
     /**
-     * Send statistics to the receiving handler
-     * @param statistics Object to send
+     * Send object to the receiving handler
+     * @param object Object to send
      */
-    public void sendServerStatistics(MPDStatistics statistics) {
+    public void sendObject(java.lang.Object object) {
         Message responseMessage = this.obtainMessage();
-        responseMessage.obj = statistics;
+        responseMessage.obj = object;
         sendMessage(responseMessage);
     }
 
@@ -62,7 +62,7 @@ public abstract class MPDResponseServerStatistics extends MPDResponseHandler {
      * Abstract method to be implemented by the user of the MPD implementation.
      * This should be a callback for the UI thread and run in the UI thread.
      * This can be used for updating lists of adapters and views.
-     * @param statistics Current MPD statistics
+     * @param object Current MPD object
      */
-    abstract public void handleStatistic(MPDStatistics statistics);
+    abstract public void handleObject(Object object);
 }

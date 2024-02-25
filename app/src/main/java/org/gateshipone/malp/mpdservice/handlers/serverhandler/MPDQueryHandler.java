@@ -26,14 +26,13 @@ package org.gateshipone.malp.mpdservice.handlers.serverhandler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.util.Pair;
 
 import org.gateshipone.malp.application.utils.FormatHelper;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseFileList;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseHandler;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseServerStatistics;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResonseGenericObject;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCapabilities;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCommands;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDException;
@@ -502,7 +501,7 @@ public class MPDQueryHandler extends MPDGenericHandler {
 
                 MPDStatistics stats;
                 stats = MPDInterface.getGenericInstance().getServerStatistics();
-                ((MPDResponseServerStatistics) responseHandler).sendServerStatistics(stats);
+                ((MPDResonseGenericObject) responseHandler).sendObject(stats);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_UPDATE_DATABASE) {
 
                 String updatePath = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PATH);
@@ -866,7 +865,7 @@ public class MPDQueryHandler extends MPDGenericHandler {
      *
      * @param responseHandler The handler used to send the requested data.
      */
-    public static void getStatistics(MPDResponseServerStatistics responseHandler) {
+    public static void getStatistics(MPDResonseGenericObject responseHandler) {
         MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_SERVER_STATISTICS);
 
         action.setResponseHandler(responseHandler);

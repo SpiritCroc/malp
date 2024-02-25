@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseServerStatistics;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResonseGenericObject;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 
@@ -51,7 +51,7 @@ public class StatisticsViewModel extends GenericViewModel<MPDStatistics> {
         MPDQueryHandler.getStatistics(mServerStatisticsHandler);
     }
 
-    private static class ServerStatisticsHandler extends MPDResponseServerStatistics {
+    private static class ServerStatisticsHandler extends MPDResonseGenericObject {
 
         private final WeakReference<StatisticsViewModel> mStatisticsViewModel;
 
@@ -60,9 +60,9 @@ public class StatisticsViewModel extends GenericViewModel<MPDStatistics> {
         }
 
         @Override
-        public void handleStatistic(MPDStatistics statistics) {
+        public void handleObject(Object object) {
             final List<MPDStatistics> mpdStatisticsList = new ArrayList<>();
-            mpdStatisticsList.add(statistics);
+            mpdStatisticsList.add((MPDStatistics)object);
 
             final StatisticsViewModel viewModel = mStatisticsViewModel.get();
 
