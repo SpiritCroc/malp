@@ -44,10 +44,8 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 
 public class MPDInterface {
     private static final String TAG = MPDInterface.class.getSimpleName();
@@ -902,6 +900,19 @@ public class MPDInterface {
         mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_TAG_ITEMS(tagName));
 
         return MPDResponseParser.parseTagEntryList(mConnection);
+    }
+
+    public synchronized MPDPlaytime getTagFilterSongCount(Pair<String,String> tagFilter) throws MPDException {
+        mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_COUNT_FILTERED_SONGS(tagFilter));
+        MPDPlaytime playtime = MPDResponseParser.parseMPDPlaylistLength(mConnection);
+        return playtime;
+    }
+
+    public synchronized List<MPDFileEntry> getTagFilteredSongs(Pair<String, String> tagFilter, int start, int end) throws MPDException {
+        mConnection.sendMPDCommand(MPDCommands.MPD_COMMAND_GET_FILTERED_SONGS_BY_ALBUM_WINDOWED(tagFilter, start, end));
+        List<MPDFileEntry> fileList = MPDResponseParser.parseMPDTracks(mConnection);
+
+        return fileList;
     }
 
     /**

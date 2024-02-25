@@ -44,9 +44,11 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFilterObject;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaytime;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -289,6 +291,27 @@ public class MPDQueryHandler extends MPDGenericHandler {
 
                 List<MPDFileEntry> trackList = MPDInterface.getGenericInstance().getCurrentPlaylistWindow(start, end);
                 ((MPDResponseFileList) responseHandler).sendFileList(trackList, start, end);
+            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_TAG_FILTERED_SONGS_WINDOWED) {
+                int start = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_WINDOW_START);
+                int end = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_WINDOW_END);
+                responseHandler = mpdAction.getResponseHandler();
+                if (!(responseHandler instanceof MPDResponseFileList)) {
+                    return;
+                }
+
+                List<MPDFileEntry> list;
+
+                Pair<String,String> tagPair = null;
+                String tagName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_NAME);
+                String tagValue = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_VALUE);
+                if (tagName != null && tagValue != null && !tagName.isEmpty() && !tagValue.isEmpty()) {
+                    tagPair = new Pair<>(tagName, tagValue);
+                    list = MPDInterface.getGenericInstance().getTagFilteredSongs(tagPair, start, end);
+                } else {
+                    list = new ArrayList<>();
+                }
+
+                ((MPDResponseFileList) responseHandler).sendFileList(list, start, end);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_SAVED_PLAYLIST) {
                 String playlistName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PLAYLIST_NAME);
                 responseHandler = mpdAction.getResponseHandler();
@@ -502,6 +525,21 @@ public class MPDQueryHandler extends MPDGenericHandler {
                 MPDStatistics stats;
                 stats = MPDInterface.getGenericInstance().getServerStatistics();
                 ((MPDResonseGenericObject) responseHandler).sendObject(stats);
+            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_TAG_FILTERED_SONG_COUNT) {
+                responseHandler = mpdAction.getResponseHandler();
+
+                Pair<String,String> tagPair = null;
+                String tagName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_NAME);
+                String tagValue = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_VALUE);
+                MPDPlaytime playtime;
+                if (tagName != null && tagValue != null && !tagName.isEmpty() && !tagValue.isEmpty()) {
+                    tagPair = new Pair<>(tagName, tagValue);
+                    playtime = MPDInterface.getGenericInstance().getTagFilterSongCount(tagPair);
+                } else {
+                    playtime = new MPDPlaytime();
+                }
+
+                ((MPDResonseGenericObject) responseHandler).sendObject(playtime);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_UPDATE_DATABASE) {
 
                 String updatePath = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PATH);
@@ -785,6 +823,23 @@ public class MPDQueryHandler extends MPDGenericHandler {
     }
 
     /**
+     * Requests a list of songs filtered by a tag name/value pair.
+     *
+     * @param responseHandler The handler used to send the requested data
+     */
+    public static void getTagFilteredSongs(MPDResponseFileList responseHandler,Pair<String, String> tagFilter, int start, int end) {
+        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_TAG_FILTERED_SONGS_WINDOWED);
+
+        action.setResponseHandler(responseHandler);
+        action.setIntExtras(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_WINDOW_START, start);
+        action.setIntExtras(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_WINDOW_END, end);
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_NAME, tagFilter.first);
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_VALUE, tagFilter.second);
+
+        sendMsg(action);
+    }
+
+    /**
      * Requests a list of playlists saved on the server.
      *
      * @param responseHandler The handler used to send the requested data
@@ -867,6 +922,21 @@ public class MPDQueryHandler extends MPDGenericHandler {
      */
     public static void getStatistics(MPDResonseGenericObject responseHandler) {
         MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_SERVER_STATISTICS);
+
+        action.setResponseHandler(responseHandler);
+
+        sendMsg(action);
+    }
+
+    /**
+     * Requests the number of songs for a given pair of tag name/value
+     *
+     * @param responseHandler The handler used to send the requested data.
+     */
+    public static void getTagFilteredSongCount(MPDResonseGenericObject responseHandler, Pair<String,String> tagFilter) {
+        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_GET_TAG_FILTERED_SONG_COUNT);
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_NAME, tagFilter.first);
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_VALUE, tagFilter.second);
 
         action.setResponseHandler(responseHandler);
 

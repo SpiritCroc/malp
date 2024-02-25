@@ -63,12 +63,16 @@ public class MPDCommands {
         return groups;
     }
 
+    private static String tagFilterString(Pair<String, String> tagFilter) {
+        return "\"(" + tagFilter.first + " == \\\"" + tagFilter.second + "\\\")\" ";
+    }
+
     /* Database request commands */
     public static String MPD_COMMAND_REQUEST_ALBUMS(MPDCapabilities caps, Pair<String, String> tagFilter) {
         if (tagFilter == null) {
             return "list album " + createAlbumGroupString(caps);
         } else {
-            return "list album \"(" + tagFilter.first + " == \\\"" + tagFilter.second + "\\\")\" " + createAlbumGroupString(caps);
+            return "list album " + tagFilterString(tagFilter) + createAlbumGroupString(caps);
         }
     }
 
@@ -123,7 +127,7 @@ public class MPDCommands {
         if (tagFilter == null) {
             return "list artist " + createArtistsGroupString(capabilities);
         } else {
-            return "list artist \"(" + tagFilter.first + " == \\\"" + tagFilter.second + "\\\")\" " + createArtistsGroupString(capabilities);
+            return "list artist " + tagFilterString(tagFilter) + createArtistsGroupString(capabilities);
         }
     }
 
@@ -132,7 +136,7 @@ public class MPDCommands {
             if (tagFilter == null) {
                 return "list albumartist " + createArtistsGroupString(capabilities);
             } else {
-                return "list albumartist \"(" + tagFilter.first + " == \\\"" + tagFilter.second + "\\\")\" " + createArtistsGroupString(capabilities);
+                return "list albumartist " + tagFilterString(tagFilter) + createArtistsGroupString(capabilities);
             }
         } else {
             return MPD_COMMAND_REQUEST_ARTISTS(capabilities, tagFilter);
@@ -144,7 +148,7 @@ public class MPDCommands {
             if (tagFilter == null) {
                 return "list artistsort " + createArtistsGroupString(capabilities);
             } else {
-                return "list artistsort \"(" + tagFilter.first + " == \\\"" + tagFilter.second + "\\\")\" " + createArtistsGroupString(capabilities);
+                return "list artistsort " + tagFilterString(tagFilter) + createArtistsGroupString(capabilities);
             }
         } else {
             return MPD_COMMAND_REQUEST_ARTISTS(capabilities, tagFilter);
@@ -156,7 +160,7 @@ public class MPDCommands {
             if (tagFilter == null) {
                 return "list albumartistsort " + createArtistsGroupString(capabilities);
             } else {
-                return "list albumartistsort \"(" + tagFilter.first + " == \\\"" + tagFilter.second + "\\\")\" " + createArtistsGroupString(capabilities);
+                return "list albumartistsort " + tagFilterString(tagFilter) + createArtistsGroupString(capabilities);
             }
         } else {
             return MPD_COMMAND_REQUEST_ARTISTS(capabilities, tagFilter);
@@ -405,5 +409,13 @@ public class MPDCommands {
 
     public static String MPD_COMMAND_GET_TAG_ITEMS(String name) {
         return "list \"" + escapeString(name) + "\"";
+    }
+
+    public static String MPD_COMMAND_COUNT_FILTERED_SONGS(Pair<String, String> tagFilter) {
+        return "count " + tagFilterString(tagFilter);
+    }
+
+    public static String MPD_COMMAND_GET_FILTERED_SONGS_BY_ALBUM_WINDOWED(Pair<String, String> tagFilter, int start, int end) {
+        return "find " + tagFilterString(tagFilter) + "sort album window " + start + ":" + end;
     }
 }
