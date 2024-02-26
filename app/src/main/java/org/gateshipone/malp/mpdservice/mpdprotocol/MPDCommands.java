@@ -64,7 +64,7 @@ public class MPDCommands {
     }
 
     private static String tagFilterString(Pair<String, String> tagFilter) {
-        return "\"(" + tagFilter.first + " == \\\"" + tagFilter.second + "\\\")\" ";
+        return "\"(" + tagFilter.first + " == \\\"" + escapeString(escapeString(tagFilter.second)) + "\\\")\" ";
     }
 
     /* Database request commands */
