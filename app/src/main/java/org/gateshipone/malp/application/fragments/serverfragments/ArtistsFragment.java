@@ -117,7 +117,7 @@ public class ArtistsFragment extends GenericMPDFragment<MPDArtist> implements Ad
 
         final Bundle args = getArguments();
 
-        if (args != null && savedInstanceState == null) {
+        if (args != null) {
             mTagName = args.getString(REQUESTED_TAG_NAME);
             mTagValue = args.getString(REQUESTED_TAG_VALUE);
         }

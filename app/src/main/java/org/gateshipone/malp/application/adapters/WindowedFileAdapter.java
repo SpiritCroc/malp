@@ -499,6 +499,10 @@ public abstract class WindowedFileAdapter extends BaseAdapter implements Artwork
         }
     }
 
+    public void refresh() {
+        updateFileList();
+    }
+
     /**
      * Task used for cleaning unnecessary list blocks.
      */

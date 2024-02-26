@@ -33,6 +33,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -77,6 +78,8 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     private String mSearchString;
 
     private SearchView mSearchView;
+
+    private Menu mOptionsMenu;
 
     private String mTagName;
     private String mTagValue;
@@ -144,6 +147,9 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
                 case 1:
                     drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_album_24dp, null);
                     break;
+                case 2:
+                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_queue_music_black_48dp, null);
+                    break;
             }
 
             if (drawable != null) {
@@ -182,10 +188,27 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     public void onTabSelected(TabLayout.Tab tab) {
         // set view pager to current page
         mViewPager.setCurrentItem(tab.getPosition());
+        if (mOptionsMenu != null) {
+            MenuItem item = mOptionsMenu.findItem(R.id.action_search);
+            if (item != null) {
+                if (tab.getPosition() == 2) {
+                    item.setVisible(false);
+                    if (mSearchView != null) {
+                        mSearchView.clearFocus();
+                        mSearchView.setVisibility(View.GONE);
+                    }
+                } else {
+                    item.setVisible(true);
+                    if (mSearchView != null) {
+                        mSearchView.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        }
 
-        final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(tab.getPosition());
-        if (fragment != null) {
-            fragment.getContent();
+        final BaseMPDFragment fragment = mMyMusicPagerAdapter.getRegisteredFragment(tab.getPosition());
+        if (fragment instanceof GenericMPDFragment<?>) {
+            ((GenericMPDFragment<?>)fragment).getContent();
         }
     }
 
@@ -286,6 +309,8 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         mSearchView.setOnQueryTextListener(new SearchTextObserver());
 
+        mOptionsMenu = menu;
+
         super.onCreateOptionsMenu(menu, menuInflater);
     }
 
@@ -294,9 +319,10 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     }
 
     private static class MyMusicPagerAdapter extends FragmentStatePagerAdapter {
-        static final int NUMBER_OF_PAGES = 2;
+        static final int NUMBER_OF_PAGES_NON_TAG = 2;
+        static final int NUMBER_OF_PAGES_TAG = 3;
 
-        private final SparseArray<GenericMPDFragment<?>> mRegisteredFragments;
+        private final SparseArray<BaseMPDFragment> mRegisteredFragments;
 
         private String mTagName = null;
         private String mTagValue = null;
@@ -317,7 +343,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            GenericMPDFragment<?> fragment = (GenericMPDFragment<?>) super.instantiateItem(container, position);
+            BaseMPDFragment fragment = (BaseMPDFragment) super.instantiateItem(container, position);
             mRegisteredFragments.put(position, fragment);
             return fragment;
         }
@@ -336,6 +362,8 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
                     return ArtistsFragment.newInstance(new Pair<>(mTagName, mTagValue));
                 case 1:
                     return AlbumsFragment.newInstance(null, new Pair<>(mTagName, mTagValue));
+                case 2:
+                    return TagFilterSongsFragment.newInstance(new Pair<>(mTagName, mTagValue));
                 default:
                     // should not happen throw exception
                     throw new IllegalStateException("No fragment defined to return");
@@ -344,11 +372,15 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         @Override
         public int getCount() {
-            // this is done in order to reload all tabs
-            return NUMBER_OF_PAGES;
+            if (mTagName != null && !mTagName.isEmpty()) {
+                return NUMBER_OF_PAGES_TAG;
+            } else {
+                // this is done in order to reload all tabs
+                return NUMBER_OF_PAGES_NON_TAG;
+            }
         }
 
-        public GenericMPDFragment<?> getRegisteredFragment(int position) {
+        public BaseMPDFragment getRegisteredFragment(int position) {
             return mRegisteredFragments.get(position);
         }
     }

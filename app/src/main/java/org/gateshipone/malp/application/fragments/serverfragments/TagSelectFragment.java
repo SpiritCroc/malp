@@ -191,9 +191,11 @@ public class TagSelectFragment extends GenericMPDFragment<MPDFilterObject> imple
             mFABCallback.setupToolbar(getResources().getString(R.string.action_search), false, true, false);
         }
 
-        mTagName = mSpinnerAdapter.getItem(0);
-        ((TagFilterViewModel)getViewModel()).setTagName(mTagName);
-        mSelectSpinner.setSelection(0);
+        if (mSpinnerAdapter.getCount() > 0) {
+            mTagName = mSpinnerAdapter.getItem(0);
+            ((TagFilterViewModel) getViewModel()).setTagName(mTagName);
+            mSelectSpinner.setSelection(0);
+        }
     }
 
     /**
