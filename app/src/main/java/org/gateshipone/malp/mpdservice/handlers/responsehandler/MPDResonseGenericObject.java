@@ -44,8 +44,8 @@ public abstract class MPDResonseGenericObject extends MPDResponseHandler {
 
 
         /* Call album response handler */
-        MPDStatistics stats = (MPDStatistics)msg.obj;
-        handleObject(stats);
+        Object obj = (Object)msg.obj;
+        handleObject(obj);
     }
 
     /**
