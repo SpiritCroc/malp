@@ -75,6 +75,8 @@ public class MPDCapabilities {
 
     private boolean mHasPlaylistLength;
 
+    private boolean mHasTagFilter;
+
     private List<String> mTags;
 
     public MPDCapabilities(String version, List<String> commands, List<String> tags) {
@@ -121,10 +123,13 @@ public class MPDCapabilities {
             mHasListFiltering = true;
         }
 
+        if (mMinorVersion >= 20 || mMajorVersion > 0) {
+            mHasTagFilter = true;
+        }
+
         if (mMinorVersion >= 21 || mMajorVersion > 0) {
             mHasAlbumArt = true;
         }
-
 
         if (null != commands) {
             mHasIdle = commands.contains(MPDCommands.MPD_COMMAND_START_IDLE);
@@ -240,6 +245,10 @@ public class MPDCapabilities {
         return mHasPlaylistLength;
     }
 
+    public boolean hasTagFilter() {
+        return mHasTagFilter;
+    }
+
     public List<String> getTags() {
         if (mTags == null) {
             mTags = new ArrayList<>();
@@ -259,6 +268,7 @@ public class MPDCapabilities {
                 + "List grouping: " + mHasListGroup + '\n'
                 + "List filtering: " + mHasListFiltering + '\n'
                 + "Partitioning: " + mHasPartitions + '\n'
+                + "Tag filtering: " + mHasTagFilter + '\n'
                 + "Playlist length: " + mHasPlaylistLength + '\n'
                 + "Fast ranged currentplaylist delete: " + mHasCurrentPlaylistRemoveRange + '\n'
                 + "MPD based album artwork: " + mHasAlbumArt + '|' + mHasReadPicture + '\n'
