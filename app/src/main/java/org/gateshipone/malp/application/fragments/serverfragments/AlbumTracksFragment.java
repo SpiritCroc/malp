@@ -353,7 +353,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         // Do not save the bitmap for later use (too big for binder)
         Bundle args = getArguments();
         if (args != null) {
-            getArguments().remove(BUNDLE_STRING_EXTRA_BITMAP);
+            args.remove(BUNDLE_STRING_EXTRA_BITMAP);
         }
         super.onSaveInstanceState(savedInstanceState);
     }
