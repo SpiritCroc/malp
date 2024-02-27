@@ -96,6 +96,7 @@ import org.gateshipone.malp.mpdservice.ConnectionManager;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDStateMonitoringHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDException;
+import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
@@ -507,6 +508,11 @@ public class MainActivity extends GenericActivity
             }
             nowPlayingView.onResume();
         }
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        boolean hasTagFilter = MPDInterface.getGenericInstance().getServerCapabilities().hasTagFilter();
+        navigationView.getMenu().findItem(R.id.nav_tag_browser).setVisible(hasTagFilter);
+
     }
 
     @Override
@@ -524,6 +530,10 @@ public class MainActivity extends GenericActivity
     @Override
     protected void onConnected() {
         setNavbarHeader(ConnectionManager.getInstance(getApplicationContext()).getProfileName());
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        boolean hasTagFilter = MPDInterface.getGenericInstance().getServerCapabilities().hasTagFilter();
+        navigationView.getMenu().findItem(R.id.nav_tag_browser).setVisible(hasTagFilter);
     }
 
     @Override
