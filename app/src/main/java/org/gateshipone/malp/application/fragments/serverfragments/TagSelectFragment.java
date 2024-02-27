@@ -72,6 +72,8 @@ import java.util.List;
 public class TagSelectFragment extends GenericMPDFragment<MPDFilterObject> implements AdapterView.OnItemClickListener{
     public static final String TAG = TagSelectFragment.class.getSimpleName();
 
+    private static final String FRAGMENT_STATE_TAG_NAME = "tagname";
+
     /**
      * Main ListView of this fragment
      */
@@ -137,6 +139,13 @@ public class TagSelectFragment extends GenericMPDFragment<MPDFilterObject> imple
         mSelectSpinner.setAdapter(mSpinnerAdapter);
         mSelectSpinner.setOnItemSelectedListener(new SpinnerSelectListener());
 
+        if (savedInstanceState != null) {
+            String tag = savedInstanceState.getString(FRAGMENT_STATE_TAG_NAME);
+            if (tag != null) {
+                mTagName = tag;
+            }
+        }
+
         SearchView mSearchView = view.findViewById(R.id.search_text);
         mSearchView.setVisibility(View.GONE);
 
@@ -160,7 +169,6 @@ public class TagSelectFragment extends GenericMPDFragment<MPDFilterObject> imple
         mClickAction = PreferenceHelper.getClickAction(sharedPref, requireContext());
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
-
     }
 
     @Override
@@ -191,11 +199,23 @@ public class TagSelectFragment extends GenericMPDFragment<MPDFilterObject> imple
             mFABCallback.setupToolbar(getResources().getString(R.string.action_search), false, true, false);
         }
 
-        if (mSpinnerAdapter.getCount() > 0) {
-            mTagName = mSpinnerAdapter.getItem(0);
-            ((TagFilterViewModel) getViewModel()).setTagName(mTagName);
-            mSelectSpinner.setSelection(0);
+        if (mTagName != null) {
+            for (int i = 0; i < mSpinnerAdapter.getCount(); i++) {
+                if (mSpinnerAdapter.getItem(i).equals(mTagName)) {
+                    mSelectSpinner.setSelection(i);
+                }
+            }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Log.e(TAG, "Save state");
+
+        // save the already typed search string (or null if nothing is entered)
+        outState.putString(FRAGMENT_STATE_TAG_NAME, mTagName);
     }
 
     /**
