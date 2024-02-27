@@ -511,17 +511,17 @@ public abstract class WindowedFileAdapter extends BaseAdapter implements Artwork
         public void run() {
             // Lock the list structures
             mListsLock.writeLock().lock();
-
-
-            // Cleanup all but the currently active list block.
-            for (int i = 0; i < mWindowedFileLists.length; i++) {
-                if (i != mLastAccessedList) {
-                    mWindowedFileLists[i] = null;
-                    mWindowedListStates[i] = LIST_STATE.LIST_EMPTY;
+            if (mWindowedFileLists != null) {
+                // Cleanup all but the currently active list block.
+                for (int i = 0; i < mWindowedFileLists.length; i++) {
+                    if (i != mLastAccessedList) {
+                        mWindowedFileLists[i] = null;
+                        mWindowedListStates[i] = LIST_STATE.LIST_EMPTY;
+                    }
                 }
+                // Cleanup the timer field
+                mClearTimer = null;
             }
-            // Cleanup the timer field
-            mClearTimer = null;
             // Release the list lock
             mListsLock.writeLock().unlock();
         }
