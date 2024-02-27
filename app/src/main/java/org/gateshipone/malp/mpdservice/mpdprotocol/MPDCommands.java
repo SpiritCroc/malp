@@ -418,4 +418,8 @@ public class MPDCommands {
     public static String MPD_COMMAND_GET_FILTERED_SONGS_BY_ALBUM_WINDOWED(Pair<String, String> tagFilter, int start, int end) {
         return "find " + tagFilterString(tagFilter) + "sort album window " + start + ":" + end;
     }
+
+    public static String MPD_COMMAND_ADD_FILTERED_SONGS_BY_ALBUM(Pair<String, String> tagFilter) {
+        return "findadd " + tagFilterString(tagFilter) + "sort album";
+    }
 }

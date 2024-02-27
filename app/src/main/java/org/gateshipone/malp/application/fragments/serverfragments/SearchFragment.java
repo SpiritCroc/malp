@@ -280,10 +280,10 @@ public class SearchFragment extends GenericMPDFragment<MPDFileEntry> implements 
             MPDQueryHandler.playArtistAlbum(track.getAlbum(), mAlbumArtistSelector, mArtistSortSelector);
             return true;
         } else if (itemId == R.id.action_add_artist) {
-            MPDQueryHandler.addArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder, mAlbumArtistSelector, mArtistSortSelector);
+            MPDQueryHandler.addArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder, MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ARTIST, MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST);
             return true;
         } else if (itemId == R.id.action_play_artist) {
-            MPDQueryHandler.playArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder, mAlbumArtistSelector, mArtistSortSelector);
+            MPDQueryHandler.playArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder, MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ARTIST, MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST);
             return true;
         } else if (itemId == R.id.menu_group_album) {
             // Save position for later use

@@ -260,8 +260,10 @@ public class TagSelectFragment extends GenericMPDFragment<MPDFilterObject> imple
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             mTagName = mSpinnerAdapter.getItem(position);
-            ((TagFilterViewModel)getViewModel()).setTagName(mTagName);
-            refreshContent();
+            if (!isDetached()) {
+                ((TagFilterViewModel) getViewModel()).setTagName(mTagName);
+                refreshContent();
+            }
         }
 
         @Override

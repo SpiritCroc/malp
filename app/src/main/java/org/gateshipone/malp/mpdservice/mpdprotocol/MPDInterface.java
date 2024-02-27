@@ -915,11 +915,15 @@ public class MPDInterface {
         return fileList;
     }
 
-    /**
-     * Returns the list of MPDOutputs of all partitions to the outside callers.
-     *
-     * @return List of MPDOutput objects or null in case of error.
-     */
+    public synchronized void addTagFilteredSongs(Pair<String, String> tagFilter) throws MPDException {
+        mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_ADD_FILTERED_SONGS_BY_ALBUM(tagFilter));
+    }
+
+        /**
+         * Returns the list of MPDOutputs of all partitions to the outside callers.
+         *
+         * @return List of MPDOutput objects or null in case of error.
+         */
     public synchronized List<MPDOutput> getAllPartitionOutputs() throws MPDException {
         List<MPDPartition> partitions = getPartitions();
 

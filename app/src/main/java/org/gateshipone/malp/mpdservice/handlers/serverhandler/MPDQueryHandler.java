@@ -540,6 +540,14 @@ public class MPDQueryHandler extends MPDGenericHandler {
                 }
 
                 ((MPDResonseGenericObject) responseHandler).sendObject(playtime);
+            } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_PLAY_TAG_FILTERED_SONGS) {
+
+                Pair<String,String> tagPair = null;
+                String tagName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_NAME);
+                String tagValue = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_VALUE);
+                MPDInterface.getGenericInstance().clearPlaylist();
+                MPDInterface.getGenericInstance().addTagFilteredSongs(new Pair<>(tagName, tagValue));
+                MPDInterface.getGenericInstance().playSongIndex(0);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_UPDATE_DATABASE) {
 
                 String updatePath = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_PATH);
@@ -939,6 +947,14 @@ public class MPDQueryHandler extends MPDGenericHandler {
         action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_VALUE, tagFilter.second);
 
         action.setResponseHandler(responseHandler);
+
+        sendMsg(action);
+    }
+
+    public static void playTagFilteredSongCount(Pair<String,String> tagFilter) {
+        MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_PLAY_TAG_FILTERED_SONGS);
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_NAME, tagFilter.first);
+        action.setStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_TAG_VALUE, tagFilter.second);
 
         sendMsg(action);
     }

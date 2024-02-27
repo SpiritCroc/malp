@@ -48,8 +48,10 @@ import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import org.gateshipone.malp.R;
+import org.gateshipone.malp.application.adapters.CurrentPlaylistAdapter;
 import org.gateshipone.malp.application.adapters.FileAdapter;
 import org.gateshipone.malp.application.adapters.TagFilterFileAdapter;
+import org.gateshipone.malp.application.adapters.WindowedFileAdapter;
 import org.gateshipone.malp.application.callbacks.AddPathToPlaylist;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
@@ -59,6 +61,8 @@ import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCapabilities;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
@@ -95,6 +99,12 @@ public class TagFilterSongsFragment extends BaseMPDFragment implements AbsListVi
     private TagFilterFileAdapter mAdapter;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private MPDAlbum.MPD_ALBUM_SORT_ORDER mAlbumSortOrder;
+    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+
+    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
+    private int mContextMenuPosition;
 
     /**
      * Constant for state saving
@@ -153,8 +163,13 @@ public class TagFilterSongsFragment extends BaseMPDFragment implements AbsListVi
         // set swipe refresh listener
         mSwipeRefreshLayout.setOnRefreshListener(() -> mAdapter.refresh());
 
+        // Get album sort order
+        mAlbumSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, requireContext());
+        mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, requireContext());
+        mArtistSortSelector = PreferenceHelper.getArtistSortSelector(sharedPref, requireContext());
 
         setHasOptionsMenu(false);
+        mSwipeRefreshLayout.setEnabled(false);
     }
 
     /**
@@ -165,7 +180,7 @@ public class TagFilterSongsFragment extends BaseMPDFragment implements AbsListVi
         super.onResume();
 
         if (null != mFABCallback) {
-
+            mFABCallback.setupFAB(true, new FABListener());
         }
     }
 
@@ -181,7 +196,7 @@ public class TagFilterSongsFragment extends BaseMPDFragment implements AbsListVi
 
     @Override
     void onDatabaseUpdated() {
-
+        mAdapter.refresh();
     }
 
 
@@ -192,14 +207,6 @@ public class TagFilterSongsFragment extends BaseMPDFragment implements AbsListVi
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // save the already typed search string (or null if nothing is entered)
-        outState.putString(FILESFRAGMENT_SAVED_INSTANCE_SEARCH_STRING, mSearchString);
     }
 
     /**
@@ -215,10 +222,9 @@ public class TagFilterSongsFragment extends BaseMPDFragment implements AbsListVi
         MPDFileEntry file = (MPDFileEntry) mAdapter.getItem(position);
 
         if (file instanceof MPDTrack) {
-            inflater.inflate(R.menu.context_menu_track, menu);
+            inflater.inflate(R.menu.context_menu_search_track, menu);
         }
     }
-
     /**
      * Hook called when an menu item in the context menu is selected.
      *
@@ -228,37 +234,66 @@ public class TagFilterSongsFragment extends BaseMPDFragment implements AbsListVi
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-
+        int position;
         if (info == null) {
-            return super.onContextItemSelected(item);
+            if (mContextMenuPosition == -1) {
+                return super.onContextItemSelected(item);
+            }
+            position = mContextMenuPosition;
+            mContextMenuPosition = -1;
+        } else {
+            position = info.position;
         }
 
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.action_song_enqueue) {
-            MPDQueryHandler.addPath(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+        MPDTrack track = (MPDTrack)mAdapter.getItem(position);
+        if (track == null) {
+            return false;
+        }
+
+        if (itemId == R.id.action_song_play) {
+            MPDQueryHandler.playSong(track.getPath());
+            return true;
+        } else if (itemId == R.id.action_song_enqueue) {
+            MPDQueryHandler.addPath(track.getPath());
             return true;
         } else if (itemId == R.id.action_song_enqueue_at_start) {
-            MPDQueryHandler.addPathAtStart(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
-            return true;
-        } else if (itemId == R.id.action_song_play) {
-            MPDQueryHandler.playSong(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+            MPDQueryHandler.addPathAtStart(track.getPath());
             return true;
         } else if (itemId == R.id.action_song_play_next) {
-            MPDQueryHandler.playSongNext(((MPDFileEntry) mAdapter.getItem(info.position)).getPath());
+            MPDQueryHandler.playSongNext(track.getPath());
             return true;
         } else if (itemId == R.id.action_add_to_saved_playlist) {
             // open dialog in order to save the current playlist as a playlist in the mediastore
             ChoosePlaylistDialog choosePlaylistDialog = ChoosePlaylistDialog.newInstance(true);
 
-            choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(info.position), getActivity()));
+            choosePlaylistDialog.setCallback(new AddPathToPlaylist((MPDFileEntry) mAdapter.getItem(position), getContext()));
             choosePlaylistDialog.show(requireActivity().getSupportFragmentManager(), "ChoosePlaylistDialog");
             return true;
         } else if (itemId == R.id.action_show_details) {
             // Open song details dialog
-            SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(info.position), false);
+            SongDetailsDialog songDetailsDialog = SongDetailsDialog.createDialog((MPDTrack) mAdapter.getItem(position), false);
             songDetailsDialog.show(requireActivity().getSupportFragmentManager(), "SongDetails");
             return true;
+        } else if (itemId == R.id.action_add_album) {
+            MPDQueryHandler.addArtistAlbum(track.getAlbum(), mAlbumArtistSelector, mArtistSortSelector);
+            return true;
+        } else if (itemId == R.id.action_play_album) {
+            MPDQueryHandler.playArtistAlbum(track.getAlbum(), mAlbumArtistSelector, mArtistSortSelector);
+            return true;
+        } else if (itemId == R.id.action_add_artist) {
+            MPDQueryHandler.addArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder, MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ARTIST, MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST);
+            return true;
+        } else if (itemId == R.id.action_play_artist) {
+            MPDQueryHandler.playArtist(track.getStringTag(MPDTrack.StringTagTypes.ARTIST), mAlbumSortOrder, MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ARTIST, MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST);
+            return true;
+        } else if (itemId == R.id.menu_group_album) {
+            // Save position for later use
+            mContextMenuPosition = info.position;
+        } else if (itemId == R.id.menu_group_artist) {
+            // Save position for later use
+            mContextMenuPosition = info.position;
         }
 
         return super.onContextItemSelected(item);
@@ -307,12 +342,11 @@ public class TagFilterSongsFragment extends BaseMPDFragment implements AbsListVi
     }
 
     private class FABListener implements View.OnClickListener {
-
         @Override
         public void onClick(View v) {
             MPDCommandHandler.setRandom(false);
             MPDCommandHandler.setRepeat(false);
+            MPDQueryHandler.playTagFilteredSongCount(new Pair<>(mTagName, mTagValue));
         }
     }
-
 }
