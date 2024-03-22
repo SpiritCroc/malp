@@ -58,7 +58,7 @@ public class MPDInterface {
 
     private static String mPartition = "";
 
-    private MPDCache mCache;
+    private final MPDCache mCache;
 
     private static final long MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50 MB
 
@@ -184,6 +184,7 @@ public class MPDInterface {
 
         if (tagFilter == null) {
             synchronized (mCache) {
+                checkCacheState();
                 albums = mCache.getCachedAlbums();
             }
         }
@@ -258,6 +259,7 @@ public class MPDInterface {
 
         List<MPDAlbum> result;
         synchronized (mCache) {
+            checkCacheState();
             result = mCache.getCachedArtistAlbumsRequest(artistName, albumArtistSelector, artistSortSelector, sortOrder);
         }
 
@@ -310,6 +312,7 @@ public class MPDInterface {
         List<MPDArtist> normalArtists = null;
         if (tagFilter == null) {
             synchronized (mCache) {
+                checkCacheState();
                 normalArtists = mCache.getCachedArtistsRequest(albumArtistSelector, artistSortSelector);
             }
         }
@@ -498,8 +501,10 @@ public class MPDInterface {
     public List<MPDFileEntry> getFiles(String path) throws MPDException {
         List<MPDFileEntry> retList;
 
-        checkCacheState();
-        retList = mCache.getFiles(path);
+        synchronized (mCache) {
+            checkCacheState();
+            retList = mCache.getFiles(path);
+        }
         if (retList != null) {
             return retList;
         }
@@ -1223,7 +1228,7 @@ public class MPDInterface {
     private void checkCacheState() throws MPDException {
         long version = getServerStatistics().getLastDBUpdate();
         synchronized (mCache) {
-            if (mCache.getVersion() != getServerStatistics().getLastDBUpdate()) {
+            if (mCache.getVersion() != version) {
                 invalidateCache();
                 mCache.setVersion(version);
             }
