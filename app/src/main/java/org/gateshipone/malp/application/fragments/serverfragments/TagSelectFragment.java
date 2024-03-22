@@ -23,6 +23,7 @@
 package org.gateshipone.malp.application.fragments.serverfragments;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -45,6 +46,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
@@ -173,7 +175,12 @@ public class TagSelectFragment extends GenericMPDFragment<MPDFilterObject> imple
 
     @Override
     GenericViewModel<MPDFilterObject> getViewModel() {
-        return new ViewModelProvider(this, new TagFilterViewModel.TagFilterViewModelFactory(requireActivity().getApplication())).get(TagFilterViewModel.class);
+        Activity activity = getActivity();
+        if (activity != null) {
+            return new ViewModelProvider(this, new TagFilterViewModel.TagFilterViewModelFactory(activity.getApplication())).get(TagFilterViewModel.class);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -211,8 +218,6 @@ public class TagSelectFragment extends GenericMPDFragment<MPDFilterObject> imple
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        Log.e(TAG, "Save state");
 
         // save the already typed search string (or null if nothing is entered)
         outState.putString(FRAGMENT_STATE_TAG_NAME, mTagName);
@@ -261,8 +266,11 @@ public class TagSelectFragment extends GenericMPDFragment<MPDFilterObject> imple
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             mTagName = mSpinnerAdapter.getItem(position);
             if (!isDetached()) {
-                ((TagFilterViewModel) getViewModel()).setTagName(mTagName);
-                refreshContent();
+                TagFilterViewModel model = ((TagFilterViewModel) getViewModel());
+                if (model != null) {
+                    model.setTagName(mTagName);
+                    refreshContent();
+                }
             }
         }
 
