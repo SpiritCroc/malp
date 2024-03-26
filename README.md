@@ -11,7 +11,7 @@ This whole project is licensed under the  **GPLv3 or later** license (see LICENS
 
 ## Requirements: ##
  - Android 5.0
- - MPD >= 0.14
+ - MPD >= 0.14 (Everything < 0.23 is considered experimental going forward)
  
 ## Features: ##
  - Artist/Album/Files library browsing
@@ -33,6 +33,7 @@ This whole project is licensed under the  **GPLv3 or later** license (see LICENS
  - HTTP cover download
  - MPD artwork loading
  - Partitions (create, delete, move outputs)
+ - Tag browser (filter Artists, Albums, Tracks) by all available MPD tags (e.g. genre, performer, composer, label, ...)
 
 ## Description ##
 

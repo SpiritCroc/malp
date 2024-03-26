@@ -1,5 +1,12 @@
 # Changelog M.A.L.P
 
+## 1.3.1 Tag: release-41 (2024-03-26)
+* Partitions support
+* Tag browser support (Filter artist, albums, tracks by and MPD supported tag;
+  e.g. performer, genre, label)
+* Idle improvements: M.A.L.P. will synchronize MPD's state much better
+* Memory usage reductions
+
 ## 1.3.0 Tag: release-40 (2024-01-21)
 * Material You design implementation
 * Flickering fixes for album images
