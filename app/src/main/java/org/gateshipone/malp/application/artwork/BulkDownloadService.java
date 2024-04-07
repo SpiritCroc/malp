@@ -60,8 +60,7 @@ import org.gateshipone.malp.application.artwork.storage.ImageNotFoundException;
 import org.gateshipone.malp.application.utils.NetworkUtils;
 import org.gateshipone.malp.mpdservice.ConnectionManager;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumList;
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseArtistList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseFileList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
@@ -142,7 +141,11 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         mConnectionStateChangeReceiver = new ConnectionStateReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(mConnectionStateChangeReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            registerReceiver(mConnectionStateChangeReceiver, filter, RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(mConnectionStateChangeReceiver, filter);
+        }
     }
 
     @Override
@@ -277,8 +280,11 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
             IntentFilter intentFilter = new IntentFilter();
 
             intentFilter.addAction(ACTION_CANCEL);
-
-            registerReceiver(mBroadcastReceiver, intentFilter);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                registerReceiver(mBroadcastReceiver, intentFilter, RECEIVER_EXPORTED);
+            } else {
+                registerReceiver(mBroadcastReceiver, intentFilter);
+            }
         }
 
         mBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
@@ -320,7 +326,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     private void fetchAllAlbums() {
         if (mArtworkManager.hasImageProvider(ArtworkRequestModel.ArtworkRequestType.ALBUM)) {
-            MPDQueryHandler.getAlbums(new AlbumsResponseHandler(this));
+            MPDQueryHandler.getAlbums(new AlbumsResponseHandler(this), null);
         } else {
             fetchAllArtists();
         }
@@ -328,7 +334,8 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
 
     private void fetchAllArtists() {
         if (mArtworkManager.hasImageProvider(ArtworkRequestModel.ArtworkRequestType.ARTIST)) {
-            MPDQueryHandler.getArtists(new ArtistsResponseHandler(this));
+            MPDQueryHandler.getArtists(new ArtistsResponseHandler(this),
+                    MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ARTIST, MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST, null);
         } else {
             startBulkDownload();
         }
@@ -534,7 +541,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         }
     }
 
-    private static class ArtistsResponseHandler extends MPDResponseArtistList {
+    private static class ArtistsResponseHandler extends MPDResponseGenericList<MPDArtist> {
         private final WeakReference<BulkDownloadService> mBulkDownloadService;
 
         ArtistsResponseHandler(final BulkDownloadService bulkDownloadService) {
@@ -542,7 +549,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         }
 
         @Override
-        public void handleArtists(List<MPDArtist> artistList) {
+        public void handleList(List<MPDArtist> artistList) {
             final BulkDownloadService bulkDownloadService = mBulkDownloadService.get();
 
             if (bulkDownloadService != null) {
@@ -551,7 +558,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         }
     }
 
-    private static class AlbumsResponseHandler extends MPDResponseAlbumList {
+    private static class AlbumsResponseHandler extends MPDResponseGenericList<MPDAlbum> {
         private final WeakReference<BulkDownloadService> mBulkDownloadService;
 
         AlbumsResponseHandler(final BulkDownloadService bulkDownloadService) {
@@ -559,7 +566,7 @@ public class BulkDownloadService extends Service implements InsertImageTask.Imag
         }
 
         @Override
-        public void handleAlbums(List<MPDAlbum> albumList) {
+        public void handleList(List<MPDAlbum> albumList) {
             final BulkDownloadService bulkDownloadService = mBulkDownloadService.get();
 
             if (bulkDownloadService != null) {

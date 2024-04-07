@@ -23,15 +23,19 @@
 package org.gateshipone.malp.application.activities;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 
@@ -73,9 +77,11 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
     protected void onCreate(Bundle savedInstanceState) {
         // Read theme preference
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String themePref = sharedPref.getString(getString(R.string.pref_theme_key), getString(R.string.pref_theme_default));
+        String themePref = sharedPref.getString(getString(R.string.pref_legacy_theme_selector_key), getString(R.string.pref_theme_default));
+        String themeMaterialPref = sharedPref.getString(getString(R.string.pref_materialyou_theme_selector_key), getString(R.string.pref_theme_materialyou_default));
         boolean darkTheme = sharedPref.getBoolean(getString(R.string.pref_dark_theme_key), getResources().getBoolean(R.bool.pref_theme_dark_default));
-        if (darkTheme) {
+        boolean legacyTheme = sharedPref.getBoolean(getString(R.string.pref_legacy_theme_key), getResources().getBoolean(R.bool.pref_theme_legacy_default));
+        if (darkTheme && legacyTheme) {
             if (themePref.equals(getString(R.string.pref_indigo_key))) {
                 setTheme(R.style.AppTheme_indigo);
             } else if (themePref.equals(getString(R.string.pref_orange_key))) {
@@ -92,29 +98,75 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
                 setTheme(R.style.AppTheme_lightGreen);
             } else if (themePref.equals(getString(R.string.pref_red_key))) {
                 setTheme(R.style.AppTheme_red);
+            } else if (themePref.equals(getString(R.string.pref_oleddark_key))) {
+                setTheme(R.style.AppTheme_oledDark);
+            } else if (themePref.equals(getString(R.string.pref_materialyou_auto_key))) {
+                setTheme(R.style.AppTheme_materialyou);
+            } else if (themePref.equals(getString(R.string.pref_materialyou_key))) {
+                setTheme(R.style.AppTheme_materialyou_dark);
+            }
+        } else if (!darkTheme && legacyTheme){
+            if (themePref.equals(getString(R.string.pref_indigo_key))) {
+                setTheme(R.style.AppTheme_light_indigo);
+            } else if (themePref.equals(getString(R.string.pref_orange_key))) {
+                setTheme(R.style.AppTheme_light_orange);
+            } else if (themePref.equals(getString(R.string.pref_deeporange_key))) {
+                setTheme(R.style.AppTheme_light_deepOrange);
+            } else if (themePref.equals(getString(R.string.pref_blue_key))) {
+                setTheme(R.style.AppTheme_light_blue);
+            } else if (themePref.equals(getString(R.string.pref_darkgrey_key))) {
+                setTheme(R.style.AppTheme_light_darkGrey);
+            } else if (themePref.equals(getString(R.string.pref_brown_key))) {
+                setTheme(R.style.AppTheme_light_brown);
+            } else if (themePref.equals(getString(R.string.pref_lightgreen_key))) {
+                setTheme(R.style.AppTheme_light_lightGreen);
+            } else if (themePref.equals(getString(R.string.pref_red_key))) {
+                setTheme(R.style.AppTheme_light_red);
+            } else if (themePref.equals(getString(R.string.pref_oleddark_key))) {
+                setTheme(R.style.AppTheme_oledDark);
+            } else if (themePref.equals(getString(R.string.pref_materialyou_auto_key))) {
+                setTheme(R.style.AppTheme_materialyou);
+            } else if (themePref.equals(getString(R.string.pref_materialyou_key))) {
+                setTheme(R.style.AppTheme_materialyou_light);
+            }
+        } else if (darkTheme && !legacyTheme) {
+            if (themeMaterialPref.equals(getString(R.string.pref_indigo_key))) {
+                setTheme(R.style.AppTheme_materialyou_indigo_dark);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_orange_key))) {
+                setTheme(R.style.AppTheme_materialyou_orange_dark);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_blue_key))) {
+                setTheme(R.style.AppTheme_materialyou_blue_dark);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_lightgreen_key))) {
+                setTheme(R.style.AppTheme_materialyou_green_dark);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_red_key))) {
+                setTheme(R.style.AppTheme_materialyou_red_dark);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_materialyou_auto_key))) {
+                setTheme(R.style.AppTheme_materialyou);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_materialyou_key))) {
+                setTheme(R.style.AppTheme_materialyou_dark);
+            } else {
+                setTheme(R.style.AppTheme_materialyou);
             }
         } else {
-            if (themePref.equals(getString(R.string.pref_indigo_key))) {
-                setTheme(R.style.AppTheme_indigo_light);
-            } else if (themePref.equals(getString(R.string.pref_orange_key))) {
-                setTheme(R.style.AppTheme_orange_light);
-            } else if (themePref.equals(getString(R.string.pref_deeporange_key))) {
-                setTheme(R.style.AppTheme_deepOrange_light);
-            } else if (themePref.equals(getString(R.string.pref_blue_key))) {
-                setTheme(R.style.AppTheme_blue_light);
-            } else if (themePref.equals(getString(R.string.pref_darkgrey_key))) {
-                setTheme(R.style.AppTheme_darkGrey_light);
-            } else if (themePref.equals(getString(R.string.pref_brown_key))) {
-                setTheme(R.style.AppTheme_brown_light);
-            } else if (themePref.equals(getString(R.string.pref_lightgreen_key))) {
-                setTheme(R.style.AppTheme_lightGreen_light);
-            } else if (themePref.equals(getString(R.string.pref_red_key))) {
-                setTheme(R.style.AppTheme_red_light);
+            if (themeMaterialPref.equals(getString(R.string.pref_indigo_key))) {
+                setTheme(R.style.AppTheme_materialyou_indigo_light);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_orange_key)))  {
+                setTheme(R.style.AppTheme_materialyou_orange_light);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_blue_key))) {
+                setTheme(R.style.AppTheme_materialyou_blue_light);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_lightgreen_key))) {
+                setTheme(R.style.AppTheme_materialyou_green_light);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_red_key))) {
+                setTheme(R.style.AppTheme_materialyou_red_light);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_materialyou_auto_key))) {
+                setTheme(R.style.AppTheme_materialyou);
+            } else if (themeMaterialPref.equals(getString(R.string.pref_materialyou_key))) {
+                setTheme(R.style.AppTheme_materialyou_light);
+            } else {
+                setTheme(R.style.AppTheme_materialyou);
             }
         }
-        if (themePref.equals(getString(R.string.pref_oleddark_key))) {
-            setTheme(R.style.AppTheme_oledDark);
-        }
+
 
         super.onCreate(savedInstanceState);
 
@@ -147,7 +199,11 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(BackgroundService.ACTION_STREAMING_STATUS_CHANGED);
-        getApplicationContext().registerReceiver(mStreamingStatusReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            getApplicationContext().registerReceiver(mStreamingStatusReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            getApplicationContext().registerReceiver(mStreamingStatusReceiver, filter);
+        }
 
         // Check if hardware key control is enabled by the user
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -193,6 +249,24 @@ public abstract class GenericActivity extends AppCompatActivity implements Share
         } else if (key.equals(getString(R.string.pref_keep_display_on_key))) {
             mKeepDisplayOn = sharedPreferences.getBoolean(getString(R.string.pref_keep_display_on_key),getResources().getBoolean(R.bool.pref_keep_display_on_default));
             handleKeepDisplayOnSetting();
+        }
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        switch (level) {
+            case TRIM_MEMORY_UI_HIDDEN:
+            case TRIM_MEMORY_BACKGROUND:
+                break;
+            case TRIM_MEMORY_MODERATE:
+            case TRIM_MEMORY_RUNNING_CRITICAL:
+            case TRIM_MEMORY_RUNNING_LOW:
+            case TRIM_MEMORY_RUNNING_MODERATE:
+            case TRIM_MEMORY_COMPLETE:
+                Log.v(TAG,"Memory pressure: " + level + " trying to reduce memory consumption");
+                MPDInterface.memoryPressure();
+                break;
         }
     }
 

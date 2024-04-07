@@ -70,13 +70,12 @@
                 android:layout_gravity="center_horizontal"
                 android:ellipsize="marquee"
                 android:focusable="true"
-                android:fontFamily="sans-serif-medium"
                 android:gravity="center_horizontal"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/material_font_style_size_title" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
             <TextView
                 android:id="@+id/textview_track_album"
@@ -85,13 +84,12 @@
                 android:layout_gravity="center_horizontal"
                 android:ellipsize="marquee"
                 android:focusable="true"
-                android:fontFamily="sans-serif-regular"
                 android:gravity="center_horizontal"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/material_font_style_size_subheading" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
 
             <TextView
                 android:id="@+id/textview_track_artist"
@@ -100,13 +98,12 @@
                 android:layout_gravity="center_horizontal"
                 android:ellipsize="marquee"
                 android:focusable="true"
-                android:fontFamily="sans-serif-regular"
                 android:gravity="center_horizontal"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/material_font_style_size_subheading" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
         </LinearLayout>
 
         <LinearLayout
@@ -128,7 +125,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@drawable/ic_volume_high_black_48dp"
-                    app:tint="?android:textColor" />
+                    app:tint="?attr/app_color_fanart_activity_tint" />
 
                 <SeekBar
                     android:id="@+id/volume_seekbar"
@@ -154,7 +151,7 @@
                     android:layout_marginEnd="4dp"
                     android:background="?android:selectableItemBackground"
                     android:src="@drawable/ic_minus_black_48dp"
-                    android:tint="?attr/malp_color_text_accent" />
+                    app:tint="?attr/app_color_fanart_activity_tint" />
 
                 <ImageView
                     android:id="@+id/volume_icon_buttons"
@@ -163,7 +160,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="4dp"
                     android:src="@drawable/ic_volume_high_black_48dp"
-                    app:tint="?android:textColor" />
+                    app:tint="?attr/app_color_fanart_activity_tint" />
 
                 <TextView
                     android:id="@+id/volume_button_text"
@@ -172,7 +169,8 @@
                     android:layout_marginEnd="4dp"
                     android:gravity="center"
                     android:text="100%"
-                    android:textColor="?attr/malp_color_text_accent" />
+                    android:textColor="?attr/app_color_fanart_activity_tint"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium"/>
 
                 <ImageButton
                     android:id="@+id/volume_button_plus"
@@ -181,7 +179,7 @@
                     android:layout_marginEnd="4dp"
                     android:background="?android:selectableItemBackground"
                     android:src="@drawable/ic_plus_black_48dp"
-                    android:tint="?attr/malp_color_text_accent" />
+                    app:tint="?attr/app_color_fanart_activity_tint" />
 
             </LinearLayout>
 
@@ -200,7 +198,7 @@
                     android:background="?android:selectableItemBackground"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_skip_previous_48dp"
-                    android:tint="?attr/malp_color_text_accent" />
+                    app:tint="?attr/app_color_fanart_activity_tint" />
 
                 <ImageButton
                     android:id="@+id/button_playpause"
@@ -210,7 +208,7 @@
                     android:background="?android:selectableItemBackground"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_pause_circle_fill_48dp"
-                    android:tint="?attr/malp_color_text_accent" />
+                    app:tint="?attr/app_color_fanart_activity_tint" />
 
                 <ImageButton
                     android:id="@+id/button_stop"
@@ -220,7 +218,7 @@
                     android:background="?android:selectableItemBackground"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_stop_black_48dp"
-                    android:tint="?attr/malp_color_text_accent" />
+                    app:tint="?attr/app_color_fanart_activity_tint" />
 
                 <ImageButton
                     android:id="@+id/button_next_track"
@@ -230,7 +228,7 @@
                     android:background="?android:selectableItemBackground"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_skip_next_48dp"
-                    android:tint="?attr/malp_color_text_accent" />
+                    app:tint="?attr/app_color_fanart_activity_tint" />
             </LinearLayout>
         </LinearLayout>
 

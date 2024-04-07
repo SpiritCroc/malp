@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
 public class PreferenceHelper {
     public enum LIBRARY_TRACK_CLICK_ACTION {
@@ -50,6 +51,18 @@ public class PreferenceHelper {
 
         // Default value
         return MPDAlbum.MPD_ALBUM_SORT_ORDER.TITLE;
+    }
+
+    public static MPDArtist.MPD_ALBUM_ARTIST_SELECTOR getAlbumArtistSelector(SharedPreferences prefs, Context context) {
+        boolean useAlbumArtist = prefs.getBoolean(context.getString(R.string.pref_use_album_artists_key), context.getResources().getBoolean(R.bool.pref_use_album_artists_default));
+
+        return useAlbumArtist ? MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ALBUMARTIST : MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ARTIST;
+    }
+
+    public static MPDArtist.MPD_ARTIST_SORT_SELECTOR getArtistSortSelector(SharedPreferences prefs, Context context) {
+        boolean useSortArtist = prefs.getBoolean(context.getString(R.string.pref_use_artist_sort_key), context.getResources().getBoolean(R.bool.pref_use_artist_sort_default));
+
+        return useSortArtist ? MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTISTSORT : MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST;
     }
 
     public static LIBRARY_TRACK_CLICK_ACTION getClickAction(SharedPreferences prefs, Context context) {

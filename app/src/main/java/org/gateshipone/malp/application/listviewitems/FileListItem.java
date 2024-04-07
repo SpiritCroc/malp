@@ -25,6 +25,7 @@ package org.gateshipone.malp.application.listviewitems;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ import org.gateshipone.malp.application.utils.FormatHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaytime;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
 
@@ -216,7 +218,11 @@ public class FileListItem extends AbsImageListViewItem {
                 mNumberView.setVisibility(VISIBLE);
             } else {
                 mTitleView.setText(track.getFilename());
-                mAdditionalInfoView.setText(track.getLastModifiedString());
+                if (track.hasLastModifiedDate()) {
+                    mAdditionalInfoView.setText(track.getLastModifiedString());
+                } else {
+                    mAdditionalInfoView.setVisibility(GONE);
+                }
 
                 mSeparator.setVisibility(GONE);
                 mNumberView.setVisibility(GONE);
@@ -255,7 +261,11 @@ public class FileListItem extends AbsImageListViewItem {
         final Context context = getContext();
 
         mTitleView.setText(directory.getSectionTitle());
-        mAdditionalInfoView.setText(directory.getLastModifiedString());
+        if (directory.hasLastModifiedDate()) {
+            mAdditionalInfoView.setText(directory.getLastModifiedString());
+        } else {
+            mAdditionalInfoView.setVisibility(GONE);
+        }
 
         mSeparator.setVisibility(GONE);
         mNumberView.setVisibility(GONE);
@@ -287,7 +297,27 @@ public class FileListItem extends AbsImageListViewItem {
 
         mSeparator.setVisibility(GONE);
         mNumberView.setVisibility(GONE);
-        mDurationView.setVisibility(GONE);
+
+        if (playlist.hasLastModifiedDate()) {
+            mAdditionalInfoView.setVisibility(VISIBLE);
+            mAdditionalInfoView.setText(playlist.getLastModifiedString());
+        } else {
+            mAdditionalInfoView.setVisibility(GONE);
+        }
+
+        MPDPlaytime playtime = playlist.getPlaytime();
+        if (playtime != null) {
+            int length = playtime.getPlaytimeS();
+            int titleCount = playtime.getSongCount();
+            mDurationView.setVisibility(VISIBLE);
+            if (length > 0) {
+                mDurationView.setText(getResources().getQuantityString(R.plurals.playlist_count_template_length, titleCount, titleCount, FormatHelper.formatTracktimeFromS(length)));
+            } else {
+                mDurationView.setText(getResources().getQuantityString(R.plurals.playlist_count_template, titleCount, titleCount));
+            }
+        } else {
+            mDurationView.setVisibility(GONE);
+        }
 
         if (mShowIcon) {
             Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_queue_music_black_48dp);
@@ -325,12 +355,12 @@ public class FileListItem extends AbsImageListViewItem {
      */
     public void setPlaying(boolean state) {
         if (state) {
-            int color = ThemeUtils.getThemeColor(getContext(), R.attr.colorAccent);
+            int color = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_secondary);
             mTitleView.setTextColor(color);
             mNumberView.setTextColor(color);
             mSeparator.setTextColor(color);
         } else {
-            int color = ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_background_primary);
+            int color = ThemeUtils.getThemeColor(getContext(), R.attr.app_color_on_content);
             mTitleView.setTextColor(color);
             mNumberView.setTextColor(color);
             mSeparator.setTextColor(color);

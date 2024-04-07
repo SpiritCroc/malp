@@ -30,6 +30,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 import org.gateshipone.malp.R;
+import org.gateshipone.malp.application.adapters.CurrentPlaylistAdapter;
 
 import java.util.HashMap;
 
@@ -61,7 +62,8 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
         ALBUMARTIST_MBID,
         TRACK_MBID,
         RELEASETRACK_MBID,
-        WORK_MBID
+        WORK_MBID,
+        FILE_FORMAT,
     }
 
     private final HashMap<StringTagTypes, String> pStringTags;
@@ -180,7 +182,7 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
     private int pBitDepth;
 
     /**
-     * Used for {@link org.gateshipone.malp.application.adapters.CurrentPlaylistAdapter} to save if an
+     * Used for {@link CurrentPlaylistAdapter} to save if an
      * image is already being fetchted from the internet for this item
      */
     private boolean pImageFetching;
@@ -395,5 +397,12 @@ public class MPDTrack extends MPDFileEntry implements MPDGenericItem, Parcelable
 
     public boolean equalsStringTag(StringTagTypes tag, MPDTrack compTrack) {
         return getStringTag(tag).equals(compTrack.getStringTag(tag));
+    }
+
+    public boolean isDummy() {
+        if (mPath.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 }

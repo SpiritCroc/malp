@@ -23,6 +23,7 @@
 package org.gateshipone.malp.application.viewmodels;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -31,6 +32,7 @@ import androidx.lifecycle.ViewModelProvider;
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseFileList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 
 import java.lang.ref.WeakReference;
@@ -38,42 +40,28 @@ import java.util.List;
 
 public class AlbumTracksViewModel extends GenericViewModel<MPDFileEntry> {
 
+    private final static String TAG = AlbumTracksModelFactory.class.getSimpleName();
     private final MPDResponseFileList mTrackResponseHandler;
 
-    private final String mArtistName;
+    private final MPDAlbum mAlbum;
 
-    private final String mArtistSortName;
-
-    private final String mAlbumName;
-
-    private final String mAlbumMBID;
-
-    private final boolean mUseArtistSort;
-
-    private AlbumTracksViewModel(@NonNull final Application application, final MPDAlbum album, final boolean useArtistSort) {
+    private final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+    private final MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
+    private AlbumTracksViewModel(@NonNull final Application application, final MPDAlbum album, final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR albumArtistSelector,
+                                 final MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector) {
         super(application);
 
         mTrackResponseHandler = new TrackResponseHandler(this);
 
-        mArtistName = album.getArtistName();
-        mArtistSortName = album.getArtistSortName();
-        mAlbumName = album.getName();
-        mAlbumMBID = album.getMBID();
+        mAlbum = album;
 
-        mUseArtistSort = useArtistSort;
+        mAlbumArtistSelector = albumArtistSelector;
+        mArtistSortSelector = artistSortSelector;
     }
 
     @Override
     void loadData() {
-        if (mArtistName.isEmpty()) {
-            MPDQueryHandler.getAlbumTracks(mTrackResponseHandler, mAlbumName, mAlbumMBID);
-        } else {
-            if (mUseArtistSort && !mArtistSortName.isEmpty()) {
-                MPDQueryHandler.getArtistSortAlbumTracks(mTrackResponseHandler, mAlbumName, mArtistSortName, mAlbumMBID);
-            } else {
-                MPDQueryHandler.getArtistAlbumTracks(mTrackResponseHandler, mAlbumName, mArtistName, mAlbumMBID);
-            }
-        }
+        MPDQueryHandler.getArtistAlbumTracks(mTrackResponseHandler, mAlbum, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     private static class TrackResponseHandler extends MPDResponseFileList {
@@ -99,18 +87,21 @@ public class AlbumTracksViewModel extends GenericViewModel<MPDFileEntry> {
 
         private final MPDAlbum mAlbum;
 
-        private final boolean mUseArtistSort;
 
-        public AlbumTracksModelFactory(final Application application, final MPDAlbum album, final boolean useArtistSort) {
+        private final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+        private final MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
+        public AlbumTracksModelFactory(final Application application, final MPDAlbum album, final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR albumArtistSelector,
+                                       final MPDArtist.MPD_ARTIST_SORT_SELECTOR artistSortSelector) {
             mApplication = application;
             mAlbum = album;
-            mUseArtistSort = useArtistSort;
+            mAlbumArtistSelector = albumArtistSelector;
+            mArtistSortSelector = artistSortSelector;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) new AlbumTracksViewModel(mApplication, mAlbum, mUseArtistSort);
+            return (T) new AlbumTracksViewModel(mApplication, mAlbum, mAlbumArtistSelector, mArtistSortSelector);
         }
     }
 }

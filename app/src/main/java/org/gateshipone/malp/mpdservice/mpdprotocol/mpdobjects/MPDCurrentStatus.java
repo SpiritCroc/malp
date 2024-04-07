@@ -124,6 +124,8 @@ public class MPDCurrentStatus implements Parcelable {
     @NonNull
     private MPD_PLAYBACK_STATE pPlaybackState;
 
+    private String pPartition;
+
     protected MPDCurrentStatus(Parcel in) {
         /* Create this object from parcel */
         pVolume = in.readInt();
@@ -143,6 +145,7 @@ public class MPDCurrentStatus implements Parcelable {
         pTrackLength = in.readFloat();
         pUpdateDBJob = in.readInt();
         pPlaybackState = MPD_PLAYBACK_STATE.values()[in.readInt()];
+        pPartition = in.readString();
     }
 
     public MPDCurrentStatus() {
@@ -163,6 +166,7 @@ public class MPDCurrentStatus implements Parcelable {
         pTrackLength = 0;
         pUpdateDBJob = -1;
         pPlaybackState = MPD_PLAYBACK_STATE.MPD_STOPPED;
+        pPartition = "";
     }
 
     /**
@@ -188,6 +192,7 @@ public class MPDCurrentStatus implements Parcelable {
         pTrackLength = status.pTrackLength;
         pUpdateDBJob = status.pUpdateDBJob;
         pPlaybackState = status.pPlaybackState;
+        pPartition = status.pPartition;
     }
 
 
@@ -333,6 +338,13 @@ public class MPDCurrentStatus implements Parcelable {
         this.pPlaybackState = pPlaybackState;
     }
 
+    public String getPartition() {
+        return pPartition;
+    }
+
+    public void setPartition(String name) {
+        pPartition = name;
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -355,6 +367,7 @@ public class MPDCurrentStatus implements Parcelable {
         dest.writeInt(pUpdateDBJob);
         /* Convert enum-type to int here and back when deserializing */
         dest.writeInt(pPlaybackState.ordinal());
+        dest.writeString(pPartition);
     }
 
     @Override
@@ -398,6 +411,7 @@ public class MPDCurrentStatus implements Parcelable {
         retString += "Track length: " + pTrackLength + "\n";
         retString += "UpdateDB job id: " + pUpdateDBJob + "\n";
         retString += "Playback state: " + pPlaybackState.ordinal() + "\n";
+        retString += "Partition: " + pPartition + "\n";
 
         return retString;
     }

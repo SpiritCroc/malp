@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Process;
@@ -49,6 +50,8 @@ import org.gateshipone.malp.mpdservice.profilemanagement.MPDProfileManager;
 import org.gateshipone.malp.mpdservice.profilemanagement.MPDServerProfile;
 
 import java.lang.ref.WeakReference;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class BackgroundService extends Service implements AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = BackgroundService.class.getSimpleName();
@@ -140,6 +143,12 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
      */
     public static final String INTENT_EXTRA_STREAMING_STATUS = "org.gateshipone.malp.streaming.extra.status";
 
+    /**
+     * Timeout in ms when the service closes itself after MPD stopped playing
+     */
+    private static final int FOREGROUND_TIMEOUT = 60000;
+
+
     private boolean mIsDucked = false;
 
     private boolean mLostAudioFocus = false;
@@ -186,6 +195,10 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
      */
     private BackgroundServiceHandler mHandler;
 
+    private final Timer mStopForegroundTimer = new Timer();
+
+    private StopForegroundTask mStopForegroundTask;
+
     /**
      * No bindable service.
      *
@@ -222,7 +235,11 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
         // Register the receiver with the system
-        registerReceiver(mBroadcastReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            registerReceiver(mBroadcastReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(mBroadcastReceiver, filter);
+        }
 
         // Create handler for service binding
         mHandler = new BackgroundServiceHandler(this);
@@ -319,6 +336,8 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
 
         notifyDisconnected();
         mNotificationManager.hideNotification();
+
+        stopForegroundTimeout();
 
         stopSelf();
     }
@@ -661,6 +680,15 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         }
     }
 
+    private void stopForegroundTimeout() {
+        synchronized (mStopForegroundTimer) {
+            if (mStopForegroundTask != null) {
+                mStopForegroundTask.cancel();
+                mStopForegroundTask = null;
+            }
+        }
+    }
+
     /**
      * Private class to react to changes in MPDs connection state changes.
      */
@@ -682,15 +710,19 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
          */
         @Override
         public void onDisconnected() {
+            BackgroundService service = mService.get();
+            if (service == null) {
+                return;
+            }
             if (BuildConfig.DEBUG) {
                 Log.v(TAG, "Disconnected");
             }
 
-            mService.get().mConnecting = false;
-            mService.get().shutdownService();
+            service.mConnecting = false;
+            service.shutdownService();
 
-            if (mService.get().mPlaybackManager != null && mService.get().mPlaybackManager.isPlaying()) {
-                mService.get().mPlaybackManager.stop();
+            if (service.mPlaybackManager != null && service.mPlaybackManager.isPlaying()) {
+                service.mPlaybackManager.stop();
             }
         }
     }
@@ -707,24 +739,61 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
 
         @Override
         protected void onNewStatusReady(MPDCurrentStatus status) {
-            if (mService.get().mLastStatus.getPlaybackState() != status.getPlaybackState()) {
-                if (status.getPlaybackState() == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING && mService.get().mWasStreaming) {
-                    mService.get().startStreamingPlayback();
-                } else if (mService.get().mWasStreaming) {
-                    mService.get().stopStreamingPlayback();
+            BackgroundService service = mService.get();
+            if (service == null) {
+                return;
+            }
+
+            if (service.mLastStatus.getPlaybackState() != status.getPlaybackState()) {
+                service.stopForegroundTimeout();
+                if (status.getPlaybackState() == MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING && service.mWasStreaming) {
+                    service.startStreamingPlayback();
+                } else if (service.mWasStreaming) {
+                    service.stopStreamingPlayback();
+                }
+
+                if (status.getPlaybackState() != MPDCurrentStatus.MPD_PLAYBACK_STATE.MPD_PLAYING && MPDInterface.getGenericInstance().isConnected()) {
+                    synchronized (service.mStopForegroundTimer) {
+                        service.mStopForegroundTask = new StopForegroundTask(service);
+                        service.mStopForegroundTimer.schedule(service.mStopForegroundTask, FOREGROUND_TIMEOUT);
+                    }
                 }
             }
 
-            mService.get().mLastStatus = status;
-            mService.get().notifyNewStatus(status);
-            mService.get().mNotificationManager.setMPDStatus(status);
+            service.mLastStatus = status;
+            service.notifyNewStatus(status);
+            service.mNotificationManager.setMPDStatus(status);
         }
 
         @Override
         protected void onNewTrackReady(MPDTrack track) {
-            mService.get().notifyNewTrack(track);
-            mService.get().mLastTrack = track;
-            mService.get().mNotificationManager.setMPDFile(track);
+            BackgroundService service = mService.get();
+            if (service == null) {
+                return;
+            }
+
+            service.notifyNewTrack(track);
+            service.mLastTrack = track;
+            service.mNotificationManager.setMPDFile(track);
+        }
+    }
+
+    private static class StopForegroundTask extends TimerTask {
+
+        WeakReference<BackgroundService> mService;
+        public StopForegroundTask(BackgroundService service) {
+            mService = new WeakReference<>(service);
+        }
+
+        @Override
+        public void run() {
+            BackgroundService service = mService.get();
+            if (service != null) {
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "Forground timeout expired, closing");
+                }
+                service.onMPDDisconnect();
+            }
         }
     }
 }

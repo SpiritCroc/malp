@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.GenericRecyclerViewAdapter;
@@ -37,7 +38,7 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDGenericItem;
 
 import java.util.List;
 
-abstract public class GenericMPDRecyclerFragment<T extends MPDGenericItem, VH extends RecyclerView.ViewHolder> extends BaseMPDFragment<T> {
+abstract public class GenericMPDRecyclerFragment<T extends MPDGenericItem, VH extends RecyclerView.ViewHolder> extends GenericMPDFragment<T> {
 
     /**
      * The reference to the possible recyclerview
@@ -51,7 +52,9 @@ abstract public class GenericMPDRecyclerFragment<T extends MPDGenericItem, VH ex
 
     @Override
     void swapModel(List<T> model) {
-        // Transfer the data to the adapter so that the views can use it
+        if (mAdapter == null) {
+            return;
+        }
         mAdapter.swapModel(model);
     }
 
@@ -107,4 +110,6 @@ abstract public class GenericMPDRecyclerFragment<T extends MPDGenericItem, VH ex
             }
         });
     }
+
+
 }

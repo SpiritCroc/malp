@@ -26,7 +26,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,6 +55,7 @@ import org.gateshipone.malp.application.views.MalpRecyclerView;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -78,8 +79,8 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
 
     private PreferenceHelper.LIBRARY_TRACK_CLICK_ACTION mClickAction;
 
-    private boolean mUseArtistSort;
-
+    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
     public static AlbumTracksFragment newInstance(@NonNull final MPDAlbum album, @Nullable final Bitmap bitmap) {
         final Bundle args = new Bundle();
         args.putParcelable(BUNDLE_STRING_EXTRA_ALBUM, album);
@@ -133,7 +134,8 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
 
         mClickAction = PreferenceHelper.getClickAction(sharedPref, requireContext());
 
-        mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
+        mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, requireContext());
+        mArtistSortSelector = PreferenceHelper.getArtistSortSelector(sharedPref, requireContext());
 
         setHasOptionsMenu(true);
 
@@ -144,7 +146,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
 
     @Override
     GenericViewModel<MPDFileEntry> getViewModel() {
-        return new ViewModelProvider(this, new AlbumTracksViewModel.AlbumTracksModelFactory(requireActivity().getApplication(), mAlbum, mUseArtistSort)).get(AlbumTracksViewModel.class);
+        return new ViewModelProvider(this, new AlbumTracksViewModel.AlbumTracksModelFactory(requireActivity().getApplication(), mAlbum, mAlbumArtistSelector, mArtistSortSelector)).get(AlbumTracksViewModel.class);
     }
 
     /**
@@ -292,7 +294,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         menuInflater.inflate(R.menu.fragment_menu_album_tracks, menu);
 
         // get tint color
-        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
+        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.app_color_on_surface);
 
         Drawable drawable = menu.findItem(R.id.action_add_album).getIcon();
         drawable = DrawableCompat.wrap(drawable);
@@ -330,6 +332,16 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         } else if (itemId == R.id.action_show_all_tracks) {
             mAlbum.setMBID("");
             mAlbum.setArtistName("");
+
+            // There might be an image now that was previously not mapped
+            final View rootView = getView();
+            if (rootView != null) {
+                getView().post(() -> {
+                    final int size = rootView.getWidth();
+                    mBitmapLoader.getAlbumImage(mAlbum, false, size, size);
+                });
+            }
+            refreshContent();
             return true;
         }
 
@@ -341,7 +353,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         // Do not save the bitmap for later use (too big for binder)
         Bundle args = getArguments();
         if (args != null) {
-            getArguments().remove(BUNDLE_STRING_EXTRA_BITMAP);
+            args.remove(BUNDLE_STRING_EXTRA_BITMAP);
         }
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -373,11 +385,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
     }
 
     private void enqueueAlbum() {
-        if (mUseArtistSort) {
-            MPDQueryHandler.addArtistSortAlbum(mAlbum.getName(), mAlbum.getArtistSortName(), mAlbum.getMBID());
-        } else {
-            MPDQueryHandler.addArtistAlbum(mAlbum.getName(), mAlbum.getArtistName(), mAlbum.getMBID());
-        }
+        MPDQueryHandler.addArtistAlbum(mAlbum, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     @Override
@@ -408,11 +416,7 @@ public class AlbumTracksFragment extends GenericMPDRecyclerFragment<MPDFileEntry
         public void onClick(View v) {
             MPDCommandHandler.setRandom(false);
             MPDCommandHandler.setRepeat(false);
-            if (mUseArtistSort) {
-                MPDQueryHandler.playArtistSortAlbum(mAlbum.getName(), mAlbum.getArtistSortName(), mAlbum.getMBID());
-            } else {
-                MPDQueryHandler.playArtistAlbum(mAlbum.getName(), mAlbum.getArtistName(), mAlbum.getMBID());
-            }
+            MPDQueryHandler.playArtistAlbum(mAlbum, mAlbumArtistSelector, mArtistSortSelector);
         }
     }
 

@@ -25,6 +25,7 @@ package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MPDCapabilities {
@@ -70,6 +71,14 @@ public class MPDCapabilities {
     private boolean mHasAlbumArt;
     private boolean mHasReadPicture;
 
+    private boolean mHasPartitions;
+
+    private boolean mHasPlaylistLength;
+
+    private boolean mHasTagFilter;
+
+    private List<String> mTags;
+
     public MPDCapabilities(String version, List<String> commands, List<String> tags) {
         String[] versions = version.split("\\.");
         if (versions.length == 3) {
@@ -114,20 +123,26 @@ public class MPDCapabilities {
             mHasListFiltering = true;
         }
 
+        if (mMinorVersion >= 20 || mMajorVersion > 0) {
+            mHasTagFilter = true;
+        }
+
         if (mMinorVersion >= 21 || mMajorVersion > 0) {
             mHasAlbumArt = true;
         }
-
 
         if (null != commands) {
             mHasIdle = commands.contains(MPDCommands.MPD_COMMAND_START_IDLE);
             mHasSearchAdd = commands.contains(MPDCommands.MPD_COMMAND_ADD_SEARCH_FILES_CMD_NAME);
             mHasPlaylistFind = commands.contains(MPDCommands.MPD_COMMAND_PLAYLIST_FIND);
             mHasReadPicture = commands.contains(MPDCommands.MPD_COMMAND_READ_PICTURE);
+            mHasPartitions = commands.contains(MPDCommands.MPD_COMMAND_GET_PARTITIONS);
+            mHasPlaylistLength = commands.contains(MPDCommands.MPD_COMMAND_GET_PLAYLIST_LENGTH);
         }
 
 
         if (null != tags) {
+            mTags = tags;
             for (String tag : tags) {
                 String tagLC = tag.toLowerCase();
                 if (tagLC.contains(MPD_TAG_TYPE_MUSICBRAINZ)) {
@@ -222,6 +237,25 @@ public class MPDCapabilities {
         return mMultipleListGroupFixed;
     }
 
+    public boolean hasPartitions() {
+        return mHasPartitions;
+    }
+
+    public boolean hasPlaylistLength() {
+        return mHasPlaylistLength;
+    }
+
+    public boolean hasTagFilter() {
+        return mHasTagFilter;
+    }
+
+    public List<String> getTags() {
+        if (mTags == null) {
+            mTags = new ArrayList<>();
+        }
+        return mTags;
+    }
+
     public String getServerFeatures() {
         return "MPD protocol version: " + mMajorVersion + '.' + mMinorVersion + '.' + mPatchVersion + '\n'
                 + "TAGS:" + '\n'
@@ -233,6 +267,9 @@ public class MPDCapabilities {
                 + "Fast search add: " + mHasSearchAdd + '\n'
                 + "List grouping: " + mHasListGroup + '\n'
                 + "List filtering: " + mHasListFiltering + '\n'
+                + "Partitioning: " + mHasPartitions + '\n'
+                + "Tag filtering: " + mHasTagFilter + '\n'
+                + "Playlist length: " + mHasPlaylistLength + '\n'
                 + "Fast ranged currentplaylist delete: " + mHasCurrentPlaylistRemoveRange + '\n'
                 + "MPD based album artwork: " + mHasAlbumArt + '|' + mHasReadPicture + '\n'
                 + (mMopidyDetected ? "Mopidy detected, consider using the real MPD server (www.musicpd.org)!\n" : "")

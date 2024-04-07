@@ -31,6 +31,8 @@ import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbum
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDException;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 
 import java.util.List;
@@ -133,10 +135,14 @@ public class MPDArtworkHandler extends MPDGenericHandler {
                 String artistName = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ARTIST_NAME);
                 String albumMBID = mpdAction.getStringExtra(MPDHandlerAction.NET_HANDLER_EXTRA_STRING.EXTRA_ALBUM_MBID);
 
+                MPDAlbum album = new MPDAlbum(albumName);
+                album.setArtistName(artistName);
+                album.setMBID(albumMBID);
+
                 // Get album tracks first
                 List<MPDFileEntry> tracks = null;
                 try {
-                    tracks = MPDInterface.getArtworkInstance().getArtistAlbumTracks(albumName, artistName, albumMBID);
+                    tracks = MPDInterface.getArtworkInstance().getAlbumTracks(album, MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.MPD_ALBUM_ARTIST_SELECTOR_ARTIST, MPDArtist.MPD_ARTIST_SORT_SELECTOR.MPD_ARTIST_SORT_SELECTOR_ARTIST);
                 } catch (MPDException e) {
                     Log.e(TAG, "Error fetching tracks for album: " + e.getError());
                 }

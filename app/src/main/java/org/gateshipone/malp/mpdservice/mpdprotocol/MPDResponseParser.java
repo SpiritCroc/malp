@@ -25,13 +25,17 @@ package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 import android.util.Log;
 
+import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDDirectory;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFilterObject;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaytime;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
 
@@ -354,14 +358,12 @@ class MPDResponseParser {
                     if (null != tempFileEntry) {
                         trackList.add(tempFileEntry);
                     }
-                    Log.v(TAG, "New Playlist item");
                     tempFileEntry = new MPDPlaylist(value);
                     break;
                 case RESPONSE_DIRECTORY:
                     if (null != tempFileEntry) {
                         trackList.add(tempFileEntry);
                     }
-                    Log.v(TAG, "New Dir item");
                     tempFileEntry = new MPDDirectory(value);
                     break;
                 default:
@@ -431,6 +433,9 @@ class MPDResponseParser {
                         break;
                     case RESPONSE_COMMENT:
                         ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.COMMENT, value);
+                        break;
+                    case RESPONSE_FORMAT:
+                        ((MPDTrack) tempFileEntry).setStringTag(MPDTrack.StringTagTypes.FILE_FORMAT, value);
                         break;
                     case RESPONSE_TIME:
                         try {
@@ -627,6 +632,9 @@ class MPDResponseParser {
                     case RESPONSE_UPDATING_DB:
                         status.setUpdateDBJob(Integer.parseInt(value));
                         break;
+                    case RESPONSE_PARTITION:
+                        status.setPartition(value);
+                        break;
                     default:
                         break;
                 }
@@ -707,7 +715,7 @@ class MPDResponseParser {
             }
         } catch (MPDSocketInterface.NoKeyReadException e) {
             e.printStackTrace();
-            throw new MPDException("Read value before key");
+            throw new MPDException.MPDConnectionException("Read value before key");
         }
         return stats;
     }
@@ -784,6 +792,7 @@ class MPDResponseParser {
         ArrayList<MPDOutput> outputList = new ArrayList<>();
         // Parse outputs
         String outputName = null;
+        String outputPlugin = null;
         boolean outputActive = false;
         int outputId = -1;
 
@@ -801,13 +810,18 @@ class MPDResponseParser {
             switch (key) {
                 case RESPONSE_OUTPUT_ID:
                     if (null != outputName) {
-                        MPDOutput tempOutput = new MPDOutput(outputName, outputActive, outputId);
-                        outputList.add(tempOutput);
+                        if (outputPlugin == null || !outputPlugin.equals("dummy")) {
+                            MPDOutput tempOutput = new MPDOutput(outputName, outputActive, outputId, outputPlugin);
+                            outputList.add(tempOutput);
+                        }
                     }
                     outputId = Integer.parseInt(value);
                     break;
                 case RESPONSE_OUTPUT_NAME:
                     outputName = value;
+                    break;
+                case RESPONSE_OUTPUT_PLUGIN:
+                    outputPlugin = value;
                     break;
                 case RESPONSE_OUTPUT_ENABLED:
                     outputActive = value.equals("1");
@@ -820,10 +834,127 @@ class MPDResponseParser {
 
         // Add remaining output to list
         if (null != outputName) {
-            MPDOutput tempOutput = new MPDOutput(outputName, outputActive, outputId);
-            outputList.add(tempOutput);
+            if (outputPlugin == null || !outputPlugin.equals("dummy")) {
+                MPDOutput tempOutput = new MPDOutput(outputName, outputActive, outputId, outputPlugin);
+                outputList.add(tempOutput);
+            }
         }
 
         return outputList;
+    }
+
+    /**
+     * Private parsing method for MPDs output lists.
+     *
+     * @return A list of MPDOutput objects with name,active,id values if successful. Otherwise empty list.
+     * @throws MPDException if an error from MPD was received during reading
+     */
+    static List<MPDPartition> parseMPDPartitions(final MPDConnection connection) throws MPDException {
+        ArrayList<MPDPartition> partitionList = new ArrayList<>();
+        // Parse partitions
+        String partitionName = null;
+        boolean partitionActive = false;
+
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+
+        key = connection.readKey();
+
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
+            }
+            if (key.equals(MPDResponses.MPD_RESPONSE_KEY.RESPONSE_PARTITION)) {
+                partitionName = value;
+                MPDPartition partition = new MPDPartition(partitionName, partitionActive);
+                partitionList.add(partition);
+            }
+
+            key = connection.readKey();
+        }
+
+        return partitionList;
+    }
+
+    static MPDIdleChangeHandler.MPDChangedSubsystemsResponse parseMPDIdleResponse(final MPDConnection connection) throws MPDException {
+        MPDIdleChangeHandler.MPDChangedSubsystemsResponse response = new MPDIdleChangeHandler.MPDChangedSubsystemsResponse();
+
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+
+        key = connection.readKey();
+        String value = "";
+        MPDIdleChangeHandler.CHANGED_SUBSYSTEM responseValue;
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
+            }
+            responseValue = MPDResponses.IDLE_RESPONSE_VALUES.get(value);
+            if (key.equals(MPDResponses.MPD_RESPONSE_KEY.RESPONSE_CHANGED) && responseValue != null) {
+                    response.setSubsystemChanged(responseValue, true);
+            }
+
+            key = connection.readKey();
+        }
+
+        return response;
+    }
+
+    static MPDPlaytime parseMPDPlaylistLength(final MPDConnection connection) throws MPDException {
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+        MPDPlaytime playtime = new MPDPlaytime();
+
+        key = connection.readKey();
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
+            }
+            if (key.equals(MPDResponses.MPD_RESPONSE_KEY.RESPONSE_SONGS)) {
+                try {
+                    playtime.setSongCount(Integer.parseInt(value));
+                } catch (NumberFormatException ignored) {
+                }
+            } else if (key.equals(MPDResponses.MPD_RESPONSE_KEY.RESPONSE_PLAYTIME)) {
+                try {
+                    playtime.setPlaytime(Integer.parseInt(value));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+
+            key = connection.readKey();
+        }
+        return playtime;
+    }
+
+    static List<MPDFilterObject> parseTagEntryList(final MPDConnection connection) throws MPDException {
+        ArrayList<MPDFilterObject> entryList = new ArrayList<>();
+        // Parse entry
+        String entryName = null;
+
+        MPDResponses.MPD_RESPONSE_KEY key = null;
+
+        key = connection.readKey();
+
+        String value = "";
+        while (key != null && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_OK && key != MPDResponses.MPD_RESPONSE_KEY.RESPONSE_ACK) {
+            try {
+                value = connection.readValue();
+            } catch (MPDSocketInterface.NoKeyReadException e) {
+                e.printStackTrace();
+            }
+            entryList.add(new MPDFilterObject(value));
+
+
+            key = connection.readKey();
+        }
+
+        Collections.sort(entryList);
+        return entryList;
     }
 }

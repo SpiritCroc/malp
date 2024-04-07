@@ -32,11 +32,6 @@ import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDTrack;
  * Class to handle status updates handled by the MPDStateMonitoringHandler
  */
 public abstract class MPDStatusChangeHandler extends Handler {
-    public enum MPD_STATUS_RESPONSE_ACTION {
-        MPD_STATUS_RESPONSE_ACTION_NEW_STATUS,
-        MPD_STATUS_RESPONSE_ACTION_NEW_TRACK,
-    }
-
     /**
      * Handles the change of the status and track of MPD
      * @param msg Message object
@@ -49,8 +44,6 @@ public abstract class MPDStatusChangeHandler extends Handler {
         } else if ( msg.obj instanceof MPDTrack) {
             onNewTrackReady((MPDTrack) msg.obj);
         }
-
-
     }
 
     public void newMPDStatusReady(MPDCurrentStatus status ) {

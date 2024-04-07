@@ -25,37 +25,36 @@ package org.gateshipone.malp.mpdservice.handlers.responsehandler;
 
 import android.os.Message;
 
-import java.util.List;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
 
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
+public abstract class MPDResonseGenericObject extends MPDResponseHandler {
 
-public abstract class MPDResponseOutputList extends MPDResponseHandler {
-
-    public MPDResponseOutputList() {
+    public MPDResonseGenericObject() {
 
     }
 
     /**
-     * Handle function for the track list. This only calls the abstract method
+     * Handle function for the server statistics. This only calls the abstract method
      * which needs to get implemented by the user of this class.
-     * @param msg Message object containing a list of MPDTrack items.
+     * @param msg Message object containing a MPDStatistics object
      */
     @Override
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
 
+
         /* Call album response handler */
-        List<MPDOutput> outputList = (List<MPDOutput>)msg.obj;
-        handleOutputs(outputList);
+        Object obj = (Object)msg.obj;
+        handleObject(obj);
     }
 
     /**
-     * Sends the list of outputs to the receiving handler looper
-     * @param outputList
+     * Send object to the receiving handler
+     * @param object Object to send
      */
-    public void sendOutputs(List<MPDOutput> outputList) {
+    public void sendObject(java.lang.Object object) {
         Message responseMessage = this.obtainMessage();
-        responseMessage.obj = outputList;
+        responseMessage.obj = object;
         sendMessage(responseMessage);
     }
 
@@ -63,7 +62,7 @@ public abstract class MPDResponseOutputList extends MPDResponseHandler {
      * Abstract method to be implemented by the user of the MPD implementation.
      * This should be a callback for the UI thread and run in the UI thread.
      * This can be used for updating lists of adapters and views.
-     * @param outputList List of MPDOutput objects containing a list of available MPD outputs
+     * @param object Current MPD object
      */
-    abstract public void handleOutputs(List<MPDOutput> outputList);
+    abstract public void handleObject(Object object);
 }

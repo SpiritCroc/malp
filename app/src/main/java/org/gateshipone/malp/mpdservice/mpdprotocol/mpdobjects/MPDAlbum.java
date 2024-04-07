@@ -111,7 +111,7 @@ public class MPDAlbum implements MPDGenericItem, Comparable<MPDAlbum>, Parcelabl
 
     @NonNull
     public String getArtistSortName() {
-        return mArtistSortName;
+        return !mArtistSortName.isEmpty() ? mArtistSortName : mArtistName;
     }
 
     public void setArtistSortName(@NonNull String artistSortName) {

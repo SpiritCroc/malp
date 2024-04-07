@@ -27,7 +27,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -75,13 +75,14 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
 
     private AlbumCallback mAlbumSelectCallback;
 
-    private boolean mUseArtistSort;
-
     private Bitmap mBitmap;
 
     private CoverBitmapLoader mBitmapLoader;
 
     private MPDAlbum.MPD_ALBUM_SORT_ORDER mSortOrder;
+    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+
+    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
     /**
      * Save the last position here. Gets reused when the user returns to this view after selecting sme
@@ -130,8 +131,8 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
 
         registerForContextMenu(mRecyclerView);
         mSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, requireContext());
-
-        mUseArtistSort = sharedPref.getBoolean(getString(R.string.pref_use_artist_sort_key), getResources().getBoolean(R.bool.pref_use_artist_sort_default));
+        mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, requireContext());
+        mArtistSortSelector = PreferenceHelper.getArtistSortSelector(sharedPref, requireContext());
 
         /* Check if an artistname was given in the extras */
         Bundle args = requireArguments();
@@ -155,7 +156,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
 
     @Override
     GenericViewModel<MPDAlbum> getViewModel() {
-        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(requireActivity().getApplication(), mArtist.getArtistName(), null)).get(AlbumsViewModel.class);
+        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(requireActivity().getApplication(), mArtist.getArtistName(), null, null)).get(AlbumsViewModel.class);
     }
 
     @Override
@@ -262,7 +263,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
             menuInflater.inflate(R.menu.fragment_menu_albums, menu);
 
             // get tint color
-            int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
+            int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.app_color_on_surface);
 
             Drawable drawable = menu.findItem(R.id.action_add_artist).getIcon();
             drawable = DrawableCompat.wrap(drawable);
@@ -349,11 +350,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
         if (null != mFABCallback) {
             if (null != mArtist && !mArtist.getArtistName().isEmpty()) {
                 mFABCallback.setupFAB(true, view -> {
-                    if (mUseArtistSort) {
-                        MPDQueryHandler.playArtistSort(mArtist.getArtistName(), mSortOrder);
-                    } else {
-                        MPDQueryHandler.playArtist(mArtist.getArtistName(), mSortOrder);
-                    }
+                    MPDQueryHandler.playArtist(mArtist.getArtistName(), mSortOrder, mAlbumArtistSelector, mArtistSortSelector);
                 });
                 if (mBitmap == null) {
                     final View rootView = requireView();
@@ -400,14 +397,7 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
     private void enqueueAlbum(int index) {
         MPDAlbum album = (MPDAlbum) mAdapter.getItem(index);
 
-        // If artist albums are shown set artist for the album (necessary for old MPD version, which don't
-        // support group commands and therefore do not provide artist tags for albums)
-        if (mArtist != null && !mArtist.getArtistName().isEmpty() && album.getArtistName().isEmpty()) {
-            album.setArtistName(mArtist.getArtistName());
-            album.setArtistSortName(mArtist.getArtistName());
-        }
-
-        MPDQueryHandler.addArtistAlbum(album.getName(), album.getArtistName(), album.getMBID());
+        MPDQueryHandler.addArtistAlbum(album, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     /**
@@ -418,20 +408,13 @@ public class ArtistAlbumsFragment extends GenericMPDRecyclerFragment<MPDAlbum, G
     private void playAlbum(int index) {
         MPDAlbum album = (MPDAlbum) mAdapter.getItem(index);
 
-        // If artist albums are shown set artist for the album (necessary for old MPD version, which don't
-        // support group commands and therefore do not provide artist tags for albums)
-        if (mArtist != null && !mArtist.getArtistName().isEmpty() && album.getArtistName().isEmpty()) {
-            album.setArtistName(mArtist.getArtistName());
-            album.setArtistSortName(mArtist.getArtistName());
-        }
-
-        MPDQueryHandler.playArtistAlbum(album.getName(), album.getArtistName(), album.getMBID());
+        MPDQueryHandler.playArtistAlbum(album, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     /**
      * Enqueues the artist that is currently shown (if the fragment is not shown for all albums)
      */
     private void enqueueArtist() {
-        MPDQueryHandler.addArtist(mArtist.getArtistName(), mSortOrder);
+        MPDQueryHandler.addArtist(mArtist.getArtistName(), mSortOrder, mAlbumArtistSelector, mArtistSortSelector);
     }
 }

@@ -38,8 +38,12 @@ import org.gateshipone.malp.application.callbacks.OnSaveDialogListener;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.PlaylistsViewModel;
+import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
+import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDStateMonitoringHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
+
+import java.lang.ref.WeakReference;
 
 public class ChoosePlaylistDialog extends GenericMPDFragment<MPDFileEntry> {
 
@@ -51,6 +55,8 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<MPDFileEntry> {
     private OnSaveDialogListener mSaveCallback;
 
     private boolean mShowNewEntry;
+
+    private StateUpdateHandler mStateHandler;
 
     public static ChoosePlaylistDialog newInstance(final boolean showNewEntry) {
         final Bundle args = new Bundle();
@@ -101,17 +107,52 @@ public class ChoosePlaylistDialog extends GenericMPDFragment<MPDFileEntry> {
         });
 
         getViewModel().getData().observe(this, this::onDataReady);
+        mStateHandler = new StateUpdateHandler(this);
+        MPDStateMonitoringHandler.getHandler().registerIdleListener(mStateHandler);
 
         // set divider
         AlertDialog dlg = builder.create();
-        dlg.getListView().setDivider(new ColorDrawable(ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_divider)));
+        dlg.getListView().setDivider(new ColorDrawable(ThemeUtils.getThemeColor(requireContext(), R.attr.colorSurfaceVariant)));
         dlg.getListView().setDividerHeight(getResources().getDimensionPixelSize(R.dimen.list_divider_size));
 
         return dlg;
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        MPDStateMonitoringHandler.getHandler().unRegisterIdleListener(mStateHandler);
+        mStateHandler = null;
+    }
+
+    @Override
     GenericViewModel<MPDFileEntry> getViewModel() {
         return new ViewModelProvider(this, new PlaylistsViewModel.PlaylistsViewModelFactory(requireActivity().getApplication(), mShowNewEntry)).get(PlaylistsViewModel.class);
+    }
+
+    private static class StateUpdateHandler extends MPDIdleChangeHandler {
+        private final WeakReference<ChoosePlaylistDialog> mFragment;
+
+        public StateUpdateHandler(ChoosePlaylistDialog fragment) {
+            mFragment = new WeakReference<>(fragment);
+        }
+
+        @Override
+        protected void onIdle() {
+
+        }
+
+        @Override
+        protected void onNoIdle(MPDChangedSubsystemsResponse response) {
+            if (response.getSubsystemChanged(CHANGED_SUBSYSTEM.STORED_PLAYLIST)) {
+                ChoosePlaylistDialog fragment = mFragment.get();
+                if (fragment == null) {
+                    return;
+                }
+
+                fragment.refreshContent();
+            }
+        }
     }
 }

@@ -24,12 +24,16 @@ package org.gateshipone.malp.application.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
+import org.gateshipone.malp.application.utils.ThemeUtils;
 
 public class InformationSettingsFragment extends PreferenceFragmentCompat {
     /**
@@ -60,6 +64,16 @@ public class InformationSettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
+    @NonNull
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        // we have to set the background color at this point otherwise we loose the ripple effect
+        view.setBackgroundColor(ThemeUtils.getThemeColor(requireContext(), R.attr.app_color_content));
+
+        return view;
+    }
 
     /**
      * Called when the fragment resumes.

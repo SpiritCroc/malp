@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Copyright (C) 2023 Team Gateship-One
+  ~  (Hendrik Borghorst & Frederik Luetkes)
+  ~
+  ~  The AUTHORS.md file contains a detailed contributors list:
+  ~  <https://gitlab.com/gateship-one/malp/blob/master/AUTHORS.md>
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/now_playing_buttonLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface"
+    android:gravity="center_vertical"
+    android:layout_weight="1"
+    android:paddingBottom="@dimen/material_content_spacing">
+
+    <ImageButton
+        android:id="@+id/now_playing_bottomRepeatButton"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:background="?android:selectableItemBackground"
+        android:scaleType="center"
+        android:src="@drawable/ic_repeat_24dp"
+        app:tint="?attr/app_color_on_surface"
+        />
+
+    <ImageButton
+        android:id="@+id/now_playing_bottomPreviousButton"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:background="?android:selectableItemBackground"
+        android:scaleType="fitCenter"
+        app:tint="?attr/app_color_on_surface"
+        android:src="@drawable/ic_skip_previous_48dp" />
+
+    <ImageButton
+        android:id="@+id/now_playing_bottomPlayPauseButton"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:background="?android:selectableItemBackground"
+        android:scaleType="fitCenter"
+        app:tint="?attr/app_color_on_surface"
+        android:src="@drawable/ic_play_circle_fill_48dp" />
+
+    <ImageButton
+        android:id="@+id/now_playing_bottomStopButton"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:background="?android:selectableItemBackground"
+        android:scaleType="fitCenter"
+        app:tint="?attr/app_color_on_surface"
+        android:src="@drawable/ic_stop_black_48dp" />
+
+    <ImageButton
+        android:id="@+id/now_playing_bottomNextButton"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:background="?android:selectableItemBackground"
+        android:scaleType="fitCenter"
+        app:tint="?attr/app_color_on_surface"
+        android:src="@drawable/ic_skip_next_48dp" />
+
+    <ImageButton
+        android:id="@+id/now_playing_bottomRandomButton"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:background="?android:selectableItemBackground"
+        android:scaleType="center"
+        android:src="@drawable/ic_shuffle_24dp"
+        app:tint="?attr/app_color_on_surface"/>
+</LinearLayout>

@@ -47,9 +47,13 @@ import org.gateshipone.malp.application.callbacks.PlaylistCallback;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.PlaylistsViewModel;
+import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
+import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDStateMonitoringHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDFileEntry;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPlaylist;
+
+import java.lang.ref.WeakReference;
 
 public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> implements AbsListView.OnItemClickListener {
     public static final String TAG = SavedPlaylistsFragment.class.getSimpleName();
@@ -58,6 +62,8 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
      * Callback for activity this fragment gets attached to
      */
     private PlaylistCallback mCallback;
+
+    private StateUpdateHandler mStateHandler;
 
     public static SavedPlaylistsFragment newInstance() {
         return new SavedPlaylistsFragment();
@@ -93,6 +99,17 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
         mSwipeRefreshLayout.setOnRefreshListener(this::refreshContent);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
+
+        mStateHandler = new StateUpdateHandler(this);
+        MPDStateMonitoringHandler.getHandler().registerIdleListener(mStateHandler);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        MPDStateMonitoringHandler.getHandler().unRegisterIdleListener(mStateHandler);
+        mStateHandler = null;
     }
 
     @Override
@@ -190,6 +207,31 @@ public class SavedPlaylistsFragment extends GenericMPDFragment<MPDFileEntry> imp
         if (null != mCallback) {
             MPDPlaylist playlist = (MPDPlaylist) mAdapter.getItem(position);
             mCallback.openPlaylist(playlist.getPath());
+        }
+    }
+
+    private static class StateUpdateHandler extends MPDIdleChangeHandler {
+        private final WeakReference<SavedPlaylistsFragment> mFragment;
+
+        public StateUpdateHandler(SavedPlaylistsFragment fragment) {
+            mFragment = new WeakReference<>(fragment);
+        }
+
+        @Override
+        protected void onIdle() {
+
+        }
+
+        @Override
+        protected void onNoIdle(MPDChangedSubsystemsResponse response) {
+            if (response.getSubsystemChanged(CHANGED_SUBSYSTEM.STORED_PLAYLIST)) {
+                SavedPlaylistsFragment fragment = mFragment.get();
+                if (fragment == null) {
+                    return;
+                }
+
+                fragment.refreshContent();
+            }
         }
     }
 }

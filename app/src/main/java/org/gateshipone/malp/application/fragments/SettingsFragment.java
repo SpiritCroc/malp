@@ -26,7 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +69,29 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             dialog.show(requireActivity().getSupportFragmentManager(), "Volume steps");
             return true;
         });
+
+
+        // Read theme preference
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        boolean legacyTheme = sharedPref.getBoolean(getString(R.string.pref_legacy_theme_key), getResources().getBoolean(R.bool.pref_theme_legacy_default));
+        String themePref = sharedPref.getString(getString(R.string.pref_legacy_theme_selector_key), getString(R.string.pref_oleddark_key));
+        if (legacyTheme && themePref.equals(getString(R.string.pref_oleddark_key))) {
+            findPreference(getString(R.string.pref_dark_theme_key)).setVisible(false);
+        }
+
+        themePref = sharedPref.getString(getString(R.string.pref_materialyou_theme_selector_key), getString(R.string.pref_oleddark_key) );
+        if (!legacyTheme && themePref.equals(getString(R.string.pref_materialyou_auto_key))) {
+            findPreference(getString(R.string.pref_dark_theme_key)).setVisible(false);
+        }
+
+        if (legacyTheme) {
+            findPreference(getString(R.string.pref_materialyou_theme_selector_key)).setVisible(false);
+            findPreference(getString(R.string.pref_legacy_theme_selector_key)).setVisible(true);
+        } else {
+            findPreference(getString(R.string.pref_materialyou_theme_selector_key)).setVisible(true);
+            findPreference(getString(R.string.pref_legacy_theme_selector_key)).setVisible(false);
+        }
+
     }
 
     @NonNull
@@ -77,7 +100,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         // we have to set the background color at this point otherwise we loose the ripple effect
-        view.setBackgroundColor(ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_background));
+        view.setBackgroundColor(ThemeUtils.getThemeColor(requireContext(), R.attr.app_color_content));
 
         return view;
     }
@@ -129,12 +152,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public void onCreatePreferences(Bundle bundle, String s) {
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.main_settings);
-        PreferenceManager.setDefaultValues(getActivity(), R.xml.main_settings, false);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_theme_key)) || key.equals(getString(R.string.pref_dark_theme_key))) {
+        if (key.equals(getString(R.string.pref_legacy_theme_selector_key)) || key.equals(getString(R.string.pref_dark_theme_key)) ||
+                key.equals(getString(R.string.pref_legacy_theme_key)) || key.equals(getString(R.string.pref_materialyou_theme_selector_key))) {
             Intent intent = requireActivity().getIntent();
             intent.putExtra(MainActivity.MAINACTIVITY_INTENT_EXTRA_REQUESTEDVIEW, MainActivity.REQUESTEDVIEW.SETTINGS.ordinal());
             requireActivity().finish();

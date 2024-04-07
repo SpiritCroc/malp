@@ -1,0 +1,5 @@
+* Partitions support
+* Tag browser support (Filter artist, albums, tracks by and MPD supported tag;
+  e.g. performer, genre, label)
+* Idle improvements: M.A.L.P. will synchronize MPD's state much better
+* Memory usage reductions

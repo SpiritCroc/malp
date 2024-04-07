@@ -29,8 +29,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
@@ -48,6 +49,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -57,6 +59,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -86,6 +90,7 @@ import org.gateshipone.malp.application.fragments.serverfragments.SavedPlaylists
 import org.gateshipone.malp.application.fragments.serverfragments.SearchFragment;
 import org.gateshipone.malp.application.fragments.serverfragments.ServerPropertiesFragment;
 import org.gateshipone.malp.application.fragments.serverfragments.SongDetailsDialog;
+import org.gateshipone.malp.application.fragments.serverfragments.TagSelectFragment;
 import org.gateshipone.malp.application.utils.PermissionHelper;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.views.CurrentPlaylistView;
@@ -94,6 +99,7 @@ import org.gateshipone.malp.mpdservice.ConnectionManager;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDStateMonitoringHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.MPDException;
+import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
@@ -107,7 +113,8 @@ public class MainActivity extends GenericActivity
         implements NavigationView.OnNavigationItemSelectedListener, AlbumCallback, ArtistsFragment.ArtistSelectedCallback,
         ProfileManageCallbacks, PlaylistCallback,
         NowPlayingView.NowPlayingDragStatusReceiver, FilesFragment.FilesCallback,
-        FABFragmentCallback, SettingsFragment.OnArtworkSettingsRequestedCallback {
+        FABFragmentCallback, SettingsFragment.OnArtworkSettingsRequestedCallback,
+        TagSelectFragment.TagSelectCallback {
 
     private static final String TAG = "MainActivity";
 
@@ -130,13 +137,16 @@ public class MainActivity extends GenericActivity
     private VIEW_SWITCHER_STATUS mNowPlayingViewSwitcherStatus;
     private VIEW_SWITCHER_STATUS mSavedNowPlayingViewSwitcherStatus;
 
-    private boolean mHeaderImageActive;
-
     private boolean mUseArtistSort;
 
     private FloatingActionButton mFAB;
 
     private boolean mShowNPV = false;
+
+    private boolean mShowImage = false;
+
+    private ImageView mCollapsingImage;
+    private RelativeLayout mCollapsingImageLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,6 +203,7 @@ public class MainActivity extends GenericActivity
             mDrawerToggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(mDrawerToggle);
             mDrawerToggle.syncState();
+            mDrawerToggle.getDrawerArrowDrawable().setColor(MaterialColors.getColor(this, R.attr.app_color_on_surface, 0));
         }
 
         int navId = switchToSettings ? R.id.nav_app_settings : getDefaultViewID();
@@ -262,6 +273,8 @@ public class MainActivity extends GenericActivity
             transaction.commit();
         }
 
+        mCollapsingImage = findViewById(R.id.collapsing_image);
+        mCollapsingImageLayout = findViewById(R.id.appbar_image_layout);
     }
 
     @Override
@@ -275,8 +288,6 @@ public class MainActivity extends GenericActivity
         } else if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
             NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
             if (nowPlayingView != null) {
-                View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-                coordinatorLayout.setVisibility(View.VISIBLE);
                 nowPlayingView.minimize();
             }
         } else {
@@ -419,8 +430,6 @@ public class MainActivity extends GenericActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         final int id = item.getItemId();
-        final View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-        coordinatorLayout.setVisibility(View.VISIBLE);
 
         final NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
         if (nowPlayingView != null) {
@@ -447,6 +456,9 @@ public class MainActivity extends GenericActivity
         } else if (id == R.id.nav_search) {
             fragment = SearchFragment.newInstance();
             fragmentTag = SearchFragment.TAG;
+        } else if (id == R.id.nav_tag_browser) {
+            fragment = TagSelectFragment.newInstance();
+            fragmentTag = TagSelectFragment.TAG;
         } else if (id == R.id.nav_profiles) {
             fragment = ProfilesFragment.newInstance();
             fragmentTag = ProfilesFragment.TAG;
@@ -475,6 +487,9 @@ public class MainActivity extends GenericActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        mCollapsingImage = findViewById(R.id.collapsing_image);
+        mCollapsingImageLayout = findViewById(R.id.appbar_image_layout);
 
         final NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
         if (nowPlayingView != null) {
@@ -517,6 +532,11 @@ public class MainActivity extends GenericActivity
             }
             nowPlayingView.onResume();
         }
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        boolean hasTagFilter = MPDInterface.getGenericInstance().getServerCapabilities().hasTagFilter();
+        navigationView.getMenu().findItem(R.id.nav_tag_browser).setVisible(hasTagFilter);
+
     }
 
     @Override
@@ -534,6 +554,10 @@ public class MainActivity extends GenericActivity
     @Override
     protected void onConnected() {
         setNavbarHeader(ConnectionManager.getInstance(getApplicationContext()).getProfileName());
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        boolean hasTagFilter = MPDInterface.getGenericInstance().getServerCapabilities().hasTagFilter();
+        navigationView.getMenu().findItem(R.id.nav_tag_browser).setVisible(hasTagFilter);
     }
 
     @Override
@@ -549,9 +573,6 @@ public class MainActivity extends GenericActivity
             String errorText = getString(R.string.snackbar_mpd_server_error_format, e.getErrorCode(), e.getCommandOffset(), e.getServerMessage());
             Snackbar sb = Snackbar.make(layout, errorText, Snackbar.LENGTH_SHORT);
 
-            // style the snackbar text
-            TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-            sbText.setTextColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent));
             sb.show();
         }
     }
@@ -564,9 +585,6 @@ public class MainActivity extends GenericActivity
 
             Snackbar sb = Snackbar.make(layout, errorText, Snackbar.LENGTH_SHORT);
 
-            // style the snackbar text
-            TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-            sbText.setTextColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent));
             sb.show();
         }
     }
@@ -587,8 +605,6 @@ public class MainActivity extends GenericActivity
         if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
             NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
             if (nowPlayingView != null) {
-                View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-                coordinatorLayout.setVisibility(View.VISIBLE);
                 nowPlayingView.minimize();
             }
         }
@@ -601,8 +617,7 @@ public class MainActivity extends GenericActivity
         // fragment,
         // and add the transaction to the back stack so the user can navigate
         // back
-        //newFragment.setEnterTransition(new Slide(Gravity.BOTTOM));
-        //newFragment.setExitTransition(new Slide(Gravity.TOP));
+        //transaction.setCustomAnimations(R.anim.fragment_slide_in_bottom, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out_bottom);
         transaction.replace(R.id.fragment_container, newFragment, AlbumTracksFragment.TAG);
         transaction.addToBackStack("AlbumTracksFragment");
 
@@ -618,8 +633,6 @@ public class MainActivity extends GenericActivity
         if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
             NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
             if (nowPlayingView != null) {
-                View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-                coordinatorLayout.setVisibility(View.VISIBLE);
                 nowPlayingView.minimize();
             }
         }
@@ -628,8 +641,7 @@ public class MainActivity extends GenericActivity
         ArtistAlbumsFragment newFragment = ArtistAlbumsFragment.newInstance(artist, bitmap);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        //newFragment.setEnterTransition(new Slide(Gravity.BOTTOM));
-        //newFragment.setExitTransition(new Slide(Gravity.TOP));
+        //transaction.setCustomAnimations(R.anim.fragment_slide_in_bottom, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out_bottom);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -646,26 +658,37 @@ public class MainActivity extends GenericActivity
 
     @Override
     public void onStatusChanged(DRAG_STATUS status) {
+        DRAG_STATUS old = mNowPlayingDragStatus;
         mNowPlayingDragStatus = status;
-        if (status == DRAG_STATUS.DRAGGED_UP) {
-            View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-            coordinatorLayout.setVisibility(View.INVISIBLE);
+        switch (mNowPlayingDragStatus) {
+            case DRAGGING:
+                if (old == DRAG_STATUS.DRAGGED_DOWN) {
+                    setStatusBarColor(1.0f);
+                } else if (old == DRAG_STATUS.DRAGGED_UP) {
+                    if (mShowImage) {
+                        mCollapsingImageLayout.setVisibility(View.VISIBLE);
+                    }
+                    setStatusBarColor(0.0f);
+                }
+                break;
+            case DRAGGED_DOWN:
+                if (mShowImage) {
+                    mCollapsingImageLayout.setVisibility(View.VISIBLE);
+                }
+                setStatusBarColor(1.0f);
+                break;
+            case DRAGGED_UP:
+                if (mShowImage) {
+                    mCollapsingImageLayout.setVisibility(View.GONE);
+                }
+                setStatusBarColor(0.0f);
+                break;
         }
     }
 
     @Override
     public void onDragPositionChanged(float pos) {
-        if (mHeaderImageActive) {
-            // Get the primary color of the active theme from the helper.
-            int newColor = ThemeUtils.getThemeColor(this, R.attr.colorPrimaryDark);
-
-            // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
-            // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
-            int alphaOffset = (((255 - (int) (255.0 * pos)) << 24) | 0xFFFFFF);
-            // and with this mask to set the new alpha value.
-            newColor &= (alphaOffset);
-            getWindow().setStatusBarColor(newColor);
-        }
+        setStatusBarColor(pos);
     }
 
     @Override
@@ -675,10 +698,7 @@ public class MainActivity extends GenericActivity
 
     @Override
     public void onStartDrag() {
-        View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-        coordinatorLayout.setVisibility(View.VISIBLE);
     }
-
 
     @Override
     public void editProfile(MPDServerProfile profile) {
@@ -691,9 +711,9 @@ public class MainActivity extends GenericActivity
         // Create fragment and give it an argument for the selected article
         EditProfileFragment newFragment = EditProfileFragment.newInstance(profile);
 
+
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        //newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        //newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        //transaction.setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -713,8 +733,7 @@ public class MainActivity extends GenericActivity
         PlaylistTracksFragment newFragment = PlaylistTracksFragment.newInstance(name);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        //newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        //newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        //transaction.setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -757,49 +776,25 @@ public class MainActivity extends GenericActivity
         // set drawer state
         mDrawerToggle.setDrawerIndicatorEnabled(drawerIndicatorEnabled);
 
-        RelativeLayout collapsingImageLayout = findViewById(R.id.appbar_image_layout);
-
-        ImageView collapsingImage = findViewById(R.id.collapsing_image);
-
-        if (collapsingImage != null) {
-            if (showImage) {
-                collapsingImageLayout.setVisibility(View.VISIBLE);
-                mHeaderImageActive = true;
-
-                // Get the primary color of the active theme from the helper.
-                int newColor = ThemeUtils.getThemeColor(this, R.attr.colorPrimaryDark);
-
-                // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
-                // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
-                int alphaOffset = (((255 - (int) (255.0 * (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP ? 0.0 : 1.0))) << 24) | 0xFFFFFF);
-                // and with this mask to set the new alpha value.
-                newColor &= (alphaOffset);
-                getWindow().setStatusBarColor(newColor);
-            } else {
-                collapsingImageLayout.setVisibility(View.GONE);
-                mHeaderImageActive = false;
-
-                // Get the primary color of the active theme from the helper.
-                getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorPrimaryDark));
-            }
-        } else {
-            // If in portrait mode (no collapsing image exists), the status bar also needs dark coloring
-            mHeaderImageActive = false;
-
-            // Get the primary color of the active theme from the helper.
-            getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.colorPrimaryDark));
-        }
         // set scrolling behaviour
         CollapsingToolbarLayout toolbar = findViewById(R.id.collapsing_toolbar);
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.height = -1;
+
+        mShowImage = showImage;
+
+        if (!mShowImage) {
+            mCollapsingImageLayout.setVisibility(View.GONE);
+        } else {
+            mCollapsingImageLayout.setVisibility(View.VISIBLE);
+        }
 
         if (scrollingEnabled && !showImage) {
             toolbar.setTitleEnabled(false);
             setTitle(title);
 
             params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL + AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED + AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-        } else if (!scrollingEnabled && showImage && collapsingImage != null) {
+        } else if (!scrollingEnabled && showImage && mCollapsingImage != null) {
             toolbar.setTitleEnabled(true);
             toolbar.setTitle(title);
 
@@ -807,9 +802,11 @@ public class MainActivity extends GenericActivity
             params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED + AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
         } else {
             toolbar.setTitleEnabled(false);
+
             setTitle(title);
             params.setScrollFlags(0);
         }
+        setStatusBarColor();
     }
 
     @Override
@@ -819,20 +816,57 @@ public class MainActivity extends GenericActivity
 
     @Override
     public void setupToolbarImage(Bitmap bm) {
-        ImageView collapsingImage = findViewById(R.id.collapsing_image);
-        if (collapsingImage != null) {
-            collapsingImage.setImageBitmap(bm);
+        if (mCollapsingImage != null) {
+            mCollapsingImage.setImageBitmap(bm);
+            mCollapsingImage.setMinimumHeight(mCollapsingImage.getMeasuredWidth());
 
-            // FIXME DIRTY HACK: Manually fix the toolbar size to the screen width
-            CollapsingToolbarLayout toolbar = findViewById(R.id.collapsing_toolbar);
-            AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-
-            params.height = getWindow().getDecorView().getMeasuredWidth();
-
-            // Always expand the toolbar to show the complete image
             AppBarLayout appbar = findViewById(R.id.appbar);
+            // Always expand the toolbar to show the complete image
             appbar.setExpanded(true, false);
         }
+        mShowImage = bm != null;
+    }
+
+    private void setStatusBarColor() {
+        setStatusBarColor(-1.0f);
+    }
+
+    private void setStatusBarColor(float pos)
+    {
+        /*
+         * For the case of dragging it depends on the state of the toolbar image (cover/artist).
+         * - If an image is visible we will blend the bottom NPV color with transparent.
+         * - If no image is visible no change
+         */
+        if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGING) {
+            if (mShowImage) {
+
+                // Get the primary color of the active theme from the helper.
+                int newColor = MaterialColors.getColor(this, R.attr.colorSurface, 0);
+
+                // Calculate the offset depending on the floating point position (0.0-1.0 of the view)
+                // Shift by 24 bit to set it as the A from ARGB and set all remaining 24 bits to 1 to
+                int alphaOffset = (((255 - (int) (255.0 * pos)) << 24) | 0xFFFFFF);
+                // and with this mask to set the new alpha value.
+                newColor &= (alphaOffset);
+                getWindow().setStatusBarColor(newColor);
+            }
+
+        } else if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
+            /*
+             * If NPV is dragged up we will always use the color of NPV for the status bar.
+             */
+            getWindow().setStatusBarColor(MaterialColors.getColor(this, R.attr.colorSurface, 0));
+        } else {
+            /*
+             * If NPV is dragged down we will use:
+             * - No image: Transparent toolbar (so that the NavDrawer slides visible beneath the StatusBar), statusBarScrim prevents
+             *             the TopBar's title to be visible under it.
+             * - Image active: Complete transparent (to show the image under the status bar)
+             */
+            getWindow().setStatusBarColor(0x000000);
+        }
+
     }
 
 
@@ -845,8 +879,7 @@ public class MainActivity extends GenericActivity
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        //newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        //newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        //transaction.setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out);
 
         transaction.addToBackStack("FilesFragment" + path);
         transaction.replace(R.id.fragment_container, newFragment);
@@ -861,8 +894,6 @@ public class MainActivity extends GenericActivity
         if (mNowPlayingDragStatus == DRAG_STATUS.DRAGGED_UP) {
             NowPlayingView nowPlayingView = findViewById(R.id.now_playing_layout);
             if (nowPlayingView != null) {
-                View coordinatorLayout = findViewById(R.id.main_coordinator_layout);
-                coordinatorLayout.setVisibility(View.VISIBLE);
                 nowPlayingView.minimize();
             }
         }
@@ -870,8 +901,7 @@ public class MainActivity extends GenericActivity
         AlbumsFragment newFragment = AlbumsFragment.newInstance(path);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        //newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        //newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        //transaction.setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out);
         // Replace whatever is in the fragment_container view with this
         // fragment,
         // and add the transaction to the back stack so the user can navigate
@@ -907,8 +937,7 @@ public class MainActivity extends GenericActivity
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        //newFragment.setEnterTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.START, getResources().getConfiguration().getLayoutDirection())));
-        //newFragment.setExitTransition(new Slide(GravityCompat.getAbsoluteGravity(GravityCompat.END, getResources().getConfiguration().getLayoutDirection())));
+        //transaction.setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out);
 
         transaction.addToBackStack("ArtworkSettingsFragment");
         transaction.replace(R.id.fragment_container, newFragment);
@@ -935,9 +964,7 @@ public class MainActivity extends GenericActivity
                     sb.setAction(R.string.permission_request_snackbar_button, view -> ActivityCompat.requestPermissions(this,
                             new String[]{PermissionHelper.NOTIFICATION_PERMISSION},
                             PermissionHelper.MY_PERMISSIONS_REQUEST_NOTIFICATIONS));
-                    // style the snackbar text
-                    TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-                    sbText.setTextColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent));
+
                     sb.show();
                 }
             } else {
@@ -1006,6 +1033,7 @@ public class MainActivity extends GenericActivity
 
         return navId;
     }
+
     private void inflateProfileMenu(Menu menu) { // TODO call on profile edited/added/removed
         final List<MPDServerProfile> profiles = MPDProfileManager.getInstance(this).getProfiles();
         final NavigationView navigationView = findViewById(R.id.nav_view);
@@ -1036,5 +1064,26 @@ public class MainActivity extends GenericActivity
             }
             profilesMenu.setGroupCheckable(groupId, true, true);
         }
+    }
+
+    @Override
+    public void onTagSelected(String tagName, String tagValue) {
+        // Create fragment and give it an argument for the selected article
+        MyMusicTabsFragment newFragment = MyMusicTabsFragment.newInstance(getDefaultTab(), tagName, tagValue);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        //transaction.setCustomAnimations(R.anim.fragment_slide_in_bottom, R.anim.fragment_fade_out, R.anim.fragment_fade_in, R.anim.fragment_slide_out_bottom);
+        // Replace whatever is in the fragment_container view with this
+        // fragment,
+        // and add the transaction to the back stack so the user can navigate
+        // back
+        transaction.replace(R.id.fragment_container, newFragment, MyMusicTabsFragment.TAG);
+        transaction.addToBackStack("TagedMyMusicFragment");
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setCheckedItem(R.id.nav_tag_browser);
+
+        // Commit the transaction
+        transaction.commit();
     }
 }

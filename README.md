@@ -11,7 +11,7 @@ This whole project is licensed under the  **GPLv3 or later** license (see LICENS
 
 ## Requirements: ##
  - Android 5.0
- - MPD >= 0.14
+ - MPD >= 0.14 (Everything < 0.23 is considered experimental going forward)
  
 ## Features: ##
  - Artist/Album/Files library browsing
@@ -31,14 +31,19 @@ This whole project is licensed under the  **GPLv3 or later** license (see LICENS
  - Bulk downloader to download all artwork to local memory
  - HTTP audio streaming from MPD server
  - HTTP cover download
+ - MPD artwork loading
+ - Partitions (create, delete, move outputs)
+ - Tag browser (filter Artists, Albums, Tracks) by all available MPD tags (e.g. genre, performer, composer, label, ...)
 
 ## Description ##
 
 This is M.A.L.P. a fast and easy to use MPD client. The main goal is to create a MPD client that is both simple and fast to use and also follow the material design guidelines. 
 
-This MPD client is tested with MPD 0.14, 0.19 and 0.20 but you really should not use outdated versions of MPD.
+This MPD client is tested with MPD 0.14, 0.19 and 0.23 but you really should not use outdated versions of MPD.
 
-**This MPD client works best with accurately taged music libraries. I recommend tagging using [MusicBrainz Picard](https://picard.musicbrainz.org/)** 
+Support for outdated versions is experimental.
+
+**This MPD client works best with accurately tagged music libraries. I recommend tagging using [MusicBrainz Picard](https://picard.musicbrainz.org/)** 
 
 Starting with MPD 0.19 it is possible to filter list requests which allows this client to 
 use the AlbumArtist and Artist tag for retrieval of albums. So if you have a lot of "Greatest Hits" albums you will get a list entry for each one of it. 

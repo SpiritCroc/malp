@@ -45,6 +45,8 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.callbacks.FABFragmentCallback;
+import org.gateshipone.malp.mpdservice.mpdprotocol.MPDCapabilities;
+import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 
 public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTabSelectedListener {
     public static final String TAG = ServerPropertiesFragment.class.getSimpleName();
@@ -53,12 +55,15 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
 
     private ViewPager mViewPager;
 
+    private boolean mPartitionSupport;
+
     public static ServerPropertiesFragment newInstance() {
         return new ServerPropertiesFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mPartitionSupport = MPDInterface.getGenericInstance().getServerCapabilities().hasPartitions();
         return inflater.inflate(R.layout.fragment_tab_pager, container, false);
     }
 
@@ -71,29 +76,44 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
 
         // setup viewpager
         mViewPager = view.findViewById(R.id.my_music_viewpager);
-        ServerPropertiesTabAdapter tabAdapter = new ServerPropertiesTabAdapter(getChildFragmentManager());
+        ServerPropertiesTabAdapter tabAdapter = new ServerPropertiesTabAdapter(getChildFragmentManager(), mPartitionSupport);
         mViewPager.setAdapter(tabAdapter);
         tabLayout.setupWithViewPager(mViewPager, false);
         tabLayout.addOnTabSelectedListener(this);
+
 
         // setup icons for tabs
         final ColorStateList tabColors = tabLayout.getTabTextColors();
         final Resources res = getResources();
         Drawable drawable = null;
+        String title = "";
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             switch (i) {
                 case 0:
                     drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_statistics_black_24dp, null);
+                    title = getString(R.string.menu_statistic);
                     break;
                 case 1:
+                    if (mPartitionSupport) {
+                        drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_partitions_24dp, null);
+                        title = getString(R.string.menu_partitions);
+                    } else {
+                        drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_hearing_black_24dp, null);
+                        title = getString(R.string.menu_outputs);
+                    }
+                    break;
+                case 2:
                     drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_hearing_black_24dp, null);
+                    title = getString(R.string.menu_outputs);
                     break;
             }
 
             if (drawable != null) {
                 Drawable icon = DrawableCompat.wrap(drawable);
                 DrawableCompat.setTintList(icon, tabColors);
-                tabLayout.getTabAt(i).setIcon(icon);
+                TabLayout.Tab tab = tabLayout.getTabAt(i);
+                tab.setIcon(icon);
+                tab.setText(title);
             }
         }
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -109,10 +129,11 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
             mFABCallback.setupFAB(false, null);
             if (mViewPager.getCurrentItem() == 0) {
                 mFABCallback.setupToolbar(getString(R.string.menu_statistic), false, true, false);
-            } else if (mViewPager.getCurrentItem() == 1) {
+            } else if (mPartitionSupport && mViewPager.getCurrentItem() == 1) {
+                mFABCallback.setupToolbar(getString(R.string.menu_partitions), false, true, false);
+            } else if ((mPartitionSupport && mViewPager.getCurrentItem() == 2) || (!mPartitionSupport && mViewPager.getCurrentItem() == 1)) {
                 mFABCallback.setupToolbar(getString(R.string.menu_outputs), false, true, false);
             }
-
         }
     }
 
@@ -144,7 +165,9 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
             if (null != mFABCallback) {
                 if (tab.getPosition() == 0) {
                     mFABCallback.setupToolbar(getString(R.string.menu_statistic), false, true, false);
-                } else if (tab.getPosition() == 1) {
+                } else if (mPartitionSupport && tab.getPosition() == 1) {
+                    mFABCallback.setupToolbar(getString(R.string.menu_partitions), false, true, false);
+                } else if ((mPartitionSupport && tab.getPosition() == 2) || (!mPartitionSupport && tab.getPosition() == 1)) {
                     mFABCallback.setupToolbar(getString(R.string.menu_outputs), false, true, false);
                 }
             }
@@ -162,15 +185,18 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
     }
 
     private static class ServerPropertiesTabAdapter extends FragmentStatePagerAdapter {
-        static final int NUMBER_OF_PAGES = 2;
+        int mPages = 3;
 
-        ServerPropertiesTabAdapter(FragmentManager fm) {
+        boolean mPartitions;
+        ServerPropertiesTabAdapter(FragmentManager fm, boolean partitions) {
             super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+            mPages = partitions ? 3 : 2;
+            mPartitions = partitions;
         }
 
         @Override
         public int getCount() {
-            return NUMBER_OF_PAGES;
+            return mPages;
         }
 
         @Override
@@ -181,15 +207,15 @@ public class ServerPropertiesFragment extends Fragment implements TabLayout.OnTa
         @NonNull
         @Override
         public Fragment getItem(int i) {
-            switch (i) {
-                case 0:
+                if (i == 0) {
                     return ServerStatisticFragment.newInstance();
-                case 1:
+                } else if (mPartitions && i == 1) {
+                    return PartitionsFragment.newInstance();
+                } else if ((mPartitions && i == 2) || (!mPartitions && i == 1)) {
                     return OutputsFragment.newInstance();
-                default:
-                    // should not happen throw exception
+                } else {
                     throw new IllegalStateException("No fragment defined to return");
-            }
+                }
         }
     }
 }

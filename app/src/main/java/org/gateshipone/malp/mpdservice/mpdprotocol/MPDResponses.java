@@ -23,6 +23,8 @@
 package org.gateshipone.malp.mpdservice.mpdprotocol;
 
 
+import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,6 +90,7 @@ public class MPDResponses {
         RESPONSE_OUTPUT_ID,
         RESPONSE_OUTPUT_NAME,
         RESPONSE_OUTPUT_ENABLED,
+        RESPONSE_OUTPUT_PLUGIN,
         RESPONSE_UPTIME,
         RESPONSE_PLAYTIME,
         RESPONSE_ARTISTS,
@@ -105,8 +108,12 @@ public class MPDResponses {
         RESPONSE_GENRE,
         RESPONSE_COMMENT,
         RESPONSE_LABEL,
+        RESPONSE_PARTITION,
+        RESPONSE_FORMAT,
         RESPONSE_UNKNOWN,
     }
+
+
 
     private static Map<String, MPD_RESPONSE_KEY> createResponseMap() {
         Map<String, MPD_RESPONSE_KEY> map = new HashMap<>(MPD_RESPONSE_KEY.values().length);
@@ -159,6 +166,7 @@ public class MPDResponses {
         map.put("outputid", MPD_RESPONSE_KEY.RESPONSE_OUTPUT_ID);
         map.put("outputname", MPD_RESPONSE_KEY.RESPONSE_OUTPUT_NAME);
         map.put("outputenabled", MPD_RESPONSE_KEY.RESPONSE_OUTPUT_ENABLED);
+        map.put("plugin", MPD_RESPONSE_KEY.RESPONSE_OUTPUT_PLUGIN);
         map.put("uptime", MPD_RESPONSE_KEY.RESPONSE_UPTIME);
         map.put("playtime", MPD_RESPONSE_KEY.RESPONSE_PLAYTIME);
         map.put("artists", MPD_RESPONSE_KEY.RESPONSE_ARTISTS);
@@ -176,10 +184,35 @@ public class MPDResponses {
         map.put("Genre", MPD_RESPONSE_KEY.RESPONSE_GENRE);
         map.put("Comment", MPD_RESPONSE_KEY.RESPONSE_COMMENT);
         map.put("Label", MPD_RESPONSE_KEY.RESPONSE_LABEL);
+        map.put("Format", MPD_RESPONSE_KEY.RESPONSE_FORMAT);
+        map.put("partition", MPD_RESPONSE_KEY.RESPONSE_PARTITION);
 
         return map;
     }
 
     public static final Map<String, MPD_RESPONSE_KEY> RESPONSE_KEYMAP = createResponseMap();
 
+    private static Map<String, MPDIdleChangeHandler.CHANGED_SUBSYSTEM> createIdleResponseValueMap() {
+        Map<String, MPDIdleChangeHandler.CHANGED_SUBSYSTEM> map = new HashMap<>(MPDIdleChangeHandler.CHANGED_SUBSYSTEM.values().length);
+
+        // Create dumb mapping
+        map.put("database", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.DATABASE);
+        map.put("update", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.UPDATE);
+        map.put("stored_playlist", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.STORED_PLAYLIST);
+        map.put("playlist", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.PLAYLIST);
+        map.put("player", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.PLAYER);
+        map.put("mixer", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.MIXER);
+        map.put("output", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.OUTPUT);
+        map.put("options", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.OPTIONS);
+        map.put("partition", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.PARTITION);
+        map.put("sticker", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.STICKER);
+        map.put("subscription", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.SUBSCRIPTION);
+        map.put("message", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.MESSAGE);
+        map.put("neighbor", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.NEIGHBOR);
+        map.put("mount", MPDIdleChangeHandler.CHANGED_SUBSYSTEM.MOUNT);
+
+        return map;
+    }
+
+    public static final Map<String, MPDIdleChangeHandler.CHANGED_SUBSYSTEM> IDLE_RESPONSE_VALUES = createIdleResponseValueMap();
 }

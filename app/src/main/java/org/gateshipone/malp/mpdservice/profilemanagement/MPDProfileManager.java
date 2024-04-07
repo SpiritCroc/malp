@@ -91,6 +91,9 @@ public class MPDProfileManager extends Observable {
                 // MPD Cover parameter
                 boolean mpdCoverEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_MPD_COVER_ENABLED)) == 1;
 
+                // MPD Partition
+                String partition = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_MPD_PARTITION));
+
                 /* Create temporary object to append to list. */
                 MPDServerProfile profile = new MPDServerProfile(profileName, autoConnect, creationDate);
                 profile.setHostname(serverHostname);
@@ -104,6 +107,8 @@ public class MPDProfileManager extends Observable {
                 profile.setHTTPCoverEnabled(httpCoverEnabled);
 
                 profile.setMPDCoverEnabled(mpdCoverEnabled);
+
+                profile.setPartition(partition);
 
                 /* Finish and add to list */
                 profileList.add(profile);
@@ -132,7 +137,6 @@ public class MPDProfileManager extends Observable {
             db.update(MPDServerProfileTable.SQL_TABLE_NAME, autoConValues, MPDServerProfileTable.COLUMN_PROFILE_AUTO_CONNECT + "=?", new String[]{"1"});
         }
 
-
         /* Prepare the sql transaction */
         ContentValues values = new ContentValues();
 
@@ -156,6 +160,8 @@ public class MPDProfileManager extends Observable {
 
         // MPD cover parameter
         values.put(MPDServerProfileTable.COLUMN_PROFILE_MPD_COVER_ENABLED, profile.getMPDCoverEnabled());
+
+        values.put(MPDServerProfileTable.COLUMN_PROFILE_MPD_PARTITION, profile.getPartition());
 
         /* Insert the table in the database */
         db.insert(MPDServerProfileTable.SQL_TABLE_NAME, null, values);
@@ -219,6 +225,8 @@ public class MPDProfileManager extends Observable {
             // MPD Cover parameter
             boolean mpdCoverEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_MPD_COVER_ENABLED)) == 1;
 
+            String partition = cursor.getString(cursor.getColumnIndexOrThrow(MPDServerProfileTable.COLUMN_PROFILE_MPD_PARTITION));
+
             /* Create temporary object to append to list. */
             MPDServerProfile profile = new MPDServerProfile(profileName, autoConnect, creationDate);
             profile.setHostname(serverHostname);
@@ -233,6 +241,8 @@ public class MPDProfileManager extends Observable {
 
             profile.setMPDCoverEnabled(mpdCoverEnabled);
 
+            profile.setPartition(partition);
+
             cursor.close();
             db.close();
             return profile;
@@ -241,6 +251,17 @@ public class MPDProfileManager extends Observable {
         cursor.close();
         db.close();
         return null;
+    }
+
+    public synchronized void setAutoconnectPartition(String name) {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        /* Check if autoconnect is set, if it is, all other autoconnects need to be set to 0 */
+        ContentValues autoConValues = new ContentValues();
+        autoConValues.put(MPDServerProfileTable.COLUMN_PROFILE_MPD_PARTITION, name);
+
+        /* Update the table columns to 0. */
+        db.update(MPDServerProfileTable.SQL_TABLE_NAME, autoConValues, MPDServerProfileTable.COLUMN_PROFILE_AUTO_CONNECT + "=?", new String[]{"1"});
+        db.close();
     }
 
 }

@@ -25,36 +25,37 @@ package org.gateshipone.malp.mpdservice.handlers.responsehandler;
 
 import android.os.Message;
 
-import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDStatistics;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
 
-public abstract class MPDResponseServerStatistics extends MPDResponseHandler {
+import java.util.List;
 
-    public MPDResponseServerStatistics() {
+public abstract class MPDResponseGenericList<T> extends MPDResponseHandler {
+
+    public MPDResponseGenericList() {
 
     }
 
     /**
-     * Handle function for the server statistics. This only calls the abstract method
+     * Handle function for the track list. This only calls the abstract method
      * which needs to get implemented by the user of this class.
-     * @param msg Message object containing a MPDStatistics object
+     * @param msg Message object containing a list of MPDTrack items.
      */
     @Override
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
 
-
         /* Call album response handler */
-        MPDStatistics stats = (MPDStatistics)msg.obj;
-        handleStatistic(stats);
+        List<T> itemList = (List<T>)msg.obj;
+        handleList(itemList);
     }
 
     /**
-     * Send statistics to the receiving handler
-     * @param statistics Object to send
+     * Sends the list of outputs to the receiving handler looper
+     * @param itemList
      */
-    public void sendServerStatistics(MPDStatistics statistics) {
+    public void sendList(List<T> itemList) {
         Message responseMessage = this.obtainMessage();
-        responseMessage.obj = statistics;
+        responseMessage.obj = itemList;
         sendMessage(responseMessage);
     }
 
@@ -62,7 +63,7 @@ public abstract class MPDResponseServerStatistics extends MPDResponseHandler {
      * Abstract method to be implemented by the user of the MPD implementation.
      * This should be a callback for the UI thread and run in the UI thread.
      * This can be used for updating lists of adapters and views.
-     * @param statistics Current MPD statistics
+     * @param itemList List of MPDPartition objects containing a list of available MPD outputs
      */
-    abstract public void handleStatistic(MPDStatistics statistics);
+    abstract public void handleList(List<T> itemList);
 }

@@ -23,15 +23,14 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/app_color_content">
     <ListView android:id="@+id/main_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fastScrollAlwaysVisible="false"
         android:fastScrollEnabled="true"
         android:fastScrollStyle="?attr/colorAccent"
-        android:divider="?attr/malp_color_divider"
-        android:dividerHeight="@dimen/list_divider_size"
         android:nestedScrollingEnabled="true"
         android:scrollingCache="true"
         android:scrollbarStyle="outsideOverlay"

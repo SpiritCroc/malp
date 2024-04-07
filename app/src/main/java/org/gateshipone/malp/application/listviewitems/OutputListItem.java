@@ -25,33 +25,41 @@ package org.gateshipone.malp.application.listviewitems;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.widget.CheckedTextView;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.gateshipone.malp.R;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
 
 public class OutputListItem extends LinearLayout {
 
-    CheckedTextView mMainView;
+    CheckBox mCheckbox;
+    TextView mMainTextview;
+    TextView mSecondaryTextview;
 
-    public OutputListItem(Context context, String outputName, boolean active, int outputid) {
+    public OutputListItem(Context context, MPDOutput output){
         super(context);
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.listview_item_output, this, true);
 
-        mMainView = findViewById(R.id.item_output_name);
-        mMainView.setText(outputName);
+        mMainTextview = findViewById(R.id.item_text_primary);
+        mSecondaryTextview = findViewById(R.id.item_text_secondary);
+        mCheckbox = findViewById(R.id.item_output_checkbox);
 
-        mMainView.setChecked(active);
+        setOutput(output);
     }
 
-    public void setName(String name) {
-        mMainView.setText(name);
-    }
-
-    public void setChecked(boolean checked) {
-        mMainView.setChecked(checked);
+    public void setOutput(MPDOutput output) {
+        String partition = output.getPartitionName();
+        mMainTextview.setText(output.getOutputName());
+        if (partition != null && !partition.isEmpty()) {
+            mSecondaryTextview.setText(output.getPartitionName());
+        } else {
+            mSecondaryTextview.setVisibility(GONE);
+        }
+        mCheckbox.setChecked(output.getOutputState());
     }
 
 }

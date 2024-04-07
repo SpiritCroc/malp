@@ -63,9 +63,12 @@ public class MPDServerProfile implements MPDGenericItem, Parcelable {
 
     private long mCreated;
 
+    private String mPartition;
+
     public MPDServerProfile() {
         mProfileName = "";
         mHostname = "";
+        mPartition = "";
     }
 
     public MPDServerProfile(String profileName, boolean autoConnect) {
@@ -101,6 +104,7 @@ public class MPDServerProfile implements MPDGenericItem, Parcelable {
         mHTTPCoverEnabled = in.readByte() != 0;
         mMPDCoverEnabled = in.readByte() != 0;
         mCreated = in.readLong();
+        mPartition = in.readString();
     }
 
     @Override
@@ -116,6 +120,7 @@ public class MPDServerProfile implements MPDGenericItem, Parcelable {
         dest.writeByte((byte) (mHTTPCoverEnabled ? 1 : 0));
         dest.writeByte((byte) (mMPDCoverEnabled ? 1 : 0));
         dest.writeLong(mCreated);
+        dest.writeString(mPartition);
     }
 
     @Override
@@ -261,6 +266,14 @@ public class MPDServerProfile implements MPDGenericItem, Parcelable {
         return mMPDCoverEnabled;
     }
 
+    public void setPartition(String partition) {
+        mPartition = partition;
+    }
+
+    public String getPartition() {
+        return mPartition;
+    }
+
     /**
      * Creates a string of the server profile. Be careful printing this out, because
      * it includes potential passwords.
@@ -277,6 +290,7 @@ public class MPDServerProfile implements MPDGenericItem, Parcelable {
         retString += "Password: " + mPassword + "\n";
         retString += "Port: " + mPort + "\n";
         retString += "Created: " + mCreated + "\n";
+        retString += "Partition: " + mPartition +"\n";
 
         return retString;
     }

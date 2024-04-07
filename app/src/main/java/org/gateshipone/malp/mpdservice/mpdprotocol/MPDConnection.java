@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import org.gateshipone.malp.BuildConfig;
 import org.gateshipone.malp.mpdservice.handlers.MPDConnectionStateChangeHandler;
 import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
+import org.gateshipone.malp.mpdservice.mpdprotocol.helper.DebugSemaphore;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
@@ -198,7 +199,11 @@ class MPDConnection {
         mIdleListeners = new ArrayList<>();
         mStateListeners = new ArrayList<>();
 
-        mConnectionLock = new Semaphore(1);
+        if (!BuildConfig.DEBUG) {
+            mConnectionLock = new Semaphore(1);
+        } else {
+            mConnectionLock = new DebugSemaphore(1);
+        }
 
         mIDLETimer = new Timer();
 
@@ -234,6 +239,7 @@ class MPDConnection {
             }
             mSocket = null;
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             if (BuildConfig.DEBUG) {
                 Log.v(TAG, "Error during read error handling");
             }
@@ -299,6 +305,7 @@ class MPDConnection {
         try {
             mSocket.connect(new InetSocketAddress(mHostname, mPort), SOCKET_TIMEOUT);
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             handleSocketError();
             mConnectionLock.release();
             throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -313,6 +320,7 @@ class MPDConnection {
                 try {
                     mSocketInterface = new MPDSocketInterface(mSocket.getInputStream(), mSocket.getOutputStream());
                 } catch (IOException e) {
+                    Log.w(TAG, "IO error: " + e.getMessage());
                     handleSocketError();
                     mConnectionLock.release();
                     throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -323,6 +331,7 @@ class MPDConnection {
             try {
                 waitForResponse();
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 mConnectionLock.release();
                 throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -365,6 +374,7 @@ class MPDConnection {
                 try {
                     waitForResponse();
                 } catch (IOException e) {
+                    Log.w(TAG, "IO error: " + e.getMessage());
                     handleSocketError();
                     mConnectionLock.release();
                     throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -374,6 +384,7 @@ class MPDConnection {
                 try {
                     commands = MPDResponseParser.parseMPDCommands(this);
                 } catch (IOException e) {
+                    Log.w(TAG, "IO error: " + e.getMessage());
                     handleSocketError();
                     mConnectionLock.release();
                     throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -383,6 +394,7 @@ class MPDConnection {
                 try {
                     waitForResponse();
                 } catch (IOException e) {
+                    Log.w(TAG, "IO error: " + e.getMessage());
                     handleSocketError();
                     mConnectionLock.release();
                     throw new MPDException.MPDConnectionException(e.getLocalizedMessage());
@@ -430,6 +442,7 @@ class MPDConnection {
         try {
             waitForResponse();
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -469,6 +482,7 @@ class MPDConnection {
                 mSocket = null;
             }
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             if (BuildConfig.DEBUG) {
                 Log.v(TAG, "Error during disconnecting:" + e);
             }
@@ -579,6 +593,7 @@ class MPDConnection {
         try {
             waitForResponse(responseTimeout);
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             handleSocketError();
             mConnectionLock.release();
         }
@@ -674,6 +689,7 @@ class MPDConnection {
         try {
             waitForResponse();
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             handleSocketError();
             mConnectionLock.release();
         }
@@ -721,14 +737,12 @@ class MPDConnection {
 
         // Start timeout task
         synchronized (mReadTimeoutTimer) {
-            if (mReadTimeoutTask != null) {
-                // Another deidling is already running, abort
-                return;
-            }
-            mReadTimeoutTask = new ReadTimeoutTask();
-            mReadTimeoutTimer.schedule(mReadTimeoutTask, DEIDLE_TIMEOUT);
-            if (BuildConfig.DEBUG) {
-                Log.v(TAG, "noidle read timeout scheduled");
+            if (mReadTimeoutTask == null) {
+                mReadTimeoutTask = new ReadTimeoutTask();
+                mReadTimeoutTimer.schedule(mReadTimeoutTask, DEIDLE_TIMEOUT);
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "noidle read timeout scheduled");
+                }
             }
         }
 
@@ -862,6 +876,7 @@ class MPDConnection {
         try {
             return (null != mSocket) && (null != mSocketInterface) && mSocket.isConnected() && mSocketInterface.readReady();
         } catch (IOException e) {
+            Log.w(TAG, "IO error: " + e.getMessage());
             handleSocketError();
             return false;
         }
@@ -958,68 +973,36 @@ class MPDConnection {
     private class IdleThread extends Thread {
         @Override
         public void run() {
-            String response;
+            MPDIdleChangeHandler.MPDChangedSubsystemsResponse idleResponse = null;
+
             // Wait for noidle. This should block until the server is ready for commands again
             try {
-                response = waitForIdleResponse();
-            } catch (IOException e) {
-                if (BuildConfig.DEBUG) {
-                    Log.v(TAG, "IOException on waitforIdleResponse!: " + e.getMessage());
-                }
+                idleResponse = MPDResponseParser.parseMPDIdleResponse(MPDConnection.this);
+            } catch (MPDException e) {
+                Log.e(TAG, "MPDException: " + e.getMessage() + " while unidling");
                 handleSocketError();
-                return;
             }
-
-            // Cancel the timeout task
-            cancelReadTimeoutWait();
-
             synchronized (MPDConnection.this) {
+                // Cancel the timeout task
+                cancelReadTimeoutWait();
+
                 if (mConnectionState != CONNECTION_STATES.GOING_NOIDLE && mConnectionState != CONNECTION_STATES.IDLE) {
                     if (BuildConfig.DEBUG) {
                         Log.w(TAG, "Timeout during deidle, releasing connection");
                     }
 
                     // Timeout, abort!
-                    mConnectionLock.release();
+                    // Lock is already released by readKey function
                     return;
                 }
-            }
 
 
-            // Check if noidle was sent or if server changed externally
-            if (response.startsWith(MPDResponses.MPD_RESPONSE_CHANGED)) {
-                // External change
-                if (BuildConfig.DEBUG) {
-                    Log.v(TAG, "External changes");
-                }
-
-                while (!response.equals("OK")) {
-                    try {
-                        response = readLineInternal();
-                    } catch (MPDException e) {
-                        e.printStackTrace();
-                    }
+                if (idleResponse != null) {
+                    notifyIdleListener(idleResponse);
                 }
 
                 changeState(CONNECTION_STATES.READY_FOR_COMMANDS);
-
-                mConnectionLock.release();
-                notifyIdleListener();
-
                 scheduleIDLE();
-            } else if (response.isEmpty()) {
-                if (BuildConfig.DEBUG) {
-                    Log.e(TAG, "Error during idling");
-                }
-                handleSocketError();
-                mConnectionLock.release();
-            } else {
-                // Noidle sent
-                // Release connection
-                if (BuildConfig.DEBUG) {
-                    Log.v(TAG, "No external change, response: " + response);
-                }
-                changeState(CONNECTION_STATES.READY_FOR_COMMANDS);
                 mConnectionLock.release();
             }
         }
@@ -1037,6 +1020,7 @@ class MPDConnection {
             try {
                 line = mSocketInterface.readLine();
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 mConnectionLock.release();
                 return "";
@@ -1080,6 +1064,7 @@ class MPDConnection {
             try {
                 keyValue = mSocketInterface.readValue();
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 mConnectionLock.release();
                 return "";
@@ -1097,6 +1082,7 @@ class MPDConnection {
             try {
                 key = mSocketInterface.readKey();
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 mConnectionLock.release();
                 return null;
@@ -1140,6 +1126,7 @@ class MPDConnection {
             try {
                 return mSocketInterface.readBinary(size);
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 return null;
             }
@@ -1159,6 +1146,7 @@ class MPDConnection {
             try {
                 line = mSocketInterface.readLine();
             } catch (IOException e) {
+                Log.w(TAG, "IO error: " + e.getMessage());
                 handleSocketError();
                 return "";
             }
@@ -1202,10 +1190,10 @@ class MPDConnection {
         }
     }
 
-    private void notifyIdleListener() {
+    private void notifyIdleListener(MPDIdleChangeHandler.MPDChangedSubsystemsResponse changedSubsystems) {
         synchronized (mIdleListeners) {
             for (MPDIdleChangeHandler listener : mIdleListeners) {
-                listener.noIdle();
+                listener.noIdle(changedSubsystems);
             }
         }
     }

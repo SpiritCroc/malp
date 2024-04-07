@@ -23,9 +23,13 @@
 package org.gateshipone.malp.application.activities;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import androidx.preference.PreferenceManager;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import com.google.android.material.color.MaterialColors;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.utils.ThemeUtils;
@@ -47,7 +51,7 @@ public class ContributorsActivity extends GenericActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contributors);
 
-        getWindow().setStatusBarColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_primary_dark));
+        getWindow().setStatusBarColor(MaterialColors.getColor(this, R.attr.app_color_content, 0));
 
         ListView contributors = findViewById(R.id.contributors_listview);
 

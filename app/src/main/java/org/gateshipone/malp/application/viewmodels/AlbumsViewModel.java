@@ -24,7 +24,9 @@ package org.gateshipone.malp.application.viewmodels;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.util.Pair;
+
+import androidx.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -32,9 +34,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.utils.PreferenceHelper;
-import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseAlbumList;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -42,17 +45,21 @@ import java.util.List;
 
 public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
 
-    private final MPDResponseAlbumList mAlbumsResponseHandler;
+    private final MPDResponseGenericList<MPDAlbum> mAlbumsResponseHandler;
 
     private final String mArtistName;
 
     private final String mAlbumsPath;
 
     private final MPDAlbum.MPD_ALBUM_SORT_ORDER mSortOrder;
+    private final MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
 
-    private final boolean mUseArtistSort;
+    private final MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
 
-    private AlbumsViewModel(@NonNull final Application application, final String artistName, final String albumsPath) {
+    private final String mTagName;
+    private final String mTagValue;
+
+    private AlbumsViewModel(@NonNull final Application application, final String artistName, final String albumsPath, final String tagName, final String tagValue) {
         super(application);
 
         mAlbumsResponseHandler = new AlbumResponseHandler(this);
@@ -60,29 +67,29 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
         mArtistName = artistName;
         mAlbumsPath = albumsPath;
 
+        mTagName = tagName;
+        mTagValue = tagValue;
+
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(application);
         mSortOrder = PreferenceHelper.getMPDAlbumSortOrder(sharedPref, application);
-        mUseArtistSort = sharedPref.getBoolean(application.getString(R.string.pref_use_artist_sort_key), application.getResources().getBoolean(R.bool.pref_use_artist_sort_default));
+        mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, application);
+        mArtistSortSelector = PreferenceHelper.getArtistSortSelector(sharedPref, application);
     }
 
     @Override
     void loadData() {
         if ((null == mArtistName) || mArtistName.isEmpty()) {
             if (null == mAlbumsPath || mAlbumsPath.isEmpty()) {
-                MPDQueryHandler.getAlbums(mAlbumsResponseHandler);
+                MPDQueryHandler.getAlbums(mAlbumsResponseHandler, new Pair<>(mTagName, mTagValue));
             } else {
                 MPDQueryHandler.getAlbumsInPath(mAlbumsPath, mAlbumsResponseHandler);
             }
         } else {
-            if (!mUseArtistSort) {
-                MPDQueryHandler.getArtistAlbums(mAlbumsResponseHandler, mArtistName);
-            } else {
-                MPDQueryHandler.getArtistSortAlbums(mAlbumsResponseHandler, mArtistName);
-            }
+            MPDQueryHandler.getArtistAlbums(mAlbumsResponseHandler, mArtistName, mAlbumArtistSelector, mArtistSortSelector, mSortOrder);
         }
     }
 
-    private static class AlbumResponseHandler extends MPDResponseAlbumList {
+    private static class AlbumResponseHandler extends MPDResponseGenericList<MPDAlbum> {
 
         private final WeakReference<AlbumsViewModel> mAlbumViewModel;
 
@@ -91,14 +98,10 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
         }
 
         @Override
-        public void handleAlbums(final List<MPDAlbum> albumList) {
+        public void handleList(final List<MPDAlbum> albumList) {
             final AlbumsViewModel albumsViewModel = mAlbumViewModel.get();
 
             if (albumsViewModel != null) {
-                // If artist albums and sort by year is active, resort the list
-                if (albumsViewModel.mSortOrder == MPDAlbum.MPD_ALBUM_SORT_ORDER.DATE && !((null == albumsViewModel.mArtistName) || albumsViewModel.mArtistName.isEmpty())) {
-                    Collections.sort(albumList, new MPDAlbum.MPDAlbumDateComparator());
-                }
                 albumsViewModel.setData(albumList);
             }
         }
@@ -112,16 +115,26 @@ public class AlbumsViewModel extends GenericViewModel<MPDAlbum> {
 
         private final String mAlbumsPath;
 
-        public AlbumViewModelFactory(final Application application, final String artistName, final String albumsPath) {
+        private final String mTagName;
+        private final String mTagValue;
+
+        public AlbumViewModelFactory(final Application application, final String artistName, final String albumsPath, final Pair<String, String> tagFilter) {
             mApplication = application;
             mArtistName = artistName;
             mAlbumsPath = albumsPath;
+            if (tagFilter != null) {
+                mTagName = tagFilter.first;
+                mTagValue = tagFilter.second;
+            } else {
+                mTagName = null;
+                mTagValue = null;
+            }
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) new AlbumsViewModel(mApplication, mArtistName, mAlbumsPath);
+            return (T) new AlbumsViewModel(mApplication, mArtistName, mAlbumsPath, mTagName, mTagValue);
         }
     }
 }

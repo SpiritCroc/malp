@@ -27,7 +27,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
+
+import android.util.Pair;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -48,6 +50,7 @@ import org.gateshipone.malp.application.adapters.AlbumsAdapter;
 import org.gateshipone.malp.application.artwork.ArtworkManager;
 import org.gateshipone.malp.application.callbacks.AlbumCallback;
 import org.gateshipone.malp.application.listviewitems.AbsImageListViewItem;
+import org.gateshipone.malp.application.utils.PreferenceHelper;
 import org.gateshipone.malp.application.utils.ScrollSpeedListener;
 import org.gateshipone.malp.application.utils.ThemeUtils;
 import org.gateshipone.malp.application.viewmodels.AlbumsViewModel;
@@ -55,9 +58,12 @@ import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.SearchViewModel;
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
 public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements AdapterView.OnItemClickListener {
     public static final String TAG = AlbumsFragment.class.getSimpleName();
+    private static final String REQUESTED_TAG_NAME = "ARG_TAG_NAME";
+    private static final String REQUESTED_TAG_VALUE = "ARG_TAG_VALUE";
 
     /**
      * Definition of bundled extras
@@ -67,6 +73,11 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     private String mAlbumsPath;
 
     private AlbumCallback mAlbumSelectCallback;
+    private MPDArtist.MPD_ALBUM_ARTIST_SELECTOR mAlbumArtistSelector;
+    private MPDArtist.MPD_ARTIST_SORT_SELECTOR mArtistSortSelector;
+
+    private String mTagName;
+    private String mTagValue;
 
     public static AlbumsFragment newInstance(@Nullable final String albumPath) {
         final Bundle args = new Bundle();
@@ -78,6 +89,19 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
         return fragment;
     }
 
+    public static AlbumsFragment newInstance(@Nullable final String albumPath, Pair<String,String> tagFilter) {
+        final Bundle args = new Bundle();
+        args.putString(BUNDLE_STRING_EXTRA_PATH, albumPath);
+        if (tagFilter != null) {
+            args.putString(REQUESTED_TAG_NAME, tagFilter.first);
+            args.putString(REQUESTED_TAG_VALUE, tagFilter.second);
+        }
+
+        final AlbumsFragment fragment = new AlbumsFragment();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -97,9 +121,12 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Bundle args = getArguments();
 
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         final String viewAppearance = sharedPref.getString(getString(R.string.pref_library_view_key), getString(R.string.pref_library_view_default));
+        mAlbumArtistSelector = PreferenceHelper.getAlbumArtistSelector(sharedPref, requireContext());
+        mArtistSortSelector = PreferenceHelper.getArtistSortSelector(sharedPref, requireContext());
 
         final boolean useList = viewAppearance.equals(getString(R.string.pref_library_view_list_key));
 
@@ -115,9 +142,11 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
         mAdapter = new AlbumsAdapter(getActivity(), useList);
 
         /* Check if an artistname was given in the extras */
-        Bundle args = getArguments();
+
         if (null != args) {
             mAlbumsPath = args.getString(BUNDLE_STRING_EXTRA_PATH);
+            mTagName = args.getString(REQUESTED_TAG_NAME);
+            mTagValue = args.getString(REQUESTED_TAG_VALUE);
         }
 
         adapterView.setAdapter(mAdapter);
@@ -152,7 +181,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
     @Override
     GenericViewModel<MPDAlbum> getViewModel() {
-        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(requireActivity().getApplication(), null, mAlbumsPath)).get(AlbumsViewModel.class);
+        return new ViewModelProvider(this, new AlbumsViewModel.AlbumViewModelFactory(requireActivity().getApplication(), null, mAlbumsPath, new Pair<>(mTagName, mTagValue))).get(AlbumsViewModel.class);
     }
 
     @Override
@@ -240,6 +269,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
 
     private void setupToolbarAndStuff() {
         if (null != mFABCallback) {
+
             if (mAlbumsPath != null && !mAlbumsPath.equals("")) {
                 String lastPath = mAlbumsPath;
                 String[] pathSplit = mAlbumsPath.split("/");
@@ -250,7 +280,16 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
                 mFABCallback.setupToolbar(lastPath, false, false, false);
             } else {
                 mFABCallback.setupFAB(false, null);
-                mFABCallback.setupToolbar(getString(R.string.app_name), true, true, false);
+                String title;
+                boolean backButton;
+                if (mTagValue == null || mTagValue.isEmpty()) {
+                    title = getString(R.string.app_name);
+                    backButton = false;
+                } else {
+                    title = mTagValue;
+                    backButton = true;
+                }
+                mFABCallback.setupToolbar(title, true, !backButton, false);
 
             }
         }
@@ -264,7 +303,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     private void enqueueAlbum(int index) {
         final MPDAlbum album = (MPDAlbum) mAdapter.getItem(index);
 
-        MPDQueryHandler.addArtistAlbum(album.getName(), album.getArtistName(), album.getMBID());
+        MPDQueryHandler.addArtistAlbum(album, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     /**
@@ -275,7 +314,7 @@ public class AlbumsFragment extends GenericMPDFragment<MPDAlbum> implements Adap
     private void playAlbum(int index) {
         final MPDAlbum album = (MPDAlbum) mAdapter.getItem(index);
 
-        MPDQueryHandler.playArtistAlbum(album.getName(), album.getArtistName(), album.getMBID());
+        MPDQueryHandler.playArtistAlbum(album, mAlbumArtistSelector, mArtistSortSelector);
     }
 
     public void applyFilter(String name) {

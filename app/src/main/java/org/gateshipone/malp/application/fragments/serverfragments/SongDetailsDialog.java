@@ -133,6 +133,7 @@ public class SongDetailsDialog extends DialogFragment {
         } else {
             builder.setPositiveButton(R.string.dialog_action_ok, (dialogInterface, i) -> dismiss());
         }
+        builder.setTitle(R.string.song_details_dialog_title);
 
         return builder.create();
     }

@@ -24,7 +24,10 @@ package org.gateshipone.malp.application.fragments.serverfragments;
 
 
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -39,18 +42,35 @@ import org.gateshipone.malp.R;
 import org.gateshipone.malp.application.adapters.OutputAdapter;
 import org.gateshipone.malp.application.viewmodels.GenericViewModel;
 import org.gateshipone.malp.application.viewmodels.OutputsViewModel;
-import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDCommandHandler;
+import org.gateshipone.malp.mpdservice.handlers.MPDIdleChangeHandler;
+import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseGenericList;
+import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
+import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDStateMonitoringHandler;
+import org.gateshipone.malp.mpdservice.mpdprotocol.MPDInterface;
 import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDOutput;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDPartition;
+
+import java.lang.ref.WeakReference;
+import java.util.List;
 
 public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements AbsListView.OnItemClickListener {
     public static final String TAG = OutputsFragment.class.getSimpleName();
+
+    private List<MPDPartition> mPartitions;
+
+    private PartitionResponseHandler mPartitionHandler;
+
+    private boolean mPartitionSupport;
 
     public static OutputsFragment newInstance() {
         return new OutputsFragment();
     }
 
+    private StateUpdateHandler mStateHandler;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mPartitionSupport = MPDInterface.getGenericInstance().getServerCapabilities().hasPartitions();
         return inflater.inflate(R.layout.listview_layout, container, false);
     }
 
@@ -72,6 +92,19 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
         setHasOptionsMenu(true);
 
         getViewModel().getData().observe(getViewLifecycleOwner(), this::onDataReady);
+        mPartitionHandler = new PartitionResponseHandler(this);
+        mStateHandler = new StateUpdateHandler(this);
+        MPDStateMonitoringHandler.getHandler().registerIdleListener(mStateHandler);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Get latest list of partitions
+        if (mPartitionSupport) {
+            MPDQueryHandler.getPartitions(mPartitionHandler);
+        }
     }
 
     @Override
@@ -79,10 +112,114 @@ public class OutputsFragment extends GenericMPDFragment<MPDOutput> implements Ab
         return new ViewModelProvider(this, new OutputsViewModel.OutputsViewModelFactory(requireActivity().getApplication())).get(OutputsViewModel.class);
     }
 
+    private void updatePartitions() {
+        if (mPartitionSupport) {
+            MPDQueryHandler.getPartitions(mPartitionHandler);
+        }
+    }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MPDOutput output = (MPDOutput) mAdapter.getItem(position);
-        MPDCommandHandler.toggleOutput(output.getID());
+        MPDQueryHandler.toggleOutputPartition(output);
         ((OutputAdapter) mAdapter).setOutputActive(position, !output.getOutputState());
+        refreshContent();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        MPDStateMonitoringHandler.getHandler().unRegisterIdleListener(mStateHandler);
+    }
+
+    private static class PartitionResponseHandler extends MPDResponseGenericList<MPDPartition> {
+        OutputsFragment mFragment;
+
+        ContextMenu mMenu;
+        public PartitionResponseHandler(OutputsFragment fragment) {
+            mFragment = fragment;
+        }
+
+        @Override
+        public void handleList(List<MPDPartition> itemList) {
+            mFragment.mPartitions = itemList;
+        }
+    }
+
+    private MPDOutput mContextMenuOutput = null;
+
+    /**
+     * Create the context menu.
+     */
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        if (!mPartitionSupport) {
+            return;
+        }
+
+        SubMenu submenu = menu.addSubMenu(getString(R.string.menu_move_output));
+        for (MPDPartition partition : mPartitions) {
+            MenuItem item = submenu.add(partition.getPartitionName());
+            item.setOnMenuItemClickListener(menuItem -> {
+                if (mContextMenuOutput == null) {
+                    return false;
+                }
+
+                MPDQueryHandler.moveOutputToPartition(mContextMenuOutput, partition);
+                refreshContent();
+                mContextMenuOutput = null;
+                return true;
+            });
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        if (info == null) {
+            return super.onContextItemSelected(item);
+        }
+
+        final int itemId = item.getItemId();
+        int position = info.position;
+        mContextMenuOutput = mAdapter.getItem(position);
+
+        return super.onContextItemSelected(item);
+    }
+
+
+    private static class StateUpdateHandler extends MPDIdleChangeHandler {
+        private final WeakReference<OutputsFragment> mFragment;
+
+        public StateUpdateHandler(OutputsFragment fragment) {
+            mFragment = new WeakReference<>(fragment);
+        }
+
+        @Override
+        protected void onIdle() {
+
+        }
+
+        @Override
+        protected void onNoIdle(MPDChangedSubsystemsResponse response) {
+            if (response.getSubsystemChanged(CHANGED_SUBSYSTEM.OUTPUT)) {
+                OutputsFragment fragment = mFragment.get();
+                if (fragment == null) {
+                    return;
+                }
+
+                fragment.refreshContent();
+            } else if (response.getSubsystemChanged(CHANGED_SUBSYSTEM.PARTITION)) {
+                OutputsFragment fragment = mFragment.get();
+                if (fragment == null) {
+                    return;
+                }
+
+                fragment.updatePartitions();
+            }
+        }
     }
 }

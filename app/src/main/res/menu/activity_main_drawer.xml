@@ -36,6 +36,10 @@
             android:icon="@drawable/ic_folder_48dp"
             android:title="@string/menu_files" />
         <item
+            android:id="@+id/nav_tag_browser"
+            android:icon="@drawable/ic_filter_24"
+            android:title="@string/menu_tag_browser" />
+        <item
             android:id="@+id/nav_search"
             android:icon="@drawable/ic_search_black_24dp"
             android:title="@string/menu_search" />

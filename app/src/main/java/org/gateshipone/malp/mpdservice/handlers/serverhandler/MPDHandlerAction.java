@@ -26,6 +26,8 @@ package org.gateshipone.malp.mpdservice.handlers.serverhandler;
 import java.util.HashMap;
 
 import org.gateshipone.malp.mpdservice.handlers.responsehandler.MPDResponseHandler;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDAlbum;
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDArtist;
 
 public class MPDHandlerAction {
 
@@ -41,15 +43,10 @@ public class MPDHandlerAction {
         ACTION_GET_ALBUMS,
         ACTION_GET_ALBUMS_IN_PATH,
         ACTION_GET_ARTIST_ALBUMS,
-        ACTION_GET_ARTISTSORT_ALBUMS,
         ACTION_GET_ARTISTS,
-        ACTION_GET_ARTISTSORT,
-        ACTION_GET_ALBUMARTISTS,
-        ACTION_GET_ALBUMARTISTSORT,
         ACTION_GET_ARTWORK_TRACKS,
         ACTION_GET_ALBUM_TRACKS,
         ACTION_GET_ARTIST_ALBUM_TRACKS,
-        ACTION_GET_ARTIST_SORT_ALBUM_TRACKS,
         ACTION_GET_SERVER_STATUS,
         ACTION_GET_SERVER_STATISTICS,
         ACTION_GET_CURRENT_PLAYLIST,
@@ -58,17 +55,15 @@ public class MPDHandlerAction {
         ACTION_GET_SAVED_PLAYLISTS,
         ACTION_GET_FILES,
         ACTION_GET_OUTPUTS,
+        ACTION_GET_OUTPUTS_ALL_PARTITIONS,
         ACTION_GET_ALBUM_ART_FOR_TRACK,
         ACTION_GET_ALBUM_ART_FOR_ALBUM,
         ACTION_ADD_ARTIST_ALBUM,
-        ACTION_ADD_ARTIST_SORT_ALBUM,
         ACTION_ADD_ARTIST,
         ACTION_ADD_PATH,
         ACTION_ADD_PATH_AT_INDEX,
         ACTION_PLAY_ARTIST_ALBUM,
-        ACTION_PLAY_ARTIST_SORT_ALBUM,
         ACTION_PLAY_ARTIST,
-        ACTION_PLAY_ARTIST_SORT,
         ACTION_PLAY_DIRECTORY,
         ACTION_PLAY_ALBUMS_IN_PATH,
         ACTION_PLAY_SONG,
@@ -108,7 +103,17 @@ public class MPDHandlerAction {
         ACTION_UPDATE_DATABASE,
         ACTION_SEARCH_FILES,
         ACTION_ADD_SEARCH_FILES,
-        ACTION_PLAY_SEARCH_FILES
+        ACTION_PLAY_SEARCH_FILES,
+        ACTION_GET_PARTITIONS,
+        ACTION_NEW_PARTITION,
+        ACTION_DELETE_PARTITION,
+        ACTION_SWITCH_PARTITION,
+        ACTION_MOVE_OUTPUT_TO_PARTITION,
+        ACTION_TOGGLE_PARTITION_OUTPUT,
+        ACTION_GET_TAG_FILTER_ENTRIES,
+        ACTION_GET_TAG_FILTERED_SONG_COUNT,
+        ACTION_GET_TAG_FILTERED_SONGS_WINDOWED,
+        ACTION_PLAY_TAG_FILTERED_SONGS,
     }
 
 
@@ -126,6 +131,10 @@ public class MPDHandlerAction {
         EXTRA_PATH,
         EXTRA_SEARCH_TERM,
         EXTRA_ALBUM_MBID,
+        EXTRA_PARTITION_NAME,
+        EXTRA_OUTPUT_NAME,
+        EXTRA_TAG_NAME,
+        EXTRA_TAG_VALUE,
     }
 
     /**
@@ -147,6 +156,8 @@ public class MPDHandlerAction {
         EXTRA_OUTPUT_ID,
         EXTRA_SEARCH_TYPE,
         EXTRA_SORT_ORDER,
+        EXTRA_ALBUM_ARTIST_SELECT,
+        EXTRA_ARTIST_SORT_SELECT,
     }
 
     /**
@@ -161,6 +172,8 @@ public class MPDHandlerAction {
     HashMap<NET_HANDLER_EXTRA_INT, Integer> pIntExtras = null;
 
     private MPDResponseHandler pResponseHandler = null;
+
+    private MPDAlbum mAlbumExtra = null;
 
     /**
      * The action type for this message.
@@ -263,4 +276,36 @@ public class MPDHandlerAction {
         return pIntExtras.get(type);
     }
 
+    public void setAlbumArtistSelector(MPDArtist.MPD_ALBUM_ARTIST_SELECTOR selector) {
+        setIntExtras(NET_HANDLER_EXTRA_INT.EXTRA_ALBUM_ARTIST_SELECT, selector.ordinal());
+    }
+
+    public MPDArtist.MPD_ALBUM_ARTIST_SELECTOR getAlbumArtistSelector() {
+        return MPDArtist.MPD_ALBUM_ARTIST_SELECTOR.values()[getIntExtra(NET_HANDLER_EXTRA_INT.EXTRA_ALBUM_ARTIST_SELECT)];
+    }
+
+    public void setArtistSortSelector(MPDArtist.MPD_ARTIST_SORT_SELECTOR selector) {
+        setIntExtras(NET_HANDLER_EXTRA_INT.EXTRA_ARTIST_SORT_SELECT, selector.ordinal());
+    }
+
+    public MPDArtist.MPD_ARTIST_SORT_SELECTOR getArtistSortSelector() {
+        return MPDArtist.MPD_ARTIST_SORT_SELECTOR.values()[getIntExtra(NET_HANDLER_EXTRA_INT.EXTRA_ARTIST_SORT_SELECT)];
+    }
+
+    public void setAlbumSortOrder(MPDAlbum.MPD_ALBUM_SORT_ORDER sortOrder) {
+        setIntExtras(NET_HANDLER_EXTRA_INT.EXTRA_SORT_ORDER, sortOrder.ordinal());
+    }
+    public MPDAlbum.MPD_ALBUM_SORT_ORDER getAlbumSortOrder() {
+        return MPDAlbum.MPD_ALBUM_SORT_ORDER.values()[getIntExtra(NET_HANDLER_EXTRA_INT.EXTRA_SORT_ORDER)];
+    }
+    public void setMPDAlbum(MPDAlbum album) {
+        if (null == album) {
+            return;
+        }
+        mAlbumExtra = album;
+    }
+
+    public MPDAlbum getMPDAlbum() {
+        return mAlbumExtra;
+    }
 }

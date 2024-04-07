@@ -27,10 +27,13 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Pair;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -56,6 +59,8 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     public static final String TAG = MyMusicTabsFragment.class.getSimpleName();
 
     private static final String MY_MUSIC_REQUESTED_TAB = "ARG_REQUESTED_TAB";
+    private static final String MY_MUSIC_REQUESTED_TAG_NAME = "ARG_TAG_NAME";
+    private static final String MY_MUSIC_REQUESTED_TAG_VALUE = "ARG_TAG_VALUE";
 
     private MyMusicPagerAdapter mMyMusicPagerAdapter;
 
@@ -74,6 +79,11 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
     private SearchView mSearchView;
 
+    private Menu mOptionsMenu;
+
+    private String mTagName;
+    private String mTagValue;
+
     /**
      * Constant for state saving
      */
@@ -82,6 +92,17 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     public static MyMusicTabsFragment newInstance(final DEFAULTTAB defaulttab) {
         final Bundle args = new Bundle();
         args.putInt(MY_MUSIC_REQUESTED_TAB, defaulttab.ordinal());
+
+        final MyMusicTabsFragment fragment = new MyMusicTabsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static MyMusicTabsFragment newInstance(final DEFAULTTAB defaulttab, String tagName, String tagValue) {
+        final Bundle args = new Bundle();
+        args.putInt(MY_MUSIC_REQUESTED_TAB, defaulttab.ordinal());
+        args.putString(MY_MUSIC_REQUESTED_TAG_NAME, tagName);
+        args.putString(MY_MUSIC_REQUESTED_TAG_VALUE, tagValue);
 
         final MyMusicTabsFragment fragment = new MyMusicTabsFragment();
         fragment.setArguments(args);
@@ -99,10 +120,17 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         // create tabs
         final TabLayout tabLayout = view.findViewById(R.id.my_music_tab_layout);
+        final Bundle args = getArguments();
+        if (args != null) {
+            mTagName = args.getString(MY_MUSIC_REQUESTED_TAG_NAME);
+            mTagValue = args.getString(MY_MUSIC_REQUESTED_TAG_VALUE);
+            Log.e(TAG, "Tag[" + mTagName + "]=" + mTagValue);
+        }
+
 
         // setup viewpager
         mViewPager = view.findViewById(R.id.my_music_viewpager);
-        mMyMusicPagerAdapter = new MyMusicPagerAdapter(getChildFragmentManager());
+        mMyMusicPagerAdapter = new MyMusicPagerAdapter(getChildFragmentManager(), mTagName, mTagValue);
         mViewPager.setAdapter(mMyMusicPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager, false);
         tabLayout.addOnTabSelectedListener(this);
@@ -118,6 +146,9 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
                     break;
                 case 1:
                     drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_album_24dp, null);
+                    break;
+                case 2:
+                    drawable = ResourcesCompat.getDrawable(res, R.drawable.ic_queue_music_black_48dp, null);
                     break;
             }
 
@@ -138,7 +169,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         setHasOptionsMenu(true);
 
         // set start page
-        final Bundle args = getArguments();
+
 
         if (args != null && savedInstanceState == null) {
             final DEFAULTTAB tab = DEFAULTTAB.values()[args.getInt(MY_MUSIC_REQUESTED_TAB)];
@@ -157,10 +188,27 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     public void onTabSelected(TabLayout.Tab tab) {
         // set view pager to current page
         mViewPager.setCurrentItem(tab.getPosition());
+        if (mOptionsMenu != null) {
+            MenuItem item = mOptionsMenu.findItem(R.id.action_search);
+            if (item != null) {
+                if (tab.getPosition() == 2) {
+                    item.setVisible(false);
+                    if (mSearchView != null) {
+                        mSearchView.clearFocus();
+                        mSearchView.setVisibility(View.GONE);
+                    }
+                } else {
+                    item.setVisible(true);
+                    if (mSearchView != null) {
+                        mSearchView.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        }
 
-        final GenericMPDFragment<?> fragment = mMyMusicPagerAdapter.getRegisteredFragment(tab.getPosition());
-        if (fragment != null) {
-            fragment.getContent();
+        final BaseMPDFragment fragment = mMyMusicPagerAdapter.getRegisteredFragment(tab.getPosition());
+        if (fragment instanceof GenericMPDFragment<?>) {
+            ((GenericMPDFragment<?>)fragment).getContent();
         }
     }
 
@@ -181,7 +229,13 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         if (null != mFABCallback) {
             mFABCallback.setupFAB(false, null);
-            mFABCallback.setupToolbar(getString(R.string.app_name), true, true, false);
+            String title;
+            if (mTagValue == null || mTagValue.isEmpty()) {
+                title = getString(R.string.app_name);
+            } else {
+                title = mTagValue;
+            }
+            mFABCallback.setupToolbar(title, true, true, false);
         }
     }
 
@@ -235,7 +289,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         menuInflater.inflate(R.menu.fragment_menu_library, menu);
 
         // get tint color
-        final int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
+        final int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.app_color_on_surface);
 
         Drawable drawable = menu.findItem(R.id.action_search).getIcon();
         drawable = DrawableCompat.wrap(drawable);
@@ -255,6 +309,8 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         mSearchView.setOnQueryTextListener(new SearchTextObserver());
 
+        mOptionsMenu = menu;
+
         super.onCreateOptionsMenu(menu, menuInflater);
     }
 
@@ -263,13 +319,20 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
     }
 
     private static class MyMusicPagerAdapter extends FragmentStatePagerAdapter {
-        static final int NUMBER_OF_PAGES = 2;
+        static final int NUMBER_OF_PAGES_NON_TAG = 2;
+        static final int NUMBER_OF_PAGES_TAG = 3;
 
-        private final SparseArray<GenericMPDFragment<?>> mRegisteredFragments;
+        private final SparseArray<BaseMPDFragment> mRegisteredFragments;
 
-        public MyMusicPagerAdapter(FragmentManager fm) {
+        private String mTagName = null;
+        private String mTagValue = null;
+
+        public MyMusicPagerAdapter(FragmentManager fm, String tagName, String tagValue) {
             super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
             mRegisteredFragments = new SparseArray<>();
+            mTagName = tagName;
+            mTagValue = tagValue;
+            Log.e(TAG, "Tag[" + mTagName + "]=" + mTagValue);
         }
 
         @Override
@@ -280,7 +343,7 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            GenericMPDFragment<?> fragment = (GenericMPDFragment<?>) super.instantiateItem(container, position);
+            BaseMPDFragment fragment = (BaseMPDFragment) super.instantiateItem(container, position);
             mRegisteredFragments.put(position, fragment);
             return fragment;
         }
@@ -296,9 +359,11 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
         public Fragment getItem(int i) {
             switch (i) {
                 case 0:
-                    return ArtistsFragment.newInstance();
+                    return ArtistsFragment.newInstance(new Pair<>(mTagName, mTagValue));
                 case 1:
-                    return AlbumsFragment.newInstance(null);
+                    return AlbumsFragment.newInstance(null, new Pair<>(mTagName, mTagValue));
+                case 2:
+                    return TagFilterSongsFragment.newInstance(new Pair<>(mTagName, mTagValue));
                 default:
                     // should not happen throw exception
                     throw new IllegalStateException("No fragment defined to return");
@@ -307,11 +372,15 @@ public class MyMusicTabsFragment extends Fragment implements TabLayout.OnTabSele
 
         @Override
         public int getCount() {
-            // this is done in order to reload all tabs
-            return NUMBER_OF_PAGES;
+            if (mTagName != null && !mTagName.isEmpty()) {
+                return NUMBER_OF_PAGES_TAG;
+            } else {
+                // this is done in order to reload all tabs
+                return NUMBER_OF_PAGES_NON_TAG;
+            }
         }
 
-        public GenericMPDFragment<?> getRegisteredFragment(int position) {
+        public BaseMPDFragment getRegisteredFragment(int position) {
             return mRegisteredFragments.get(position);
         }
     }

@@ -26,7 +26,7 @@ package org.gateshipone.malp.application.fragments.serverfragments;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -214,7 +214,7 @@ public class PlaylistTracksFragment extends GenericMPDFragment<MPDFileEntry> imp
         menuInflater.inflate(R.menu.fragment_playlist_tracks, menu);
 
         // get tint color
-        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.malp_color_text_accent);
+        int tintColor = ThemeUtils.getThemeColor(requireContext(), R.attr.app_color_on_surface);
 
         Drawable drawable = menu.findItem(R.id.action_add_playlist).getIcon();
         drawable = DrawableCompat.wrap(drawable);

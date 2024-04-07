@@ -29,8 +29,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Looper;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.volley.NetworkResponse;
@@ -146,6 +147,11 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
      */
     private final Context mApplicationContext;
 
+    /**
+     * Receiver that is called if user's device connection changes (e.g. Wifi -> celluar).
+     */
+    private final ConnectionStateReceiver mReceiver;
+
     private ArtworkManager(final Context context) {
 
         mApplicationContext = context.getApplicationContext();
@@ -156,10 +162,15 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
         mAlbumListeners = new ArrayList<>();
         mDirectoryListeners = new ArrayList<>();
 
-        ConnectionStateReceiver receiver = new ConnectionStateReceiver();
+        mReceiver = new ConnectionStateReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        mApplicationContext.registerReceiver(receiver, filter);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            mApplicationContext.registerReceiver(mReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            mApplicationContext.registerReceiver(mReceiver, filter);
+        }
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mApplicationContext);
         mArtistProvider = sharedPref.getString(mApplicationContext.getString(R.string.pref_artist_provider_key), mApplicationContext.getString(R.string.pref_artwork_provider_artist_default));
@@ -167,6 +178,11 @@ public class ArtworkManager implements ArtProvider.ArtFetchError, InsertImageTas
         mWifiOnly = sharedPref.getBoolean(mApplicationContext.getString(R.string.pref_download_wifi_only_key), mApplicationContext.getResources().getBoolean(R.bool.pref_download_wifi_default));
 
         MPDAlbumImageProvider.getInstance().setResponseLooper(Looper.getMainLooper());
+    }
+
+    @Override
+    protected void finalize() {
+        mApplicationContext.unregisterReceiver(mReceiver);
     }
 
     public static synchronized ArtworkManager getInstance(final Context context) {
