@@ -22,7 +22,6 @@
 
 package org.gateshipone.malp.application.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -30,9 +29,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.transition.Slide;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,6 +39,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -115,6 +113,8 @@ public class MainActivity extends GenericActivity
 
     private static final String MAINACTIVITY_SAVED_INSTANCE_NOW_PLAYING_DRAG_STATUS = "MainActivity.NowPlayingDragStatus";
     private static final String MAINACTIVITY_SAVED_INSTANCE_NOW_PLAYING_VIEW_SWITCHER_CURRENT_VIEW = "MainActivity.NowPlayingViewSwitcherCurrentView";
+
+    private static final boolean TOAST_INSTEAD_OF_SNACK = true;
 
     private DRAG_STATUS mNowPlayingDragStatus;
     private DRAG_STATUS mSavedNowPlayingDragStatus = null;
@@ -545,22 +545,24 @@ public class MainActivity extends GenericActivity
     protected void onMPDError(MPDException.MPDServerException e) {
         e.printStackTrace();
         View layout = findViewById(R.id.drawer_layout);
-        if (layout != null) {
-            String errorText = getString(R.string.snackbar_mpd_server_error_format, e.getErrorCode(), e.getCommandOffset(), e.getServerMessage());
+        String errorText = getString(R.string.snackbar_mpd_server_error_format, e.getErrorCode(), e.getCommandOffset(), e.getServerMessage());
+        if (layout != null && !TOAST_INSTEAD_OF_SNACK) {
             Snackbar sb = Snackbar.make(layout, errorText, Snackbar.LENGTH_SHORT);
 
             // style the snackbar text
             TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
             sbText.setTextColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent));
             sb.show();
+        } else {
+            Toast.makeText(this, errorText, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     protected void onMPDConnectionError(MPDException.MPDConnectionException e) {
         View layout = findViewById(R.id.drawer_layout);
-        if (layout != null) {
-            String errorText = getString(R.string.snackbar_mpd_connection_error_format, e.getError());
+        String errorText = getString(R.string.snackbar_mpd_connection_error_format, e.getError());
+        if (layout != null && !TOAST_INSTEAD_OF_SNACK) {
 
             Snackbar sb = Snackbar.make(layout, errorText, Snackbar.LENGTH_SHORT);
 
@@ -568,6 +570,8 @@ public class MainActivity extends GenericActivity
             TextView sbText = sb.getView().findViewById(com.google.android.material.R.id.snackbar_text);
             sbText.setTextColor(ThemeUtils.getThemeColor(this, R.attr.malp_color_text_accent));
             sb.show();
+        } else {
+            Toast.makeText(this, errorText, Toast.LENGTH_SHORT).show();
         }
     }
 
