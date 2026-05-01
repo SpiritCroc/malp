@@ -55,8 +55,8 @@ android {
         applicationId "de.spiritcroc.malp"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 2000043
-        versionName "2.1"
+        versionCode 2000044
+        versionName "2.2"
         signingConfig signingConfigs.config
     }
     buildTypes {
