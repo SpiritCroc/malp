@@ -23,6 +23,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_toggle_repeat_mode"
+        android:checkable="true"
+        android:orderInCategory="1"
+        android:title="@string/action_toggle_repeat_mode"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_toggle_single_mode"
         android:checkable="true"
         android:orderInCategory="1"

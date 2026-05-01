@@ -558,7 +558,7 @@ class MPDResponseParser {
                         status.setRandom(Integer.parseInt(value));
                         break;
                     case RESPONSE_SINGLE:
-                        status.setSinglePlayback(Integer.parseInt(value));
+                        status.setSinglePlayback(parseSingleState(value));
                         break;
                     case RESPONSE_CONSUME:
                         status.setConsume(Integer.parseInt(value));
@@ -637,6 +637,13 @@ class MPDResponseParser {
             key = connection.readKey();
         }
         return status;
+    }
+
+    private static int parseSingleState(String value) {
+        if ("oneshot".equals(value)) {
+            return MPDCurrentStatus.MPD_OPTION_ONESHOT;
+        }
+        return Integer.parseInt(value);
     }
 
     /**

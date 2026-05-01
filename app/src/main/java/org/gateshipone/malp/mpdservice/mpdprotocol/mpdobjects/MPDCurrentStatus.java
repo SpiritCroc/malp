@@ -30,6 +30,10 @@ import androidx.annotation.NonNull;
 
 public class MPDCurrentStatus implements Parcelable {
 
+    public static final int MPD_OPTION_DISABLED = 0;
+    public static final int MPD_OPTION_ENABLED = 1;
+    public static final int MPD_OPTION_ONESHOT = 2;
+
     public enum MPD_PLAYBACK_STATE {
         MPD_PLAYING,
         MPD_PAUSING,
@@ -52,7 +56,7 @@ public class MPDCurrentStatus implements Parcelable {
     private int pRandom;
 
     /**
-     * Single playback: 0,1
+     * Single playback: 0,1,oneshot
      */
     private int pSinglePlayback;
 
@@ -149,7 +153,7 @@ public class MPDCurrentStatus implements Parcelable {
         pVolume = 0;
         pRepeat = 0;
         pRandom = 0;
-        pSinglePlayback = 0;
+        pSinglePlayback = MPD_OPTION_DISABLED;
         pConsume = 0;
         pPlaylistVersion = 0;
         pPlaylistLength = 0;
@@ -225,6 +229,10 @@ public class MPDCurrentStatus implements Parcelable {
 
     public void setSinglePlayback(int pSinglePlayback) {
         this.pSinglePlayback = pSinglePlayback;
+    }
+
+    public boolean isSinglePlaybackActive() {
+        return pSinglePlayback != MPD_OPTION_DISABLED;
     }
 
     public int getConsume() {

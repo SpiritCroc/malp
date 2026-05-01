@@ -403,13 +403,13 @@
                     android:paddingBottom="@dimen/material_content_spacing">
 
                     <ImageButton
-                        android:id="@+id/now_playing_bottomRepeatButton"
+                        android:id="@+id/now_playing_bottomSingleButton"
                         android:layout_width="0px"
                         android:layout_height="48dp"
                         android:layout_weight="1"
                         android:background="?android:selectableItemBackground"
                         android:scaleType="center"
-                        android:src="@drawable/ic_repeat_24dp"
+                        android:src="@drawable/ic_repeat_one_24dp"
                         android:tint="?attr/malp_color_text_accent" />
 
                     <ImageButton

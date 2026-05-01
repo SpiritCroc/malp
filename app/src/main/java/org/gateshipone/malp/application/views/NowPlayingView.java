@@ -189,7 +189,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
     /**
      * Buttons in the bottom part of the view
      */
-    private ImageButton mBottomRepeatButton;
+    private ImageButton mBottomSingleButton;
     private ImageButton mBottomPreviousButton;
     private ImageButton mBottomPlayPauseButton;
     private ImageButton mBottomStopButton;
@@ -417,14 +417,12 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
             addURLDialog.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "AddURLDialog");
         } else if (itemId == R.id.action_jump_to_current) {
             mPlaylistView.jumpToCurrentSong();
-        } else if (itemId == R.id.action_toggle_single_mode) {
+        } else if (itemId == R.id.action_toggle_repeat_mode) {
             if (null != mLastStatus) {
-                if (mLastStatus.getSinglePlayback() == 0) {
-                    MPDCommandHandler.setSingle(true);
-                } else {
-                    MPDCommandHandler.setSingle(false);
-                }
+                MPDCommandHandler.setRepeat(mLastStatus.getRepeat() == 0);
             }
+        } else if (itemId == R.id.action_toggle_single_mode) {
+            toggleSinglePlaybackMenuMode();
         } else if (itemId == R.id.action_toggle_consume_mode) {
             if (null != mLastStatus) {
                 if (mLastStatus.getConsume() == 0) {
@@ -827,7 +825,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         mTopMenuButton = findViewById(R.id.now_playing_topMenuButton);
 
         // bottom buttons
-        mBottomRepeatButton = findViewById(R.id.now_playing_bottomRepeatButton);
+        mBottomSingleButton = findViewById(R.id.now_playing_bottomSingleButton);
         mBottomPreviousButton = findViewById(R.id.now_playing_bottomPreviousButton);
         mBottomPlayPauseButton = findViewById(R.id.now_playing_bottomPlayPauseButton);
         mBottomStopButton = findViewById(R.id.now_playing_bottomStopButton);
@@ -961,16 +959,7 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         mTopMenuButton.setOnClickListener(this::showAdditionalOptionsMenu);
         TooltipCompat.setTooltipText(mTopMenuButton, getResources().getString(R.string.action_npv_more_options));
 
-        // Add listener to bottom repeat button
-        mBottomRepeatButton.setOnClickListener(arg0 -> {
-            if (null != mLastStatus) {
-                if (mLastStatus.getRepeat() == 0) {
-                    MPDCommandHandler.setRepeat(true);
-                } else {
-                    MPDCommandHandler.setRepeat(false);
-                }
-            }
-        });
+        mBottomSingleButton.setOnClickListener(arg0 -> toggleSinglePlaybackMode());
 
         // Add listener to bottom previous button
         mBottomPreviousButton.setOnClickListener(arg0 -> MPDCommandHandler.previousSong());
@@ -1003,6 +992,26 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
         mCoverLoader = new CoverBitmapLoader(getContext(), new CoverReceiverClass());
     }
 
+    private void toggleSinglePlaybackMode() {
+        if (null != mLastStatus) {
+            if (mLastStatus.isSinglePlaybackActive()) {
+                MPDCommandHandler.setSingle(MPDCurrentStatus.MPD_OPTION_DISABLED);
+            } else {
+                MPDCommandHandler.setSingle(MPDCurrentStatus.MPD_OPTION_ONESHOT);
+            }
+        }
+    }
+
+    private void toggleSinglePlaybackMenuMode() {
+        if (null != mLastStatus) {
+            if (mLastStatus.getSinglePlayback() == MPDCurrentStatus.MPD_OPTION_ENABLED) {
+                MPDCommandHandler.setSingle(MPDCurrentStatus.MPD_OPTION_DISABLED);
+            } else {
+                MPDCommandHandler.setSingle(MPDCurrentStatus.MPD_OPTION_ENABLED);
+            }
+        }
+    }
+
     /**
      * Called to open the popup menu on the top right corner.
      *
@@ -1019,8 +1028,11 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
 
         // Set the checked menu item state if a MPDCurrentStatus is available
         if (null != mLastStatus) {
+            MenuItem repeatItem = menu.findItem(R.id.action_toggle_repeat_mode);
+            repeatItem.setChecked(mLastStatus.getRepeat() == 1);
+
             MenuItem singlePlaybackItem = menu.findItem(R.id.action_toggle_single_mode);
-            singlePlaybackItem.setChecked(mLastStatus.getSinglePlayback() == 1);
+            singlePlaybackItem.setChecked(mLastStatus.getSinglePlayback() == MPDCurrentStatus.MPD_OPTION_ENABLED);
 
             MenuItem consumeItem = menu.findItem(R.id.action_toggle_consume_mode);
             consumeItem.setChecked(mLastStatus.getConsume() == 1);
@@ -1189,17 +1201,11 @@ public class NowPlayingView extends RelativeLayout implements PopupMenu.OnMenuIt
                 break;
         }
 
-        // update repeat button
-        // FIXME with single playback
-        switch (status.getRepeat()) {
-            case 0:
-                mBottomRepeatButton.setImageResource(R.drawable.ic_repeat_24dp);
-                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
-                break;
-            case 1:
-                mBottomRepeatButton.setImageResource(R.drawable.ic_repeat_24dp);
-                mBottomRepeatButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), android.R.attr.colorAccent)));
-                break;
+        // update single button
+        if (status.isSinglePlaybackActive()) {
+            mBottomSingleButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), android.R.attr.colorAccent)));
+        } else {
+            mBottomSingleButton.setImageTintList(ColorStateList.valueOf(ThemeUtils.getThemeColor(getContext(), R.attr.malp_color_text_accent)));
         }
 
         // update random button

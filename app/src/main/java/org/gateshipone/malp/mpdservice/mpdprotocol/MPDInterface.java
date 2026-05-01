@@ -754,11 +754,11 @@ public class MPDInterface {
     }
 
     /**
-     * Sets single playback to enable (true) or disabled (false)
+     * Sets single playback mode.
      *
-     * @param single if single playback should be enabled or not.
+     * @param single single playback state.
      */
-    public void setSingle(boolean single) throws MPDException {
+    public void setSingle(int single) throws MPDException {
         mConnection.sendSimpleMPDCommand(MPDCommands.MPD_COMMAND_SET_SINGLE(single));
     }
 

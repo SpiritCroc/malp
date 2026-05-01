@@ -22,6 +22,8 @@
 
 package org.gateshipone.malp.mpdservice.mpdprotocol;
 
+import org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects.MPDCurrentStatus;
+
 public class MPDCommands {
 
     public static final String MPD_COMMAND_CLOSE = "close";
@@ -211,8 +213,16 @@ public class MPDCommands {
         return "repeat " + (repeat ? "1" : "0");
     }
 
-    public static String MPD_COMMAND_SET_SINGLE(boolean single) {
-        return "single " + (single ? "1" : "0");
+    public static String MPD_COMMAND_SET_SINGLE(int single) {
+        switch (single) {
+            case MPDCurrentStatus.MPD_OPTION_ENABLED:
+                return "single 1";
+            case MPDCurrentStatus.MPD_OPTION_ONESHOT:
+                return "single oneshot";
+            case MPDCurrentStatus.MPD_OPTION_DISABLED:
+            default:
+                return "single 0";
+        }
     }
 
     public static String MPD_COMMAND_SET_CONSUME(boolean consume) {

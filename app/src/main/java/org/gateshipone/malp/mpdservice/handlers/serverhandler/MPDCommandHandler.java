@@ -149,7 +149,7 @@ public class MPDCommandHandler extends MPDGenericHandler {
                 boolean repeat = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_REPEAT) == 1;
                 MPDInterface.getGenericInstance().setRepeat(repeat);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_SET_SINGLE) {
-                boolean single = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SINGLE) == 1;
+                int single = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SINGLE);
                 MPDInterface.getGenericInstance().setSingle(single);
             } else if (action == MPDHandlerAction.NET_HANDLER_ACTION.ACTION_SET_CONSUME) {
                 boolean consume = mpdAction.getIntExtra(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_CONSUME) == 1;
@@ -368,16 +368,16 @@ public class MPDCommandHandler extends MPDGenericHandler {
 
     /**
      * Set single song playback. (Stop after song)
-     * @param single Enable/disable single playback
+     * @param single Single playback state to send to MPD.
      */
-    public static void setSingle(boolean single) {
+    public static void setSingle(int single) {
         MPDHandlerAction action = new MPDHandlerAction(MPDHandlerAction.NET_HANDLER_ACTION.ACTION_SET_SINGLE);
         Message msg = Message.obtain();
         if (msg == null) {
             return;
         }
 
-        action.setIntExtras(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SINGLE, single ? 1 : 0);
+        action.setIntExtras(MPDHandlerAction.NET_HANDLER_EXTRA_INT.EXTRA_SINGLE, single);
 
         msg.obj = action;
         MPDCommandHandler.getHandler().sendMessage(msg);
